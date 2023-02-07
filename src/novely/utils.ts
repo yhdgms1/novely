@@ -44,9 +44,9 @@ type MatchActionMap = {
 }
 
 const matchAction = (values: MatchActionMap) => {
-  return (action: keyof MatchActionMap) => {
-    console.log(values, action);
+  return (action: keyof MatchActionMap, props: any) => {
+    values[action](props);
   }
 }
 
-export { capitalize, createElement, createImage, url, canvasDrawImages }
+export { capitalize, createElement, createImage, url, canvasDrawImages, matchAction }

@@ -1,23 +1,24 @@
 import type { DefaultDefinedCharacter, } from './character';
+import type { Thenable } from './types'
 
 export enum Action {
-  Choice,
-  Clear,
-  Condition,
-  Dialog,
-  End,
+  // Choice,
+  // Clear,
+  // Condition,
+  // Dialog,
+  // End,
   // Gallery - не нужно согласни идеологии
   // HideCanvas, - можно сделать по другому
-  HideCharacter,
+  // HideCharacter,
   HideImage,
   HideParticles,
   HideVideo,
   Input,
-  Function,
+  // Function,
   Jump,
   Next,
   // Placeholder - не понимаю что это
-  PlayMusic,
+  // PlayMusic,
   PlaySound,
   PlayVoice,
   // ShowCanvas,
@@ -33,13 +34,13 @@ export enum Action {
   StopSound,
   StopVoice,
   Vibrate,
-  Wait
+  // Wait
 }
 
 /**
  * Не лучшее решение, но наиболее простое
  */
-export type ValidAction = [Capitalize<keyof ActionProxyProvider<Record<string, DefaultDefinedCharacter>>>, Parameters<ActionProxyProvider<Record<string, DefaultDefinedCharacter>>[keyof ActionProxyProvider<Record<string, DefaultDefinedCharacter>>]>]
+export type ValidAction = [keyof ActionProxyProvider<Record<string, DefaultDefinedCharacter>>, Parameters<ActionProxyProvider<Record<string, DefaultDefinedCharacter>>[keyof ActionProxyProvider<Record<string, DefaultDefinedCharacter>>]>]
 
 export type Story = Record<string, ValidAction[]>;
 
@@ -65,6 +66,7 @@ export type ActionProxyProvider<Characters extends Record<string, DefaultDefined
     <C extends keyof Characters>(character: C, className?: string, style?: string, duration?: number): ValidAction
   }
   wait: (time: number) => ValidAction;
+  function: (fn: () => Thenable<void>) => ValidAction;
 }
 
 export type GetActionParameters<T extends Capitalize<keyof ActionProxyProvider<Record<string, DefaultDefinedCharacter>>>> = Parameters<ActionProxyProvider<Record<string, DefaultDefinedCharacter>>[Uncapitalize<T>]>;

@@ -50,32 +50,40 @@ const nezuko = defineCharacter({
   }
 } as const)
 
+const target = document.getElementById('app')!;
+
 const engine = novely({
+  target: target,
   characters: {
     'Masaki Natsuko': masaki,
     'Nezuko': nezuko
   }
 });
 
+const { action } = engine;
+
 engine.withStory({
   'start': [
-    engine.action.showBackground('https://i.imgur.com/2CtCDxs.png'),
-    engine.action.showCharacter('Masaki Natsuko', 'happy', 'animate__animated animate__backInDown'),
-    engine.action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
-    engine.action.wait(500),
-    engine.action.hideCharacter('Masaki Natsuko', 'animate__animated animate__backOutUp', '', 1000),
-    engine.action.showCharacter('Nezuko', 'sad', 'animate__animated animate__rubberBand'),
-    engine.action.dialog('Nezuko', 'Почему ты сначала попривествовал <bold>её</bold>?', 'sad'),
-    // engine.action.choice(
-    //   ['Да, я новенький!', [engine.action.jump('act-1')]],
+    action.showBackground('https://i.imgur.com/2CtCDxs.png'),
+    action.showCharacter('Masaki Natsuko', 'happy', 'animate__animated animate__backInDown'),
+    action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
+    action.wait(500),
+    action.hideCharacter('Masaki Natsuko', 'animate__animated animate__backOutUp', '', 1000),
+    action.showCharacter('Nezuko', 'sad', 'animate__animated animate__rubberBand'),
+    action.dialog('Nezuko', 'Почему ты сначала попривествовал <bold>её</bold>?', 'sad'),
+    action.function(async () => {
+      console.log('Function Ran!! Yay!')
+    }),
+    // action.choice(
+    //   ['Да, я новенький!', [action.jump('act-1')]],
     //   ['Нет, я уже давно учусь здесь.', [], () => { return false /** Нельзя выбрать */ }]
     // )
   ],
   'act-1': [
-    engine.action.dialog(undefined, 'Вы прошли игру!'),
-    engine.action.clear(),
-    engine.action.showCharacter('Nezuko', 'sad'),
-    engine.action.condition(
+    action.dialog(undefined, 'Вы прошли игру!'),
+    action.clear(),
+    action.showCharacter('Nezuko', 'sad'),
+    action.condition(
       () => {
         let age = 13;
 
@@ -83,20 +91,15 @@ engine.withStory({
       },
       {
         'ok': [
-          engine.action.end()
+          action.end()
         ],
         'prison': [
-          engine.action.jump('prison')
+          action.jump('prison')
         ]
       }
     )
   ],
   'prison': []
 });
-
-const target = document.getElementById('app')!;
-
-engine.setupStyling(target);
-engine.withTarget(target);
 
 engine.next('start');

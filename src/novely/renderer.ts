@@ -128,7 +128,7 @@ const createRenderer = (characters: Record<string, DefaultDefinedCharacter>) => 
        */
       let ended = false;
 
-      const t = typer(text, { min: 70, max: 140 }).line(content).end(() => {
+      const t = typer(text, { min: 70, max: 100 }).line(content).end(() => {
         ended = true;
       });
 
