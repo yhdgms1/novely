@@ -1,8 +1,5 @@
 import type { DefaultDefinedCharacter } from './character';
-import { createElement, createImage, url, canvasDrawImages } from './utils'
-// @ts-expect-error package provides no types
-import typer from 'typer-js'
-
+import { createElement, createImage, url, canvasDrawImages, typewriter } from './utils'
 import './styles/dialog.css';
 
 interface CharacterHandle {
@@ -123,22 +120,10 @@ const createRenderer = (characters: Record<string, DefaultDefinedCharacter>) => 
 
       //* text start
 
-      /**
-       * Закончил ли typer написание
-       */
-      let ended = false;
-
-      const t = typer(text, { min: 70, max: 100 }).line(content).end(() => {
-        ended = true;
-      });
+      const end = typewriter(text, content);
 
       const onEvent = (event: MouseEvent | KeyboardEvent) => {
         const disconnect = () => {
-          /**
-           * Уничтожить инстанс typer
-           */
-          t.kill();
-
           /**
            * Убрать слушатели событий
            */
@@ -159,9 +144,7 @@ const createRenderer = (characters: Record<string, DefaultDefinedCharacter>) => 
         };
 
         if (!('key' in event) || event.key === ' ') {
-          if (ended) return disconnect(), resolve();
-
-          t.kill(), ended = true, text.innerHTML = content;
+          if (end()) disconnect(), resolve()
         }
       }
 

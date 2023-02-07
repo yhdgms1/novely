@@ -49,4 +49,64 @@ const matchAction = (values: MatchActionMap) => {
   }
 }
 
-export { capitalize, createElement, createImage, url, canvasDrawImages, matchAction }
+const typewriter = (node: HTMLElement, text: string) => {
+  let id!: number;
+
+  const root = createElement('span');
+  root.innerHTML = text;
+
+  const traverse = (el: HTMLElement | ChildNode | Node, erase = false) => {
+    const items = [] as ChildNode[];
+
+    el.childNodes.forEach(child => {
+      if (child.nodeType === Node.TEXT_NODE) {
+        items.push(child);
+
+        if (erase) child.textContent = '';
+      }
+
+      items.push(...traverse(child, erase));
+    });
+
+    return items;
+  }
+
+  const copy = root.cloneNode(true);
+
+  const emptied = traverse(root, true);
+  const full = traverse(copy, false);
+
+  node.appendChild(root);
+
+  let current = 0;
+  let pos = 0;
+
+  let end = false;
+
+  const process = () => {
+    if (full[current]?.textContent!.length > pos) {
+      emptied[current].textContent += full[current].textContent![pos++];
+
+      id = setTimeout(process, typewriter.timeout())
+    } else if (current++ < full.length) {
+      pos = 0;
+      process();
+    } else {
+      end = true;
+    }
+  }
+
+  id = setTimeout(process, typewriter.timeout())
+
+  /**
+   * Did the typewriter ended it's task
+   */
+  return () => {
+    if (end) return true;
+    return clearTimeout(id), root.replaceWith(copy), end = true, false;
+  }
+}
+
+typewriter.timeout = () => Math.min(100 * Math.random() + 100, 140);
+
+export { capitalize, createElement, createImage, url, canvasDrawImages, matchAction, typewriter }
