@@ -1,0 +1,52 @@
+.novely-dialog {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: rgb(255, 255, 255);
+
+  min-height: 20%;
+  max-height: 25%;
+  width: 100%;
+
+  position: absolute;
+  bottom: 0;
+  z-index: 10;
+
+  overflow-y: auto;
+  text-align: left;
+
+  overflow: hidden;
+
+  grid-template-areas:
+    "char name name"
+    "char text text";
+
+  grid-template-rows: 50px 1fr;
+  grid-template-columns: 150px 1fr;
+
+  cursor: default;
+}
+
+.novely-dialog__name,
+.novely-dialog__text {
+  display: block;
+  width: 100%;
+  padding: 1vmin;
+  margin: 0;
+}
+
+.novely-dialog__name {
+  grid-area: name;
+  font-size: 1.4375em;
+  line-height: 1.2;
+}
+
+.novely-dialog__text {
+  grid-area: text;
+}
+
+.novely-dialog__person {
+  grid-area: char;
+}
+
+.novely-dialog__person > canvas {
+  width: 100%;
+}
