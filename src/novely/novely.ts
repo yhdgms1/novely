@@ -10,9 +10,14 @@ interface NovelyInit {
 
 const novely = <I extends NovelyInit>(init: I) => {
   let story: Story;
+  let target: HTMLElement;
 
   const withStory = (s: Story) => {
     story = s;
+  }
+
+  const withTarget = (t: HTMLElement) => {
+    target = t;
   }
 
   const action = new Proxy({} as ActionProxyProvider<I['characters']>, {
@@ -30,7 +35,7 @@ const novely = <I extends NovelyInit>(init: I) => {
 
   const path: [Action | null, string | number][] = [];
 
-  const next = async (target = document.body, key: string | number) => {
+  const next = async (key: string | number) => {
 
     if (path.length === 0) path.push([null, key], [null, 0]);
 
@@ -73,14 +78,14 @@ const novely = <I extends NovelyInit>(init: I) => {
         const background = data[0];
 
         renderer.background(target, background);
-        next(target, arr_inc())
+        next(arr_inc())
 
         break;
       }
 
       case Action.PlayMusic: {
         console.warn(`PlayMusic: cannot play ${props[0]} - не реализовано`);
-        next(target, arr_inc())
+        next(arr_inc())
 
         break;
       }
@@ -109,7 +114,7 @@ const novely = <I extends NovelyInit>(init: I) => {
         };
 
         handle.withEmotion(emotion)();
-        next(target, arr_inc())
+        next(arr_inc())
 
         break;
       }
@@ -126,7 +131,7 @@ const novely = <I extends NovelyInit>(init: I) => {
         setTimeout(() => {
           handle.canvas.parentElement?.removeChild(handle.canvas);
 
-          next(target, arr_inc())
+          next(arr_inc())
         }, duration);
 
         break;
@@ -136,7 +141,7 @@ const novely = <I extends NovelyInit>(init: I) => {
         const data = props as any as GetActionParameters<'Wait'>;
 
         setTimeout(() => {
-          next(target, arr_inc())
+          next(arr_inc())
         }, data[0])
 
         break;
@@ -147,7 +152,7 @@ const novely = <I extends NovelyInit>(init: I) => {
         const [person, content, emotion] = data;
 
         renderer.dialog(content, person, emotion)(target, () => {
-          next(target, arr_inc());
+          next(arr_inc());
         });
 
         break;
@@ -165,7 +170,8 @@ const novely = <I extends NovelyInit>(init: I) => {
     withStory,
     action,
     setupStyling,
-    next
+    next,
+    withTarget
   }
 }
 

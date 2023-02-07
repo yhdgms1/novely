@@ -96,6 +96,7 @@ engine.withStory({
 
 const target = document.getElementById('app')!;
 
-engine.setupStyling(target)
+engine.setupStyling(target);
+engine.withTarget(target);
 
-engine.next(target, 'start');
+engine.next('start');

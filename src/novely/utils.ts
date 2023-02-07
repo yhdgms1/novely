@@ -1,3 +1,6 @@
+import type { ActionProxyProvider } from './action'
+import type { DefaultDefinedCharacter } from './character'
+
 const capitalize = <T extends string>(str: T): Capitalize<T> => {
   return str[0].toUpperCase() + str.slice(1) as Capitalize<T>
 }
@@ -34,6 +37,16 @@ const canvasDrawImages = (canvas = createElement('canvas'), ctx = canvas.getCont
   }
 
   return [canvas, ctx] as const;
+}
+
+type MatchActionMap = {
+  [Key in keyof ActionProxyProvider<Record<string, DefaultDefinedCharacter>>]: (data: Parameters<ActionProxyProvider<Record<string, DefaultDefinedCharacter>>[Key]>) => void;
+}
+
+const matchAction = (values: MatchActionMap) => {
+  return (action: keyof MatchActionMap) => {
+    console.log(values, action);
+  }
 }
 
 export { capitalize, createElement, createImage, url, canvasDrawImages }

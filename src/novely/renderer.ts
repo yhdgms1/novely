@@ -9,7 +9,7 @@ interface CharacterHandle {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
 
-  withEmotion: (emotion: string) => () => Promise<void>;
+  withEmotion: (emotion: string) => () => void;
 
   emotions: Record<string, Record<"head" | "left" | "right", HTMLImageElement>>
 }
@@ -67,7 +67,7 @@ const createRenderer = (characters: Record<string, DefaultDefinedCharacter>) => 
       const stored = store.characters[character].emotions[emotion];
 
       const render = (h: HTMLImageElement, l: HTMLImageElement, r: HTMLImageElement) => {
-        return async () => {
+        return () => {
           canvasDrawImages(canvas, ctx, [h, l, r]);
         }
       }
@@ -158,10 +158,8 @@ const createRenderer = (characters: Record<string, DefaultDefinedCharacter>) => 
           name.style.color = '#fff';
         };
 
-        if ((event instanceof MouseEvent) || (event instanceof KeyboardEvent && event.key === ' ')) {
-          if (ended) {
-            return disconnect(), resolve();
-          }
+        if (!('key' in event) || event.key === ' ') {
+          if (ended) return disconnect(), resolve();
 
           t.kill(), ended = true, text.innerHTML = content;
         }
