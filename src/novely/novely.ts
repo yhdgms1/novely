@@ -1,6 +1,5 @@
 import type { DefaultDefinedCharacter } from './character';
 import type { ActionProxyProvider, Story } from './action';
-import { Action } from './action'
 import { matchAction } from './utils';
 import { createRenderer } from './renderer';
 import { createCharactersRoot } from './dom'
@@ -33,9 +32,9 @@ const novely = <I extends NovelyInit>(init: I) => {
 
   const renderer = createRenderer(init.characters);
 
-  const path: [Action | null, string | number][] = [];
+  let path: ['choice' | 'condition' | null, string | number][] = [];
 
-  // @ts-expect-error not implemented
+  // @ts-ignore not implemented
   const match = matchAction({
     wait([time]) {
       setTimeout(next, time, arr_inc());
@@ -98,6 +97,29 @@ const novely = <I extends NovelyInit>(init: I) => {
       } else {
         next(arr_inc())
       }
+    },
+    choice(choices) {
+      renderer.choices(target, choices)((selected) => {
+        path.push(['choice', selected], [null, 0]);
+        next()
+      });
+    },
+    jump([scene]) {
+      path = [[null, scene], [null, 0]];
+      next()
+    },
+    clear() {
+      // todo: доделать
+      next(arr_inc())
+    },
+    condition([condition]) {
+      const value = condition();
+
+      path.push(['condition', value], [null, 0])
+      next();
+    },
+    end() {
+      // конец!!
     }
   });
 
@@ -113,9 +135,9 @@ const novely = <I extends NovelyInit>(init: I) => {
     }
   }
 
-  const next = async (key: string | number) => {
+  const next = async (key?: string | number) => {
 
-    if (path.length === 0) path.push([null, key], [null, 0]);
+    if (path.length === 0) path.push([null, key!], [null, 0]);
 
     const refer = (p = path) => {
       let c: any = story;
@@ -123,8 +145,14 @@ const novely = <I extends NovelyInit>(init: I) => {
       for (const [type, val] of p) {
         if (type === null) {
           c = c[val];
+        } else if (type === 'choice') {
+          c = c[val as number + 1][1];
+        } else if (type === 'condition') {
+          c = c[2][val];
         }
       }
+
+      // console.log(path)
 
       return c;
     }

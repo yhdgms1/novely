@@ -69,4 +69,5 @@ export type ActionProxyProvider<Characters extends Record<string, DefaultDefined
   function: (fn: () => Thenable<void>) => ValidAction;
 }
 
-export type GetActionParameters<T extends Capitalize<keyof ActionProxyProvider<Record<string, DefaultDefinedCharacter>>>> = Parameters<ActionProxyProvider<Record<string, DefaultDefinedCharacter>>[Uncapitalize<T>]>;
+export type DefaultActionProxyProvider = ActionProxyProvider<Record<string, DefaultDefinedCharacter>>;
+export type GetActionParameters<T extends Capitalize<keyof DefaultActionProxyProvider>> = Parameters<DefaultActionProxyProvider[Uncapitalize<T>]>;

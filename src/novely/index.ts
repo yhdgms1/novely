@@ -30,7 +30,7 @@ const masaki = defineCharacter({
 } as const);
 
 const nezuko = defineCharacter({
-  name: 'Nezuko',
+  name: 'Нацуки',
   color: '#f67288',
   emotions: {
     ok: {
@@ -65,24 +65,20 @@ const { action } = engine;
 engine.withStory({
   'start': [
     action.showBackground('https://i.imgur.com/2CtCDxs.png'),
-    action.showCharacter('Masaki Natsuko', 'happy', 'animate__animated animate__backInDown'),
-    action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
-    action.wait(500),
-    action.hideCharacter('Masaki Natsuko', 'animate__animated animate__backOutUp', '', 1000),
-    action.showCharacter('Nezuko', 'sad', 'animate__animated animate__rubberBand'),
-    action.dialog('Nezuko', 'Почему ты сначала попривествовал <bold>её</bold>?', 'sad'),
+    action.showCharacter('Nezuko', 'ok', 'animate__animated animate__backInDown'),
+    action.dialog('Nezuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
     action.function(async () => {
       console.log('Function Ran!! Yay!')
     }),
-    // action.choice(
-    //   ['Да, я новенький!', [action.jump('act-1')]],
-    //   ['Нет, я уже давно учусь здесь.', [], () => { return false /** Нельзя выбрать */ }]
-    // )
+    action.choice(
+      ['Да, я новенький!', [action.jump('act-1')]],
+      ['Нет, я уже давно учусь здесь.', [], () => { return false /** Нельзя выбрать */ }]
+    )
   ],
   'act-1': [
-    action.dialog(undefined, 'Вы прошли игру!'),
-    action.clear(),
-    action.showCharacter('Nezuko', 'sad'),
+    action.dialog(undefined, 'Произошло то, чего вы не ожидали'),
+    // action.clear(),
+    action.hideCharacter('Nezuko'), // пока что нет clear
     action.condition(
       () => {
         let age = 13;
@@ -99,7 +95,10 @@ engine.withStory({
       }
     )
   ],
-  'prison': []
+  'prison': [
+    action.showBackground('https://kartinkin.net/uploads/posts/2021-07/1627201958_4-kartinkin-com-p-shkola-tyurma-anime-kieshi-anime-krasivo-4.jpg'),
+    action.dialog(undefined, 'Ей было 13 лет. Вы попали в тюрьму!')
+  ]
 });
 
 engine.next('start');

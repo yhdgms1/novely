@@ -1,8 +1,11 @@
 import type { DefaultDefinedCharacter } from './character';
+import type { DefaultActionProxyProvider } from './action'
 import { createElement, createImage, url, canvasDrawImages, typewriter } from './utils'
+import { createDialog, createChoices } from './dom'
 
 import './styles/dialog.css';
 import './styles/characters.css';
+import './styles/choices.css';
 
 interface CharacterHandle {
   canvas: HTMLCanvasElement;
@@ -16,37 +19,7 @@ interface CharacterHandle {
 interface RendererStore {
   characters: Record<string, CharacterHandle>
   dialog?: readonly [HTMLDivElement, HTMLParagraphElement, HTMLSpanElement, HTMLDivElement]
-}
-
-const createDialog = () => {
-  /**
-   * Корневой элемент диалога
-   */
-  const dialog = createElement('div');
-  dialog.classList.add('novely-dialog');
-
-  /**
-   * Блок с именем
-   */
-  const name = createElement('span');
-  name.classList.add('novely-dialog__name');
-  dialog.appendChild(name);
-
-  /**
-   * Блок с текстом
-   */
-  const text = createElement('p');
-  text.classList.add('novely-dialog__text');
-  dialog.appendChild(text);
-
-  /**
-   * Картинка персонажа
-   */
-  const person = createElement('div');
-  person.classList.add('novely-dialog__person')
-  dialog.appendChild(person);
-
-  return [dialog, text, name, person] as const;
+  choice?: ReturnType<typeof createChoices>
 }
 
 const createRenderer = (characters: Record<string, DefaultDefinedCharacter>) => {
@@ -174,10 +147,32 @@ const createRenderer = (characters: Record<string, DefaultDefinedCharacter>) => 
     }
   }
 
+  const renderChoices = (target: HTMLElement, choices: Parameters<DefaultActionProxyProvider['choice']>) => {
+    const [root, createChoice] = store.choice || (store.choice = createChoices());
+
+    if (!root.isConnected) target.appendChild(root);
+
+    root.style.display = 'flex';
+
+    return (resolve: (selected: number) => void) => {
+      for (let i = 0; i < choices.length; i++) {
+        const [text, , disabled] = choices[i];
+
+        const selectable = disabled ? disabled() : true;
+
+        createChoice(text, selectable, () => {
+          root.style.display = 'none';
+          resolve(i);
+        });
+      }
+    }
+  }
+
   return {
     character: renderCharacter,
     background: renderBackground,
-    dialog: renderDialog
+    dialog: renderDialog,
+    choices: renderChoices
   }
 }
 
