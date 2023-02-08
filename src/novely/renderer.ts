@@ -6,6 +6,7 @@ import { createChoice, createLayout } from './dom'
 import './styles/dialog.css';
 import './styles/characters.css';
 import './styles/choices.css';
+import './styles/input.css'
 
 interface CharacterHandle {
   canvas: HTMLCanvasElement;
@@ -30,7 +31,7 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
     }
   };
 
-  const [charactersRoot, choicesRoot, dialogCollection] = layout;
+  const [charactersRoot, choicesRoot, dialogCollection, inputCollection] = layout;
 
   const renderCharacter = (character: string,) => {
     if (store.characters[character]) {
@@ -196,11 +197,41 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
     return store.audio[method] = new Audio(source);
   }
 
+  const renderInput = (question: string, onInput: (meta: { input: HTMLInputElement, error: HTMLSpanElement, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, setup?: (input: HTMLInputElement) => void) => {
+    const [container, input, text, error, button] = inputCollection;
+
+    container.style.display = 'flex';
+    text.textContent = question;
+
+    return (resolve: () => void) => {
+      setup?.(input);
+
+      const onInputEvent = (event: InputEvent) => {
+        onInput({ input, event, error } as any);
+      }
+
+      const onButtonClick = (_: MouseEvent) => {
+        if (!error.textContent && input.validity.valid) {
+          input.removeEventListener('input', onInputEvent as any);
+
+          text.textContent = '';
+          container.style.display = 'none';
+
+          resolve();
+        }
+      }
+
+      button.addEventListener('click', onButtonClick);
+      input.addEventListener('input', onInputEvent as any);
+    }
+  }
+
   return {
     character: renderCharacter,
     background: renderBackground,
     dialog: renderDialog,
     choices: renderChoices,
+    input: renderInput,
     music: useMusic,
     store
   }

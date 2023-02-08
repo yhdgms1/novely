@@ -154,6 +154,8 @@ const novely = <I extends NovelyInit>(init: I) => {
        * Отключить все звуки
        */
       for (const audio of Object.values(renderer.store.audio)) {
+        if (!audio) continue;
+
         audio.pause();
         audio.currentTime = 0;
       }
@@ -171,6 +173,11 @@ const novely = <I extends NovelyInit>(init: I) => {
     },
     end() {
       // конец!!
+    },
+    input([question, onInput, setup]) {
+      renderer.input(question, onInput, setup)(() => {
+        next(arr_inc())
+      });
     }
   });
 

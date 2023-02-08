@@ -3,7 +3,7 @@ import 'normalize.css'
 
 import { novely, defineCharacter } from './novely'
 
-import chingchenghanji from './assets/ChingChengHanji.mp3';
+// import chingchenghanji from './assets/ChingChengHanji.mp3';
 import masakiNatsukoOk from './assets/Masaki Natsuko.png';
 
 const masaki = defineCharacter({
@@ -50,7 +50,6 @@ const { action } = engine;
 engine.withStory({
   'start': [
     action.showBackground('https://i.imgur.com/2CtCDxs.png'),
-    action.playMusic(chingchenghanji),
     action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__backInDown', 'left: 15%'),
     action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
     action.choice(
@@ -61,6 +60,15 @@ engine.withStory({
   'act-1': [
     action.dialog(undefined, '...'),
     action.clear(),
+    action.input(
+      'Введите ваш возраст',
+      ({ input, error }) => {
+        error.textContent = Number.isFinite(input.valueAsNumber) ? input.valueAsNumber < 14 ? 'Слишком маленький возраст' : '' : 'Неправильное число'
+      },
+      (input) => {
+        input.type = 'number';
+      }
+    ),
     action.condition(
       () => {
         let age = 13;

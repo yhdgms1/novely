@@ -18,16 +18,37 @@ const createDialog = () => {
   return [dialog, text, name, person] as const;
 }
 
+const createInput = () => {
+  let input!: HTMLInputElement, text!: HTMLSpanElement, error!: HTMLSpanElement, button!: HTMLButtonElement;
+
+  const container = (
+    <div class="novely-input" style={{ display: 'none' }}>
+      <label for="novely-input">
+        <span ref={text} />
+        <input type="text" name="novely-input" required ref={input} />
+        <span class="error" aria-live="polite" ref={error} />
+      </label>
+      <button ref={button}>
+        Подтвердить
+      </button>
+    </div>
+  ) as HTMLDivElement;
+
+  return [container, input, text, error, button] as const;
+}
+
 const createLayout = (parent: HTMLElement) => {
   const dialog = createDialog();
+  const input = createInput();
   const characters = <div class="novely-characters" />;
   const choices = <div class="novely-choices" />;
 
   appendChild(parent, dialog[0]);
+  appendChild(parent, input[0]);
   appendChild(parent, characters)
   appendChild(parent, choices)
 
-  return [characters, choices, dialog] as const
+  return [characters, choices, dialog, input] as const
 }
 
 export { createChoice, createDialog, createLayout }
