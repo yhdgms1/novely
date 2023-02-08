@@ -3,10 +3,13 @@ import type { ActionProxyProvider, Story } from './action';
 import { Action } from './action'
 import { matchAction } from './utils';
 import { createRenderer } from './renderer';
+import { createCharactersRoot } from './dom'
 
 interface NovelyInit {
   target: HTMLElement;
   characters: Record<string, DefaultDefinedCharacter>;
+
+  settings?: { assetsPreloading?: boolean }
 }
 
 const novely = <I extends NovelyInit>(init: I) => {
@@ -17,6 +20,8 @@ const novely = <I extends NovelyInit>(init: I) => {
   const withStory = (s: Story) => {
     story = s;
   }
+
+  const charactersRoot = createCharactersRoot(target);
 
   const action = new Proxy({} as ActionProxyProvider<I['characters']>, {
     get(_, prop) {
@@ -60,7 +65,7 @@ const novely = <I extends NovelyInit>(init: I) => {
       handle.canvas.style.cssText += style;
 
       if (!handle.canvas.isConnected) {
-        target.appendChild(handle.canvas)
+        charactersRoot.appendChild(handle.canvas)
       };
 
       handle.withEmotion(emotion)();
@@ -73,7 +78,7 @@ const novely = <I extends NovelyInit>(init: I) => {
       if (style) handle.canvas.style.cssText += style;
 
       setTimeout(() => {
-        handle.canvas.parentElement?.removeChild(handle.canvas);
+        handle.canvas.remove();
 
         next(arr_inc())
       }, duration);

@@ -1,6 +1,8 @@
 import type { DefaultDefinedCharacter } from './character';
 import { createElement, createImage, url, canvasDrawImages, typewriter } from './utils'
+
 import './styles/dialog.css';
+import './styles/characters.css';
 
 interface CharacterHandle {
   canvas: HTMLCanvasElement;
@@ -163,7 +165,10 @@ const createRenderer = (characters: Record<string, DefaultDefinedCharacter>) => 
 
         const [canvas] = canvasDrawImages(undefined, undefined, Object.values(store['characters'][character]['emotions'][emotion]));
 
+        delete dialog.dataset.personHidden;
         person.appendChild(canvas);
+      } else {
+        dialog.dataset.personHidden = 'true';
       }
 
     }

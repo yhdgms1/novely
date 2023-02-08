@@ -10,7 +10,6 @@
   bottom: 0;
   z-index: 10;
 
-  overflow-y: auto;
   text-align: left;
 
   overflow: hidden;
@@ -19,10 +18,16 @@
     "char name name"
     "char text text";
 
-  grid-template-rows: 50px 1fr;
-  grid-template-columns: 150px 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 10vmax 1fr;
 
   cursor: default;
+}
+
+.novely-dialog[data-person-hidden="true"] {
+  grid-template-areas:
+    "name name name"
+    "text text text";
 }
 
 .novely-dialog__name,

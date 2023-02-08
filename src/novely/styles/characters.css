@@ -1,0 +1,18 @@
+.novely-characters {
+  width: 100%;
+  height: 100vh;
+
+  position: absolute;
+  inset: 0;
+
+  z-index: 1;
+
+  overflow: hidden;
+}
+
+.novely-characters > canvas[style] {
+  position: absolute;
+  bottom: 0;
+
+  width: 85vmin;
+}

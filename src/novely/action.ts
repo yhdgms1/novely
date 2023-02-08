@@ -28,7 +28,7 @@ export enum Action {
   ShowMessage,
   ShowNotification,
   ShowParticles,
-  ShowScene,
+  // ShowScene, The scene action will change the background and clear the screen, removing all characters, images and text currently displayed. - можно же сделать просто Clear, не?
   ShowVideo,
   StopMusic,
   StopSound,
