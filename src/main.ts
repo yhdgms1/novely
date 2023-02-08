@@ -50,6 +50,7 @@ const { action } = engine;
 engine.withStory({
   'start': [
     action.showBackground('https://i.imgur.com/2CtCDxs.png'),
+    action.playMusic(chingchenghanji),
     action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__backInDown', 'left: 15%'),
     action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
     action.choice(
@@ -59,8 +60,7 @@ engine.withStory({
   ],
   'act-1': [
     action.dialog(undefined, '...'),
-    // action.clear(),
-    action.hideCharacter('Masaki Natsuko'), // пока что нет clear
+    action.clear(),
     action.condition(
       () => {
         let age = 13;

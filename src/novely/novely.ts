@@ -127,7 +127,40 @@ const novely = <I extends NovelyInit>(init: I) => {
       next()
     },
     clear() {
-      // todo: доделать
+      const [charactersRoot, choicesRoot, dialogCollection] = layout;
+
+      /**
+       * Очистить персонажей
+       */
+      charactersRoot.childNodes.forEach(node => node.remove());
+
+      /**
+       * Очистить выбор
+       */
+      choicesRoot.childNodes.forEach(node => node.remove());
+      choicesRoot.style.display = 'none';
+
+      /**
+       * Скрыть диалог
+       */
+      const [dialog, text, name, person] = dialogCollection;
+
+      dialog.style.display = 'none';
+      text.textContent = '';
+      name.textContent = '';
+      person.childNodes.forEach(node => node.remove());
+
+      /**
+       * Отключить все звуки
+       */
+      for (const audio of Object.values(renderer.store.audio)) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+
+      /**
+       * Перейти дальше
+       */
       next(arr_inc())
     },
     condition([condition]) {
@@ -191,6 +224,7 @@ const novely = <I extends NovelyInit>(init: I) => {
     target.parentElement!.style.height = '100vh';
     target.style.height = '100%';
     target.style.fontSize = '1em';
+    target.style.fontFamily = `ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`;
   }
 
   setupStyling(target);

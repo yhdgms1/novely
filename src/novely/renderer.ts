@@ -201,7 +201,8 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
     background: renderBackground,
     dialog: renderDialog,
     choices: renderChoices,
-    music: useMusic
+    music: useMusic,
+    store
   }
 }
 
