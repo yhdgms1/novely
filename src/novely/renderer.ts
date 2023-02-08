@@ -13,7 +13,7 @@ interface CharacterHandle {
 
   withEmotion: (emotion: string) => () => void;
 
-  emotions: Record<string, Record<"head" | "left" | "right", HTMLImageElement>>
+  emotions: Record<string, HTMLImageElement | Record<"head" | "left" | "right", HTMLImageElement>>
 }
 
 interface RendererStore {
@@ -43,15 +43,23 @@ const createRenderer = (characters: Record<string, DefaultDefinedCharacter>) => 
     const withEmotion = (emotion: string) => {
       const stored = store.characters[character].emotions[emotion];
 
-      const render = (h: HTMLImageElement, l: HTMLImageElement, r: HTMLImageElement) => {
+      const render = (...images: HTMLImageElement[]) => {
         return () => {
-          canvasDrawImages(canvas, ctx, [h, l, r]);
+          canvasDrawImages(canvas, ctx, images);
         }
       }
 
-      if (stored) return render(stored.head, stored.left, stored.right);
+      if (stored) return render(...('head' in stored ? [stored.head, stored.left, stored.right] : [stored]));
 
       const emotionData = characters[character].emotion(emotion);
+
+      if (typeof emotionData === 'string') {
+        const img = createImage(emotionData);
+
+        store.characters[character].emotions[emotion] = img;
+
+        return render(img);
+      }
 
       const head = createImage(emotionData.head);
       const left = createImage(emotionData.body.left);

@@ -11,5 +11,6 @@
   position: absolute;
   bottom: 0;
 
-  width: 85vmin;
+  height: 85vmin;
+  max-height: 70vh;
 }

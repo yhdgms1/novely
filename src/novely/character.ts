@@ -1,4 +1,4 @@
-export type Emotions<Keys extends string | number | symbol = string> = Record<Keys, { body: Record<'left' | 'right', string>, head: string }>;
+export type Emotions<Keys extends string | number | symbol = string> = Record<Keys, string | { body: Record<'left' | 'right', string>, head: string }>;
 
 export interface CharacterDefinition {
   name: string;

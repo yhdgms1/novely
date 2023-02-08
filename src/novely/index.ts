@@ -2,32 +2,13 @@ import { defineCharacter } from './character'
 import { novely } from './novely'
 
 import chingchenghanji from '../ChingChengHanji.mp3';
+import masakiNatsukoOk from '../assets/Masaki Natsuko.png';
 
 const masaki = defineCharacter({
-  name: 'Masaki Natsuko',
-  color: 'orange',
+  name: 'Масаки Натсуко',
+  color: '#e29f01',
   emotions: {
-    ok: {
-      body: {
-        'left': 'https://i.imgur.com/tEwzVrM.png',
-        'right': 'https://i.imgur.com/2EwP7ks.png',
-      },
-      head: 'https://i.imgur.com/LRDYGDk.png'
-    },
-    happy: {
-      body: {
-        'left': 'https://i.imgur.com/tEwzVrM.png',
-        'right': 'https://i.imgur.com/2EwP7ks.png',
-      },
-      head: 'https://i.imgur.com/Ld1PLTn.png'
-    },
-    worried: {
-      body: {
-        'left': 'https://i.imgur.com/tEwzVrM.png',
-        'right': 'https://i.imgur.com/2EwP7ks.png',
-      },
-      head: 'https://i.imgur.com/tegaScz.png'
-    }
+    ok: masakiNatsukoOk,
   },
 } as const);
 
@@ -68,20 +49,17 @@ engine.withStory({
   'start': [
     action.showBackground('https://i.imgur.com/2CtCDxs.png'),
     action.playMusic(chingchenghanji),
-    action.showCharacter('Nezuko', 'ok', 'animate__animated animate__backInDown'),
-    action.dialog('Nezuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
-    action.function(async () => {
-      console.log('Function Ran!! Yay!')
-    }),
+    action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__backInDown', 'left: 15%'),
+    action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
     action.choice(
       ['Да, я новенький!', [action.jump('act-1')]],
       ['Нет, я уже давно учусь здесь.', [], () => { return false /** Нельзя выбрать */ }]
     )
   ],
   'act-1': [
-    action.dialog(undefined, 'Произошло то, чего вы не ожидали'),
+    action.dialog(undefined, '...'),
     // action.clear(),
-    action.hideCharacter('Nezuko'), // пока что нет clear
+    action.hideCharacter('Masaki Natsuko'), // пока что нет clear
     action.condition(
       () => {
         let age = 13;
