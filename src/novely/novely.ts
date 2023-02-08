@@ -45,6 +45,7 @@ const novely = <I extends NovelyInit>(init: I) => {
     playMusic([source]) {
       const audio = renderer.music(source, 'music');
 
+      // todo: убрать!
       /**
        * user should interact with the document first
        */
@@ -68,37 +69,17 @@ const novely = <I extends NovelyInit>(init: I) => {
     showCharacter([character, emotion, className, style]) {
       const handle = renderer.character(character);
 
-      handle.canvas.classList.value = '';
-
-      if (className) {
-        /**
-         * A hack to restart CSS animations
-         * @see https://css-tricks.com/restart-css-animation/#aa-update-another-javascript-method-to-restart-a-css-animation
-         */
-        void handle.canvas.offsetWidth;
-        handle.canvas.classList.value = className || '';
-      }
-
-      handle.canvas.style.cssText += style;
-
-      if (!handle.canvas.isConnected) {
-        layout[0].appendChild(handle.canvas)
-      };
-
+      handle.append(className, style);
       handle.withEmotion(emotion)();
+
       next(arr_inc())
     },
     hideCharacter([character, className, style, duration]) {
       const handle = renderer.character(character);
 
-      if (className) handle.canvas.classList.value = className;
-      if (style) handle.canvas.style.cssText += style;
-
-      setTimeout(() => {
-        handle.canvas.remove();
-
+      handle.remove(className, style, duration)(() => {
         next(arr_inc())
-      }, duration);
+      });
     },
     dialog([person, content, emotion]) {
       renderer.dialog(content, person, emotion)(() => {
@@ -127,43 +108,9 @@ const novely = <I extends NovelyInit>(init: I) => {
       next()
     },
     clear() {
-      const [charactersRoot, choicesRoot, dialogCollection] = layout;
-
-      /**
-       * Очистить персонажей
-       */
-      charactersRoot.childNodes.forEach(node => node.remove());
-
-      /**
-       * Очистить выбор
-       */
-      choicesRoot.childNodes.forEach(node => node.remove());
-      choicesRoot.style.display = 'none';
-
-      /**
-       * Скрыть диалог
-       */
-      const [dialog, text, name, person] = dialogCollection;
-
-      dialog.style.display = 'none';
-      text.textContent = '';
-      name.textContent = '';
-      person.childNodes.forEach(node => node.remove());
-
-      /**
-       * Отключить все звуки
-       */
-      for (const audio of Object.values(renderer.store.audio)) {
-        if (!audio) continue;
-
-        audio.pause();
-        audio.currentTime = 0;
-      }
-
-      /**
-       * Перейти дальше
-       */
-      next(arr_inc())
+      renderer.clear()(() => {
+        next(arr_inc())
+      })
     },
     condition([condition]) {
       const value = condition();

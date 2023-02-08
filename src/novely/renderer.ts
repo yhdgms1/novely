@@ -13,6 +13,8 @@ interface CharacterHandle {
   ctx: CanvasRenderingContext2D;
 
   withEmotion: (emotion: string) => () => void;
+  append: (className?: string, style?: string) => void;
+  remove: (className?: string, style?: string, duration?: number) => (resolve: () => void) => void;
 
   emotions: Record<string, HTMLImageElement | Record<"head" | "left" | "right", HTMLImageElement>>
 }
@@ -75,11 +77,44 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
       return render(head, left, right);
     }
 
+    const append = (className?: string, style?: string) => {
+      canvas.classList.value = '';
+
+      if (className) {
+        /**
+         * A hack to restart CSS animations
+         * @see https://css-tricks.com/restart-css-animation/#aa-update-another-javascript-method-to-restart-a-css-animation
+         */
+        void canvas.offsetWidth;
+        canvas.classList.value = className || '';
+      }
+
+      canvas.style.cssText += style;
+
+      if (!canvas.isConnected) {
+        charactersRoot.appendChild(canvas)
+      };
+    }
+
+    const remove = (className?: string, style?: string, duration?: number) => {
+      if (className) canvas.classList.value = className;
+      if (style) canvas.style.cssText += style;
+
+      return (resolve: () => void) => {
+        setTimeout(() => {
+          canvas.remove();
+          resolve();
+        }, duration);
+      }
+    }
+
     return store.characters[character] = {
       canvas,
       ctx,
       emotions: {},
       withEmotion,
+      append,
+      remove
     }
   }
 
@@ -226,6 +261,45 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
     }
   }
 
+  const useClear = () => {
+    const [charactersRoot, choicesRoot, dialogCollection] = layout;
+
+    /**
+     * Очистить персонажей
+     */
+    charactersRoot.childNodes.forEach(node => node.remove());
+
+    /**
+     * Очистить выбор
+     */
+    choicesRoot.childNodes.forEach(node => node.remove());
+    choicesRoot.style.display = 'none';
+
+    /**
+     * Скрыть диалог
+     */
+    const [dialog, text, name, person] = dialogCollection;
+
+    dialog.style.display = 'none';
+    text.textContent = '';
+    name.textContent = '';
+    person.childNodes.forEach(node => node.remove());
+
+    /**
+     * Отключить все звуки
+     */
+    for (const audio of Object.values(store.audio)) {
+      if (!audio) continue;
+
+      audio.pause();
+      audio.currentTime = 0;
+    }
+
+    return (resolve: () => void) => {
+      resolve();
+    }
+  }
+
   return {
     character: renderCharacter,
     background: renderBackground,
@@ -233,6 +307,7 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
     choices: renderChoices,
     input: renderInput,
     music: useMusic,
+    clear: useClear,
     store
   }
 }
