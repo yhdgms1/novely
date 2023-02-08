@@ -1,7 +1,7 @@
 import type { DefaultDefinedCharacter } from './character';
 import type { DefaultActionProxyProvider } from './action'
 import { createElement, createImage, url, canvasDrawImages, typewriter } from './utils'
-import { createDialog, createChoices } from './dom'
+import { createChoice, createLayout } from './dom'
 
 import './styles/dialog.css';
 import './styles/characters.css';
@@ -18,19 +18,19 @@ interface CharacterHandle {
 
 interface RendererStore {
   characters: Record<string, CharacterHandle>
-  dialog?: readonly [HTMLDivElement, HTMLParagraphElement, HTMLSpanElement, HTMLDivElement]
-  choice?: ReturnType<typeof createChoices>
 
   audio: Partial<Record<"music", HTMLAudioElement>>
 }
 
-const createRenderer = (characters: Record<string, DefaultDefinedCharacter>) => {
+const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLElement, characters: Record<string, DefaultDefinedCharacter>) => {
   const store: RendererStore = {
     characters: {},
     audio: {
       music: undefined
     }
   };
+
+  const [charactersRoot, choicesRoot, dialogCollection] = layout;
 
   const renderCharacter = (character: string,) => {
     if (store.characters[character]) {
@@ -82,7 +82,7 @@ const createRenderer = (characters: Record<string, DefaultDefinedCharacter>) => 
     }
   }
 
-  const renderBackground = (target: HTMLElement, background: string) => {
+  const renderBackground = (background: string) => {
     target.style.backgroundRepeat = 'no-repeat';
     target.style.backgroundPosition = 'center';
     target.style.backgroundSize = 'cover';
@@ -96,11 +96,9 @@ const createRenderer = (characters: Record<string, DefaultDefinedCharacter>) => 
   }
 
   const renderDialog = (content: string, character?: string, emotion?: string) => {
-    const [dialog, text, name, person] = store.dialog || (store.dialog = createDialog());
+    const [dialog, text, name, person] = dialogCollection;
 
-    return (container: HTMLElement, resolve: () => void) => {
-      if (!dialog.isConnected) container.appendChild(dialog);
-
+    return (resolve: () => void) => {
       /**
        * Сделать его видимым
        */
@@ -157,26 +155,33 @@ const createRenderer = (characters: Record<string, DefaultDefinedCharacter>) => 
         dialog.dataset.personHidden = 'true';
       }
 
+      //* image end
     }
   }
 
-  const renderChoices = (target: HTMLElement, choices: Parameters<DefaultActionProxyProvider['choice']>) => {
-    const [root, createChoice] = store.choice || (store.choice = createChoices());
-
-    if (!root.isConnected) target.appendChild(root);
-
-    root.style.display = 'flex';
+  const renderChoices = (choices: Parameters<DefaultActionProxyProvider['choice']>) => {
+    choicesRoot.style.display = 'flex';
 
     return (resolve: (selected: number) => void) => {
-      for (let i = 0; i < choices.length; i++) {
-        const [text, , disabled] = choices[i];
+      const onClick = (event: MouseEvent) => {
+        if (event.target && event.target instanceof HTMLButtonElement && event.target.getAttribute('aria-disabled') === 'false') {
+          const value = Number(event.target.dataset.value);
 
+          choicesRoot.innerHTML = '';
+          choicesRoot.style.display = 'none';
+          choicesRoot.removeEventListener('click', onClick)
+
+          resolve(value);
+        }
+      }
+
+      choicesRoot.addEventListener('click', onClick);
+
+      for (let i = 0; i < choices.length; i++) {
+        const [text, _, disabled] = choices[i];
         const selectable = disabled ? disabled() : true;
 
-        createChoice(text, selectable, () => {
-          root.style.display = 'none';
-          resolve(i);
-        });
+        choicesRoot.appendChild(createChoice(text, selectable, i));
       }
     }
   }

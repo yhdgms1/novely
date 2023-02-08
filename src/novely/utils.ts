@@ -7,6 +7,10 @@ const capitalize = <T extends string>(str: T): Capitalize<T> => {
 
 const createElement = document.createElement.bind(document);
 
+const appendChild = <T extends Node>(parent: Node, node: T) => {
+  return parent.appendChild(node);
+}
+
 const createImage = (src: string) => {
   const img = createElement('img');
 
@@ -109,4 +113,4 @@ const typewriter = (node: HTMLElement, text: string) => {
 
 typewriter.timeout = () => Math.min(100 * Math.random() + 100, 140);
 
-export { capitalize, createElement, createImage, url, canvasDrawImages, matchAction, typewriter }
+export { capitalize, createElement, createImage, url, canvasDrawImages, matchAction, typewriter, appendChild }

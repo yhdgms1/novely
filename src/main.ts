@@ -50,7 +50,6 @@ const { action } = engine;
 engine.withStory({
   'start': [
     action.showBackground('https://i.imgur.com/2CtCDxs.png'),
-    action.playMusic(chingchenghanji),
     action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__backInDown', 'left: 15%'),
     action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
     action.choice(
@@ -79,7 +78,6 @@ engine.withStory({
     )
   ],
   'prison': [
-    action.stopMusic(chingchenghanji),
     action.showBackground('https://kartinkin.net/uploads/posts/2021-07/1627201958_4-kartinkin-com-p-shkola-tyurma-anime-kieshi-anime-krasivo-4.jpg'),
     action.dialog(undefined, 'Ей было 13 лет. Вы попали в тюрьму!')
   ]

@@ -22,6 +22,7 @@
   grid-template-columns: 10vmax 1fr;
 
   cursor: default;
+  user-select: none;
 }
 
 .novely-dialog[data-person-hidden="true"] {

@@ -2,7 +2,7 @@ import type { DefaultDefinedCharacter } from './character';
 import type { ActionProxyProvider, Story } from './action';
 import { matchAction } from './utils';
 import { createRenderer } from './renderer';
-import { createCharactersRoot } from './dom'
+import { createLayout } from './dom'
 
 interface NovelyInit {
   target: HTMLElement;
@@ -20,8 +20,6 @@ const novely = <I extends NovelyInit>(init: I) => {
     story = s;
   }
 
-  const charactersRoot = createCharactersRoot(target);
-
   const action = new Proxy({} as ActionProxyProvider<I['characters']>, {
     get(_, prop) {
       return (...props: Parameters<ActionProxyProvider<I['characters']>[keyof ActionProxyProvider<I['characters']>]>) => {
@@ -30,7 +28,8 @@ const novely = <I extends NovelyInit>(init: I) => {
     }
   });
 
-  const renderer = createRenderer(init.characters);
+  const layout = createLayout(target);
+  const renderer = createRenderer(layout, target, init.characters);
 
   let path: ['choice' | 'condition' | null, string | number][] = [];
 
@@ -40,7 +39,7 @@ const novely = <I extends NovelyInit>(init: I) => {
       setTimeout(next, time, arr_inc());
     },
     showBackground([background]) {
-      renderer.background(target, background);
+      renderer.background(background);
       next(arr_inc());
     },
     playMusic([source]) {
@@ -83,7 +82,7 @@ const novely = <I extends NovelyInit>(init: I) => {
       handle.canvas.style.cssText += style;
 
       if (!handle.canvas.isConnected) {
-        charactersRoot.appendChild(handle.canvas)
+        layout[0].appendChild(handle.canvas)
       };
 
       handle.withEmotion(emotion)();
@@ -102,7 +101,7 @@ const novely = <I extends NovelyInit>(init: I) => {
       }, duration);
     },
     dialog([person, content, emotion]) {
-      renderer.dialog(content, person, emotion)(target, () => {
+      renderer.dialog(content, person, emotion)(() => {
         next(arr_inc());
       });
     },
@@ -118,7 +117,7 @@ const novely = <I extends NovelyInit>(init: I) => {
       }
     },
     choice(choices) {
-      renderer.choices(target, choices)((selected) => {
+      renderer.choices(choices)((selected) => {
         path.push(['choice', selected], [null, 0]);
         next()
       });
