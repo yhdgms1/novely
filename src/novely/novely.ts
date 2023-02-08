@@ -43,26 +43,12 @@ const novely = <I extends NovelyInit>(init: I) => {
       next(arr_inc());
     },
     playMusic([source]) {
-      const audio = renderer.music(source, 'music');
-
-      // todo: убрать!
-      /**
-       * user should interact with the document first
-       */
-      const onClick = () => {
-        audio.play();
-        removeEventListener('click', onClick);
-      }
-
-      addEventListener('click', onClick)
+      renderer.music(source, 'music').play();
 
       next(arr_inc())
     },
     stopMusic([source]) {
-      const audio = renderer.music(source, 'music');
-
-      audio.pause();
-      audio.currentTime = 0;
+      renderer.music(source, 'music').stop();
 
       next(arr_inc())
     },

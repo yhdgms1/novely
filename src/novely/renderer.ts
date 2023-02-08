@@ -19,10 +19,18 @@ interface CharacterHandle {
   emotions: Record<string, HTMLImageElement | Record<"head" | "left" | "right", HTMLImageElement>>
 }
 
+interface AudioHandle {
+  element: HTMLAudioElement;
+
+  stop: () => void;
+  pause: () => void;
+  play: () => void;
+}
+
 interface RendererStore {
   characters: Record<string, CharacterHandle>
 
-  audio: Partial<Record<"music", HTMLAudioElement>>
+  audio: Partial<Record<"music", AudioHandle>>
 }
 
 const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLElement, characters: Record<string, DefaultDefinedCharacter>) => {
@@ -225,11 +233,31 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
   const useMusic = (source: string, method: keyof RendererStore['audio']) => {
     const stored = store.audio?.[method];
 
-    if (stored && stored.src.endsWith(source)) {
-      return stored.currentTime = 0, stored;
+    if (stored && stored.element.src.endsWith(source)) return stored.element.currentTime = 0, stored;
+
+    const element = new Audio(source);
+
+    const handle = {
+      element,
+      pause: element.pause,
+      play: () => {
+        /**
+         * User should interact with the document first
+         */
+        const onClick = () => {
+          element.play();
+          removeEventListener('click', onClick);
+        }
+
+        addEventListener('click', onClick)
+      },
+      stop: () => {
+        element.pause();
+        element.currentTime = 0;
+      }
     }
 
-    return store.audio[method] = new Audio(source);
+    return store.audio[method] = handle;
   }
 
   const renderInput = (question: string, onInput: (meta: { input: HTMLInputElement, error: HTMLSpanElement, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, setup?: (input: HTMLInputElement) => void) => {
@@ -291,8 +319,7 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
     for (const audio of Object.values(store.audio)) {
       if (!audio) continue;
 
-      audio.pause();
-      audio.currentTime = 0;
+      audio.stop();
     }
 
     return (resolve: () => void) => {
