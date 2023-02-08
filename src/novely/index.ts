@@ -1,6 +1,8 @@
 import { defineCharacter } from './character'
 import { novely } from './novely'
 
+import chingchenghanji from '../ChingChengHanji.mp3';
+
 const masaki = defineCharacter({
   name: 'Masaki Natsuko',
   color: 'orange',
@@ -65,6 +67,7 @@ const { action } = engine;
 engine.withStory({
   'start': [
     action.showBackground('https://i.imgur.com/2CtCDxs.png'),
+    action.playMusic(chingchenghanji),
     action.showCharacter('Nezuko', 'ok', 'animate__animated animate__backInDown'),
     action.dialog('Nezuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
     action.function(async () => {
@@ -96,6 +99,7 @@ engine.withStory({
     )
   ],
   'prison': [
+    action.stopMusic(chingchenghanji),
     action.showBackground('https://kartinkin.net/uploads/posts/2021-07/1627201958_4-kartinkin-com-p-shkola-tyurma-anime-kieshi-anime-krasivo-4.jpg'),
     action.dialog(undefined, 'Ей было 13 лет. Вы попали в тюрьму!')
   ]

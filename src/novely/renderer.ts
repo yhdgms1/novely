@@ -20,11 +20,16 @@ interface RendererStore {
   characters: Record<string, CharacterHandle>
   dialog?: readonly [HTMLDivElement, HTMLParagraphElement, HTMLSpanElement, HTMLDivElement]
   choice?: ReturnType<typeof createChoices>
+
+  audio: Partial<Record<"music", HTMLAudioElement>>
 }
 
 const createRenderer = (characters: Record<string, DefaultDefinedCharacter>) => {
   const store: RendererStore = {
     characters: {},
+    audio: {
+      music: undefined
+    }
   };
 
   const renderCharacter = (character: string,) => {
@@ -168,11 +173,22 @@ const createRenderer = (characters: Record<string, DefaultDefinedCharacter>) => 
     }
   }
 
+  const useMusic = (source: string, method: keyof RendererStore['audio']) => {
+    const stored = store.audio?.[method];
+
+    if (stored && stored.src.endsWith(source)) {
+      return stored.currentTime = 0, stored;
+    }
+
+    return store.audio[method] = new Audio(source);
+  }
+
   return {
     character: renderCharacter,
     background: renderBackground,
     dialog: renderDialog,
-    choices: renderChoices
+    choices: renderChoices,
+    music: useMusic
   }
 }
 

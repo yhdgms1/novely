@@ -43,8 +43,27 @@ const novely = <I extends NovelyInit>(init: I) => {
       renderer.background(target, background);
       next(arr_inc());
     },
-    playMusic([audio]) {
-      console.warn(`PlayMusic: cannot play ${audio} - не реализовано`);
+    playMusic([source]) {
+      const audio = renderer.music(source, 'music');
+
+      /**
+       * user should interact with the document first
+       */
+      const onClick = () => {
+        audio.play();
+        removeEventListener('click', onClick);
+      }
+
+      addEventListener('click', onClick)
+
+      next(arr_inc())
+    },
+    stopMusic([source]) {
+      const audio = renderer.music(source, 'music');
+
+      audio.pause();
+      audio.currentTime = 0;
+
       next(arr_inc())
     },
     showCharacter([character, emotion, className, style]) {

@@ -55,7 +55,9 @@ export type ActionProxyProvider<Characters extends Record<string, DefaultDefined
   }
   end: () => ValidAction;
   showBackground: (background: string) => ValidAction;
+
   playMusic: (audio: string) => ValidAction;
+  stopMusic: (audio: string) => ValidAction;
 
   jump: (scene: string) => ValidAction;
 
