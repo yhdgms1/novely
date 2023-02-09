@@ -127,8 +127,6 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
   }
 
   const renderBackground = (background: string) => {
-    console.log(background);
-
     target.style.backgroundRepeat = 'no-repeat';
     target.style.backgroundPosition = 'center';
     target.style.backgroundSize = 'cover';
@@ -159,8 +157,7 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
           /**
            * Убрать слушатели событий
            */
-          document.removeEventListener('keyup', onEvent);
-          dialog.removeEventListener('click', onEvent);
+          if (dialog.onclick === onEvent) dialog.onclick = null;
 
           /**
            * Скрыть диалог
@@ -180,8 +177,11 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
         }
       }
 
-      document.addEventListener('keyup', onEvent);
-      dialog.addEventListener('click', onEvent);
+      /**
+       * Здесь лучше использовать `onclick`, потому что 09.02.2023 около часа потратил на расследование почему происходил лишний переход при `restore`
+       * Просто не удалялся старый слушатель события
+       */
+      dialog.onclick = onEvent;
 
       //* text end
 
@@ -278,7 +278,9 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
       const onButtonClick = (_: MouseEvent) => {
         if (!error.textContent && input.validity.valid) {
           input.removeEventListener('input', onInputEvent as any);
+          button.removeEventListener('click', onButtonClick);
 
+          input.value = '';
           text.textContent = '';
           container.style.display = 'none';
 

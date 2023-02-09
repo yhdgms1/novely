@@ -1,7 +1,7 @@
 import 'animate.css';
 import 'normalize.css'
 
-import { novely, defineCharacter } from './novely'
+import { novely, defineCharacter, localStorageStorage } from './novely'
 
 // import chingchenghanji from './assets/ChingChengHanji.mp3';
 import masakiNatsukoOk from './assets/Masaki Natsuko.png';
@@ -39,6 +39,7 @@ const target = document.getElementById('app')!;
 
 const engine = novely({
   target: target,
+  storage: localStorageStorage({ key: 'novely-' }),
   characters: {
     'Masaki Natsuko': masaki,
     'Nezuko': nezuko
@@ -59,7 +60,7 @@ engine.withStory({
   ],
   'act-1': [
     action.dialog(undefined, '...'),
-    action.clear(),
+    // action.clear(),
     action.input(
       'Введите ваш возраст',
       ({ input, error }) => {
@@ -93,6 +94,6 @@ engine.withStory({
   ]
 });
 
-engine.next();
+engine.render();
 
 export { }

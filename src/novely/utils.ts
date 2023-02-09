@@ -47,9 +47,9 @@ type MatchActionMap = {
   [Key in keyof ActionProxyProvider<Record<string, DefaultDefinedCharacter>>]: (data: Parameters<ActionProxyProvider<Record<string, DefaultDefinedCharacter>>[Key]>) => void;
 }
 
-const matchAction = (values: MatchActionMap) => {
+const matchAction = <M extends MatchActionMap>(values: M) => {
   return (action: keyof MatchActionMap, props: any) => {
-    values[action](props);
+    return values[action](props);
   }
 }
 
@@ -113,8 +113,16 @@ const typewriter = (node: HTMLElement, text: string) => {
 
 typewriter.timeout = () => Math.min(100 * Math.random() + 100, 140);
 
-const localStorageSave = () => {
-
+const isNumber = (val: unknown): val is number => {
+  return typeof val === 'number';
 }
 
-export { capitalize, createElement, createImage, url, canvasDrawImages, matchAction, typewriter, appendChild }
+const isNull = (val: unknown): val is null => {
+  return val === null;
+}
+
+const isString = (val: unknown): val is string => {
+  return typeof val === 'string';
+}
+
+export { capitalize, createElement, createImage, url, canvasDrawImages, matchAction, typewriter, appendChild, isNumber, isNull, isString }

@@ -1,6 +1,7 @@
 import type { DefaultDefinedCharacter } from './character';
 import type { ActionProxyProvider, Story } from './action';
-import { matchAction } from './utils';
+import type { Storage } from './storage';
+import { matchAction, isNumber, isNull, isString } from './utils';
 import { createRenderer } from './renderer';
 import { createLayout } from './dom'
 
@@ -9,6 +10,7 @@ interface NovelyInit {
   characters: Record<string, DefaultDefinedCharacter>;
 
   settings?: { assetsPreloading?: boolean }
+  storage: Storage
 }
 
 const novely = <I extends NovelyInit>(init: I) => {
@@ -38,78 +40,103 @@ const novely = <I extends NovelyInit>(init: I) => {
 
   let restoring = false;
 
-  const restore = () => {
-    let saved = localStorage.getItem('novely-');
+  const restore = async () => {
+    const saved = await init.storage.get();
 
-    if (saved) {
-      restoring = true;
+    /**
+     * Если нет сохранённой игры, то запустим новую
+     */
+    if (!saved) return;
 
-      path = JSON.parse(saved);
+    restoring = true, path = saved;
 
-      match('clear', []);
+    match('clear', []);
 
-      console.log(path);
+    /**
+     * Текущий элемент в истории
+     */
+    let current: any = story;
+    /**
+     * Текущий элемент `[null, int]`
+     */
+    let index = 0;
 
-      let current: any = story;
-      /**
-       * Текущий элемент `[null, int]`
-       */
-      let index = 0;
-
-      /**
-       * Число элементов `[null, int]`
-       */
-      const max = path.reduce((acc, curr) => {
-        if (curr[0] === null && typeof curr[1] === 'number') {
-          return acc + 1;
-        }
-
-        return acc + 0;
-      }, 0);
-
-      console.log(max)
-
-      for (const [type, val] of path) {
-        console.log(type, val)
-        if (type === null) {
-          if (typeof val === 'string') {
-            current = current[val];
-          } else if (typeof val === 'number') {
-            index++;
-
-            for (let i = 0; i < val; i++) {
-              const [action, ...meta] = current[i];
-
-              if (action === 'dialog') {
-                if (index === max && i === val) {
-                  match(action, meta);
-                } else {
-                  continue;
-                }
-              }
-
-              match(action, meta);
-            }
-
-            current = current[val];
-          }
-        } else if (type === 'choice') {
-          current = current[val as number + 1][1];
-        } else if (type === 'condition') {
-          current = current[2][val];
-        }
+    /**
+     * Число элементов `[null, int]`
+     */
+    const max = path.reduce((acc, curr) => {
+      if (isNull(curr[0]) && isNumber(curr[1])) {
+        return acc + 1;
       }
 
-      restoring = false;
+      return acc + 0;
+    }, 0);
 
+    for await (const [type, val] of path) {
+      if (type === null) {
+        if (isString(val)) {
+          current = current[val];
+        } else if (isNumber(val)) {
+          index++;
 
-      /**
-       * path не начальный, а конечный
-       * Нужено сделать функцию, которая из сохранённого path будет делать так, чтобы оно проходилось по всем элементам до него
-       */
+          /**
+           * Запустим все экшены которые идут в `[null, int]` от `0` до `int`
+           */
+          for (let i = 0; i < val; i++) {
+            const [action, ...meta] = current[i];
 
-      next();
+            /**
+             * В будущем здесь будет больше таких элементов.
+             * Диалог такой элемент, который должен быть закрыт пользователем для прохода дальше.
+             */
+            if (action === 'dialog') {
+              if (index === max && i === val) {
+                match(action, meta);
+              } else {
+                continue;
+              }
+            }
+
+            if (action === 'function') {
+              /**
+               * `action.function` может возвращать Promise. Нужно подожать его `resolve`
+               */
+              const result: any = match(action, meta);
+
+              if (result && 'then' in result) {
+                await result;
+              }
+            } else {
+              match(action, meta)
+            }
+          }
+
+          current = current[val];
+        }
+      } else if (type === 'choice') {
+        current = current[val as number + 1][1];
+      } else if (type === 'condition') {
+        current = current[2][val];
+      }
     }
+
+    restoring = false, render();
+  }
+
+  const refer = () => {
+    let current: any = story;
+
+    for (const [type, val] of path) {
+      if (type === null) {
+        current = current[val];
+      } else if (type === 'choice') {
+        current = current[val as number + 1][1];
+      } else if (type === 'condition') {
+        current = current[2][val];
+      }
+    }
+
+    return current;
   }
 
   window.save = save;
@@ -120,27 +147,24 @@ const novely = <I extends NovelyInit>(init: I) => {
 
   let path: ['choice' | 'condition' | null, string | number][] = [[null, 'start'], [null, 0]];
 
-  // @ts-ignore not implemented
   const match = matchAction({
     wait([time]) {
-
-      setTimeout(() => {
-        if (!restoring) arr_inc(), next();
-      }, time);
+      /**
+       * `restoring` может поменяться на `true` перед тем как запуститься `push` из `setTimeout`
+       */
+      if (!restoring) setTimeout(push, time);
     },
     showBackground([background]) {
       renderer.background(background);
-      if (!restoring) arr_inc(), next();;
+      push()
     },
     playMusic([source]) {
       renderer.music(source, 'music').play();
-
-      if (!restoring) arr_inc(), next();
+      push()
     },
     stopMusic([source]) {
       renderer.music(source, 'music').stop();
-
-      if (!restoring) arr_inc(), next();
+      push()
     },
     showCharacter([character, emotion, className, style]) {
       const handle = renderer.character(character);
@@ -148,110 +172,93 @@ const novely = <I extends NovelyInit>(init: I) => {
       handle.append(className, style);
       handle.withEmotion(emotion)();
 
-      if (!restoring) arr_inc(), next();
+      push()
     },
     hideCharacter([character, className, style, duration]) {
       const handle = renderer.character(character);
 
-      handle.remove(className, style, duration)(() => {
-        if (!restoring) arr_inc(), next();
-      });
+      handle.remove(className, style, duration)(push);
     },
     dialog([person, content, emotion]) {
-      renderer.dialog(content, person, emotion)(() => {
-        if (!restoring) arr_inc(), next();;
-      });
+      console.log('render dialog')
+      renderer.dialog(content, person, emotion)(push);
     },
     function([fn]) {
       const result = fn();
 
-      // todo: придумать как ожидать эту функцию, если она асинхронная
-      // todo: она может стейт ставит, или что-то инициализирует
-      // todo: да в любом случае рассинхрон загрузки и работы
-
-      if (!restoring) {
-        if (result) {
-          result.then(() => {
-            arr_inc(), next();
-          });
-        } else {
-          arr_inc(), next();
-        }
-      }
+      if (!restoring) result ? result.then(push) : push();
 
       return result;
     },
     choice(choices) {
       renderer.choices(choices)((selected) => {
         path.push(['choice', selected], [null, 0]);
-        next()
+        render()
       });
     },
     jump([scene]) {
       path = [[null, scene], [null, 0]];
 
       renderer.clear()(() => {
-        if (!restoring) next(); // clear запустит next сам
+        if (!restoring) render();
       })
     },
     clear() {
-      renderer.clear()(() => {
-        if (!restoring) arr_inc(), next();
-      })
+      renderer.clear()(push)
     },
     condition([condition]) {
       const value = condition();
 
-      if (!restoring) path.push(['condition', value], [null, 0]), next();
+      if (!restoring) path.push(['condition', value], [null, 0]), render();
     },
     end() {
       // конец!!
     },
     input([question, onInput, setup]) {
+      console.log(`Restoring: ${restoring}`);
+
+      console.log(path);
+
       renderer.input(question, onInput, setup)(() => {
-        if (!restoring) arr_inc(), next();
+        console.log(`Pushing!!`);
+
+        push();
       });
     }
   });
 
-  const arr_inc = () => {
+  const next = () => {
+    /**
+     * Последний элемент пути
+     */
     const last = path.at(-1)!;
 
-    if (last[0] === null && typeof last[1] === 'number') {
+    /**
+     * Если он вида `[null, int]` - увеличивает `int`
+     */
+    if (isNull(last[0]) && isNumber(last[1])) {
       last[1] = last[1] + 1;
-      return last[1];
-    } else {
-      path.push([null, 0]);
-      return 0;
+      return;
+    }
+
+    /**
+     * Иначе добавляет новое `[null int]`
+     */
+    path.push([null, 0]);
+  }
+
+  const render = () => {
+    const referred = refer();
+
+    if (referred) {
+      const [action, ...props] = referred;
+
+      match(action, props);
     }
   }
 
-  const refer = (p = path) => {
-    let c: any = story;
-
-    for (const [type, val] of p) {
-      if (type === null) {
-        c = c[val];
-      } else if (type === 'choice') {
-        c = c[val as number + 1][1];
-      } else if (type === 'condition') {
-        c = c[2][val];
-      }
-    }
-
-    return c;
-  }
-
-  const next = () => {
-    const referred = refer(path);
-
-    if (!referred) return;
-
-    const [action, ...props] = referred;
-
-    console.dir(path)
-
-    match(action, props);
+  const push = () => {
+    if (!restoring) next(), render();
   }
 
   const setupStyling = (target: HTMLElement) => {
@@ -267,7 +274,7 @@ const novely = <I extends NovelyInit>(init: I) => {
     withStory,
     action,
     store,
-    next,
+    render,
   }
 }
 
