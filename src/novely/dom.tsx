@@ -41,7 +41,7 @@ const createLayout = (parent: HTMLElement) => {
   const dialog = createDialog();
   const input = createInput();
   const characters = <div class="novely-characters" />;
-  const choices = <div class="novely-choices" />;
+  const choices = <div class="novely-choices" style={{ display: 'none' }} />;
 
   appendChild(parent, dialog[0]);
   appendChild(parent, input[0]);

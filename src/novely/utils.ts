@@ -113,4 +113,8 @@ const typewriter = (node: HTMLElement, text: string) => {
 
 typewriter.timeout = () => Math.min(100 * Math.random() + 100, 140);
 
+const localStorageSave = () => {
+
+}
+
 export { capitalize, createElement, createImage, url, canvasDrawImages, matchAction, typewriter, appendChild }

@@ -127,6 +127,8 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
   }
 
   const renderBackground = (background: string) => {
+    console.log(background);
+
     target.style.backgroundRepeat = 'no-repeat';
     target.style.backgroundPosition = 'center';
     target.style.backgroundSize = 'cover';

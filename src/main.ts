@@ -45,7 +45,7 @@ const engine = novely({
   }
 });
 
-const { action } = engine;
+const { action, store } = engine;
 
 engine.withStory({
   'start': [
@@ -64,6 +64,8 @@ engine.withStory({
       'Введите ваш возраст',
       ({ input, error }) => {
         error.textContent = Number.isFinite(input.valueAsNumber) ? input.valueAsNumber < 14 ? 'Слишком маленький возраст' : '' : 'Неправильное число'
+
+        // store.
       },
       (input) => {
         input.type = 'number';
@@ -91,6 +93,6 @@ engine.withStory({
   ]
 });
 
-engine.next('start');
+engine.next();
 
 export { }
