@@ -1,12 +1,12 @@
-import type { DefaultDefinedCharacter } from './character';
-import type { DefaultActionProxyProvider } from './action'
-import { createElement, createImage, url, canvasDrawImages, typewriter } from './utils'
+import type { DefaultDefinedCharacter } from '../character';
+import type { DefaultActionProxyProvider } from '../action'
+import { createElement, createImage, url, canvasDrawImages, typewriter } from '../utils'
 import { createChoice, createLayout } from './dom'
 
-import './styles/dialog.css';
-import './styles/characters.css';
-import './styles/choices.css';
-import './styles/input.css'
+import '../styles/dialog.css';
+import '../styles/characters.css';
+import '../styles/choices.css';
+import '../styles/input.css'
 
 interface CharacterHandle {
   canvas: HTMLCanvasElement;
@@ -150,7 +150,7 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
 
       //* text start
 
-      const end = typewriter(text, content);
+      const writer = typewriter(text, content);
 
       const onEvent = (event: MouseEvent | KeyboardEvent) => {
         const disconnect = () => {
@@ -173,7 +173,7 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
         };
 
         if (!('key' in event) || event.key === ' ') {
-          if (end()) disconnect(), resolve()
+          if (writer.end()) disconnect(), resolve()
         }
       }
 
@@ -294,6 +294,11 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
   }
 
   const useClear = () => {
+    /**
+     * Убрать фоновое изображение
+     */
+    renderBackground('#000');
+
     const [charactersRoot, choicesRoot, dialogCollection] = layout;
 
     /**
@@ -343,4 +348,22 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
   }
 }
 
+type Renderer = {
+  character: (character: string) => CharacterHandle;
+  background: (background: string) => void;
+  dialog: (content: string, character?: string, emotion?: string) => (resolve: () => void) => void;
+  choices: (choices: Parameters<DefaultActionProxyProvider['choice']>) => (resolve: (selected: number) => void) => void;
+  input: (question: string, onInput: (meta: {
+    input: HTMLInputElement;
+    error: HTMLSpanElement;
+    event: InputEvent & {
+      currentTarget: HTMLInputElement;
+    };
+  }) => void, setup?: ((input: HTMLInputElement) => void) | undefined) => (resolve: () => void) => void;
+  music: (source: string, method: keyof RendererStore['audio']) => AudioHandle;
+  clear: () => (resolve: () => void) => void;
+  store: RendererStore;
+}
+
 export { createRenderer }
+export type { Renderer, CharacterHandle, AudioHandle, RendererStore }

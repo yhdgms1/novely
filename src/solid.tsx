@@ -1,10 +1,9 @@
 import 'animate.css';
 import 'normalize.css'
 
+import { render } from 'solid-js/web'
 import { novely, defineCharacter, localStorageStorage } from './novely'
-
-import { createLayout } from './novely/dom-renderer/dom'
-import { createRenderer } from './novely/dom-renderer/renderer'
+import { createSolidRenderer } from './novely/solid-renderer'
 
 // import chingchenghanji from './assets/ChingChengHanji.mp3';
 import masakiNatsukoOk from './assets/Masaki Natsuko.png';
@@ -40,6 +39,8 @@ const nezuko = defineCharacter({
 
 const target = document.getElementById('app')!;
 
+const { createLayout, createRenderer, Novely } = createSolidRenderer();
+
 const engine = novely({
   target: target,
   storage: localStorageStorage({ key: 'novely-' }),
@@ -51,13 +52,14 @@ const engine = novely({
   }
 });
 
-const { action, store } = engine;
+const { action } = engine;
 
 engine.withStory({
   'start': [
     action.showBackground('https://i.imgur.com/2CtCDxs.png'),
     action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__backInDown', 'left: 15%'),
-    action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
+    action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?', 'ok'),
+    action.hideCharacter('Masaki Natsuko', 'animate__animated animate__backOutUp', 'left: 15%', 1000),
     action.choice(
       ['Да, я новенький!', [action.jump('act-1')]],
       ['Нет, я уже давно учусь здесь.', [], () => { return false /** Нельзя выбрать */ }]
@@ -100,5 +102,7 @@ engine.withStory({
 });
 
 engine.render();
+
+render(() => <Novely />, target);
 
 export { }

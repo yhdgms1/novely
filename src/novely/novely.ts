@@ -1,9 +1,11 @@
 import type { DefaultDefinedCharacter } from './character';
 import type { ActionProxyProvider, Story } from './action';
 import type { Storage } from './storage';
+import type { Path } from './types'
+import { createRenderer } from './dom-renderer/renderer';
 import { matchAction, isNumber, isNull, isString } from './utils';
-import { createRenderer } from './renderer';
-import { createLayout } from './dom'
+
+type Layout = any;
 
 interface NovelyInit {
   target: HTMLElement;
@@ -11,6 +13,9 @@ interface NovelyInit {
 
   settings?: { assetsPreloading?: boolean }
   storage: Storage
+
+  layout: (parent: HTMLElement) => Layout;
+  renderer: (layout: Layout, parent: HTMLElement, characters: Record<string, DefaultDefinedCharacter>) => ReturnType<typeof createRenderer>;
 }
 
 const novely = <I extends NovelyInit>(init: I) => {
@@ -30,12 +35,40 @@ const novely = <I extends NovelyInit>(init: I) => {
     }
   });
 
-  const store = () => {
+  const createStack = (current: [Path, {}], stack = [current]) => {
+    let index = 0;
 
+    return {
+      /**
+       * Возвращает текущее значение
+       */
+      get value() {
+        return stack[index];
+      },
+      /**
+       * Устанавливает текущее значение
+       */
+      set value(value: [Path, {}]) {
+        stack[index] = value;
+      },
+      back() {
+        index--;
+        stack.length = index;
+      },
+      canBack() {
+        return stack.length > 1 && index > 0;
+      },
+      push(value: [Path, {}]) {
+        index++;
+        stack[index] = value;
+      }
+    }
   }
 
-  const save = () => {
-    localStorage.setItem('novely-', JSON.stringify(path));
+  const stack = createStack([[[null, 'start'], [null, 0]], {}]);
+
+  const save = async () => {
+    await init.storage.set(path)
   }
 
   let restoring = false;
@@ -142,10 +175,10 @@ const novely = <I extends NovelyInit>(init: I) => {
   window.save = save;
   window.restore = restore;
 
-  const layout = createLayout(target);
-  const renderer = createRenderer(layout, target, init.characters);
+  const layout = init.layout(target);
+  const renderer = init.renderer(layout, target, init.characters);
 
-  let path: ['choice' | 'condition' | null, string | number][] = [[null, 'start'], [null, 0]];
+  let path = stack.value[0];
 
   const match = matchAction({
     wait([time]) {
@@ -180,7 +213,6 @@ const novely = <I extends NovelyInit>(init: I) => {
       handle.remove(className, style, duration)(push);
     },
     dialog([person, content, emotion]) {
-      console.log('render dialog')
       renderer.dialog(content, person, emotion)(push);
     },
     function([fn]) {
@@ -215,15 +247,7 @@ const novely = <I extends NovelyInit>(init: I) => {
       // конец!!
     },
     input([question, onInput, setup]) {
-      console.log(`Restoring: ${restoring}`);
-
-      console.log(path);
-
-      renderer.input(question, onInput, setup)(() => {
-        console.log(`Pushing!!`);
-
-        push();
-      });
+      renderer.input(question, onInput, setup)(push);
     }
   });
 
@@ -266,6 +290,10 @@ const novely = <I extends NovelyInit>(init: I) => {
     target.style.height = '100%';
     target.style.fontSize = '1em';
     target.style.fontFamily = `ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`;
+
+    target.style.backgroundRepeat = 'no-repeat';
+    target.style.backgroundPosition = 'center';
+    target.style.backgroundSize = 'cover';
   }
 
   setupStyling(target);
@@ -273,7 +301,6 @@ const novely = <I extends NovelyInit>(init: I) => {
   return {
     withStory,
     action,
-    store,
     render,
   }
 }

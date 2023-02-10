@@ -1,4 +1,4 @@
-import { appendChild } from './utils'
+import { appendChild } from '../utils'
 
 const createChoice = (text: string, selectable: boolean, value: number) => {
   return <button aria-disabled={!selectable} data-value={value}>{text}</button>;

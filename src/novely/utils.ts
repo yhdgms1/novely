@@ -105,9 +105,14 @@ const typewriter = (node: HTMLElement, text: string) => {
   /**
    * Did the typewriter ended it's task
    */
-  return () => {
-    if (end) return true;
-    return clearTimeout(id), root.replaceWith(copy), end = true, false;
+  return {
+    end() {
+      if (end) return true;
+      return clearTimeout(id), root.replaceWith(copy), end = true, false;
+    },
+    destroy() {
+      clearTimeout(id); root.remove();
+    }
   }
 }
 
