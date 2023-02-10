@@ -5,15 +5,9 @@ import type { ValidAction } from '../action'
 import { createEffect, For, Show } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
-import { novely, defineCharacter, localStorageStorage } from '../'
 import { canvasDrawImages, createImage, typewriter, url } from '../utils'
 
-import {
-	Dialog,
-	DialogPanel,
-	DialogTitle,
-	DialogOverlay,
-} from 'solid-headless';
+import { Dialog, DialogPanel } from 'solid-headless';
 
 // todo: заменить на более красивые
 import '../styles/dialog.css';
@@ -21,6 +15,7 @@ import '../styles/characters.css';
 import '../styles/choices.css';
 import '../styles/input.css'
 
+import style from './style.module.css';
 
 interface StateCharacter {
 	/**
@@ -58,6 +53,10 @@ interface StateDialog {
 	 * Должен ли диалог быть показан
 	 */
 	visible: boolean;
+	/**
+	 * Функция `resolve`
+	 */
+	resolve?: () => void;
 }
 
 interface StateChoices {
@@ -116,12 +115,6 @@ const createSolidRenderer = () => {
 	let renderer!: Renderer;
 
 	let writer: ReturnType<typeof typewriter> | undefined;
-
-	/**
-	 * Функция `resolve`, которая выполняет переход к следующему
-	 * @todo: придумать лучший способ получать `resolve`
-	 */
-	let currentResolve: () => void;
 
 	return {
 		createLayout(_: HTMLElement) {
@@ -195,8 +188,7 @@ const createSolidRenderer = () => {
 					setState('dialog', { content, character, emotion });
 
 					return (resolve) => {
-						currentResolve = resolve;
-						setState('dialog', { visible: true })
+						setState('dialog', { visible: true, resolve })
 					}
 				},
 				choices(choices) {
@@ -234,7 +226,7 @@ const createSolidRenderer = () => {
 
 			return (
 				<>
-					<div class="novely-characters">
+					<div class={style.characters}>
 						<For each={Object.entries(state.characters)}>
 							{([character, data]) => (
 								<Show when={data.visible}>
@@ -244,7 +236,7 @@ const createSolidRenderer = () => {
 										void canvas.offsetWidth;
 
 										if (data.className) canvas.classList.value = data.className;
-										if (data.style) canvas.style.cssText += data.style;
+										if (data.style) canvas.style.cssText = data.style;
 
 										return canvas
 									}}
@@ -253,59 +245,63 @@ const createSolidRenderer = () => {
 						</For>
 					</div>
 					<div
-						class="novely-dialog"
-						style={{ display: state.dialog.visible ? 'grid' : 'none' }}
+						class={style.dialog}
+						style={{ display: state.dialog.visible ? 'flex' : 'none' }}
 						onClick={() => {
 							if (writer && writer.end()) {
+								state.dialog.resolve?.();
+
 								writer.destroy();
-								setState('dialog', { content: '', character: undefined, emotion: undefined, visible: false });
-								currentResolve?.();
+								setState('dialog', { content: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
 							}
 						}}
 					>
-						<span class="novely-dialog__name" style={{ color: state.dialog.character ? characters[state.dialog.character].color : '#fff' }}>
+						<span class={style.dialog__name} style={{ color: state.dialog.character ? characters[state.dialog.character].color : '#fff' }}>
 							{state.dialog.character ? characters[state.dialog.character].name : '???'}
 						</span>
-						<p class="novely-dialog__text" ref={store.dialogRef} />
-						<div class="novely-dialog__person">
-							<Show when={state.dialog.character && state.dialog.emotion}>
-								{() => {
-									const character = state.dialog.character!;
-									const emotion = state.dialog.emotion!;
+						<div class={style.dialog__container}>
+							<div class={style.dialog__person}>
+								<Show when={state.dialog.character && state.dialog.emotion}>
+									{() => {
+										const character = state.dialog.character!;
+										const emotion = state.dialog.emotion!;
 
-									/**
-									 * Если эмоция ещё не загружена - загрузим её
-									 */
-									if (!store['characters'][character]) {
-										renderer.character(character).withEmotion(emotion)
-									};
+										/**
+										 * Если эмоция ещё не загружена - загрузим её
+										 */
+										if (!store['characters'][character]) {
+											renderer.character(character).withEmotion(emotion)
+										};
 
-									const image = store['characters'][character]['emotions'][emotion];
-									const [canvas] = canvasDrawImages(undefined, undefined, ('src' in image ? [image] : Object.values(image)));
+										const image = store['characters'][character]['emotions'][emotion];
 
-									return canvas;
-								}}
-							</Show>
+										/**
+										 * Если элемент - картинка, не будем выполнять лишнюю отрисовку на `canvas`
+										 */
+										if ('src' in image) return image.alt = '', image;
+
+										const [canvas] = canvasDrawImages(undefined, undefined, Object.values(image));
+
+										return canvas;
+									}}
+								</Show>
+							</div>
+							<p class={style.dialog__text} ref={store.dialogRef} />
 						</div>
 					</div>
 
 					<Dialog
 						isOpen={state.choices.visible}
-						style={{ position: 'fixed', inset: 0, "z-index": 2, "overflow-y": 'auto' }}
+						class={style.choices}
 					>
-						<div style={{ "min-height": '100vh', display: 'flex', "align-items": 'center', "justify-content": 'center' }}>
+						<div class={style.choices__container}>
 							<span
-								style={{ display: 'inline-block', height: '100vh', 'vertical-align': 'middle' }}
+								class={style.choices__f}
 								aria-hidden="true"
 							>
 								&#8203;
 							</span>
-							<DialogPanel style={{ display: 'inline-block', 'width': '100%', 'max-width': '40vw', overflow: 'hidden', "text-align": 'left', }}>
-								<DialogTitle
-									as="h3"
-								>
-									Выберите
-								</DialogTitle>
+							<DialogPanel class={style['choices__dialog-panel']}>
 								<For each={state.choices.choices}>
 									{([text, _, active], i) => {
 										const disabled = active ? !active() : false;
@@ -327,9 +323,6 @@ const createSolidRenderer = () => {
 									}}
 								</For>
 							</DialogPanel>
-							{/* <DialogOverlay
-								style={{ position: 'fixed', inset: 0, background: '#00000050' }}
-							/> */}
 						</div>
 					</Dialog>
 				</>

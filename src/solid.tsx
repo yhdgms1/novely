@@ -68,17 +68,17 @@ engine.withStory({
   'act-1': [
     action.dialog(undefined, '...'),
     // action.clear(),
-    action.input(
-      'Введите ваш возраст',
-      ({ input, error }) => {
-        error.textContent = Number.isFinite(input.valueAsNumber) ? input.valueAsNumber < 14 ? 'Слишком маленький возраст' : '' : 'Неправильное число'
+    // action.input(
+    //   'Введите ваш возраст',
+    //   ({ input, error }) => {
+    //     error.textContent = Number.isFinite(input.valueAsNumber) ? input.valueAsNumber < 14 ? 'Слишком маленький возраст' : '' : 'Неправильное число'
 
-        // store.
-      },
-      (input) => {
-        input.type = 'number';
-      }
-    ),
+    //     // store.
+    //   },
+    //   (input) => {
+    //     input.type = 'number';
+    //   }
+    // ),
     action.condition(
       () => {
         let age = 13;
