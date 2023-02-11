@@ -33,7 +33,7 @@ interface RendererStore {
   audio: Partial<Record<"music", AudioHandle>>
 }
 
-const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLElement, characters: Record<string, DefaultDefinedCharacter>) => {
+const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLElement, characters: Record<string, DefaultDefinedCharacter>): Renderer => {
   const store: RendererStore = {
     characters: {},
     audio: {
@@ -43,7 +43,7 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
 
   const [charactersRoot, choicesRoot, dialogCollection, inputCollection] = layout;
 
-  const renderCharacter = (character: string,) => {
+  const renderCharacter: Renderer['character'] = (character) => {
     if (store.characters[character]) {
       return store.characters[character];
     }
@@ -126,7 +126,7 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
     }
   }
 
-  const renderBackground = (background: string) => {
+  const renderBackground: Renderer['background'] = (background) => {
     target.style.backgroundRepeat = 'no-repeat';
     target.style.backgroundPosition = 'center';
     target.style.backgroundSize = 'cover';
@@ -139,7 +139,7 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
     }
   }
 
-  const renderDialog = (content: string, character?: string, emotion?: string) => {
+  const renderDialog: Renderer['dialog'] = (content, character, emotion) => {
     const [dialog, text, name, person] = dialogCollection;
 
     return (resolve: () => void) => {
@@ -205,7 +205,7 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
     }
   }
 
-  const renderChoices = (choices: Parameters<DefaultActionProxyProvider['choice']>) => {
+  const renderChoices: Renderer['choices'] = (choices) => {
     choicesRoot.style.display = 'flex';
 
     return (resolve: (selected: number) => void) => {
@@ -232,7 +232,7 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
     }
   }
 
-  const useMusic = (source: string, method: keyof RendererStore['audio']) => {
+  const useMusic: Renderer['music'] = (source, method) => {
     const stored = store.audio?.[method];
 
     if (stored && stored.element.src.endsWith(source)) return stored.element.currentTime = 0, stored;
@@ -262,13 +262,13 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
     return store.audio[method] = handle;
   }
 
-  const renderInput = (question: string, onInput: (meta: { input: HTMLInputElement, error: HTMLSpanElement, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, setup?: (input: HTMLInputElement) => void) => {
+  const renderInput: Renderer['input'] = (question, onInput, setup) => {
     const [container, input, text, error, button] = inputCollection;
 
     container.style.display = 'flex';
     text.textContent = question;
 
-    return (resolve: () => void) => {
+    return (resolve) => {
       setup?.(input);
 
       const errorHandler = (value: string) => {
@@ -297,7 +297,7 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
     }
   }
 
-  const useClear = () => {
+  const useClear: Renderer['clear'] = () => {
     /**
      * Убрать фоновое изображение
      */
@@ -335,7 +335,7 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
       audio.stop();
     }
 
-    return (resolve: () => void) => {
+    return (resolve) => {
       resolve();
     }
   }

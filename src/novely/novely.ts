@@ -2,7 +2,7 @@ import type { DefaultDefinedCharacter } from './character';
 import type { ActionProxyProvider, Story } from './action';
 import type { Storage } from './storage';
 import type { Path } from './types'
-import { createRenderer } from './dom-renderer/renderer';
+import type { Renderer } from './dom-renderer/renderer'
 import { matchAction, isNumber, isNull, isString } from './utils';
 
 type Layout = any;
@@ -15,7 +15,7 @@ interface NovelyInit {
   storage: Storage
 
   layout: (parent: HTMLElement) => Layout;
-  renderer: (layout: Layout, parent: HTMLElement, characters: Record<string, DefaultDefinedCharacter>) => ReturnType<typeof createRenderer>;
+  renderer: (layout: Layout, parent: HTMLElement, characters: Record<string, DefaultDefinedCharacter>) => Renderer;
 }
 
 const novely = <I extends NovelyInit>(init: I) => {
@@ -213,7 +213,7 @@ const novely = <I extends NovelyInit>(init: I) => {
       handle.remove(className, style, duration)(push);
     },
     dialog([person, content, emotion]) {
-      renderer.dialog(content, person, emotion)(push);
+      renderer.dialog(typeof content === 'function' ? content() : content, person, emotion)(push);
     },
     function([fn]) {
       const result = fn();

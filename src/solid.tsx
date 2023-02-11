@@ -6,6 +6,8 @@ import { novely, defineCharacter, localStorageStorage } from './novely'
 import { createSolidRenderer } from './novely/solid-renderer'
 
 // import chingchenghanji from './assets/ChingChengHanji.mp3';
+import classRoom from './assets/class.png';
+import bedroomRoom from './assets/bedroom.png';
 import masakiNatsukoOk from './assets/Masaki Natsuko.png';
 
 const masaki = defineCharacter({
@@ -59,50 +61,73 @@ const { action } = engine;
  * @see https://youtu.be/8c34MKT2n6I?list=PLejGw9J2xE9WFYI08jbVMgI2moQdN3a2X&t=1809
  */
 
+let name = '';
+
 engine.withStory({
   'start': [
-    action.showBackground('https://i.imgur.com/2CtCDxs.png'),
+    action.showBackground(classRoom),
     action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__backInDown', 'left: 15%'),
-    action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?', 'ok'),
-    action.hideCharacter('Masaki Natsuko', 'animate__animated animate__backOutUp', 'left: 15%', 1000),
+    action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
     action.choice(
-      ['Да, я новенький!', [action.jump('act-1')]],
-      ['Нет, я уже давно учусь здесь.', [], () => { return false /** Нельзя выбрать */ }]
+      [
+        'Да, я новенький!',
+        [
+          action.dialog('Masaki Natsuko', 'Не хочешь зайти ко мне в гости сегодня? 😜'),
+          action.choice(
+            [
+              'Не откажусь!',
+              [action.jump('act-1')]
+            ]
+          )
+        ]
+      ]
     )
   ],
   'act-1': [
-    action.dialog(undefined, '...'),
     action.clear(),
+    action.wait(400),
+    action.showBackground(bedroomRoom),
+    action.showCharacter('Masaki Natsuko', 'ok', '', 'left: 15%'),
+    action.dialog('Masaki Natsuko', 'Добро пожаловать'),
+    action.showCharacter('Nezuko', 'ok', 'animate__animated animate__pulse', 'right: 15%'),
+    action.dialog('Nezuko', 'Сестрёнка, кого ты привела?!'),
+    action.dialog('Masaki Natsuko', 'Знакомься, это'),
     action.input(
-      'Введите ваш возраст',
+      'Введите ваше имя',
       ({ input, error }) => {
-        error(Number.isFinite(input.valueAsNumber) ? input.valueAsNumber < 14 ? 'Слишком маленький возраст' : '' : 'Неправильное число')
-
-        // store.
+        error(input.validationMessage);
+        name = input.value;
       },
       (input) => {
-        input.type = 'number';
+        input.setAttribute('minlength', '2');
+        input.setAttribute('maxlength', '16');
       }
     ),
-    action.condition(
-      () => {
-        let age = 13;
+    action.dialog('Nezuko', () => `Привет, ${name}!`)
+    // action.input(
+    //   'Введите ваш возраст',
+    //   ({ input, error }) => {
+    //     error(Number.isFinite(input.valueAsNumber) ? input.valueAsNumber < 14 ? 'Слишком маленький возраст' : '' : 'Неправильное число')
+    //   },
+    //   (input) => {
+    //     input.type = 'number';
+    //   }
+    // ),
+    // action.condition(
+    //   () => {
+    //     let age = 13;
 
-        return age >= 16 ? 'ok' : 'prison';
-      },
-      {
-        'ok': [
-          action.end()
-        ],
-        'prison': [
-          action.jump('prison')
-        ]
-      }
-    )
-  ],
-  'prison': [
-    action.showBackground('https://kartinkin.net/uploads/posts/2021-07/1627201958_4-kartinkin-com-p-shkola-tyurma-anime-kieshi-anime-krasivo-4.jpg'),
-    action.dialog(undefined, 'Ей было 13 лет. Вы попали в тюрьму!')
+    //     return age >= 16 ? 'ok' : 'prison';
+    //   },
+    //   {
+    //     'ok': [
+    //       action.end()
+    //     ],
+    //     'prison': [
+    //       action.jump('prison')
+    //     ]
+    //   }
+    // )
   ]
 });
 

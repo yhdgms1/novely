@@ -1,4 +1,4 @@
-import type { Renderer, RendererStore, CharacterHandle, AudioHandle } from '../dom-renderer/renderer'
+import type { Renderer, RendererStore } from '../dom-renderer/renderer'
 import type { DefaultDefinedCharacter } from '../character';
 import type { ValidAction } from '../action'
 import type { JSX } from 'solid-js';
@@ -220,9 +220,12 @@ const createSolidRenderer = () => {
 				clear() {
 					return (resolve) => {
 						setState('background', '#000');
-						setState('characters', {});
 						setState('choices', { visible: false });
 						setState('dialog', { visible: false });
+
+						for (const character of Object.keys(state.characters)) {
+							setState('characters', character, { visible: false });
+						}
 
 						resolve();
 					}
@@ -279,7 +282,10 @@ const createSolidRenderer = () => {
 		},
 		Novely() {
 			createEffect(() => {
-				if (state.background.startsWith('http') || state.background.startsWith('data')) {
+				const startsWith = String.prototype.startsWith.bind(state.background);
+				const isImage = startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data');
+
+				if (isImage) {
 					target.style.backgroundImage = url(state.background);
 				} else {
 					target.style.backgroundImage = '';
