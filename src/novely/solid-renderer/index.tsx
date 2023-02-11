@@ -185,10 +185,8 @@ const createSolidRenderer = () => {
 					}
 				},
 				dialog(content, character, emotion) {
-					setState('dialog', { content, character, emotion });
-
 					return (resolve) => {
-						setState('dialog', { visible: true, resolve })
+						setState('dialog', () => ({ content, character, emotion, visible: true, resolve }));
 					}
 				},
 				choices(choices) {
@@ -219,10 +217,32 @@ const createSolidRenderer = () => {
 			});
 
 			createEffect(() => {
-				if (state.dialog.content && store.dialogRef) {
+				if (state && store.dialogRef) {
+					writer?.destroy();
 					writer = typewriter(store.dialogRef, state.dialog.content);
 				}
 			});
+
+			const onChoicesButtonClick = ([disabled, i]: [boolean, number]) => {
+				if (disabled) return;
+
+				const resolve = state.choices.resolve;
+
+				setState('choices', { choices: [], visible: false, resolve: undefined });
+				resolve?.(i);
+			}
+
+			const onDialogClick = () => {
+				if (writer && writer.end()) {
+					/**
+					 * Из-за рассинхронизации состояния `resolve` запускается после скрытия диалога
+					 */
+					const resolve = state.dialog.resolve;
+
+					setState('dialog', { content: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
+					resolve?.();
+				}
+			}
 
 			return (
 				<>
@@ -233,10 +253,15 @@ const createSolidRenderer = () => {
 									{() => {
 										const canvas = store.characters[character].canvas;
 
-										void canvas.offsetWidth;
+										/**
+										 * При одинаковых значениях `className` или `style` не будет вызван ещё раз и анимация не будет перезапущена
+										 */
+										createEffect(() => {
+											void canvas.offsetWidth;
 
-										if (data.className) canvas.classList.value = data.className;
-										if (data.style) canvas.style.cssText = data.style;
+											if (data.className) canvas.classList.value = data.className;
+											if (data.style) canvas.style.cssText = data.style;
+										});
 
 										return canvas
 									}}
@@ -247,16 +272,9 @@ const createSolidRenderer = () => {
 					<div
 						class={style.dialog}
 						style={{ display: state.dialog.visible ? 'flex' : 'none' }}
-						onClick={() => {
-							if (writer && writer.end()) {
-								state.dialog.resolve?.();
-
-								writer.destroy();
-								setState('dialog', { content: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
-							}
-						}}
+						onClick={onDialogClick}
 					>
-						<span class={style.dialog__name} style={{ color: state.dialog.character ? characters[state.dialog.character].color : '#fff' }}>
+						<span class={style.dialog__name} style={{ color: state.dialog.character ? characters[state.dialog.character].color : '#000' }}>
 							{state.dialog.character ? characters[state.dialog.character].name : '???'}
 						</span>
 						<div class={style.dialog__container}>
@@ -310,12 +328,7 @@ const createSolidRenderer = () => {
 											<button
 												type="button"
 												aria-disabled={disabled}
-												onClick={() => {
-													if (disabled) return;
-													if (state.choices.resolve) state.choices.resolve(i());
-
-													setState('choices', { choices: [], visible: false, resolve: undefined });
-												}}
+												onClick={[onChoicesButtonClick, [disabled, i()]]}
 											>
 												{text}
 											</button>
