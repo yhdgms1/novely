@@ -76,9 +76,9 @@ interface StateInput {
 	 */
 	question: string;
 	/**
-	 * Элемент
+	 * Элемент `input`
 	 */
-	element?: HTMLLabelElement;
+	element?: HTMLInputElement;
 	/**
 	 * Должен ли отображаться диалог с `input`
 	 */
@@ -87,6 +87,10 @@ interface StateInput {
 	 * Функция `resolve`
 	 */
 	resolve?: () => void
+	/**
+	 * Ошибка
+	 */
+	error: string;
 }
 
 interface State {
@@ -115,6 +119,7 @@ const createSolidRenderer = () => {
 		},
 		input: {
 			question: '',
+			error: '',
 			visible: false
 		}
 	});
@@ -223,20 +228,18 @@ const createSolidRenderer = () => {
 					}
 				},
 				input(question, onInput, setup) {
-					let input!: HTMLInputElement, error!: HTMLSpanElement;
+					let input!: HTMLInputElement;
 
 					return (resolve) => {
+						const errorHandler = (value: string) => {
+							setState('input', { error: value });
+						}
+
 						const onInputHandler: JSX.EventHandlerUnion<HTMLInputElement, InputEvent> = (event) => {
-							onInput({ input, event, error });
+							onInput({ input, event, error: errorHandler });
 						};
 
-						const dom = (
-							<label for="novely-input" class={style.input__label}>
-								<span textContent={question} />
-								<input type="text" name="novely-input" required ref={input} onInput={onInputHandler} />
-								<span aria-live="polite" ref={error} />
-							</label>
-						) as HTMLLabelElement;
+						const dom = <input type="text" name="novely-input" required ref={input} onInput={onInputHandler} /> as HTMLInputElement;
 
 						if (setup) setup(input);
 
@@ -313,6 +316,8 @@ const createSolidRenderer = () => {
 			}
 
 			const onInputButtonClick = () => {
+				if (state.input.error || !state.input.element?.validity.valid) return;
+
 				const resolve = state.input.resolve;
 
 				setState('input', { element: undefined, question: '', visible: false });
@@ -427,8 +432,19 @@ const createSolidRenderer = () => {
 								&#8203;
 							</span>
 							<DialogPanel class={style['input__dialog-panel']}>
-								{state.input.element}
-								<button onClick={onInputButtonClick}>
+								<label for="novely-input" class={style.input__label}>
+									<span>
+										{state.input.question}
+									</span>
+									{state.input.element}
+									<span aria-live="polite">
+										{state.input.error}
+									</span>
+								</label>
+								<button
+									onClick={onInputButtonClick}
+									aria-disabled={(state.input.error || !state.input.element?.validity.valid) ? 'true' : 'false'}
+								>
 									Подтвердить
 								</button>
 							</DialogPanel>

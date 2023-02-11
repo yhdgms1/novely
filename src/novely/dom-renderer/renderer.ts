@@ -271,8 +271,12 @@ const createRenderer = (layout: ReturnType<typeof createLayout>, target: HTMLEle
     return (resolve: () => void) => {
       setup?.(input);
 
+      const errorHandler = (value: string) => {
+        error.textContent = value;
+      }
+
       const onInputEvent = (event: InputEvent) => {
-        onInput({ input, event, error } as any);
+        onInput({ input, event, error: errorHandler } as any);
       }
 
       const onButtonClick = (_: MouseEvent) => {
@@ -355,7 +359,7 @@ type Renderer = {
   choices: (choices: Parameters<DefaultActionProxyProvider['choice']>) => (resolve: (selected: number) => void) => void;
   input: (question: string, onInput: (meta: {
     input: HTMLInputElement;
-    error: HTMLSpanElement;
+    error: (error: string) => void;
     event: InputEvent & {
       currentTarget: HTMLInputElement;
     };

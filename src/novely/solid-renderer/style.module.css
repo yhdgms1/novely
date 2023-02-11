@@ -158,7 +158,8 @@
   color: #ffb7a2;
 }
 
-.choices__dialog-panel > button[aria-disabled="true"] {
+.choices__dialog-panel > button[aria-disabled="true"],
+.input__dialog-panel > button[aria-disabled="true"] {
   cursor: not-allowed;
   opacity: 0.9;
 }

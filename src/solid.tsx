@@ -76,7 +76,7 @@ engine.withStory({
     action.input(
       'Введите ваш возраст',
       ({ input, error }) => {
-        error.textContent = Number.isFinite(input.valueAsNumber) ? input.valueAsNumber < 14 ? 'Слишком маленький возраст' : '' : 'Неправильное число'
+        error(Number.isFinite(input.valueAsNumber) ? input.valueAsNumber < 14 ? 'Слишком маленький возраст' : '' : 'Неправильное число')
 
         // store.
       },

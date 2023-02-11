@@ -70,7 +70,7 @@ export type ActionProxyProvider<Characters extends Record<string, DefaultDefined
   wait: (time: number) => ValidAction;
   function: (fn: () => Thenable<void>) => ValidAction;
 
-  input: (question: string, onInput: (meta: { input: HTMLInputElement, error: HTMLSpanElement, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, setup?: (input: HTMLInputElement) => void) => ValidAction;
+  input: (question: string, onInput: (meta: { input: HTMLInputElement, error: (error: string) => void, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, setup?: (input: HTMLInputElement) => void) => ValidAction;
 }
 
 export type DefaultActionProxyProvider = ActionProxyProvider<Record<string, DefaultDefinedCharacter>>;
