@@ -66,7 +66,7 @@ let name = '';
 engine.withStory({
   'start': [
     action.showBackground(classRoom),
-    action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__backInDown', 'left: 15%'),
+    action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__fadeInUp', 'left: 15%'),
     action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
     action.choice(
       [
@@ -89,7 +89,7 @@ engine.withStory({
     action.showBackground(bedroomRoom),
     action.showCharacter('Masaki Natsuko', 'ok', '', 'left: 15%'),
     action.dialog('Masaki Natsuko', 'Добро пожаловать'),
-    action.showCharacter('Nezuko', 'ok', 'animate__animated animate__pulse', 'right: 15%'),
+    action.showCharacter('Nezuko', 'ok', 'animate__animated animate__fadeInUp', 'right: 15%'),
     action.dialog('Nezuko', 'Сестрёнка, кого ты привела?!'),
     action.dialog('Masaki Natsuko', 'Знакомься, это'),
     action.input(
