@@ -75,7 +75,7 @@ const typewriter = (node: HTMLElement, text: string) => {
     return items;
   }
 
-  const copy = root.cloneNode(true);
+  const copy = root.cloneNode(true) as HTMLSpanElement;
 
   const emptied = traverse(root, true);
   const full = traverse(copy, false);
@@ -107,11 +107,11 @@ const typewriter = (node: HTMLElement, text: string) => {
    */
   return {
     end() {
-      if (end) return clearTimeout(id), root.remove(), true;
+      if (end) return clearTimeout(id), root.remove(), copy.remove(), true;
       return clearTimeout(id), root.replaceWith(copy), end = true, false;
     },
     destroy() {
-      clearTimeout(id); root.remove();
+      clearTimeout(id); root.remove(), copy.remove();
     }
   }
 }

@@ -385,7 +385,9 @@ const createSolidRenderer = () => {
 									}}
 								</Show>
 							</div>
-							<p class={style.dialog__text} ref={store.dialogRef} />
+							<p class={style.dialog__text} ref={store.dialogRef}>
+								&nbsp;
+							</p>
 						</div>
 					</div>
 
