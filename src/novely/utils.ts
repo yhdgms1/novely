@@ -47,9 +47,9 @@ type MatchActionMap = {
   [Key in keyof ActionProxyProvider<Record<string, DefaultDefinedCharacter>>]: (data: Parameters<ActionProxyProvider<Record<string, DefaultDefinedCharacter>>[Key]>) => void;
 }
 
-const matchAction = (values: MatchActionMap) => {
+const matchAction = <M extends MatchActionMap>(values: M) => {
   return (action: keyof MatchActionMap, props: any) => {
-    values[action](props);
+    return values[action](props);
   }
 }
 
@@ -75,7 +75,7 @@ const typewriter = (node: HTMLElement, text: string) => {
     return items;
   }
 
-  const copy = root.cloneNode(true);
+  const copy = root.cloneNode(true) as HTMLSpanElement;
 
   const emptied = traverse(root, true);
   const full = traverse(copy, false);
@@ -105,12 +105,29 @@ const typewriter = (node: HTMLElement, text: string) => {
   /**
    * Did the typewriter ended it's task
    */
-  return () => {
-    if (end) return true;
-    return clearTimeout(id), root.replaceWith(copy), end = true, false;
+  return {
+    end() {
+      if (end) return clearTimeout(id), root.remove(), copy.remove(), true;
+      return clearTimeout(id), root.replaceWith(copy), end = true, false;
+    },
+    destroy() {
+      clearTimeout(id); root.remove(), copy.remove();
+    }
   }
 }
 
 typewriter.timeout = () => Math.min(100 * Math.random() + 100, 140);
 
-export { capitalize, createElement, createImage, url, canvasDrawImages, matchAction, typewriter, appendChild }
+const isNumber = (val: unknown): val is number => {
+  return typeof val === 'number';
+}
+
+const isNull = (val: unknown): val is null => {
+  return val === null;
+}
+
+const isString = (val: unknown): val is string => {
+  return typeof val === 'string';
+}
+
+export { capitalize, createElement, createImage, url, canvasDrawImages, matchAction, typewriter, appendChild, isNumber, isNull, isString }

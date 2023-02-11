@@ -15,7 +15,8 @@
     "noImplicitReturns": true,
     "skipLibCheck": true,
 
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js"
   },
   "include": ["src"]
 }

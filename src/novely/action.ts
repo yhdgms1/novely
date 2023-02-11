@@ -13,17 +13,17 @@ export enum Action {
   HideImage,
   HideParticles,
   HideVideo,
-  Input,
+  // Input,
   // Function,
-  Jump,
+  // Jump,
   Next,
   // Placeholder - не понимаю что это
   // PlayMusic,
   PlaySound,
   PlayVoice,
   // ShowCanvas,
-  ShowBackground,
-  ShowCharacter,
+  // ShowBackground,
+  // ShowCharacter,
   ShowImage,
   ShowMessage,
   ShowNotification,
@@ -49,9 +49,9 @@ export type ActionProxyProvider<Characters extends Record<string, DefaultDefined
   clear: () => ValidAction;
   condition: <T extends string>(condition: () => T, variants: Record<T, ValidAction[]>) => ValidAction;
   dialog: {
-    <C extends keyof Characters>(person: C, content: string, emotion?: keyof Characters[C]['emotions']): ValidAction;
-    (person: undefined, content: string, emotion?: undefined): ValidAction;
-    (person: string, content: string, emotion?: undefined): ValidAction;
+    <C extends keyof Characters>(person: C, content: (() => string) | string, emotion?: keyof Characters[C]['emotions']): ValidAction;
+    (person: undefined, content: (() => string) | string, emotion?: undefined): ValidAction;
+    (person: string, content: (() => string) | string, emotion?: undefined): ValidAction;
   }
   end: () => ValidAction;
   showBackground: (background: string) => ValidAction;
@@ -70,7 +70,7 @@ export type ActionProxyProvider<Characters extends Record<string, DefaultDefined
   wait: (time: number) => ValidAction;
   function: (fn: () => Thenable<void>) => ValidAction;
 
-  input: (question: string, onInput: (meta: { input: HTMLInputElement, error: HTMLSpanElement, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, setup?: (input: HTMLInputElement) => void) => ValidAction;
+  input: (question: string, onInput: (meta: { input: HTMLInputElement, error: (error: string) => void, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, setup?: (input: HTMLInputElement) => void) => ValidAction;
 }
 
 export type DefaultActionProxyProvider = ActionProxyProvider<Record<string, DefaultDefinedCharacter>>;

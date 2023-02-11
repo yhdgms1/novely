@@ -1,7 +1,10 @@
 import 'animate.css';
 import 'normalize.css'
 
-import { novely, defineCharacter } from './novely'
+import { novely, defineCharacter, localStorageStorage } from './novely'
+
+import { createLayout } from './novely/dom-renderer/dom'
+import { createRenderer } from './novely/dom-renderer/renderer'
 
 // import chingchenghanji from './assets/ChingChengHanji.mp3';
 import masakiNatsukoOk from './assets/Masaki Natsuko.png';
@@ -39,13 +42,16 @@ const target = document.getElementById('app')!;
 
 const engine = novely({
   target: target,
+  storage: localStorageStorage({ key: 'novely-' }),
+  layout: createLayout,
+  renderer: createRenderer,
   characters: {
     'Masaki Natsuko': masaki,
     'Nezuko': nezuko
   }
 });
 
-const { action } = engine;
+const { action, store } = engine;
 
 engine.withStory({
   'start': [
@@ -59,11 +65,13 @@ engine.withStory({
   ],
   'act-1': [
     action.dialog(undefined, '...'),
-    action.clear(),
+    // action.clear(),
     action.input(
       'Введите ваш возраст',
       ({ input, error }) => {
         error.textContent = Number.isFinite(input.valueAsNumber) ? input.valueAsNumber < 14 ? 'Слишком маленький возраст' : '' : 'Неправильное число'
+
+        // store.
       },
       (input) => {
         input.type = 'number';
@@ -91,6 +99,6 @@ engine.withStory({
   ]
 });
 
-engine.next('start');
+engine.render();
 
 export { }
