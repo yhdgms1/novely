@@ -107,7 +107,7 @@ const typewriter = (node: HTMLElement, text: string) => {
    */
   return {
     end() {
-      if (end) return true;
+      if (end) return clearTimeout(id), root.remove(), true;
       return clearTimeout(id), root.replaceWith(copy), end = true, false;
     },
     destroy() {

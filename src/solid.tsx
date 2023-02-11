@@ -54,6 +54,11 @@ const engine = novely({
 
 const { action } = engine;
 
+/**
+ * todo: проверить будет ли работать анимация как тут
+ * @see https://youtu.be/8c34MKT2n6I?list=PLejGw9J2xE9WFYI08jbVMgI2moQdN3a2X&t=1809
+ */
+
 engine.withStory({
   'start': [
     action.showBackground('https://i.imgur.com/2CtCDxs.png'),
@@ -67,18 +72,18 @@ engine.withStory({
   ],
   'act-1': [
     action.dialog(undefined, '...'),
-    // action.clear(),
-    // action.input(
-    //   'Введите ваш возраст',
-    //   ({ input, error }) => {
-    //     error.textContent = Number.isFinite(input.valueAsNumber) ? input.valueAsNumber < 14 ? 'Слишком маленький возраст' : '' : 'Неправильное число'
+    action.clear(),
+    action.input(
+      'Введите ваш возраст',
+      ({ input, error }) => {
+        error.textContent = Number.isFinite(input.valueAsNumber) ? input.valueAsNumber < 14 ? 'Слишком маленький возраст' : '' : 'Неправильное число'
 
-    //     // store.
-    //   },
-    //   (input) => {
-    //     input.type = 'number';
-    //   }
-    // ),
+        // store.
+      },
+      (input) => {
+        input.type = 'number';
+      }
+    ),
     action.condition(
       () => {
         let age = 13;

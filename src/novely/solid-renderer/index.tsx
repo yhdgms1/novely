@@ -1,6 +1,7 @@
 import type { Renderer, RendererStore, CharacterHandle, AudioHandle } from '../dom-renderer/renderer'
 import type { DefaultDefinedCharacter } from '../character';
 import type { ValidAction } from '../action'
+import type { JSX } from 'solid-js';
 
 import { createEffect, For, Show } from 'solid-js';
 import { createStore } from 'solid-js/store';
@@ -8,12 +9,6 @@ import { createStore } from 'solid-js/store';
 import { canvasDrawImages, createImage, typewriter, url } from '../utils'
 
 import { Dialog, DialogPanel } from 'solid-headless';
-
-// todo: заменить на более красивые
-import '../styles/dialog.css';
-import '../styles/characters.css';
-import '../styles/choices.css';
-import '../styles/input.css'
 
 import style from './style.module.css';
 
@@ -75,11 +70,31 @@ interface StateChoices {
 	visible: boolean
 }
 
+interface StateInput {
+	/**
+	 * Вопрос (что делает этот input)
+	 */
+	question: string;
+	/**
+	 * Элемент
+	 */
+	element?: HTMLLabelElement;
+	/**
+	 * Должен ли отображаться диалог с `input`
+	 */
+	visible: boolean;
+	/**
+	 * Функция `resolve`
+	 */
+	resolve?: () => void
+}
+
 interface State {
 	background: string;
 	characters: Record<string, StateCharacter>
 	dialog: StateDialog
 	choices: StateChoices
+	input: StateInput
 }
 
 interface SolidRendererStore extends RendererStore {
@@ -97,6 +112,10 @@ const createSolidRenderer = () => {
 		choices: {
 			visible: false,
 			choices: []
+		},
+		input: {
+			question: '',
+			visible: false
 		}
 	});
 
@@ -124,7 +143,6 @@ const createSolidRenderer = () => {
 			target = t;
 			characters = c;
 
-			// @ts-ignore
 			return renderer = {
 				background(background) {
 					setState('background', background);
@@ -203,7 +221,57 @@ const createSolidRenderer = () => {
 
 						resolve();
 					}
-				}
+				},
+				input(question, onInput, setup) {
+					let input!: HTMLInputElement, error!: HTMLSpanElement;
+
+					return (resolve) => {
+						const onInputHandler: JSX.EventHandlerUnion<HTMLInputElement, InputEvent> = (event) => {
+							onInput({ input, event, error });
+						};
+
+						const dom = (
+							<label for="novely-input" class={style.input__label}>
+								<span textContent={question} />
+								<input type="text" name="novely-input" required ref={input} onInput={onInputHandler} />
+								<span aria-live="polite" ref={error} />
+							</label>
+						) as HTMLLabelElement;
+
+						if (setup) setup(input);
+
+						setState('input', { element: dom, question, visible: true, resolve })
+					}
+				},
+				music(source, method) {
+					const stored = store.audio?.[method];
+
+					if (stored && stored.element.src.endsWith(source)) return stored.element.currentTime = 0, stored;
+
+					const element = new Audio(source);
+
+					const handle = {
+						element,
+						pause: element.pause,
+						play: () => {
+							/**
+							 * Пользователь должен сначала взаимодействовать с документом
+							 */
+							const onClick = () => {
+								removeEventListener('click', onClick), element.play();
+							}
+
+							addEventListener('click', onClick)
+						},
+						stop: () => {
+							element.pause();
+							element.currentTime = 0;
+						}
+					}
+
+					return store.audio[method] = handle;
+				},
+				store,
 			}
 		},
 		Novely() {
@@ -242,6 +310,14 @@ const createSolidRenderer = () => {
 					setState('dialog', { content: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
 					resolve?.();
 				}
+			}
+
+			const onInputButtonClick = () => {
+				const resolve = state.input.resolve;
+
+				setState('input', { element: undefined, question: '', visible: false });
+
+				resolve?.();
 			}
 
 			return (
@@ -335,6 +411,26 @@ const createSolidRenderer = () => {
 										)
 									}}
 								</For>
+							</DialogPanel>
+						</div>
+					</Dialog>
+
+					<Dialog
+						isOpen={state.input.visible}
+						class={style.input}
+					>
+						<div class={style.input__container}>
+							<span
+								class={style.input__f}
+								aria-hidden="true"
+							>
+								&#8203;
+							</span>
+							<DialogPanel class={style['input__dialog-panel']}>
+								{state.input.element}
+								<button onClick={onInputButtonClick}>
+									Подтвердить
+								</button>
 							</DialogPanel>
 						</div>
 					</Dialog>
