@@ -231,8 +231,6 @@ const createSolidRenderer = () => {
 					}
 				},
 				input(question, onInput, setup) {
-					let input!: HTMLInputElement;
-
 					return (resolve) => {
 						const errorHandler = (value: string) => {
 							setState('input', { error: value });
@@ -242,11 +240,11 @@ const createSolidRenderer = () => {
 							onInput({ input, event, error: errorHandler });
 						};
 
-						const dom = <input type="text" name="novely-input" required ref={input} onInput={onInputHandler} /> as HTMLInputElement;
+						const input = <input type="text" name="novely-input" required autocomplete="off" onInput={onInputHandler} /> as HTMLInputElement;
 
 						if (setup) setup(input);
 
-						setState('input', { element: dom, question, visible: true, resolve })
+						setState('input', { element: input, question, visible: true, resolve })
 					}
 				},
 				music(source, method) {
@@ -361,10 +359,16 @@ const createSolidRenderer = () => {
 						style={{ display: state.dialog.visible ? 'flex' : 'none' }}
 						onClick={onDialogClick}
 					>
-						<span class={style.dialog__name} style={{ color: state.dialog.character ? characters[state.dialog.character].color : '#000' }}>
-							{state.dialog.character ? characters[state.dialog.character].name : '???'}
+						<span
+							class={style.dialog__name}
+							style={{
+								color: state.dialog.character ? state.dialog.character in characters ? characters[state.dialog.character].color : '#000' : '#000',
+								display: state.dialog.character ? 'block' : 'none'
+							}}
+						>
+							{state.dialog.character ? state.dialog.character in characters ? characters[state.dialog.character].name : state.dialog.character : ''}
 						</span>
-						<div class={style.dialog__container}>
+						<div class={style.dialog__container} data-no-person={!(state.dialog.character && state.dialog.emotion)}>
 							<div class={style.dialog__person}>
 								<Show when={state.dialog.character && state.dialog.emotion}>
 									{() => {
