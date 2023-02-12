@@ -52,14 +52,13 @@ const engine = novely({
   }
 });
 
-const { action } = engine;
+const { action, state } = engine;
 
 /**
  * todo: проверить будет ли работать анимация как тут
  * @see https://youtu.be/8c34MKT2n6I?list=PLejGw9J2xE9WFYI08jbVMgI2moQdN3a2X&t=1809
  */
 
-let name = '';
 
 engine.withStory({
   'start': [
@@ -94,14 +93,14 @@ engine.withStory({
       'Введите ваше имя',
       ({ input, error }) => {
         error(input.validationMessage);
-        name = input.value;
+        state().set({ name: input.value });
       },
       (input) => {
         input.setAttribute('minlength', '2');
         input.setAttribute('maxlength', '16');
       }
     ),
-    action.dialog('Nezuko', () => `Привет, ${name}!`)
+    action.dialog('Nezuko', () => `Привет, ${state().get().name}!`)
     // action.input(
     //   'Введите ваш возраст',
     //   ({ input, error }) => {

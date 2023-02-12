@@ -1,9 +1,10 @@
 import type { DefaultDefinedCharacter } from './character';
 import type { ActionProxyProvider, Story } from './action';
 import type { Storage } from './storage';
-import type { Path } from './types'
+import type { Save, State } from './types'
 import type { Renderer } from './renderer'
 import { matchAction, isNumber, isNull, isString } from './utils';
+import { all as deepmerge } from 'deepmerge'
 
 interface NovelyInit {
   characters: Record<string, DefaultDefinedCharacter>;
@@ -29,7 +30,7 @@ const novely = <I extends NovelyInit>(init: I) => {
     }
   });
 
-  const createStack = (current: [Path, {}], stack = [current]) => {
+  const createStack = (current: Save, stack = [current]) => {
     let index = 0;
 
     return {
@@ -42,7 +43,7 @@ const novely = <I extends NovelyInit>(init: I) => {
       /**
        * Устанавливает текущее значение
        */
-      set value(value: [Path, {}]) {
+      set value(value: Save) {
         stack[index] = value;
       },
       back() {
@@ -52,30 +53,51 @@ const novely = <I extends NovelyInit>(init: I) => {
       canBack() {
         return stack.length > 1 && index > 0;
       },
-      push(value: [Path, {}]) {
+      push(value: Save) {
         index++;
         stack[index] = value;
       }
     }
   }
 
-  const stack = createStack([[[null, 'start'], [null, 0]], {}]);
+  const state = () => {
+    return {
+      set(value: State | ((prev: State) => State)) {
+        const prev = stack.value[1];
+        const val = typeof value === 'function' ? value(prev) : deepmerge([prev, value]);
+
+        stack.value = [stack.value[0], val as State, stack.value[2]];
+      },
+      get() {
+        return stack.value[1];
+      }
+    }
+  }
+
+  const initial: Save = [[[null, 'start'], [null, 0]], {}, [Date.now(), 'auto']];
+  const stack = createStack(initial);
 
   const save = async () => {
-    await init.storage.set(path)
+    return await init.storage.set(stack.value);
   }
 
   let restoring = false;
 
   const restore = async () => {
-    const saved = await init.storage.get();
+    const saved: Save | null = await init.storage.get();
 
     /**
-     * Если нет сохранённой игры, то запустим новую
+     * Если нет сохранённой игры, то запустим ту, которая уже есть
      */
-    if (!saved) return;
+    if (!saved) {
+      await init.storage.set(initial);
+      restore();
+      return;
+    }
 
-    restoring = true, path = saved;
+    const [savedPath] = saved;
+
+    restoring = true, path = savedPath;
 
     match('clear', []);
 
@@ -91,11 +113,8 @@ const novely = <I extends NovelyInit>(init: I) => {
     /**
      * Число элементов `[null, int]`
      */
-    const max = path.reduce((acc, curr) => {
-      if (isNull(curr[0]) && isNumber(curr[1])) {
-        return acc + 1;
-      }
-
+    const max = path.reduce((acc, [type, val]) => {
+      if (isNull(type) && isNumber(val)) return acc + 1;
       return acc;
     }, 0);
 
@@ -284,6 +303,7 @@ const novely = <I extends NovelyInit>(init: I) => {
     withStory,
     action,
     render,
+    state
   }
 }
 
