@@ -1,0 +1,24 @@
+{
+  "name": "@novely/preview",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.5",
+    "vite": "^4.1.0",
+    "vite-plugin-solid": "^2.5.0"
+  },
+  "dependencies": {
+    "@novely/core": "workspace:*",
+    "@novely/dom-renderer": "workspace:*",
+    "@novely/solid-renderer": "workspace:*",
+    "solid-headless": "^0.13.1",
+    "solid-js": "1.6.10",
+    "animate.css": "^4.1.1",
+    "normalize.css": "^8.0.1"
+  }
+}

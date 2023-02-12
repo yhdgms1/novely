@@ -4,25 +4,15 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev:core": "pnpm --filter=@novely/core... --parallel dev",
+    "build:core": "pnpm --filter=@novely/core... --parallel build",
+    "dev:solid": "pnpm --filter=@novely/solid-renderer... --parallel dev",
+    "build:solid": "pnpm --filter=@novely/solid-renderer... --parallel build",
+    "dev:dom": "pnpm --filter=@novely/dom-renderer... --parallel dev",
+    "build:dom": "pnpm --filter=@novely/dom-renderer... --parallel build",
+    "dev:preview": "pnpm --filter=@novely/preview... --parallel dev",
+    "build:preview": "pnpm --filter=@novely/preview... --parallel build"
   },
-  "devDependencies": {
-    "@artemis69/im": "^0.2.0",
-    "@babel/core": "^7.20.12",
-    "@babel/plugin-syntax-jsx": "^7.18.6",
-    "@babel/preset-typescript": "^7.18.6",
-    "grim-jsx": "^0.16.1",
-    "typescript": "^4.9.3",
-    "vite": "^4.1.0",
-    "vite-plugin-babel": "^1.1.3"
-  },
-  "dependencies": {
-    "animate.css": "^4.1.1",
-    "normalize.css": "^8.0.1",
-    "solid-headless": "^0.13.1",
-    "solid-js": "^1.6.10",
-    "vite-plugin-solid": "^2.5.0"
-  }
+  "devDependencies": {},
+  "dependencies": {}
 }

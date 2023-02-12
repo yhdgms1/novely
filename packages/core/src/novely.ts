@@ -2,7 +2,7 @@ import type { DefaultDefinedCharacter } from './character';
 import type { ActionProxyProvider, Story } from './action';
 import type { Storage } from './storage';
 import type { Path } from './types'
-import type { Renderer } from './dom-renderer/renderer'
+import type { Renderer } from './renderer'
 import { matchAction, isNumber, isNull, isString } from './utils';
 
 interface NovelyInit {
@@ -96,7 +96,7 @@ const novely = <I extends NovelyInit>(init: I) => {
         return acc + 1;
       }
 
-      return acc + 0;
+      return acc;
     }, 0);
 
     for await (const [type, val] of path) {
@@ -250,7 +250,7 @@ const novely = <I extends NovelyInit>(init: I) => {
     /**
      * Последний элемент пути
      */
-    const last = path.at(-1)!;
+    const last = path[path.length - 1]!;
 
     /**
      * Если он вида `[null, int]` - увеличивает `int`

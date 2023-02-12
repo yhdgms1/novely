@@ -1,9 +1,9 @@
 import 'animate.css';
 import 'normalize.css'
 
-import { novely, defineCharacter, localStorageStorage } from './novely'
+import { novely, defineCharacter, localStorageStorage } from '@novely/core'
 
-import { createDomRenderer } from './novely/dom-renderer/renderer'
+import { createDomRenderer } from '@novely/dom-renderer'
 
 import classRoom from './assets/class.png';
 import bedroomRoom from './assets/bedroom.png';

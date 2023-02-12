@@ -1,50 +1,14 @@
 import type { DefaultDefinedCharacter, } from './character';
 import type { Thenable } from './types'
 
-export enum Action {
-  // Choice,
-  // Clear,
-  // Condition,
-  // Dialog,
-  // End,
-  // Gallery - не нужно согласни идеологии
-  // HideCanvas, - можно сделать по другому
-  // HideCharacter,
-  HideImage,
-  HideParticles,
-  HideVideo,
-  // Input,
-  // Function,
-  // Jump,
-  Next,
-  // Placeholder - не понимаю что это
-  // PlayMusic,
-  PlaySound,
-  PlayVoice,
-  // ShowCanvas,
-  // ShowBackground,
-  // ShowCharacter,
-  ShowImage,
-  ShowMessage,
-  ShowNotification,
-  ShowParticles,
-  // ShowScene, The scene action will change the background and clear the screen, removing all characters, images and text currently displayed. - можно же сделать просто Clear, не?
-  ShowVideo,
-  StopMusic,
-  StopSound,
-  StopVoice,
-  Vibrate,
-  // Wait
-}
-
 /**
  * Не лучшее решение, но наиболее простое
  */
-export type ValidAction = [keyof ActionProxyProvider<Record<string, DefaultDefinedCharacter>>, Parameters<ActionProxyProvider<Record<string, DefaultDefinedCharacter>>[keyof ActionProxyProvider<Record<string, DefaultDefinedCharacter>>]>]
+type ValidAction = [keyof DefaultActionProxyProvider, Parameters<DefaultActionProxyProvider[keyof DefaultActionProxyProvider]>]
 
-export type Story = Record<string, ValidAction[]>;
+type Story = Record<string, ValidAction[]>;
 
-export type ActionProxyProvider<Characters extends Record<string, DefaultDefinedCharacter>> = {
+type ActionProxyProvider<Characters extends Record<string, DefaultDefinedCharacter>> = {
   choice: (...choices: ([string, ValidAction[]] | [string, ValidAction[], () => boolean])[]) => ValidAction;
   clear: () => ValidAction;
   condition: <T extends string>(condition: () => T, variants: Record<T, ValidAction[]>) => ValidAction;
@@ -73,5 +37,7 @@ export type ActionProxyProvider<Characters extends Record<string, DefaultDefined
   input: (question: string, onInput: (meta: { input: HTMLInputElement, error: (error: string) => void, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, setup?: (input: HTMLInputElement) => void) => ValidAction;
 }
 
-export type DefaultActionProxyProvider = ActionProxyProvider<Record<string, DefaultDefinedCharacter>>;
-export type GetActionParameters<T extends Capitalize<keyof DefaultActionProxyProvider>> = Parameters<DefaultActionProxyProvider[Uncapitalize<T>]>;
+type DefaultActionProxyProvider = ActionProxyProvider<Record<string, DefaultDefinedCharacter>>;
+type GetActionParameters<T extends Capitalize<keyof DefaultActionProxyProvider>> = Parameters<DefaultActionProxyProvider[Uncapitalize<T>]>;
+
+export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters }

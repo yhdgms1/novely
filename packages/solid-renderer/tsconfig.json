@@ -9,14 +9,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "skipLibCheck": true,
-
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist",
     "jsx": "preserve",
     "jsxImportSource": "solid-js"
   },
-  "include": []
+  "include": ["src"]
 }

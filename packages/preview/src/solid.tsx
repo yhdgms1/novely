@@ -2,8 +2,10 @@ import 'animate.css';
 import 'normalize.css'
 
 import { render } from 'solid-js/web'
-import { novely, defineCharacter, localStorageStorage } from './novely'
-import { createSolidRenderer } from './novely/solid-renderer'
+import { novely, defineCharacter, localStorageStorage } from '@novely/core'
+import { createSolidRenderer } from '@novely/solid-renderer'
+
+import '@novely/solid-renderer/dist/index.css'
 
 // import chingchenghanji from './assets/ChingChengHanji.mp3';
 import classRoom from './assets/class.png';

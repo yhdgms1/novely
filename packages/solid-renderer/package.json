@@ -1,0 +1,31 @@
+{
+  "name": "@novely/solid-renderer",
+  "version": "0.0.0",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.jsx",
+  "module": "./dist/index.jsx",
+  "sideEffects": false,
+  "scripts": {
+    "dev": "node ./build.js --watch",
+    "build": "node ./build.js && tsc"
+  },
+  "devDependencies": {
+    "esbuild": "^0.16.3",
+    "esbuild-css-modules-plugin": "^2.7.1",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@novely/core": "workspace:*",
+    "solid-headless": "^0.13.1",
+    "solid-js": "1.6.10"
+  },
+  "peerDependencies": {
+    "@novely/core": "*",
+    "solid-headless": "*",
+    "solid-js": "*"
+  }
+}

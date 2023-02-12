@@ -1,38 +1,12 @@
-import type { DefaultDefinedCharacter } from '../character';
-import type { DefaultActionProxyProvider } from '../action'
-import { createElement, createImage, url, canvasDrawImages, typewriter } from '../utils'
+import type { DefaultDefinedCharacter, RendererStore, Renderer } from '@novely/core';
+import { createElement, createImage, url, canvasDrawImages, typewriter } from './utils'
 import { createChoice, createLayout } from './dom'
 
-import '../styles/dialog.css';
-import '../styles/characters.css';
-import '../styles/choices.css';
-import '../styles/input.css';
-import '../styles/root.css';
-
-interface CharacterHandle {
-  canvas: HTMLCanvasElement;
-  ctx: CanvasRenderingContext2D;
-
-  withEmotion: (emotion: string) => () => void;
-  append: (className?: string, style?: string) => void;
-  remove: (className?: string, style?: string, duration?: number) => (resolve: () => void) => void;
-
-  emotions: Record<string, HTMLImageElement | Record<"head" | "left" | "right", HTMLImageElement>>
-}
-
-interface AudioHandle {
-  element: HTMLAudioElement;
-
-  stop: () => void;
-  pause: () => void;
-  play: () => void;
-}
-
-interface RendererStore {
-  characters: Record<string, CharacterHandle>
-
-  audio: Partial<Record<"music", AudioHandle>>
-}
+import './styles/dialog.css';
+import './styles/characters.css';
+import './styles/choices.css';
+import './styles/input.css';
+import './styles/root.css';
 
 const createDomRenderer = (target: HTMLElement) => {
   target.classList.add('novely-root');
@@ -359,22 +333,4 @@ const createDomRenderer = (target: HTMLElement) => {
   return createRenderer;
 }
 
-type Renderer = {
-  character: (character: string) => CharacterHandle;
-  background: (background: string) => void;
-  dialog: (content: string, character?: string, emotion?: string) => (resolve: () => void) => void;
-  choices: (choices: Parameters<DefaultActionProxyProvider['choice']>) => (resolve: (selected: number) => void) => void;
-  input: (question: string, onInput: (meta: {
-    input: HTMLInputElement;
-    error: (error: string) => void;
-    event: InputEvent & {
-      currentTarget: HTMLInputElement;
-    };
-  }) => void, setup?: ((input: HTMLInputElement) => void) | undefined) => (resolve: () => void) => void;
-  music: (source: string, method: keyof RendererStore['audio']) => AudioHandle;
-  clear: () => (resolve: () => void) => void;
-  store: RendererStore;
-}
-
 export { createDomRenderer }
-export type { Renderer, CharacterHandle, AudioHandle, RendererStore }

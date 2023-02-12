@@ -1,30 +1,19 @@
-import type { ActionProxyProvider } from './action'
-import type { DefaultDefinedCharacter } from './character'
+const isCSSImage = (str: string) => {
+  const startsWith = String.prototype.startsWith.bind(str);
 
-const capitalize = <T extends string>(str: T): Capitalize<T> => {
-  return str[0].toUpperCase() + str.slice(1) as Capitalize<T>
-}
-
-const createElement = document.createElement.bind(document);
-
-const appendChild = <T extends Node>(parent: Node, node: T) => {
-  return parent.appendChild(node);
+  return startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data');
 }
 
 const createImage = (src: string) => {
-  const img = createElement('img');
+  const img = document.createElement('img');
 
   return img.src = src, img;
-}
-
-const url = <T extends string>(str: T): `url(${T})` => {
-  return `url(${str})`;
 }
 
 /**
  * Рисует `images` на `canvas`
  */
-const canvasDrawImages = (canvas = createElement('canvas'), ctx = canvas.getContext('2d')!, images: HTMLImageElement[]) => {
+const canvasDrawImages = (canvas = document.createElement('canvas'), ctx = canvas.getContext('2d')!, images: HTMLImageElement[]) => {
   let set = false;
 
   for (const image of images) {
@@ -43,20 +32,14 @@ const canvasDrawImages = (canvas = createElement('canvas'), ctx = canvas.getCont
   return [canvas, ctx] as const;
 }
 
-type MatchActionMap = {
-  [Key in keyof ActionProxyProvider<Record<string, DefaultDefinedCharacter>>]: (data: Parameters<ActionProxyProvider<Record<string, DefaultDefinedCharacter>>[Key]>) => void;
-}
-
-const matchAction = <M extends MatchActionMap>(values: M) => {
-  return (action: keyof MatchActionMap, props: any) => {
-    return values[action](props);
-  }
+const url = <T extends string>(str: T): `url(${T})` => {
+  return `url(${str})`;
 }
 
 const typewriter = (node: HTMLElement, text: string) => {
   let id!: number;
 
-  const root = createElement('span');
+  const root = document.createElement('span');
   root.innerHTML = text;
 
   const traverse = (el: HTMLElement | ChildNode | Node, erase = false) => {
@@ -118,16 +101,4 @@ const typewriter = (node: HTMLElement, text: string) => {
 
 typewriter.timeout = () => Math.min(100 * Math.random() + 100, 140);
 
-const isNumber = (val: unknown): val is number => {
-  return typeof val === 'number';
-}
-
-const isNull = (val: unknown): val is null => {
-  return val === null;
-}
-
-const isString = (val: unknown): val is string => {
-  return typeof val === 'string';
-}
-
-export { capitalize, createElement, createImage, url, canvasDrawImages, matchAction, typewriter, appendChild, isNumber, isNull, isString }
+export { isCSSImage, canvasDrawImages, url, typewriter, createImage }
