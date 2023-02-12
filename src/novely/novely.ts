@@ -5,22 +5,16 @@ import type { Path } from './types'
 import type { Renderer } from './dom-renderer/renderer'
 import { matchAction, isNumber, isNull, isString } from './utils';
 
-type Layout = any;
-
 interface NovelyInit {
-  target: HTMLElement;
   characters: Record<string, DefaultDefinedCharacter>;
 
   settings?: { assetsPreloading?: boolean }
   storage: Storage
 
-  layout: (parent: HTMLElement) => Layout;
-  renderer: (layout: Layout, parent: HTMLElement, characters: Record<string, DefaultDefinedCharacter>) => Renderer;
+  renderer: (characters: Record<string, DefaultDefinedCharacter>) => Renderer;
 }
 
 const novely = <I extends NovelyInit>(init: I) => {
-  const target = init.target;
-
   let story: Story;
 
   const withStory = (s: Story) => {
@@ -172,11 +166,12 @@ const novely = <I extends NovelyInit>(init: I) => {
     return current;
   }
 
+  //@ts-ignore
   window.save = save;
+  //@ts-ignore
   window.restore = restore;
 
-  const layout = init.layout(target);
-  const renderer = init.renderer(layout, target, init.characters);
+  const renderer = init.renderer(init.characters);
 
   let path = stack.value[0];
 
@@ -284,19 +279,6 @@ const novely = <I extends NovelyInit>(init: I) => {
   const push = () => {
     if (!restoring) next(), render();
   }
-
-  const setupStyling = (target: HTMLElement) => {
-    target.parentElement!.style.height = '100vh';
-    target.style.height = '100%';
-    target.style.fontSize = '1em';
-    target.style.fontFamily = `ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`;
-
-    target.style.backgroundRepeat = 'no-repeat';
-    target.style.backgroundPosition = 'center';
-    target.style.backgroundSize = 'cover';
-  }
-
-  setupStyling(target);
 
   return {
     withStory,

@@ -39,14 +39,10 @@ const nezuko = defineCharacter({
   }
 } as const)
 
-const target = document.getElementById('app')!;
-
-const { createLayout, createRenderer, Novely } = createSolidRenderer();
+const { createRenderer, Novely } = createSolidRenderer();
 
 const engine = novely({
-  target: target,
   storage: localStorageStorage({ key: 'novely-' }),
-  layout: createLayout,
   renderer: createRenderer,
   characters: {
     'Masaki Natsuko': masaki,
@@ -131,8 +127,7 @@ engine.withStory({
   ]
 });
 
+render(() => <Novely />, document.body);
 engine.render();
-
-render(() => <Novely />, target);
 
 export { }

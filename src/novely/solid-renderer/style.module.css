@@ -1,3 +1,16 @@
+/* Root */
+.root {
+  height: 100vh;
+  font-size: 1em;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
 /* Characters */
 
 .characters {

@@ -3,7 +3,7 @@ import type { DefaultDefinedCharacter } from '../character';
 import type { ValidAction } from '../action'
 import type { JSX } from 'solid-js';
 
-import { createEffect, For, Show } from 'solid-js';
+import { createEffect, createMemo, For, Show } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
 import { canvasDrawImages, createImage, typewriter, url } from '../utils'
@@ -131,10 +131,6 @@ const createSolidRenderer = () => {
 		}
 	};
 
-	/**
-	 * Элемент, в который маунтится `Novely`
-	 */
-	let target!: HTMLElement;
 	let characters!: Record<string, DefaultDefinedCharacter>;
 	let renderer!: Renderer;
 
@@ -144,8 +140,7 @@ const createSolidRenderer = () => {
 		createLayout(_: HTMLElement) {
 			return null;
 		},
-		createRenderer(_: any, t: HTMLElement, c: Record<string, DefaultDefinedCharacter>): Renderer {
-			target = t;
+		createRenderer(c: Record<string, DefaultDefinedCharacter>): Renderer {
 			characters = c;
 
 			return renderer = {
@@ -279,16 +274,11 @@ const createSolidRenderer = () => {
 			}
 		},
 		Novely() {
-			createEffect(() => {
+			const background = createMemo(() => {
 				const startsWith = String.prototype.startsWith.bind(state.background);
 				const isImage = startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data');
 
-				if (isImage) {
-					target.style.backgroundImage = url(state.background);
-				} else {
-					target.style.backgroundImage = '';
-					target.style.backgroundColor = state.background;
-				}
+				return { "background-image": isImage ? url(state.background) : '', "background-color": isImage ? undefined : state.background } as Partial<JSX.CSSProperties>
 			});
 
 			createEffect(() => {
@@ -330,7 +320,7 @@ const createSolidRenderer = () => {
 			}
 
 			return (
-				<>
+				<div class={style.root} style={background()}>
 					<div class={style.characters}>
 						<For each={Object.entries(state.characters)}>
 							{([character, data]) => (
@@ -462,7 +452,7 @@ const createSolidRenderer = () => {
 							</DialogPanel>
 						</div>
 					</Dialog>
-				</>
+				</div>
 			)
 		}
 	}
