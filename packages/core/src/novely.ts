@@ -262,6 +262,8 @@ const novely = <I extends NovelyInit>(init: I) => {
       // конец!!
     },
     input([question, onInput, setup]) {
+      // todo: как `resolve` передавать функцию, которая также будет сохранять `state`
+      // todo: то же самое с choice
       renderer.input(question, onInput, setup)(push);
     }
   });
