@@ -11,7 +11,9 @@
     "dev:dom": "pnpm --filter=@novely/dom-renderer... --parallel dev",
     "build:dom": "pnpm --filter=@novely/dom-renderer... --parallel build",
     "dev:preview": "pnpm --filter=@novely/preview... --parallel dev",
-    "build:preview": "pnpm --filter=@novely/preview... --parallel build"
+    "build:preview": "pnpm --filter=@novely/preview... --parallel build",
+    "dev:typewriter": "pnpm --filter=@novely/typewriter... --parallel dev",
+    "build:typewriter": "pnpm --filter=@novely/typewriter... --parallel build"
   },
   "devDependencies": {},
   "dependencies": {}
