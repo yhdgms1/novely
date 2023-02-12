@@ -21,7 +21,8 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@novely/core": "workspace:*"
+    "@novely/core": "workspace:*",
+    "@novely/typewriter": "workspace:*"
   },
   "peerDependencies": {
     "@novely/core": "*"

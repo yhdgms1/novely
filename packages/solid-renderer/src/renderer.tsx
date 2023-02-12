@@ -3,10 +3,10 @@ import type { JSX } from 'solid-js';
 
 import { createEffect, createMemo, For, Show } from 'solid-js';
 import { createStore } from 'solid-js/store';
-
-import { canvasDrawImages, createImage, typewriter, url, isCSSImage } from './utils'
-
 import { Dialog, DialogPanel } from 'solid-headless';
+
+import { typewriter } from '@novely/typewriter'
+import { canvasDrawImages, createImage, url, isCSSImage } from './utils'
 
 import style from './style.module.css';
 

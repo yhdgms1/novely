@@ -24,12 +24,14 @@ importers:
       '@babel/plugin-syntax-jsx': ^7.18.6
       '@babel/preset-typescript': ^7.18.6
       '@novely/core': workspace:*
+      '@novely/typewriter': workspace:*
       esbuild: ^0.16.3
       esbuild-plugin-babel: ^0.2.3
       grim-jsx: ^0.16.1
       typescript: ^4.9.5
     dependencies:
-      '@novely/core': link:../typewriter
+      '@novely/core': link:../core
+      '@novely/typewriter': link:../typewriter
     devDependencies:
       '@babel/core': 7.20.12
       '@babel/plugin-syntax-jsx': 7.18.6_@babel+core@7.20.12
@@ -52,7 +54,7 @@ importers:
       vite: ^4.1.0
       vite-plugin-solid: ^2.5.0
     dependencies:
-      '@novely/core': link:../typewriter
+      '@novely/core': link:../core
       '@novely/dom-renderer': link:../dom-renderer
       '@novely/solid-renderer': link:../solid-renderer
       animate.css: 4.1.1
@@ -67,13 +69,15 @@ importers:
   packages/solid-renderer:
     specifiers:
       '@novely/core': workspace:*
+      '@novely/typewriter': workspace:*
       esbuild: ^0.16.3
       esbuild-css-modules-plugin: ^2.7.1
       solid-headless: ^0.13.1
       solid-js: 1.6.10
       typescript: ^4.9.5
     dependencies:
-      '@novely/core': link:../typewriter
+      '@novely/core': link:../core
+      '@novely/typewriter': link:../typewriter
       solid-headless: 0.13.1_solid-js@1.6.10
       solid-js: 1.6.10
     devDependencies:

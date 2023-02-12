@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@novely/core": "workspace:*",
+    "@novely/typewriter": "workspace:*",
     "solid-headless": "^0.13.1",
     "solid-js": "1.6.10"
   },
