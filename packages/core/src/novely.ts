@@ -5,6 +5,7 @@ import type { Save, State } from './types'
 import type { Renderer } from './renderer'
 import { matchAction, isNumber, isNull, isString } from './utils';
 import { all as deepmerge } from 'deepmerge'
+import { default as templite } from 'templite'
 
 interface NovelyInit {
   characters: Record<string, DefaultDefinedCharacter>;
@@ -227,7 +228,7 @@ const novely = <I extends NovelyInit>(init: I) => {
       handle.remove(className, style, duration)(push);
     },
     dialog([person, content, emotion]) {
-      renderer.dialog(typeof content === 'function' ? content() : content, person, emotion)(push);
+      renderer.dialog(templite(typeof content === 'function' ? content() : content, state().get()), person, emotion)(push);
     },
     function([fn]) {
       const result = fn();

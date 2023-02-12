@@ -100,7 +100,7 @@ engine.withStory({
         input.setAttribute('maxlength', '16');
       }
     ),
-    action.dialog('Nezuko', () => `Привет, ${state().get().name}!`)
+    action.dialog('Nezuko', `Привет, {{name}}!`)
     // action.input(
     //   'Введите ваш возраст',
     //   ({ input, error }) => {

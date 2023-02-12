@@ -8,10 +8,12 @@ importers:
   packages/core:
     specifiers:
       deepmerge: ^4.3.0
+      templite: ^1.2.0
       tsup: ^6.6.0
       typescript: ^4.9.5
     dependencies:
       deepmerge: 4.3.0
+      templite: 1.2.0
     devDependencies:
       tsup: 6.6.0_typescript@4.9.5
       typescript: 4.9.5
@@ -1904,6 +1906,10 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
     dev: true
+
+  /templite/1.2.0:
+    resolution: {integrity: sha512-O9BpPXF44a9Pg84Be6mjzlrqOtbP2I/B5PNLWu5hb1n9UQ1GTLsjdMg1z5ROCkF6NFXsO5LQfRXEpgTGrZ7Q0Q==}
+    dev: false
 
   /thenify-all/1.6.0:
     resolution: {integrity: sha512-RNxQH/qI8/t3thXJDwcstUO4zeqo64+Uy/+sNVRBx4Xn2OX+OZ9oP+iJnNFqplFra2ZUVeKCSa2oVWi3T4uVmA==}
