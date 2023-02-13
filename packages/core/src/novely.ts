@@ -61,18 +61,17 @@ const novely = <I extends NovelyInit>(init: I) => {
     }
   }
 
-  const state = () => {
-    return {
-      set(value: State | ((prev: State) => State)) {
-        const prev = stack.value[1];
-        const val = typeof value === 'function' ? value(prev) : deepmerge([prev, value]);
-
-        stack.value = [stack.value[0], val as State, stack.value[2]];
-      },
-      get() {
-        return stack.value[1];
-      }
+  function state(value: State | ((prev: State) => State)): void;
+  function state(): State;
+  function state(value?: State | ((prev: State) => State)): State | void {
+    if (arguments.length === 0) {
+      return stack.value[1] as State;
     }
+
+    const prev = stack.value[1];
+    const val = typeof value === 'function' ? value(prev as S) : deepmerge([prev, value!]);
+
+    stack.value = [stack.value[0], val as State, stack.value[2]];
   }
 
   const initial: Save = [[[null, 'start'], [null, 0]], {}, [Date.now(), 'auto']];
@@ -228,7 +227,7 @@ const novely = <I extends NovelyInit>(init: I) => {
       handle.remove(className, style, duration)(push);
     },
     dialog([person, content, emotion]) {
-      renderer.dialog(templite(typeof content === 'function' ? content() : content, state().get()), person, emotion)(push);
+      renderer.dialog(templite(typeof content === 'function' ? content() : content, state()), person, emotion)(push);
     },
     function([fn]) {
       const result = fn();

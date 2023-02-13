@@ -93,7 +93,7 @@ engine.withStory({
       'Введите ваше имя',
       ({ input, error }) => {
         error(input.validationMessage);
-        state().set({ name: input.value });
+        state({ name: input.value });
       },
       (input) => {
         input.setAttribute('minlength', '2');
