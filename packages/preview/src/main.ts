@@ -5,6 +5,8 @@ import { novely, defineCharacter, localStorageStorage } from '@novely/core'
 
 import { createDomRenderer } from '@novely/dom-renderer'
 
+import '@novely/dom-renderer/dist/index.css'
+
 import classRoom from './assets/class.png';
 import bedroomRoom from './assets/bedroom.png';
 import masakiNatsukoOk from './assets/Masaki Natsuko.png';
@@ -47,9 +49,7 @@ const engine = novely({
   }
 });
 
-const { action, store } = engine;
-
-let name = '';
+const { action, state } = engine;
 
 engine.withStory({
   'start': [
@@ -84,14 +84,14 @@ engine.withStory({
       'Введите ваше имя',
       ({ input, error }) => {
         error(input.validationMessage);
-        name = input.value;
+        state().set({ name: input.value });
       },
       (input) => {
         input.setAttribute('minlength', '2');
         input.setAttribute('maxlength', '16');
       }
     ),
-    action.dialog('Nezuko', () => `Привет, ${name}!`)
+    action.dialog('Nezuko', 'Привет, {{name}}!')
   ]
 });
 

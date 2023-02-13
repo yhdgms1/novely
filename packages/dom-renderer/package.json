@@ -6,6 +6,8 @@
     "access": "public"
   },
   "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "sideEffects": false,
   "scripts": {
     "dev": "node ./build.js --watch",

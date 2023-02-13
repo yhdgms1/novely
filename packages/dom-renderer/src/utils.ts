@@ -1,8 +1,6 @@
 const createElement = document.createElement.bind(document);
 
-const appendChild = <T extends Node>(parent: Node, node: T) => {
-  return parent.appendChild(node);
-}
+const appendChild = Node.prototype.appendChild.call.bind(Node.prototype.appendChild)
 
 const createImage = (src: string) => {
   const img = createElement('img');
@@ -36,69 +34,4 @@ const canvasDrawImages = (canvas = createElement('canvas'), ctx = canvas.getCont
   return [canvas, ctx] as const;
 }
 
-const typewriter = (node: HTMLElement, text: string) => {
-  let id!: number;
-
-  const root = createElement('span');
-  root.innerHTML = text;
-
-  const traverse = (el: HTMLElement | ChildNode | Node, erase = false) => {
-    const items = [] as ChildNode[];
-
-    el.childNodes.forEach(child => {
-      if (child.nodeType === Node.TEXT_NODE) {
-        items.push(child);
-
-        if (erase) child.textContent = '';
-      }
-
-      items.push(...traverse(child, erase));
-    });
-
-    return items;
-  }
-
-  const copy = root.cloneNode(true) as HTMLSpanElement;
-
-  const emptied = traverse(root, true);
-  const full = traverse(copy, false);
-
-  node.appendChild(root);
-
-  let current = 0;
-  let pos = 0;
-
-  let end = false;
-
-  const process = () => {
-    if (full[current]?.textContent!.length > pos) {
-      emptied[current].textContent += full[current].textContent![pos++];
-
-      id = setTimeout(process, typewriter.timeout())
-    } else if (current++ < full.length) {
-      pos = 0;
-      process();
-    } else {
-      end = true;
-    }
-  }
-
-  id = setTimeout(process, typewriter.timeout())
-
-  /**
-   * Did the typewriter ended it's task
-   */
-  return {
-    end() {
-      if (end) return clearTimeout(id), root.remove(), copy.remove(), true;
-      return clearTimeout(id), root.replaceWith(copy), end = true, false;
-    },
-    destroy() {
-      clearTimeout(id); root.remove(), copy.remove();
-    }
-  }
-}
-
-typewriter.timeout = () => Math.min(100 * Math.random() + 100, 140);
-
-export { createElement, createImage, url, canvasDrawImages, typewriter, appendChild }
+export { createElement, createImage, url, canvasDrawImages, appendChild }

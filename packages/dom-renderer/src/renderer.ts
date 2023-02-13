@@ -1,6 +1,7 @@
 import type { DefaultDefinedCharacter, RendererStore, Renderer } from '@novely/core';
-import { createElement, createImage, url, canvasDrawImages, typewriter } from './utils'
+import { createElement, createImage, url, canvasDrawImages } from './utils'
 import { createChoice, createLayout } from './dom'
+import { typewriter } from '@novely/typewriter'
 
 import './styles/dialog.css';
 import './styles/characters.css';
