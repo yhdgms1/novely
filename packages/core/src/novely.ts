@@ -64,14 +64,12 @@ const novely = <I extends NovelyInit>(init: I) => {
   function state(value: State | ((prev: State) => State)): void;
   function state(): State;
   function state(value?: State | ((prev: State) => State)): State | void {
-    if (arguments.length === 0) {
-      return stack.value[1] as State;
-    }
+    if (!value) return stack.value[1]
 
     const prev = stack.value[1];
-    const val = typeof value === 'function' ? value(prev as S) : deepmerge([prev, value!]);
+    const val = typeof value === 'function' ? value(prev as State) : deepmerge([prev, value]);
 
-    stack.value = [stack.value[0], val as State, stack.value[2]];
+    stack.value[1] = val as State;
   }
 
   const initial: Save = [[[null, 'start'], [null, 0]], {}, [Date.now(), 'auto']];
