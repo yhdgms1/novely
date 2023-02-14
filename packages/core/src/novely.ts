@@ -14,9 +14,11 @@ interface NovelyInit {
   storage: Storage
 
   renderer: (characters: Record<string, DefaultDefinedCharacter>) => Renderer;
+
+  initialScreen?: "mainmenu" | "game" | "saves"
 }
 
-const novely = <I extends NovelyInit>(init: I) => {
+const novely = <I extends NovelyInit>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu" }: I) => {
   let story: Story;
 
   const withStory = (s: Story) => {
@@ -76,26 +78,37 @@ const novely = <I extends NovelyInit>(init: I) => {
   const stack = createStack(initial);
 
   const save = async () => {
-    return await init.storage.set(stack.value);
+    return await storage.set(stack.value);
   }
 
   let restoring = false;
 
   const restore = async () => {
-    const saved: Save | null = await init.storage.get();
+    const saved: Save | null = await storage.get();
+
+    console.log(saved)
+
 
     /**
      * Если нет сохранённой игры, то запустим ту, которая уже есть
      */
     if (!saved) {
-      await init.storage.set(initial);
+      console.log('ff')
+      await storage.set(initial);
       restore();
       return;
     }
 
+    stack.value = saved;
+
     const [savedPath] = saved;
 
     restoring = true, path = savedPath;
+
+    /**
+     * Показать экран игры
+     */
+    renderer.ui.showScreen('game');
 
     match('clear', []);
 
@@ -188,7 +201,12 @@ const novely = <I extends NovelyInit>(init: I) => {
   //@ts-ignore
   window.restore = restore;
 
-  const renderer = init.renderer(init.characters);
+  const renderer = createRenderer(characters);
+
+  /**
+   * Показывает экран
+   */
+  renderer.ui.showScreen(initialScreen);
 
   let path = stack.value[0];
 

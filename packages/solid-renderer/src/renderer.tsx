@@ -1,14 +1,13 @@
 import type { Renderer, RendererStore, DefaultDefinedCharacter, ValidAction } from '@novely/core'
 import type { JSX } from 'solid-js';
 
-import { createEffect, createMemo, For, Show } from 'solid-js';
+import { createEffect, createMemo, For, Show, Switch, Match } from 'solid-js';
 import { createStore } from 'solid-js/store';
-import { Dialog, DialogPanel } from 'solid-headless';
 
-import { typewriter } from '@novely/typewriter'
-import { canvasDrawImages, createImage, url, isCSSImage } from './utils'
+import { canvasDrawImages, createImage } from './utils'
 
-import style from './style.module.css';
+import { Game } from './screens/game';
+import { MainMenu } from './screens/mainmenu';
 
 interface StateCharacter {
   /**
@@ -97,6 +96,7 @@ interface State {
   dialog: StateDialog
   choices: StateChoices
   input: StateInput
+  screen: "mainmenu" | "game" | "saves"
 }
 
 interface SolidRendererStore extends RendererStore {
@@ -119,7 +119,8 @@ const createSolidRenderer = () => {
       question: '',
       error: '',
       visible: false
-    }
+    },
+    screen: 'mainmenu'
   });
 
   const store: SolidRendererStore = {
@@ -131,8 +132,6 @@ const createSolidRenderer = () => {
 
   let characters!: Record<string, DefaultDefinedCharacter>;
   let renderer!: Renderer;
-
-  let writer: ReturnType<typeof typewriter> | undefined;
 
   return {
     createRenderer(c: Record<string, DefaultDefinedCharacter>): Renderer {
@@ -266,190 +265,27 @@ const createSolidRenderer = () => {
           return store.audio[method] = handle;
         },
         store,
+        ui: {
+          showScreen(name) {
+            setState('screen', name);
+          }
+        }
       }
     },
     Novely() {
-      const background = createMemo(() => {
-        const is = isCSSImage(state.background)
-
-        return { "background-image": is ? url(state.background) : '', "background-color": is ? undefined : state.background } as Partial<JSX.CSSProperties>
-      });
-
-      createEffect(() => {
-        if (state && store.dialogRef) {
-          writer?.destroy();
-          writer = typewriter(store.dialogRef, state.dialog.content);
-        }
-      });
-
-      const onChoicesButtonClick = ([disabled, i]: [boolean, number]) => {
-        if (disabled) return;
-
-        const resolve = state.choices.resolve;
-
-        setState('choices', { choices: [], visible: false, resolve: undefined });
-        resolve?.(i);
-      }
-
-      const onDialogClick = () => {
-        if (writer && writer.end()) {
-          /**
-           * Из-за рассинхронизации состояния `resolve` запускается после скрытия диалога
-           */
-          const resolve = state.dialog.resolve;
-
-          setState('dialog', { content: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
-          resolve?.();
-        }
-      }
-
-      const onInputButtonClick = () => {
-        if (state.input.error || !state.input.element?.validity.valid) return;
-
-        const resolve = state.input.resolve;
-
-        setState('input', { element: undefined, question: '', visible: false });
-
-        resolve?.();
-      }
-
       return (
-        <div class={style.root} style={background()}>
-          <div class={style.characters}>
-            <For each={Object.entries(state.characters)}>
-              {([character, data]) => (
-                <Show when={data.visible}>
-                  {() => {
-                    const canvas = store.characters[character].canvas;
-
-                    /**
-                     * При одинаковых значениях `className` или `style` не будет вызван ещё раз и анимация не будет перезапущена
-                     */
-                    createEffect(() => {
-                      void canvas.offsetWidth;
-
-                      if (data.className) canvas.classList.value = data.className;
-                      if (data.style) canvas.style.cssText = data.style;
-                    });
-
-                    return canvas
-                  }}
-                </Show>
-              )}
-            </For>
-          </div>
-          <div
-            class={style.dialog}
-            style={{ display: state.dialog.visible ? 'flex' : 'none' }}
-            onClick={onDialogClick}
-          >
-            <span
-              class={style.dialogName}
-              style={{
-                color: state.dialog.character ? state.dialog.character in characters ? characters[state.dialog.character].color : '#000' : '#000',
-                display: state.dialog.character ? 'block' : 'none'
-              }}
-            >
-              {state.dialog.character ? state.dialog.character in characters ? characters[state.dialog.character].name : state.dialog.character : ''}
-            </span>
-            <div class={style.dialogContainer} data-no-person={!(state.dialog.character && state.dialog.emotion)}>
-              <div class={style.dialogPerson}>
-                <Show when={state.dialog.character && state.dialog.emotion}>
-                  {() => {
-                    const character = state.dialog.character!;
-                    const emotion = state.dialog.emotion!;
-
-                    /**
-                     * Если эмоция ещё не загружена - загрузим её
-                     */
-                    if (!store['characters'][character]) {
-                      renderer.character(character).withEmotion(emotion)
-                    };
-
-                    const image = store['characters'][character]['emotions'][emotion];
-
-                    /**
-                     * Если элемент - картинка, не будем выполнять лишнюю отрисовку на `canvas`
-                     */
-                    if ('src' in image) return image.alt = '', image;
-
-                    const [canvas] = canvasDrawImages(undefined, undefined, Object.values(image));
-
-                    return canvas;
-                  }}
-                </Show>
-              </div>
-              <p class={style.dialogText} ref={store.dialogRef}>
-                &nbsp;
-              </p>
-            </div>
-          </div>
-
-          <Dialog
-            isOpen={state.choices.visible}
-            class={style.choices}
-          >
-            <div class={style.choicesContainer}>
-              <span
-                class={style.choicesF}
-                aria-hidden="true"
-              >
-                &#8203;
-              </span>
-              <DialogPanel class={style.choicesDialogPanel}>
-                <For each={state.choices.choices}>
-                  {([text, _, active], i) => {
-                    const disabled = active ? !active() : false;
-
-                    return (
-                      <button
-                        type="button"
-                        aria-disabled={disabled}
-                        onClick={[onChoicesButtonClick, [disabled, i()]]}
-                      >
-                        {text}
-                      </button>
-                    )
-                  }}
-                </For>
-              </DialogPanel>
-            </div>
-          </Dialog>
-
-          <Dialog
-            isOpen={state.input.visible}
-            class={style.input}
-          >
-            <div class={style.inputContainer}>
-              <span
-                class={style.inputF}
-                aria-hidden="true"
-              >
-                &#8203;
-              </span>
-              <DialogPanel class={style.inputDialogPanel}>
-                <label for="novely-input" class={style.inputLabel}>
-                  <span>
-                    {state.input.question}
-                  </span>
-                  {state.input.element}
-                  <span aria-live="polite">
-                    {state.input.error}
-                  </span>
-                </label>
-                <button
-                  onClick={onInputButtonClick}
-                  aria-disabled={(state.input.error || !state.input.element?.validity.valid) ? 'true' : 'false'}
-                >
-                  Подтвердить
-                </button>
-              </DialogPanel>
-            </div>
-          </Dialog>
-        </div>
+        <Switch fallback={<>No</>}>
+          <Match when={state.screen === "game"}>
+            <Game state={state} setState={/* @once */ setState} store={/* @once */ store} characters={/* @once */ characters} renderer={/* @once */ renderer} />
+          </Match>
+          <Match when={state.screen === 'mainmenu'}>
+            <MainMenu setState={/* @once */ setState} />
+          </Match>
+        </Switch>
       )
     }
   }
 }
 
 export { createSolidRenderer }
+export type { State, SolidRendererStore }

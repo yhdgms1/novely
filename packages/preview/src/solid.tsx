@@ -81,8 +81,6 @@ engine.withStory({
     )
   ],
   'act-1': [
-    action.clear(),
-    action.wait(400),
     action.showBackground(bedroomRoom),
     action.showCharacter('Masaki Natsuko', 'ok', '', 'left: 15%'),
     action.dialog('Masaki Natsuko', 'Добро пожаловать'),

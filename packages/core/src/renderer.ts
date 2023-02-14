@@ -33,6 +33,13 @@ type Renderer = {
   music: (source: string, method: keyof RendererStore['audio']) => AudioHandle;
   clear: () => (resolve: () => void) => void;
   store: RendererStore;
+
+  ui: {
+    /**
+     * Показывает экран, скрывает другие
+     */
+    showScreen(name: "mainmenu" | "game" | "saves"): void;
+  }
 }
 
 export type { CharacterHandle, AudioHandle, RendererStore, Renderer }
