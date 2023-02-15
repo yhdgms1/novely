@@ -2,7 +2,7 @@ import type { DefaultDefinedCharacter } from './character';
 import type { ActionProxyProvider, Story } from './action';
 import type { Storage } from './storage';
 import type { Save, State } from './types'
-import type { Renderer } from './renderer'
+import type { Renderer, RendererInit } from './renderer'
 import { matchAction, isNumber, isNull, isString } from './utils';
 import { all as deepmerge } from 'deepmerge'
 import { default as templite } from 'templite'
@@ -13,7 +13,7 @@ interface NovelyInit {
   settings?: { assetsPreloading?: boolean }
   storage: Storage
 
-  renderer: (characters: Record<string, DefaultDefinedCharacter>) => Renderer;
+  renderer: (characters: RendererInit) => Renderer;
 
   initialScreen?: "mainmenu" | "game" | "saves"
 }
@@ -201,7 +201,10 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
   //@ts-ignore
   window.restore = restore;
 
-  const renderer = createRenderer(characters);
+  const renderer = createRenderer({
+    characters,
+    storage,
+  });
 
   /**
    * Показывает экран

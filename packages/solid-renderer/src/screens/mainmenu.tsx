@@ -13,6 +13,8 @@ const MainMenu: VoidComponent<MainMenuProps> = (props) => {
 
   // todo: заменить всю эту чепуху
 
+  const setScreen = (screen: "mainmenu" | "game" | "saves") => setState('screen', screen)
+
   return (
     <div
       classList={{
@@ -36,6 +38,9 @@ const MainMenu: VoidComponent<MainMenuProps> = (props) => {
           // setState('screen', 'game')
         }}>
           Загрузить
+        </button>
+        <button type="button" onClick={() => setScreen('saves')}>
+          Сохранения
         </button>
       </div>
     </div>

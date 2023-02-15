@@ -44,7 +44,6 @@ importers:
   packages/preview:
     specifiers:
       '@novely/core': workspace:*
-      '@novely/dom-renderer': workspace:*
       '@novely/solid-renderer': workspace:*
       animate.css: ^4.1.1
       normalize.css: ^8.0.1
@@ -55,7 +54,6 @@ importers:
       vite-plugin-solid: ^2.5.0
     dependencies:
       '@novely/core': link:../core
-      '@novely/dom-renderer': link:../dom-renderer
       '@novely/solid-renderer': link:../solid-renderer
       animate.css: 4.1.1
       normalize.css: 8.0.1

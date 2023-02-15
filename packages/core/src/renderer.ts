@@ -1,4 +1,6 @@
 import type { DefaultActionProxyProvider } from './action'
+import type { DefaultDefinedCharacter } from './character'
+import type { Storage } from './storage'
 
 interface CharacterHandle {
   canvas: HTMLCanvasElement;
@@ -42,4 +44,9 @@ type Renderer = {
   }
 }
 
-export type { CharacterHandle, AudioHandle, RendererStore, Renderer }
+type RendererInit = {
+  characters: Record<string, DefaultDefinedCharacter>,
+  storage: Storage
+}
+
+export type { CharacterHandle, AudioHandle, RendererStore, Renderer, RendererInit }

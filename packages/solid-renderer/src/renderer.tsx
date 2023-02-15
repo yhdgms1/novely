@@ -1,4 +1,4 @@
-import type { Renderer, RendererStore, DefaultDefinedCharacter, ValidAction } from '@novely/core'
+import type { Renderer, RendererInit, Storage, RendererStore, DefaultDefinedCharacter, ValidAction } from '@novely/core'
 import type { JSX } from 'solid-js';
 
 import { createEffect, createMemo, For, Show, Switch, Match } from 'solid-js';
@@ -8,6 +8,7 @@ import { canvasDrawImages, createImage } from './utils'
 
 import { Game } from './screens/game';
 import { MainMenu } from './screens/mainmenu';
+import { Saves } from './screens/saves';
 
 interface StateCharacter {
   /**
@@ -131,11 +132,12 @@ const createSolidRenderer = () => {
   };
 
   let characters!: Record<string, DefaultDefinedCharacter>;
+  let storage!: Storage;
   let renderer!: Renderer;
 
   return {
-    createRenderer(c: Record<string, DefaultDefinedCharacter>): Renderer {
-      characters = c;
+    createRenderer({ characters: c, storage: s }: RendererInit): Renderer {
+      characters = c, storage = s;
 
       return renderer = {
         background(background) {
@@ -280,6 +282,9 @@ const createSolidRenderer = () => {
           </Match>
           <Match when={state.screen === 'mainmenu'}>
             <MainMenu setState={/* @once */ setState} />
+          </Match>
+          <Match when={state.screen === 'saves'}>
+            <Saves setState={/* @once */ setState} storage={/* @once */ storage} />
           </Match>
         </Switch>
       )
