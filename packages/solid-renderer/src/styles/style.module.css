@@ -320,6 +320,9 @@
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0;
 
   list-style: none;
 }

@@ -18,7 +18,26 @@ interface SavesProps {
 const Saves: VoidComponent<SavesProps> = (props) => {
   const setScreen = (screen: "mainmenu" | "game" | "saves") => props.setState('screen', screen)
 
-  const [saves] = createResource(props.storage.get.bind(props.storage));
+  const [saves, { mutate }] = createResource(props.storage.get.bind(props.storage));
+
+  const removeSave = (date: number) => {
+    const data = saves();
+
+    if (!data) return;
+
+    for (let i = 0; i < data.length; i++) {
+      const current = data[i];
+
+      if (current[2][0] === date) {
+        data.splice(i, 1);
+      }
+    }
+
+    props.storage.set(data).then(() => {
+      // todo: почему-то не работает
+      mutate(data);
+    });
+  }
 
   return (
     <div
@@ -48,6 +67,9 @@ const Saves: VoidComponent<SavesProps> = (props) => {
                     <button type="button" onClick={props.set.bind(props.set, save)} aria-label={"Загрузить сохранение от " + stringDate}>
                       {stringDate}
                       <span style={{ "margin-left": '1em' }}>{stringType}</span>
+                    </button>
+                    <button type="reset" aria-label={'Удалить сохранение от ' + stringDate} onClick={[removeSave, date]}>
+                      <span>Удалить</span>
                     </button>
                   </li>
                 )

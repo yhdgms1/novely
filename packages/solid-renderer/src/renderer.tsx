@@ -1,7 +1,7 @@
 import type { Renderer, RendererInit, Storage, RendererStore, DefaultDefinedCharacter, ValidAction } from '@novely/core'
 import type { JSX } from 'solid-js';
 
-import { createEffect, createMemo, For, Show, Switch, Match } from 'solid-js';
+import { Switch, Match } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
 import { canvasDrawImages, createImage } from './utils'
