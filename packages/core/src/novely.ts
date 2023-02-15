@@ -10,7 +10,7 @@ import { default as templite } from 'templite'
 interface NovelyInit {
   characters: Record<string, DefaultDefinedCharacter>;
 
-  settings?: { assetsPreloading?: boolean }
+  settings?: { assetsPreloading?: boolean; oneSave?: boolean }
   storage: Storage
 
   renderer: (characters: RendererInit) => Renderer;
@@ -18,8 +18,9 @@ interface NovelyInit {
   initialScreen?: "mainmenu" | "game" | "saves"
 }
 
-const novely = <I extends NovelyInit>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu" }: I) => {
+const novely = <I extends NovelyInit>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", settings = { assetsPreloading: false, oneSave: false } }: I) => {
   let story: Story;
+  settings;
 
   const withStory = (s: Story) => {
     story = s;
@@ -78,30 +79,45 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
   const stack = createStack(initial);
 
   const save = async () => {
-    return await storage.set(stack.value);
+    /**
+     * Получаем предыдущее значение
+     */
+    const prev = await storage.get();
+
+    /**
+     * Обновим дату
+     */
+    stack.value[2][0] = Date.now();
+
+    /**
+     * Добавляем текущее сохранение
+     */
+    prev.push(stack.value);
+
+    /**
+     * Устанавливаем новое значение
+     */
+    return await storage.set(prev);
   }
 
   let restoring = false;
 
   const restore = async () => {
-    const saved: Save | null = await storage.get();
-
-    console.log(saved)
-
+    const saved = await storage.get();
+    const latest = saved.at(-1);
 
     /**
      * Если нет сохранённой игры, то запустим ту, которая уже есть
      */
-    if (!saved) {
-      console.log('ff')
-      await storage.set(initial);
+    if (!latest) {
+      await storage.set([initial]);
       restore();
       return;
     }
 
-    stack.value = saved;
+    stack.value = latest;
 
-    const [savedPath] = saved;
+    const [savedPath] = latest;
 
     restoring = true, path = savedPath;
 

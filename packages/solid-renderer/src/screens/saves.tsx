@@ -14,9 +14,9 @@ interface SavesProps {
 }
 
 const Saves: VoidComponent<SavesProps> = (props) => {
-  const { setState, storage } = props;
+  const { storage } = props;
 
-  const setScreen = (screen: "mainmenu" | "game" | "saves") => setState('screen', screen)
+  const setScreen = (screen: "mainmenu" | "game" | "saves") => props.setState('screen', screen)
 
   const [saves] = createResource(storage.get.bind(storage));
 
@@ -34,21 +34,21 @@ const Saves: VoidComponent<SavesProps> = (props) => {
         </button>
       </div>
       <Show when={saves.state === 'ready'} fallback={<>В данный момент сохранения {saves.state}</>}>
-        <Show when={saves().length > 0} fallback={<>Сохранений нет</>}>
-          <div class={style.list}>
+        <Show when={saves()!.length > 0} fallback={<>Сохранений нет</>}>
+          <ol class={style.list}>
             <For each={saves()}>
               {save => {
-                console.log(save);
+                const [date, type] = save[2];
 
-                /**
-                 * В данный момент сохранение одно, а должен быть массив
-                 */
                 return (
-                  <>{JSON.stringify(save)}</>
+                  <li>
+                    {new Date(date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                    {type}
+                  </li>
                 )
               }}
             </For>
-          </div>
+          </ol>
         </Show>
       </Show>
     </div>
