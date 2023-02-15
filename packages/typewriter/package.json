@@ -1,7 +1,7 @@
 {
   "name": "@novely/typewriter",
   "description": "Эффект пишущей машинки",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "sideEffects": false,
   "types": "./dist/index.d.ts",

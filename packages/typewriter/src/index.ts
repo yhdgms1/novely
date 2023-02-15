@@ -27,11 +27,11 @@ const typewriter = (node: HTMLElement, text: string) => {
     return items;
   }
 
-  const emptied = traverse(root, true);
   /**
    * На случай эмодзи делаем простейшее разделение на графемы
    */
   const full = traverse(root.cloneNode(true), false).map((child) => [...child.textContent!]);
+  const emptied = traverse(root, true);
 
   node.appendChild(root);
 
