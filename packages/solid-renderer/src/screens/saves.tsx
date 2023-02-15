@@ -34,8 +34,7 @@ const Saves: VoidComponent<SavesProps> = (props) => {
     }
 
     props.storage.set(data).then(() => {
-      // todo: почему-то не работает
-      mutate(data);
+      mutate(() => [...data]);
     });
   }
 
@@ -53,7 +52,7 @@ const Saves: VoidComponent<SavesProps> = (props) => {
         </button>
       </div>
       <Show when={saves.state === 'ready'} fallback={<>В данный момент сохранения {saves.state}</>}>
-        <Show when={saves()!.length > 0} fallback={<>Сохранений нет</>}>
+        <Show when={saves()} fallback={<>Сохранений нет</>}>
           <ol class={style.list}>
             <For each={saves()}>
               {save => {
