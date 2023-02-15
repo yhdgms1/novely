@@ -27,13 +27,11 @@ const typewriter = (node: HTMLElement, text: string) => {
     return items;
   }
 
-  const copy = root.cloneNode(true) as HTMLSpanElement;
-
   const emptied = traverse(root, true);
   /**
    * На случай эмодзи делаем простейшее разделение на графемы
    */
-  const full = traverse(copy, false).map((child) => [...child.textContent!]);
+  const full = traverse(root.cloneNode(true), false).map((child) => [...child.textContent!]);
 
   node.appendChild(root);
 
