@@ -1,19 +1,31 @@
 import type { VoidComponent } from 'solid-js'
 import type { SetStoreFunction } from 'solid-js/store'
-import type { State, SolidRendererStore } from '../renderer'
+import type { State } from '../renderer'
+import type { RendererInit, Storage } from '@novely/core'
 
 import { style } from '../styles/styles';
 
 interface MainMenuProps {
   setState: SetStoreFunction<State>;
+
+  restore: RendererInit['restore'];
+  storage: Storage
 }
 
 const MainMenu: VoidComponent<MainMenuProps> = (props) => {
-  const { setState } = props;
+  const restore = props.restore.bind(props.restore, undefined);
+  const setScreen = (screen: "mainmenu" | "game" | "saves") => props.setState('screen', screen);
 
-  // todo: заменить всю эту чепуху
+  const newGame = () => {
+    props.storage.get().then(prev => {
+      /**
+       * Новая пустая история
+       */
+      prev.push([[[null, 'start'], [null, 0]], {}, [Date.now(), 'manual']]);
 
-  const setScreen = (screen: "mainmenu" | "game" | "saves") => setState('screen', screen)
+      props.storage.set(prev).then(restore);
+    });
+  }
 
   return (
     <div
@@ -24,19 +36,10 @@ const MainMenu: VoidComponent<MainMenuProps> = (props) => {
       style={{ "background-image": `url(https://i.imgur.com/FKvy1SO.png)` }}
     >
       <div class={style.controls}>
-        <button type="button" onClick={() => {
-          localStorage.setItem('novely-', JSON.stringify([[[null, 'start'], [null, 0]], {}, [Date.now(), 'auto']]));
-          // setState('screen', 'game');
-          window.restore();
-        }}>
+        <button type="button" onClick={newGame}>
           Новая игра
         </button>
-        <button type="button" onClick={() => {
-          // боже
-
-          window.restore();
-          // setState('screen', 'game')
-        }}>
+        <button type="button" onClick={restore}>
           Загрузить
         </button>
         <button type="button" onClick={() => setScreen('saves')}>

@@ -231,7 +231,8 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
   const renderer = createRenderer({
     characters,
     storage,
-    set
+    set,
+    restore
   });
 
   /**

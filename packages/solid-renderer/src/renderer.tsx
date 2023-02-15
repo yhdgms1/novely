@@ -134,11 +134,12 @@ const createSolidRenderer = () => {
   let characters!: Record<string, DefaultDefinedCharacter>;
   let storage!: Storage;
   let set!: RendererInit['set']
+  let restore!: RendererInit['restore'];
   let renderer!: Renderer;
 
   return {
     createRenderer(init: RendererInit): Renderer {
-      characters = init.characters, storage = init.storage, set = init.set;
+      characters = init.characters, storage = init.storage, set = init.set, restore = init.restore;
 
       return renderer = {
         background(background) {
@@ -282,7 +283,7 @@ const createSolidRenderer = () => {
             <Game state={state} setState={/* @once */ setState} store={/* @once */ store} characters={/* @once */ characters} renderer={/* @once */ renderer} />
           </Match>
           <Match when={state.screen === 'mainmenu'}>
-            <MainMenu setState={/* @once */ setState} />
+            <MainMenu setState={/* @once */ setState} storage={/* @once */ storage} restore={/* @once */ restore} />
           </Match>
           <Match when={state.screen === 'saves'}>
             <Saves setState={/* @once */ setState} storage={/* @once */ storage} set={/* @once */ set} />

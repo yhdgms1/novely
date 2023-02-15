@@ -49,6 +49,7 @@ type RendererInit = {
   characters: Record<string, DefaultDefinedCharacter>,
   storage: Storage,
   set: (save: Save) => Promise<void>
+  restore: (save?: Save) => Promise<void>;
 }
 
 export type { CharacterHandle, AudioHandle, RendererStore, Renderer, RendererInit }
