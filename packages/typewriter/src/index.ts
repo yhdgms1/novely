@@ -41,6 +41,7 @@ const typewriter = (node: HTMLElement, text: string) => {
 
   const process = () => {
     if (full[current]?.textContent!.length > pos) {
+      // todo: [...str]
       emptied[current].textContent += full[current].textContent![pos++];
 
       id = setTimeout(process, timeout())

@@ -100,11 +100,22 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
     return await storage.set(prev);
   }
 
+  /**
+   * Устанавливает сохранение
+   */
+  const set = (save: Save) => {
+    stack.value = save;
+
+    return restore(save);
+  }
+
   let restoring = false;
 
-  const restore = async () => {
-    const saved = await storage.get();
-    const latest = saved.at(-1);
+  /**
+   * Визуально восстанавливает историю
+   */
+  const restore = async (save?: Save) => {
+    const latest = save ? save : await storage.get().then(value => value.at(-1));
 
     /**
      * Если нет сохранённой игры, то запустим ту, которая уже есть
@@ -220,6 +231,7 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
   const renderer = createRenderer({
     characters,
     storage,
+    set
   });
 
   /**

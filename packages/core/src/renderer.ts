@@ -1,6 +1,7 @@
 import type { DefaultActionProxyProvider } from './action'
 import type { DefaultDefinedCharacter } from './character'
 import type { Storage } from './storage'
+import type { Save } from './types'
 
 interface CharacterHandle {
   canvas: HTMLCanvasElement;
@@ -46,7 +47,8 @@ type Renderer = {
 
 type RendererInit = {
   characters: Record<string, DefaultDefinedCharacter>,
-  storage: Storage
+  storage: Storage,
+  set: (save: Save) => Promise<void>
 }
 
 export type { CharacterHandle, AudioHandle, RendererStore, Renderer, RendererInit }

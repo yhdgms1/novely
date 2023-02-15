@@ -1,3 +1,7 @@
+const capitalize = (str: string) => {
+  return str[0].toUpperCase() + str.slice(1);
+}
+
 const isCSSImage = (str: string) => {
   const startsWith = String.prototype.startsWith.bind(str);
 
@@ -36,4 +40,4 @@ const url = <T extends string>(str: T): `url(${T})` => {
   return `url(${str})`;
 }
 
-export { isCSSImage, canvasDrawImages, url, createImage }
+export { isCSSImage, canvasDrawImages, url, createImage, capitalize }

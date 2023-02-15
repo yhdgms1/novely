@@ -1,9 +1,10 @@
 import type { VoidComponent } from 'solid-js'
 import type { SetStoreFunction } from 'solid-js/store'
-import type { Storage } from '@novely/core'
+import type { Storage, RendererInit } from '@novely/core'
 import type { State } from '../renderer'
 
 import { createResource, Show, For } from 'solid-js'
+import { capitalize } from '../utils'
 
 import { style } from '../styles/styles';
 
@@ -11,14 +12,13 @@ interface SavesProps {
   setState: SetStoreFunction<State>;
 
   storage: Storage;
+  set: RendererInit['set'];
 }
 
 const Saves: VoidComponent<SavesProps> = (props) => {
-  const { storage } = props;
-
   const setScreen = (screen: "mainmenu" | "game" | "saves") => props.setState('screen', screen)
 
-  const [saves] = createResource(storage.get.bind(storage));
+  const [saves] = createResource(props.storage.get.bind(props.storage));
 
   return (
     <div
@@ -40,10 +40,15 @@ const Saves: VoidComponent<SavesProps> = (props) => {
               {save => {
                 const [date, type] = save[2];
 
+                const stringDate = capitalize(new Date(date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
+                const stringType = type === 'auto' ? <>Автоматическое</> : <>Ручное</>;
+
                 return (
                   <li>
-                    {new Date(date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                    {type}
+                    <button type="button" onClick={props.set.bind(props.set, save)} aria-label={"Загрузить сохранение от " + stringDate}>
+                      {stringDate}
+                      <span style={{ "margin-left": '1em' }}>{stringType}</span>
+                    </button>
                   </li>
                 )
               }}
