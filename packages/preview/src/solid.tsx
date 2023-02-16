@@ -127,6 +127,5 @@ engine.withStory({
 });
 
 render(() => <Novely />, document.body);
-engine.render();
 
 export { }

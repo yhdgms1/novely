@@ -43,6 +43,10 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
        * Возвращает текущее значение
        */
       get value() {
+        console.log(JSON.stringify(stack.map(v => v[0]), null, 1));
+
+        // debugger;
+
         return stack[index];
       },
       /**
@@ -52,15 +56,19 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
         stack[index] = value;
       },
       back() {
-        index--;
-        stack.length = index;
+        if (stack.length > 1 && index > 0) {
+          console.log('back');
+
+          stack.pop();
+          index--;
+        }
       },
       canBack() {
         return stack.length > 1 && index > 0;
       },
       push(value: Save) {
         index++;
-        stack[index] = value;
+        stack.push(value);
       },
       clear() {
         index = 0;
@@ -142,8 +150,6 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
       restore();
       return;
     }
-
-    console.log(latest)
 
     stack.value = latest;
 
@@ -343,8 +349,10 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
   const enmemory = () => {
     const current = klona(stack.value);
 
+    current[0] = klona(path);
+
     current[2][0] = new Date().valueOf();
-    current[2][1] = 'manual';
+    current[2][1] = 'auto';
 
     stack.push(current);
   }
