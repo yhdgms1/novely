@@ -6,6 +6,7 @@ import type { State } from '../renderer'
 import { createResource, Show, For } from 'solid-js'
 import { capitalize } from '../utils'
 
+import { join } from '../utils'
 import { style } from '../styles/styles';
 
 interface SavesProps {
@@ -47,7 +48,7 @@ const Saves: VoidComponent<SavesProps> = (props) => {
       style={{ "background-image": `url(https://i.imgur.com/FKvy1SO.png)` }}
     >
       <div class={style.controls}>
-        <button type="button" onClick={() => setScreen('mainmenu')}>
+        <button type="button" class={join(style.button)} onClick={() => setScreen('mainmenu')}>
           Назад
         </button>
       </div>
@@ -63,7 +64,7 @@ const Saves: VoidComponent<SavesProps> = (props) => {
 
                 return (
                   <li>
-                    <button type="button" onClick={props.set.bind(props.set, save)} aria-label={"Загрузить сохранение от " + stringDate}>
+                    <button type="button" class={join(style.button)} onClick={props.set.bind(props.set, save)} aria-label={"Загрузить сохранение от " + stringDate}>
                       {stringDate}
                       <span style={{ "margin-left": '1em' }}>{stringType}</span>
                     </button>

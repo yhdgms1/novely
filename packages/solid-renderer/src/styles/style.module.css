@@ -11,75 +11,7 @@
   background-size: cover;
 }
 
-/* Characters */
-
-.characters {
-  position: absolute;
-  inset: 0;
-
-  z-index: 1;
-
-  overflow: hidden;
-}
-
-.characters > canvas[style] {
-  position: absolute;
-  bottom: 0;
-
-  height: 85vmin;
-  max-height: 70vh;
-}
-
 /* Dialog */
-.dialog {
-  min-height: 25vh;
-  max-height: 30vh;
-  width: 75%;
-
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 0.4em;
-  z-index: 10;
-
-  text-align: left;
-
-  flex-direction: column;
-  justify-content: flex-end;
-
-  cursor: default;
-  user-select: none;
-}
-
-.dialog__container {
-  height: 100%;
-  min-height: 14.5vh;
-  max-height: 25vh;
-
-  color: rgb(255, 255, 255);
-
-  border: 3px solid #ffffff;
-  border-radius: 14px;
-  box-shadow: 1px 1px 4px #00000072;
-
-  /* prettier-ignore */
-  background-image: radial-gradient(#d6608998 20%, transparent 20%), radial-gradient(#d6608998 20%, transparent 20%);
-  background-color: #f092b4d8;
-  background-position: 0 0, 50px 50px;
-  background-size: 100px 100px;
-
-  display: grid;
-  grid-template-rows: auto 1fr;
-  grid-template-columns: 10vmax 1fr;
-}
-
-.dialog__container[data-no-person="true"] {
-  display: block;
-}
-
-.dialog__container[data-no-person="true"] > .dialog__person {
-  display: none;
-}
 
 .dialog__name,
 .dialog__text {
@@ -108,11 +40,6 @@
   width: 100%;
 
   text-shadow: 1px 0 1px #000, 0 1px 1px #000, -1px 0 1px #000, 0 -1px 1px #000;
-}
-
-.dialog__person {
-  max-height: 25vh;
-  max-width: 25vw;
 }
 
 .dialog__person > canvas,
@@ -159,37 +86,6 @@
   align-items: stretch;
 }
 
-.choices__dialog-panel > button,
-.input__dialog-panel > button,
-.mainMenu > .controls > button,
-.saves button {
-  background-color: #ffe9f3;
-  border: 4px solid #ffc7df;
-
-  margin: 0.4em 0;
-  padding: 0.4em;
-
-  font-size: 1.8375em;
-  line-height: 1.2;
-
-  cursor: pointer;
-}
-
-.choices__dialog-panel > button:hover,
-.input__dialog-panel > button:hover,
-.mainMenu > .controls > button:hover,
-.saves button:hover {
-  background-color: #ffffff;
-  border-color: #ffc6d8;
-  color: #ffb7a2;
-}
-
-.choices__dialog-panel > button[aria-disabled="true"],
-.input__dialog-panel > button[aria-disabled="true"] {
-  cursor: not-allowed;
-  opacity: 0.9;
-}
-
 @media (max-width: 768px) {
   .choices__dialog-panel,
   .input__dialog-panel {
@@ -197,16 +93,8 @@
   }
 
   .dialog__text,
-  .dialog__name,
-  .choices__dialog-panel > button {
+  .dialog__name {
     font-size: 1.02em;
-  }
-
-  .dialog {
-    width: 100%;
-    bottom: 0;
-    left: unset;
-    transform: unset;
   }
 }
 
@@ -244,14 +132,6 @@
   background-color: #f092b4d8;
   background-position: 0 0, 50px 50px;
   background-size: 100px 100px;
-}
-
-.input__dialog-panel > button {
-  font-size: 1.2375em;
-  padding: 0.4em 0.6em;
-
-  width: -moz-fit-content;
-  width: fit-content;
 }
 
 /* @module: mainmenu.tsx */
@@ -306,7 +186,8 @@
   align-items: center;
 }
 
-.saves button {
+.saves > .controls button,
+.saves button.button {
   width: 100%;
   font-size: 1.02em;
 }
@@ -325,4 +206,8 @@
   flex-basis: 0;
 
   list-style: none;
+}
+
+.saves > .list > li {
+  display: flex;
 }

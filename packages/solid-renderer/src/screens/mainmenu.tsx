@@ -3,6 +3,7 @@ import type { SetStoreFunction } from 'solid-js/store'
 import type { State } from '../renderer'
 import type { RendererInit, Storage } from '@novely/core'
 
+import { join } from '../utils'
 import { style } from '../styles/styles';
 
 interface MainMenuProps {
@@ -36,13 +37,13 @@ const MainMenu: VoidComponent<MainMenuProps> = (props) => {
       style={{ "background-image": `url(https://i.imgur.com/FKvy1SO.png)` }}
     >
       <div class={style.controls}>
-        <button type="button" onClick={newGame}>
+        <button type="button" class={join(style.button)} onClick={newGame}>
           Новая игра
         </button>
-        <button type="button" onClick={restore}>
+        <button type="button" class={join(style.button)} onClick={restore}>
           Загрузить
         </button>
-        <button type="button" onClick={() => setScreen('saves')}>
+        <button type="button" class={join(style.button)} onClick={() => setScreen('saves')}>
           Сохранения
         </button>
       </div>
