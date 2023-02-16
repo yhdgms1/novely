@@ -139,7 +139,7 @@ const Game: VoidComponent<GameProps> = (props) => {
               }}
             </Show>
           </div>
-          <p class={style.dialogText} ref={store.dialogRef}>
+          <p class={style.dialogContent} ref={store.dialogRef}>
             &nbsp;
           </p>
         </div>
@@ -147,16 +147,16 @@ const Game: VoidComponent<GameProps> = (props) => {
 
       <Dialog
         isOpen={props.state.choices.visible}
-        class={style.choices}
+        class={style.headlessDialog}
       >
-        <div class={style.choicesContainer}>
+        <div class={style.headlessDialogContainer}>
           <span
-            class={style.choicesF}
+            class={style.headlessDialogFix}
             aria-hidden="true"
           >
             &#8203;
           </span>
-          <DialogPanel class={style.choicesDialogPanel}>
+          <DialogPanel class={style.headlessDialogPanel}>
             <For each={props.state.choices.choices}>
               {([text, _, active], i) => {
                 const disabled = active ? !active() : false;
@@ -179,17 +179,17 @@ const Game: VoidComponent<GameProps> = (props) => {
 
       <Dialog
         isOpen={props.state.input.visible}
-        class={style.input}
+        class={style.headlessDialog}
       >
-        <div class={style.inputContainer}>
+        <div class={style.headlessDialogContainer}>
           <span
-            class={style.inputF}
+            class={style.headlessDialogFix}
             aria-hidden="true"
           >
             &#8203;
           </span>
-          <DialogPanel class={style.inputDialogPanel}>
-            <label for="novely-input" class={style.inputLabel}>
+          <DialogPanel class={join(style.headlessDialogPanel, style.inputDialogPanel)}>
+            <label for="novely-input" class={style.inputDialogLabel}>
               <span>
                 {props.state.input.question}
               </span>

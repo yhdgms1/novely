@@ -37,13 +37,13 @@ const MainMenu: VoidComponent<MainMenuProps> = (props) => {
       style={{ "background-image": `url(https://i.imgur.com/FKvy1SO.png)` }}
     >
       <div class={style.controls}>
-        <button type="button" class={join(style.button)} onClick={newGame}>
+        <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={newGame}>
           Новая игра
         </button>
-        <button type="button" class={join(style.button)} onClick={restore}>
+        <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={restore}>
           Загрузить
         </button>
-        <button type="button" class={join(style.button)} onClick={() => setScreen('saves')}>
+        <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={() => setScreen('saves')}>
           Сохранения
         </button>
       </div>

@@ -55,12 +55,51 @@
   display: none;
 }
 
+.dialogName,
+.dialogContent {
+  display: block;
+  padding: 1vmin;
+  margin: 0;
+}
+
+.dialogName {
+  font-size: 1.4375em;
+  line-height: 1.2;
+
+  background: #ffffff;
+  border-radius: 7px 7px 0 0;
+
+  width: -moz-fit-content;
+  width: fit-content;
+  margin-left: 5vmin;
+
+  box-shadow: 1px 1px 3px #00000042;
+}
+
+.dialogContent {
+  font-size: 2.2375em;
+  line-height: 1.2;
+  width: 100%;
+
+  text-shadow: 1px 0 1px #000, 0 1px 1px #000, -1px 0 1px #000, 0 -1px 1px #000;
+}
+
+.dialogPerson > canvas,
+.dialogPerson > img {
+  height: 100%;
+}
+
 @media (max-width: 768px) {
   .dialog {
     width: 100%;
     bottom: 0;
     left: unset;
     transform: unset;
+  }
+
+  .dialogName,
+  .dialogContent {
+    font-size: 1.02em;
   }
 
   .dialogContainer {

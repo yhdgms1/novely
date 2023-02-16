@@ -36,3 +36,18 @@
 .buttonChoices {
   font-size: 1.02em;
 }
+
+.buttonMainMenu {
+  width: 100%;
+  font-size: 1.02em;
+}
+
+.buttonSaves {
+  width: 100%;
+  font-size: 1.02em;
+}
+
+.buttonSavesDelete {
+  font-size: 1.02em;
+  margin-left: 1em;
+}

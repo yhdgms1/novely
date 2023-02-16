@@ -48,7 +48,7 @@ const Saves: VoidComponent<SavesProps> = (props) => {
       style={{ "background-image": `url(https://i.imgur.com/FKvy1SO.png)` }}
     >
       <div class={style.controls}>
-        <button type="button" class={join(style.button)} onClick={() => setScreen('mainmenu')}>
+        <button type="button" class={join(style.button, style.buttonSaves)} onClick={() => setScreen('mainmenu')}>
           Назад
         </button>
       </div>
@@ -64,11 +64,11 @@ const Saves: VoidComponent<SavesProps> = (props) => {
 
                 return (
                   <li>
-                    <button type="button" class={join(style.button)} onClick={props.set.bind(props.set, save)} aria-label={"Загрузить сохранение от " + stringDate}>
+                    <button type="button" class={join(style.button, style.buttonSaves)} onClick={props.set.bind(props.set, save)} aria-label={"Загрузить сохранение от " + stringDate}>
                       {stringDate}
                       <span style={{ "margin-left": '1em' }}>{stringType}</span>
                     </button>
-                    <button type="reset" aria-label={'Удалить сохранение от ' + stringDate} onClick={[removeSave, date]}>
+                    <button type="reset" class={join(style.button, style.buttonSavesDelete)} aria-label={'Удалить сохранение от ' + stringDate} onClick={[removeSave, date]}>
                       <span>Удалить</span>
                     </button>
                   </li>
