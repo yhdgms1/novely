@@ -78,21 +78,33 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
   const initial: Save = [[[null, 'start'], [null, 0]], {}, [Date.now(), 'auto']];
   const stack = createStack(initial);
 
-  const save = async () => {
+  const save = async (override = false, type = override ? 'auto' : 'manual') => {
     /**
      * Получаем предыдущее значение
      */
     const prev = await storage.get();
+
+    const date = stack.value[2][0];
+    const isLatest = prev.findIndex(value => value[2][0] === date) === prev.length - 1;
 
     /**
      * Обновим дату
      */
     stack.value[2][0] = Date.now();
 
-    /**
-     * Добавляем текущее сохранение
-     */
-    prev.push(stack.value);
+    if (override) {
+      if (isLatest) {
+        prev[prev.length - 1] = stack.value;
+      } else {
+        // todo: что?
+        prev.push(stack.value);
+      }
+    } else {
+      /**
+       * Добавляем текущее сохранение
+       */
+      prev.push(stack.value);
+    }
 
     /**
      * Устанавливаем новое значение
