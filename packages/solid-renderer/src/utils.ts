@@ -11,7 +11,7 @@ const isCSSImage = (str: string) => {
 const createImage = (src: string) => {
   const img = document.createElement('img');
 
-  return img.src = src, img;
+  return img.src = src, img.crossOrigin = '*', img;
 }
 
 /**

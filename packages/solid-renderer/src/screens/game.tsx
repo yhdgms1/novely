@@ -208,6 +208,44 @@ const Game: VoidComponent<GameProps> = (props) => {
           </DialogPanel>
         </div>
       </Dialog>
+
+      <div class={style.controlPanel}>
+        <button
+          type="button"
+          onClick={() => {
+            // @ts-expect-error
+            if (window.stack.canBack()) {
+              // @ts-expect-error
+              window.stack.back();
+
+              // @ts-expect-error
+              window.restore(window.stack.value);
+            }
+          }}
+        >
+          Назад
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            // @ts-expect-error
+            window.save(false, 'manual');
+          }}
+        >
+          Сохранение
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            // todo: очищать stack
+            // @ts-expect-error
+            window.stack.clear();
+            props.setState('screen', 'mainmenu');
+          }}
+        >
+          Выход
+        </button>
+      </div>
     </div>
   )
 }

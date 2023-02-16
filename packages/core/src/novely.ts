@@ -6,6 +6,7 @@ import type { Renderer, RendererInit } from './renderer'
 import { matchAction, isNumber, isNull, isString } from './utils';
 import { all as deepmerge } from 'deepmerge'
 import { default as templite } from 'templite'
+import { klona } from 'klona/json';
 
 interface NovelyInit {
   characters: Record<string, DefaultDefinedCharacter>;
@@ -60,6 +61,10 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
       push(value: Save) {
         index++;
         stack[index] = value;
+      },
+      clear() {
+        index = 0;
+        stack = [];
       }
     }
   }
@@ -137,6 +142,8 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
       restore();
       return;
     }
+
+    console.log(latest)
 
     stack.value = latest;
 
@@ -239,6 +246,8 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
   window.save = save;
   //@ts-ignore
   window.restore = restore;
+  //@ts-ignore
+  window.stack = stack;
 
   const renderer = createRenderer({
     characters,
@@ -287,7 +296,10 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
       handle.remove(className, style, duration)(push);
     },
     dialog([person, content, emotion]) {
-      renderer.dialog(templite(typeof content === 'function' ? content() : content, state()), person, emotion)(push);
+      renderer.dialog(templite(typeof content === 'function' ? content() : content, state()), person, emotion)(() => {
+        enmemory();
+        push();
+      });
     },
     function([fn]) {
       const result = fn();
@@ -298,6 +310,8 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
     },
     choice(choices) {
       renderer.choices(choices)((selected) => {
+        enmemory();
+
         path.push(['choice', selected], [null, 0]);
         render()
       });
@@ -321,11 +335,19 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
       // конец!!
     },
     input([question, onInput, setup]) {
-      // todo: как `resolve` передавать функцию, которая также будет сохранять `state`
-      // todo: то же самое с choice
+      enmemory();
       renderer.input(question, onInput, setup)(push);
     }
   });
+
+  const enmemory = () => {
+    const current = klona(stack.value);
+
+    current[2][0] = new Date().valueOf();
+    current[2][1] = 'manual';
+
+    stack.push(current);
+  }
 
   const next = () => {
     /**

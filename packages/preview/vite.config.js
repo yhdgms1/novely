@@ -5,6 +5,13 @@ export default defineConfig({
   plugins: [solidPlugin()],
   build: {
     modulePreload: false,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          return null;
+        },
+      },
+    },
   },
   esbuild: {
     legalComments: "none",

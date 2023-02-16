@@ -8,11 +8,13 @@ importers:
   packages/core:
     specifiers:
       deepmerge: ^4.3.0
+      klona: ^2.0.6
       templite: ^1.2.0
       tsup: ^6.6.0
       typescript: ^4.9.5
     dependencies:
       deepmerge: 4.3.0
+      klona: 2.0.6
       templite: 1.2.0
     devDependencies:
       tsup: 6.6.0_typescript@4.9.5
@@ -1410,6 +1412,11 @@ packages:
     optionalDependencies:
       graceful-fs: 4.2.10
     dev: true
+
+  /klona/2.0.6:
+    resolution: {integrity: sha512-dhG34DXATL5hSxJbIexCft8FChFXtmskoZYnoPWjXQuebWYCNkVeV3KkGegCK9CP1oswI/vQibS2GY7Em/sJJA==}
+    engines: {node: '>= 8'}
+    dev: false
 
   /lightningcss-darwin-arm64/1.18.0:
     resolution: {integrity: sha512-OqjydwtiNPgdH1ByIjA1YzqvDG/OMR6L3LPN6wRl1729LB0y4Mik7L06kmZaTb+pvUHr+NmDd2KCwnlrQ4zO3w==}
