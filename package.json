@@ -12,6 +12,7 @@
     "build:dom": "pnpm --filter=@novely/dom-renderer... --parallel build",
     "dev:preview": "pnpm --filter=@novely/preview... --parallel dev",
     "build:preview": "pnpm --filter=@novely/preview... --parallel build",
+    "preview:preview": "pnpm --filter=@novely/preview... preview",
     "dev:typewriter": "pnpm --filter=@novely/typewriter... --parallel dev",
     "build:typewriter": "pnpm --filter=@novely/typewriter... --parallel build"
   },
