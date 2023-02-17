@@ -214,6 +214,7 @@ const createSolidRenderer = () => {
           return (resolve) => {
             setState('background', '#000');
             setState('choices', { visible: false });
+            setState('input', { element: undefined, question: '', visible: false });
             setState('dialog', { visible: false });
 
             for (const character of Object.keys(state.characters)) {

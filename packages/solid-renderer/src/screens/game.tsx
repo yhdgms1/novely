@@ -213,11 +213,8 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           onClick={() => {
-            // console.log(window.stack.all);
             // @ts-expect-error
             window.stack.back();
-
-            console.log(`Rstoring, ${window.stack.value[0]}`)
 
             // @ts-expect-error
             window.restore(window.stack.value);

@@ -37,39 +37,20 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
 
   const createStack = (current: Save, stack = [current]) => {
     return {
-      /**
-       * Возвращает текущее значение
-       */
       get value() {
-        // console.log(JSON.stringify(stack.map(v => v[0]), null, 1));
-
-        // debugger;
-
         return stack.at(-1)!;
       },
-      /**
-       * Устанавливает текущее значение
-       */
       set value(value: Save) {
         stack[stack.length - 1] = value;
       },
-      get all() {
-        return klona(stack);
-      },
       back() {
-        if (stack.length > 1) {
-          stack.pop();
-        }
-      },
-      canBack() {
-        return stack.length > 1;
+        if (stack.length > 1) stack.pop();
       },
       push(value: Save) {
-        console.log('pushing', JSON.stringify(value, null, 1))
         stack.push(value);
       },
       clear() {
-        stack = [];
+        stack = [klona(initial)];
       }
     }
   }
@@ -137,22 +118,18 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
    * Визуально восстанавливает историю
    */
   const restore = async (save?: Save) => {
-    const latest = save ? save : await storage.get().then(value => value.at(-1));
+    let latest = save ? save : await storage.get().then(value => value.at(-1));
 
     /**
      * Если нет сохранённой игры, то запустим ту, которая уже есть
      */
     if (!latest) {
       await storage.set([initial]);
-      restore();
-      return;
+
+      latest = klona(initial);
     }
 
-    // stack.value = latest;
-
-    const [savedPath] = latest;
-
-    restoring = true, stack.value[0] = savedPath;
+    restoring = true, stack.value = latest;
 
     /**
      * Показать экран игры
