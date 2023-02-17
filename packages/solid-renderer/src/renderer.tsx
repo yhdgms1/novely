@@ -135,11 +135,13 @@ const createSolidRenderer = () => {
   let storage!: Storage;
   let set!: RendererInit['set']
   let restore!: RendererInit['restore'];
+  let save!: RendererInit['save'];
+  let stack!: RendererInit['stack'];
   let renderer!: Renderer;
 
   return {
     createRenderer(init: RendererInit): Renderer {
-      characters = init.characters, storage = init.storage, set = init.set, restore = init.restore;
+      characters = init.characters, storage = init.storage, set = init.set, restore = init.restore, save = init.save, stack = init.stack;
 
       return renderer = {
         background(background) {
@@ -281,7 +283,7 @@ const createSolidRenderer = () => {
       return (
         <Switch fallback={<>No</>}>
           <Match when={state.screen === "game"}>
-            <Game state={state} setState={/* @once */ setState} store={/* @once */ store} characters={/* @once */ characters} renderer={/* @once */ renderer} />
+            <Game state={state} setState={/* @once */ setState} store={/* @once */ store} characters={/* @once */ characters} renderer={/* @once */ renderer} stack={/* @once */ stack} restore={/* @once */ restore} save={/* @once */ save} />
           </Match>
           <Match when={state.screen === 'mainmenu'}>
             <MainMenu setState={/* @once */ setState} storage={/* @once */ storage} restore={/* @once */ restore} />

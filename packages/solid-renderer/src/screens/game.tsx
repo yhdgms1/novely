@@ -1,4 +1,4 @@
-import type { Renderer, DefaultDefinedCharacter, } from '@novely/core'
+import type { Renderer, DefaultDefinedCharacter, RendererInit } from '@novely/core'
 import type { VoidComponent } from 'solid-js';
 import type { JSX } from 'solid-js';
 import type { SetStoreFunction } from 'solid-js/store'
@@ -19,6 +19,10 @@ interface GameProps {
   store: SolidRendererStore;
   characters: Record<string, DefaultDefinedCharacter>;
   renderer: Renderer;
+
+  stack: RendererInit['stack'];
+  restore: RendererInit['restore'];
+  save: RendererInit['save'];
 }
 
 const Game: VoidComponent<GameProps> = (props) => {
@@ -213,11 +217,8 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           onClick={() => {
-            // @ts-expect-error
-            window.stack.back();
-
-            // @ts-expect-error
-            window.restore(window.stack.value);
+            props.stack.back();
+            props.restore(props.stack.value);
           }}
         >
           Назад
@@ -225,8 +226,7 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           onClick={() => {
-            // @ts-expect-error
-            window.save(false, 'manual');
+            props.save(false, 'manual');
           }}
         >
           Сохранение
@@ -234,8 +234,7 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           onClick={() => {
-            // @ts-expect-error
-            window.stack.clear();
+            props.stack.clear();
             props.setState('screen', 'mainmenu');
           }}
         >

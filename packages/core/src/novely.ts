@@ -3,10 +3,11 @@ import type { ActionProxyProvider, Story } from './action';
 import type { Storage } from './storage';
 import type { Save, State } from './types'
 import type { Renderer, RendererInit } from './renderer'
-import { matchAction, isNumber, isNull, isString } from './utils';
+import { matchAction, isNumber, isNull, isString, createStack } from './utils';
 import { all as deepmerge } from 'deepmerge'
 import { default as templite } from 'templite'
 import { klona } from 'klona/json';
+import { USER_ACTION_REQUIRED_ACTIONS } from './constants'
 
 interface NovelyInit {
   characters: Record<string, DefaultDefinedCharacter>;
@@ -35,26 +36,6 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
     }
   });
 
-  const createStack = (current: Save, stack = [current]) => {
-    return {
-      get value() {
-        return stack.at(-1)!;
-      },
-      set value(value: Save) {
-        stack[stack.length - 1] = value;
-      },
-      back() {
-        if (stack.length > 1) stack.pop();
-      },
-      push(value: Save) {
-        stack.push(value);
-      },
-      clear() {
-        stack = [klona(initial)];
-      }
-    }
-  }
-
   function state(value: State | ((prev: State) => State)): void;
   function state(): State;
   function state(value?: State | ((prev: State) => State)): State | void {
@@ -69,7 +50,7 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
   const initial: Save = [[[null, 'start'], [null, 0]], {}, [Date.now(), 'auto']];
   const stack = createStack(initial);
 
-  const save = async (override = false, type = override ? 'auto' : 'manual') => {
+  const save = async (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
     /**
      * Получаем предыдущее значение
      */
@@ -82,12 +63,12 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
      * Обновим дату
      */
     stack.value[2][0] = Date.now();
+    stack.value[2][1] = type;
 
     if (override) {
       if (isLatest) {
         prev[prev.length - 1] = stack.value;
       } else {
-        // todo: что?
         prev.push(stack.value);
       }
     } else {
@@ -169,10 +150,9 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
             const [action, ...meta] = current[i];
 
             /**
-             * В будущем здесь будет больше таких элементов.
-             * Диалог такой элемент, который должен быть закрыт пользователем для прохода дальше.
+             * Экшены, для закрытия которых пользователь должен с ними взаимодействовать
              */
-            if (action === 'dialog') {
+            if (USER_ACTION_REQUIRED_ACTIONS.has(action)) {
               if (index === max && i === val) {
                 match(action, meta);
               } else {
@@ -233,7 +213,9 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
     characters,
     storage,
     set,
-    restore
+    restore,
+    save,
+    stack
   });
 
   /**
@@ -290,8 +272,7 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
       renderer.choices(choices)((selected) => {
         if (!restoring) enmemory();
 
-        stack.value[0].push(['choice', selected], [null, 0]);
-        render()
+        stack.value[0].push(['choice', selected], [null, 0]), render();
       });
     },
     jump([scene]) {
