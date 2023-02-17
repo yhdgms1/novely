@@ -8,9 +8,9 @@ import { createSolidRenderer } from '@novely/solid-renderer'
 import '@novely/solid-renderer/dist/index.css'
 
 // import chingchenghanji from './assets/ChingChengHanji.mp3';
-import classRoom from './assets/class.png';
-import bedroomRoom from './assets/bedroom.png';
-import masakiNatsukoOk from './assets/Masaki Natsuko.png';
+import classRoom from './assets/class.webp';
+import bedroomRoom from './assets/bedroom.webp';
+import masakiNatsukoOk from './assets/Masaki Natsuko.webp';
 
 const masaki = defineCharacter({
   name: 'Масаки Натсуко',
@@ -98,31 +98,35 @@ engine.withStory({
         input.setAttribute('maxlength', '16');
       }
     ),
-    action.dialog('Nezuko', 'Привет, {{name}}!')
-    // action.input(
-    //   'Введите ваш возраст',
-    //   ({ input, error }) => {
-    //     error(Number.isFinite(input.valueAsNumber) ? input.valueAsNumber < 14 ? 'Слишком маленький возраст' : '' : 'Неправильное число')
-    //   },
-    //   (input) => {
-    //     input.type = 'number';
-    //   }
-    // ),
-    // action.condition(
-    //   () => {
-    //     let age = 13;
-
-    //     return age >= 16 ? 'ok' : 'prison';
-    //   },
-    //   {
-    //     'ok': [
-    //       action.end()
-    //     ],
-    //     'prison': [
-    //       action.jump('prison')
-    //     ]
-    //   }
-    // )
+    action.dialog('Nezuko', 'Привет, {{name}}! Сколько тебе лет? 😙'),
+    action.input(
+      'Введите ваш возраст',
+      ({ input, error }) => {
+        error(input.validationMessage);
+        state({ age: input.valueAsNumber })
+      },
+      (input) => {
+        input.setAttribute('type', 'number');
+        input.setAttribute('min', '14');
+        input.setAttribute('max', '88');
+      }
+    ),
+    action.condition(
+      () => {
+        return state().age! <= 16 ? 'ok' : 'no';
+      },
+      {
+        'ok': [
+          action.hideCharacter('Masaki Natsuko'),
+          action.dialog('Nezuko', 'Правда {{age}} лет? Загляни ко мне как-нибудь 😉'),
+          action.end()
+        ],
+        'no': [
+          action.dialog('Nezuko', 'Тебе {{age}} лет?? Не умею я определять возраст... 😅', 'sad'),
+          action.end()
+        ]
+      }
+    )
   ]
 });
 
