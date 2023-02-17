@@ -36,42 +36,39 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
   });
 
   const createStack = (current: Save, stack = [current]) => {
-    let index = 0;
-
     return {
       /**
        * Возвращает текущее значение
        */
       get value() {
-        console.log(JSON.stringify(stack.map(v => v[0]), null, 1));
+        // console.log(JSON.stringify(stack.map(v => v[0]), null, 1));
 
         // debugger;
 
-        return stack[index];
+        return stack.at(-1)!;
       },
       /**
        * Устанавливает текущее значение
        */
       set value(value: Save) {
-        stack[index] = value;
+        stack[stack.length - 1] = value;
+      },
+      get all() {
+        return klona(stack);
       },
       back() {
-        if (stack.length > 1 && index > 0) {
-          console.log('back');
-
+        if (stack.length > 1) {
           stack.pop();
-          index--;
         }
       },
       canBack() {
-        return stack.length > 1 && index > 0;
+        return stack.length > 1;
       },
       push(value: Save) {
-        index++;
+        console.log('pushing', JSON.stringify(value, null, 1))
         stack.push(value);
       },
       clear() {
-        index = 0;
         stack = [];
       }
     }
@@ -151,7 +148,7 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
       return;
     }
 
-    stack.value = latest;
+    // stack.value = latest;
 
     const [savedPath] = latest;
 
@@ -303,7 +300,7 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
     },
     dialog([person, content, emotion]) {
       renderer.dialog(templite(typeof content === 'function' ? content() : content, state()), person, emotion)(() => {
-        enmemory();
+        if (!restoring) enmemory();
         push();
       });
     },
@@ -316,7 +313,7 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
     },
     choice(choices) {
       renderer.choices(choices)((selected) => {
-        enmemory();
+        if (!restoring) enmemory();
 
         path.push(['choice', selected], [null, 0]);
         render()
@@ -341,8 +338,11 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
       // конец!!
     },
     input([question, onInput, setup]) {
-      enmemory();
-      renderer.input(question, onInput, setup)(push);
+
+      renderer.input(question, onInput, setup)(() => {
+        if (!restoring) enmemory();
+        push();
+      });
     }
   });
 

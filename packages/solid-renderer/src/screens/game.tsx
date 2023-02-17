@@ -213,14 +213,14 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           onClick={() => {
+            // console.log(window.stack.all);
             // @ts-expect-error
-            if (window.stack.canBack()) {
-              // @ts-expect-error
-              window.stack.back();
+            window.stack.back();
 
-              // @ts-expect-error
-              window.restore(window.stack.value);
-            }
+            console.log(`Rstoring, ${window.stack.value[0]}`)
+
+            // @ts-expect-error
+            window.restore(window.stack.value);
           }}
         >
           Назад
@@ -237,7 +237,6 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           onClick={() => {
-            // todo: очищать stack
             // @ts-expect-error
             window.stack.clear();
             props.setState('screen', 'mainmenu');
