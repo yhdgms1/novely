@@ -152,7 +152,7 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
 
     const [savedPath] = latest;
 
-    restoring = true, path = savedPath;
+    restoring = true, stack.value[0] = savedPath;
 
     /**
      * Показать экран игры
@@ -173,12 +173,12 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
     /**
      * Число элементов `[null, int]`
      */
-    const max = path.reduce((acc, [type, val]) => {
+    const max = stack.value[0].reduce((acc, [type, val]) => {
       if (isNull(type) && isNumber(val)) return acc + 1;
       return acc;
     }, 0);
 
-    for await (const [type, val] of path) {
+    for await (const [type, val] of stack.value[0]) {
       if (type === null) {
         if (isString(val)) {
           current = current[val];
@@ -232,7 +232,7 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
   const refer = () => {
     let current: any = story;
 
-    for (const [type, val] of path) {
+    for (const [type, val] of stack.value[0]) {
       if (type === null) {
         current = current[val];
       } else if (type === 'choice') {
@@ -263,8 +263,6 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
    * Показывает экран
    */
   renderer.ui.showScreen(initialScreen);
-
-  let path = stack.value[0];
 
   const match = matchAction({
     wait([time]) {
@@ -315,12 +313,12 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
       renderer.choices(choices)((selected) => {
         if (!restoring) enmemory();
 
-        path.push(['choice', selected], [null, 0]);
+        stack.value[0].push(['choice', selected], [null, 0]);
         render()
       });
     },
     jump([scene]) {
-      path = [[null, scene], [null, 0]];
+      stack.value[0] = [[null, scene], [null, 0]];
 
       renderer.clear()(() => {
         if (!restoring) render();
@@ -332,7 +330,7 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
     condition([condition]) {
       const value = condition();
 
-      if (!restoring) path.push(['condition', value], [null, 0]), render();
+      if (!restoring) stack.value[0].push(['condition', value], [null, 0]), render();
     },
     end() {
       // конец!!
@@ -349,7 +347,7 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
   const enmemory = () => {
     const current = klona(stack.value);
 
-    current[0] = klona(path);
+    current[0] = klona(stack.value[0]);
 
     current[2][0] = new Date().valueOf();
     current[2][1] = 'auto';
@@ -361,7 +359,7 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
     /**
      * Последний элемент пути
      */
-    const last = path[path.length - 1]!;
+    const last = stack.value[0][stack.value[0].length - 1]!;
 
     /**
      * Если он вида `[null, int]` - увеличивает `int`
@@ -374,7 +372,7 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
     /**
      * Иначе добавляет новое `[null int]`
      */
-    path.push([null, 0]);
+    stack.value[0].push([null, 0]);
   }
 
   const render = () => {
