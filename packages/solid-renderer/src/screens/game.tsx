@@ -126,7 +126,7 @@ const Game: VoidComponent<GameProps> = (props) => {
                 /**
                  * Если эмоция ещё не загружена - загрузим её
                  */
-                if (!store['characters'][character]) {
+                if (!store['characters'][character] || !store['characters'][character]['emotions'][emotion]) {
                   renderer.character(character).withEmotion(emotion)
                 };
 
