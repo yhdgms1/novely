@@ -1,4 +1,8 @@
 import type { DefaultActionProxyProvider } from './action'
+import type { DefaultDefinedCharacter } from './character'
+import type { Storage } from './storage'
+import type { Save } from './types'
+import type { createStack } from './utils'
 
 interface CharacterHandle {
   canvas: HTMLCanvasElement;
@@ -33,6 +37,22 @@ type Renderer = {
   music: (source: string, method: keyof RendererStore['audio']) => AudioHandle;
   clear: () => (resolve: () => void) => void;
   store: RendererStore;
+
+  ui: {
+    /**
+     * Показывает экран, скрывает другие
+     */
+    showScreen(name: "mainmenu" | "game" | "saves"): void;
+  }
 }
 
-export type { CharacterHandle, AudioHandle, RendererStore, Renderer }
+type RendererInit = {
+  characters: Record<string, DefaultDefinedCharacter>,
+  storage: Storage,
+  set: (save: Save) => Promise<void>
+  restore: (save?: Save) => Promise<void>;
+  save: (override?: boolean, type?: Save[2][1]) => Promise<void>;
+  stack: ReturnType<typeof createStack>;
+}
+
+export type { CharacterHandle, AudioHandle, RendererStore, Renderer, RendererInit }

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "devDependencies": {
     "typescript": "^4.9.5",
@@ -14,7 +15,6 @@
   },
   "dependencies": {
     "@novely/core": "workspace:*",
-    "@novely/dom-renderer": "workspace:*",
     "@novely/solid-renderer": "workspace:*",
     "solid-headless": "^0.13.1",
     "solid-js": "1.6.10",

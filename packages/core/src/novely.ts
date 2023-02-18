@@ -2,21 +2,24 @@ import type { DefaultDefinedCharacter } from './character';
 import type { ActionProxyProvider, Story } from './action';
 import type { Storage } from './storage';
 import type { Save, State } from './types'
-import type { Renderer } from './renderer'
-import { matchAction, isNumber, isNull, isString } from './utils';
+import type { Renderer, RendererInit } from './renderer'
+import { matchAction, isNumber, isNull, isString, createStack } from './utils';
 import { all as deepmerge } from 'deepmerge'
 import { default as templite } from 'templite'
+import { klona } from 'klona/json';
+import { USER_ACTION_REQUIRED_ACTIONS } from './constants'
 
 interface NovelyInit {
   characters: Record<string, DefaultDefinedCharacter>;
 
-  settings?: { assetsPreloading?: boolean }
   storage: Storage
 
-  renderer: (characters: Record<string, DefaultDefinedCharacter>) => Renderer;
+  renderer: (characters: RendererInit) => Renderer;
+
+  initialScreen?: "mainmenu" | "game" | "saves"
 }
 
-const novely = <I extends NovelyInit>(init: I) => {
+const novely = <I extends NovelyInit>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", }: I) => {
   let story: Story;
 
   const withStory = (s: Story) => {
@@ -31,73 +34,86 @@ const novely = <I extends NovelyInit>(init: I) => {
     }
   });
 
-  const createStack = (current: Save, stack = [current]) => {
-    let index = 0;
-
-    return {
-      /**
-       * Возвращает текущее значение
-       */
-      get value() {
-        return stack[index];
-      },
-      /**
-       * Устанавливает текущее значение
-       */
-      set value(value: Save) {
-        stack[index] = value;
-      },
-      back() {
-        index--;
-        stack.length = index;
-      },
-      canBack() {
-        return stack.length > 1 && index > 0;
-      },
-      push(value: Save) {
-        index++;
-        stack[index] = value;
-      }
-    }
-  }
-
   function state(value: State | ((prev: State) => State)): void;
   function state(): State;
   function state(value?: State | ((prev: State) => State)): State | void {
-    if (arguments.length === 0) {
-      return stack.value[1] as State;
-    }
+    if (!value) return stack.value[1]
 
     const prev = stack.value[1];
-    const val = typeof value === 'function' ? value(prev as S) : deepmerge([prev, value!]);
+    const val = typeof value === 'function' ? value(prev as State) : deepmerge([prev, value]);
 
-    stack.value = [stack.value[0], val as State, stack.value[2]];
+    stack.value[1] = val as State;
   }
 
   const initial: Save = [[[null, 'start'], [null, 0]], {}, [Date.now(), 'auto']];
   const stack = createStack(initial);
 
-  const save = async () => {
-    return await init.storage.set(stack.value);
+  const save = async (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
+    /**
+     * Получаем предыдущее значение
+     */
+    const prev = await storage.get();
+
+    const date = stack.value[2][0];
+    const isLatest = prev.findIndex(value => value[2][0] === date) === prev.length - 1;
+
+    /**
+     * Обновим дату
+     */
+    stack.value[2][0] = Date.now();
+    stack.value[2][1] = type;
+
+    if (override) {
+      if (isLatest) {
+        prev[prev.length - 1] = stack.value;
+      } else {
+        prev.push(stack.value);
+      }
+    } else {
+      /**
+       * Добавляем текущее сохранение
+       */
+      prev.push(stack.value);
+    }
+
+    /**
+     * Устанавливаем новое значение
+     */
+    return await storage.set(prev);
+  }
+
+  /**
+   * Устанавливает сохранение
+   */
+  const set = (save: Save) => {
+    stack.value = save;
+
+    return restore(save);
   }
 
   let restoring = false;
 
-  const restore = async () => {
-    const saved: Save | null = await init.storage.get();
+  /**
+   * Визуально восстанавливает историю
+   */
+  const restore = async (save?: Save) => {
+    let latest = save ? save : await storage.get().then(value => value.at(-1));
 
     /**
      * Если нет сохранённой игры, то запустим ту, которая уже есть
      */
-    if (!saved) {
-      await init.storage.set(initial);
-      restore();
-      return;
+    if (!latest) {
+      await storage.set([initial]);
+
+      latest = klona(initial);
     }
 
-    const [savedPath] = saved;
+    restoring = true, stack.value = latest;
 
-    restoring = true, path = savedPath;
+    /**
+     * Показать экран игры
+     */
+    renderer.ui.showScreen('game');
 
     match('clear', []);
 
@@ -113,12 +129,12 @@ const novely = <I extends NovelyInit>(init: I) => {
     /**
      * Число элементов `[null, int]`
      */
-    const max = path.reduce((acc, [type, val]) => {
+    const max = stack.value[0].reduce((acc, [type, val]) => {
       if (isNull(type) && isNumber(val)) return acc + 1;
       return acc;
     }, 0);
 
-    for await (const [type, val] of path) {
+    for await (const [type, val] of stack.value[0]) {
       if (type === null) {
         if (isString(val)) {
           current = current[val];
@@ -132,10 +148,9 @@ const novely = <I extends NovelyInit>(init: I) => {
             const [action, ...meta] = current[i];
 
             /**
-             * В будущем здесь будет больше таких элементов.
-             * Диалог такой элемент, который должен быть закрыт пользователем для прохода дальше.
+             * Экшены, для закрытия которых пользователь должен с ними взаимодействовать
              */
-            if (action === 'dialog') {
+            if (USER_ACTION_REQUIRED_ACTIONS.has(action)) {
               if (index === max && i === val) {
                 match(action, meta);
               } else {
@@ -172,7 +187,7 @@ const novely = <I extends NovelyInit>(init: I) => {
   const refer = () => {
     let current: any = story;
 
-    for (const [type, val] of path) {
+    for (const [type, val] of stack.value[0]) {
       if (type === null) {
         current = current[val];
       } else if (type === 'choice') {
@@ -189,10 +204,22 @@ const novely = <I extends NovelyInit>(init: I) => {
   window.save = save;
   //@ts-ignore
   window.restore = restore;
+  //@ts-ignore
+  window.stack = stack;
 
-  const renderer = init.renderer(init.characters);
+  const renderer = createRenderer({
+    characters,
+    storage,
+    set,
+    restore,
+    save,
+    stack
+  });
 
-  let path = stack.value[0];
+  /**
+   * Показывает экран
+   */
+  renderer.ui.showScreen(initialScreen);
 
   const match = matchAction({
     wait([time]) {
@@ -227,7 +254,10 @@ const novely = <I extends NovelyInit>(init: I) => {
       handle.remove(className, style, duration)(push);
     },
     dialog([person, content, emotion]) {
-      renderer.dialog(templite(typeof content === 'function' ? content() : content, state()), person, emotion)(push);
+      renderer.dialog(templite(typeof content === 'function' ? content() : content, state()), person, emotion)(() => {
+        if (!restoring) enmemory();
+        push();
+      });
     },
     function([fn]) {
       const result = fn();
@@ -238,12 +268,13 @@ const novely = <I extends NovelyInit>(init: I) => {
     },
     choice(choices) {
       renderer.choices(choices)((selected) => {
-        path.push(['choice', selected], [null, 0]);
-        render()
+        if (!restoring) enmemory();
+
+        stack.value[0].push(['choice', selected], [null, 0]), render();
       });
     },
     jump([scene]) {
-      path = [[null, scene], [null, 0]];
+      stack.value[0] = [[null, scene], [null, 0]];
 
       renderer.clear()(() => {
         if (!restoring) render();
@@ -255,23 +286,36 @@ const novely = <I extends NovelyInit>(init: I) => {
     condition([condition]) {
       const value = condition();
 
-      if (!restoring) path.push(['condition', value], [null, 0]), render();
+      if (!restoring) stack.value[0].push(['condition', value], [null, 0]), render();
     },
     end() {
       // конец!!
     },
     input([question, onInput, setup]) {
-      // todo: как `resolve` передавать функцию, которая также будет сохранять `state`
-      // todo: то же самое с choice
-      renderer.input(question, onInput, setup)(push);
+
+      renderer.input(question, onInput, setup)(() => {
+        if (!restoring) enmemory();
+        push();
+      });
     }
   });
+
+  const enmemory = () => {
+    const current = klona(stack.value);
+
+    current[0] = klona(stack.value[0]);
+
+    current[2][0] = new Date().valueOf();
+    current[2][1] = 'auto';
+
+    stack.push(current);
+  }
 
   const next = () => {
     /**
      * Последний элемент пути
      */
-    const last = path[path.length - 1]!;
+    const last = stack.value[0][stack.value[0].length - 1]!;
 
     /**
      * Если он вида `[null, int]` - увеличивает `int`
@@ -284,7 +328,7 @@ const novely = <I extends NovelyInit>(init: I) => {
     /**
      * Иначе добавляет новое `[null int]`
      */
-    path.push([null, 0]);
+    stack.value[0].push([null, 0]);
   }
 
   const render = () => {

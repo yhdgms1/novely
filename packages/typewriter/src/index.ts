@@ -11,7 +11,7 @@ const typewriter = (node: HTMLElement, text: string) => {
   const root = document.createElement('span');
   root.innerHTML = text;
 
-  const traverse = (el: HTMLElement | ChildNode | Node, erase = false) => {
+  const traverse = (el: HTMLElement | ChildNode | Node, erase: boolean) => {
     const items = [] as ChildNode[];
 
     el.childNodes.forEach(child => {
@@ -27,10 +27,11 @@ const typewriter = (node: HTMLElement, text: string) => {
     return items;
   }
 
-  const copy = root.cloneNode(true) as HTMLSpanElement;
-
+  /**
+   * На случай эмодзи делаем простейшее разделение на графемы
+   */
+  const full = traverse(root.cloneNode(true), false).map((child) => [...child.textContent!]);
   const emptied = traverse(root, true);
-  const full = traverse(copy, false);
 
   node.appendChild(root);
 
@@ -40,8 +41,8 @@ const typewriter = (node: HTMLElement, text: string) => {
   let end = false;
 
   const process = () => {
-    if (full[current]?.textContent!.length > pos) {
-      emptied[current].textContent += full[current].textContent![pos++];
+    if (full[current]?.length > pos) {
+      emptied[current].textContent += full[current][pos++];
 
       id = setTimeout(process, timeout())
     } else if (current++ < full.length) {
@@ -59,14 +60,14 @@ const typewriter = (node: HTMLElement, text: string) => {
      * Did the typewriter ended it's task
      */
     end() {
-      if (end) return clearTimeout(id), root.remove(), copy.remove(), true;
-      return clearTimeout(id), root.replaceWith(copy), end = true, false;
+      if (end) return clearTimeout(id), root.remove(), true;
+      return clearTimeout(id), root.innerHTML = text, end = true, false;
     },
     /**
      * Destroy
      */
     destroy() {
-      clearTimeout(id); root.remove(), copy.remove();
+      clearTimeout(id); root.remove();
     }
   }
 }

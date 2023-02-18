@@ -5,7 +5,8 @@ export default defineConfig((options) => {
     entry: ['src/index.ts'],
     sourcemap: true,
     target: 'es2022',
-    format: ['esm', 'cjs', 'iife'],
+    format: ['esm', 'iife'],
+    bundle: true,
     dts: options.dts,
     watch: options.watch,
     globalName: 'Novely'

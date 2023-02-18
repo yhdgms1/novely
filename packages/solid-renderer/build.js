@@ -19,7 +19,7 @@ build({
     cssModulesPlugin({
       v2: true,
       v2CssModulesOption: {
-        pattern: dev ? "[local]" : "n-[hash]",
+        pattern: dev ? "[local]" : "n-[local]",
       },
     }),
   ],

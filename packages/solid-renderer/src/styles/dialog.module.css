@@ -1,0 +1,108 @@
+.dialog {
+  min-height: 25vh;
+  max-height: 30vh;
+  width: 75%;
+
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0.4em;
+  z-index: 10;
+
+  text-align: left;
+
+  flex-direction: column;
+  justify-content: flex-end;
+
+  cursor: default;
+  user-select: none;
+}
+
+.dialogContainer {
+  height: 100%;
+  min-height: 14.5vh;
+  max-height: 25vh;
+
+  color: var(--novely-dialog-color, #ffffff);
+
+  border: 3px solid var(--novely-dialog-border-color, #ffffff);
+  border-radius: 14px;
+  box-shadow: 1px 1px 4px var(--novely-dialog-box-shadow-color, #00000072);
+
+  /* prettier-ignore */
+  background-image: var(--novely-dialog-background-image, radial-gradient(#d6608998 20%, transparent 20%), radial-gradient(#d6608998 20%, transparent 20%));
+  background-color: var(--novely-dialog-background-color, #f092b4d8);
+  background-position: 0 0, 50px 50px;
+  background-size: 100px 100px;
+
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 10vmax 1fr;
+}
+
+/* @modifiers */
+
+.dialogPerson {
+  max-height: 25vh;
+  max-width: 25vw;
+}
+
+.dialogContainerWithPerson[data-no-person="true"] {
+  display: block;
+}
+
+.dialogContainerWithPerson[data-no-person="true"] > .dialogPerson {
+  display: none;
+}
+
+.dialogName,
+.dialogContent {
+  display: block;
+  padding: 1vmin;
+  margin: 0;
+}
+
+.dialogName {
+  font-size: 1.4375em;
+  line-height: 1.2;
+
+  background: #ffffff;
+  border-radius: 7px 7px 0 0;
+
+  width: -moz-fit-content;
+  width: fit-content;
+  margin-left: 5vmin;
+
+  box-shadow: 1px 1px 3px #00000042;
+}
+
+.dialogContent {
+  font-size: 2.2375em;
+  line-height: 1.2;
+  width: 100%;
+
+  text-shadow: 1px 0 1px #000, 0 1px 1px #000, -1px 0 1px #000, 0 -1px 1px #000;
+}
+
+.dialogPerson > canvas,
+.dialogPerson > img {
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .dialog {
+    width: 100%;
+    bottom: 0;
+    left: unset;
+    transform: unset;
+  }
+
+  .dialogName,
+  .dialogContent {
+    font-size: 1.02em;
+  }
+
+  .dialogContainer {
+    border-radius: 14px 14px 0 0;
+  }
+}

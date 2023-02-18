@@ -1,10 +1,12 @@
+import type { Save } from './types'
+
 interface LocalStorageStorageSettings {
   key: string
 }
 
 interface Storage {
-  get: () => Promise<any>;
-  set: (data: any) => Promise<any>;
+  get: () => Promise<Save[]>;
+  set: (data: Save[]) => Promise<void>;
 }
 
 const localStorageStorage = (options: LocalStorageStorageSettings): Storage => {
@@ -12,7 +14,7 @@ const localStorageStorage = (options: LocalStorageStorageSettings): Storage => {
     async get() {
       const value = localStorage.getItem(options.key);
 
-      return value ? JSON.parse(value) : value;
+      return value ? JSON.parse(value) : [];
     },
     async set(data) {
       localStorage.setItem(options.key, JSON.stringify(data));

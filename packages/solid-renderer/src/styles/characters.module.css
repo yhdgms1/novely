@@ -1,0 +1,18 @@
+.characters {
+  position: absolute;
+  inset: 0;
+
+  z-index: 1;
+
+  overflow: hidden;
+}
+
+/* @modifiers */
+
+.characters > canvas[style] {
+  position: absolute;
+  bottom: 0;
+
+  height: 85vmin;
+  max-height: 70vh;
+}
