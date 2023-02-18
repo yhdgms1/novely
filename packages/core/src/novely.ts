@@ -12,7 +12,6 @@ import { USER_ACTION_REQUIRED_ACTIONS } from './constants'
 interface NovelyInit {
   characters: Record<string, DefaultDefinedCharacter>;
 
-  settings?: { assetsPreloading?: boolean; oneSave?: boolean }
   storage: Storage
 
   renderer: (characters: RendererInit) => Renderer;
@@ -20,9 +19,8 @@ interface NovelyInit {
   initialScreen?: "mainmenu" | "game" | "saves"
 }
 
-const novely = <I extends NovelyInit>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", settings = { assetsPreloading: false, oneSave: false } }: I) => {
+const novely = <I extends NovelyInit>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", }: I) => {
   let story: Story;
-  settings;
 
   const withStory = (s: Story) => {
     story = s;
