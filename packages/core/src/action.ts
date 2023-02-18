@@ -1,9 +1,6 @@
 import type { DefaultDefinedCharacter, } from './character';
 import type { Thenable } from './types'
 
-/**
- * Не лучшее решение, но наиболее простое
- */
 type ValidAction = [keyof DefaultActionProxyProvider, Parameters<DefaultActionProxyProvider[keyof DefaultActionProxyProvider]>]
 
 type Story = Record<string, ValidAction[]>;

@@ -200,13 +200,6 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
     return current;
   }
 
-  //@ts-ignore
-  window.save = save;
-  //@ts-ignore
-  window.restore = restore;
-  //@ts-ignore
-  window.stack = stack;
-
   const renderer = createRenderer({
     characters,
     storage,

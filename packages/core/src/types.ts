@@ -5,7 +5,6 @@ type Path = PathItem[];
 
 /**
  * Значения, которые можно сохранить в `state`.
- * todo: Может, можно позволить Storage решать какие значения может принимать StateValues
  */
 type StateValues = null | string | number | boolean | StateValues[] | { [name: string]: StateValues };
 type State = Record<string, StateValues>;

@@ -7,6 +7,7 @@ export default defineConfig((options) => {
     target: 'es2022',
     format: ['esm', 'iife'],
     bundle: true,
+    minify: true,
     dts: options.dts,
     watch: options.watch,
     globalName: 'Novely'
