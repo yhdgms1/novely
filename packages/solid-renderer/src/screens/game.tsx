@@ -4,7 +4,7 @@ import type { JSX } from 'solid-js';
 import type { SetStoreFunction } from 'solid-js/store'
 import type { State, SolidRendererStore } from '../renderer'
 
-import { createEffect, createMemo, For, Show } from 'solid-js';
+import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
 import { Dialog, DialogPanel } from 'solid-headless';
 
 import { typewriter } from '@novely/typewriter'
@@ -39,10 +39,20 @@ const Game: VoidComponent<GameProps> = (props) => {
     return { "background-image": is ? url(props.state.background) : '', "background-color": is ? undefined : props.state.background } as Partial<JSX.CSSProperties>
   });
 
+  const [auto, setAuto] = createSignal(false);
+
   createEffect(() => {
     if (props.state && store.dialogRef) {
+      /**
+       * Уничтожаем предыдущий инстанс
+       */
       writer?.destroy();
-      writer = typewriter(store.dialogRef, props.state.dialog.content);
+      /**
+       * Создаём новый инстанс
+       */
+      writer = typewriter(store.dialogRef, props.state.dialog.content, () => {
+        if (auto()) onDialogClick();
+      });
     }
   });
 
@@ -230,6 +240,14 @@ const Game: VoidComponent<GameProps> = (props) => {
           }}
         >
           Сохранение
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setAuto(prev => !prev);
+          }}
+        >
+          Авто: {String(auto())}
         </button>
         <button
           type="button"
