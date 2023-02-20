@@ -7,7 +7,7 @@ import { matchAction, isNumber, isNull, isString, createStack } from './utils';
 import { all as deepmerge } from 'deepmerge'
 import { default as templite } from 'templite'
 import { klona } from 'klona/json';
-import { USER_ACTION_REQUIRED_ACTIONS } from './constants'
+import { DEFAULT_SAVE, USER_ACTION_REQUIRED_ACTIONS } from './constants'
 
 interface NovelyInit {
   characters: Record<string, DefaultDefinedCharacter>;
@@ -45,7 +45,7 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
     stack.value[1] = val as State;
   }
 
-  const initial: Save = [[[null, 'start'], [null, 0]], {}, [Date.now(), 'auto']];
+  const initial = klona(DEFAULT_SAVE);
   const stack = createStack(initial);
 
   const save = async (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
@@ -248,7 +248,7 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
     },
     dialog([person, content, emotion]) {
       renderer.dialog(templite(typeof content === 'function' ? content() : content, state()), person, emotion)(() => {
-        if (!restoring) enmemory();
+        enmemory();
         push();
       });
     },
@@ -261,7 +261,7 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
     },
     choice(choices) {
       renderer.choices(choices)((selected) => {
-        if (!restoring) enmemory();
+        enmemory();
 
         stack.value[0].push(['choice', selected], [null, 0]), render();
       });
@@ -287,13 +287,15 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
     input([question, onInput, setup]) {
 
       renderer.input(question, onInput, setup)(() => {
-        if (!restoring) enmemory();
+        enmemory();
         push();
       });
     }
   });
 
   const enmemory = () => {
+    if (restoring) return;
+
     const current = klona(stack.value);
 
     current[0] = klona(stack.value[0]);

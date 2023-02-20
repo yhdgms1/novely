@@ -2,6 +2,9 @@ import type { ActionProxyProvider } from './action'
 import type { DefaultDefinedCharacter } from './character'
 import type { Save } from './types'
 
+import { DEFAULT_SAVE } from './constants'
+import { klona } from 'klona/json'
+
 type MatchActionMap = {
   [Key in keyof ActionProxyProvider<Record<string, DefaultDefinedCharacter>>]: (data: Parameters<ActionProxyProvider<Record<string, DefaultDefinedCharacter>>[Key]>) => void;
 }
@@ -39,7 +42,7 @@ const createStack = (current: Save, stack = [current]) => {
       stack.push(value);
     },
     clear() {
-      stack = [[[[null, 'start'], [null, 0]], {}, [Date.now(), 'auto']]];
+      stack = [klona(DEFAULT_SAVE)];
     }
   }
 }
