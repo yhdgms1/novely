@@ -7,6 +7,8 @@ import { createSolidRenderer } from '@novely/solid-renderer'
 
 import '@novely/solid-renderer/dist/index.css'
 
+import '@novely/i18n'
+
 // import chingchenghanji from './assets/ChingChengHanji.mp3';
 import classRoom from './assets/class.webp';
 import bedroomRoom from './assets/bedroom.webp';

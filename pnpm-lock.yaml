@@ -43,9 +43,18 @@ importers:
       grim-jsx: 0.16.1_@babel+core@7.20.12
       typescript: 4.9.5
 
+  packages/i18n:
+    specifiers:
+      tsup: ^6.6.0
+      typescript: ^4.9.5
+    devDependencies:
+      tsup: 6.6.0_typescript@4.9.5
+      typescript: 4.9.5
+
   packages/preview:
     specifiers:
       '@novely/core': workspace:*
+      '@novely/i18n': workspace:*
       '@novely/solid-renderer': workspace:*
       animate.css: ^4.1.1
       normalize.css: ^8.0.1
@@ -56,6 +65,7 @@ importers:
       vite-plugin-solid: ^2.5.0
     dependencies:
       '@novely/core': link:../core
+      '@novely/i18n': link:../i18n
       '@novely/solid-renderer': link:../solid-renderer
       animate.css: 4.1.1
       normalize.css: 8.0.1
