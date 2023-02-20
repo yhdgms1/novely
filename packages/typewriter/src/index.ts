@@ -5,7 +5,7 @@ const timeout = () => Math.min(100 * Math.random() + 100, 140);
  * @param node The node where the typewriter effect will be
  * @param text Text to be written by typewriter effect
  */
-const typewriter = (node: HTMLElement, text: string, cb: () => void) => {
+const typewriter = (node: HTMLElement, text: string, cb?: () => void) => {
   let id!: number;
 
   const root = document.createElement('span');
@@ -15,7 +15,7 @@ const typewriter = (node: HTMLElement, text: string, cb: () => void) => {
     const items = [] as ChildNode[];
 
     el.childNodes.forEach(child => {
-      if (child.nodeType === Node.TEXT_NODE) {
+      if (child.nodeName === '#text') {
         items.push(child);
 
         if (erase) child.textContent = '';
@@ -28,7 +28,7 @@ const typewriter = (node: HTMLElement, text: string, cb: () => void) => {
   }
 
   /**
-   * На случай эмодзи делаем простейшее разделение на графемы
+   * The simplest division into graphemes. Does not work with more complex symbols
    */
   const full = traverse(root.cloneNode(true), false).map((child) => [...child.textContent!]);
   const emptied = traverse(root, true);
@@ -39,35 +39,42 @@ const typewriter = (node: HTMLElement, text: string, cb: () => void) => {
   let pos = 0;
 
   let end = false;
+
+  /**
+   * Clear's the timeout
+   */
+  const clear = () => {
+    clearTimeout(id)
+  };
+
   const process = () => {
     if (full[current]?.length > pos) {
       emptied[current].textContent += full[current][pos++];
-
-      id = setTimeout(process, timeout())
+      setTimeout(process, timeout());
     } else if (current++ < full.length) {
       pos = 0;
       process();
     } else {
       end = true;
-      id = setTimeout(cb, 790);
+      cb && (id = setTimeout(cb, 790));
     }
   }
 
-  id = setTimeout(process, timeout())
+  process();
 
   return {
     /**
      * Did the typewriter ended it's task
      */
     end() {
-      if (end) return clearTimeout(id), root.remove(), true;
-      return clearTimeout(id), root.innerHTML = text, end = true, false;
+      if (end) return clear(), root.remove(), true;
+      return clear(), root.innerHTML = text, end = true, false;
     },
     /**
      * Destroy
      */
     destroy() {
-      clearTimeout(id); root.remove();
+      clear(); root.remove();
     }
   }
 }

@@ -9,7 +9,11 @@ import { typewriter } from "@novely/typewriter";
 
 const writer = typewriter(
   document.body,
-  "<em>Жить вечно не означает жить полной жизнью.</em> - <bold>Ольгерд Фон Эверик<bold/>"
+  "<em>Жить вечно не означает жить полной жизнью.</em> - <bold>Ольгерд Фон Эверик<bold/>",
+  // Опциональный callback
+  () => {
+    console.log("Воспроизведение закончилось без использования метода `end`");
+  }
 );
 
 buttonStop.onclick = () => {
