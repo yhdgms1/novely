@@ -17,8 +17,8 @@ const self = Symbol('novely-i18n-self');
 const createI18N = <PluralizationKeys extends string, Label extends string>(pluralization: { [Key in PluralizationKeys]: (count: number) => PluralType }, translations: { [Lang in PluralizationKeys]: { [L in Label]: typeof self | string | LabelFunction<L> } }) => {
   return {
     t<L extends Label>(label: L) {
-      return (lang: PluralizationKeys) => {
-        const value = translations[lang][label];
+      return (lang: (string & {}) | PluralizationKeys) => {
+        const value = translations[lang as PluralizationKeys][label];
 
         if (value === self) {
           return transform(label);
@@ -27,11 +27,11 @@ const createI18N = <PluralizationKeys extends string, Label extends string>(plur
         } else {
           const pluralize = (args: Partial<Record<PluralType, string | number>>) => {
             return (count: number) => {
-              return args[pluralization[lang](count)] || '';
+              return args[pluralization[lang as PluralizationKeys](count)] || '';
             }
           }
 
-          return (params = {}) => {
+          return (params: Record<string, unknown> = {}) => {
             return transform(value({ ...params, pluralize } as any));
           }
         }
@@ -45,4 +45,4 @@ const createI18N = <PluralizationKeys extends string, Label extends string>(plur
 
 createI18N.self = self;
 
-export { createI18N }
+export { createI18N, self }

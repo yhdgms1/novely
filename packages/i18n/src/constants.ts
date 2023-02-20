@@ -3,9 +3,9 @@
  */
 const rx = /{(.*?)}/g;
 /**
- * Rosetta's regex
+ * Rosetta's regex, except the last `}` is ignored
  */
-const rrx = /{{(.*?)}}/g;
+const rrx = /{{(.*?)}/g;
 
 /**
  * Changes `{str:var}` to `{{var}}`

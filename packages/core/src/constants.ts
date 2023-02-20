@@ -5,6 +5,6 @@ const USER_ACTION_REQUIRED_ACTIONS = new Set([
   'input'
 ]);
 
-const DEFAULT_SAVE: Save = [[[null, 'start'], [null, 0]], {}, [Date.now(), 'auto']];
+const DEFAULT_SAVE: Save = [[[null, 'start'], [null, 0]], {}, [Date.now(), 'auto', 'ru']];
 
 export { USER_ACTION_REQUIRED_ACTIONS, DEFAULT_SAVE }

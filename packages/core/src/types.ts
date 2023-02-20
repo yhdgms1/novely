@@ -11,8 +11,9 @@ type State = Record<string, StateValues>;
 
 type SaveDate = number;
 type SaveType = "manual" | "auto";
+type SaveLang = string;
 
-type SaveMeta = [SaveDate, SaveType];
+type SaveMeta = [SaveDate, SaveType, SaveLang];
 
 type Save = [Path, State, SaveMeta]
 

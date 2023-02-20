@@ -7,12 +7,12 @@ import { createSolidRenderer } from '@novely/solid-renderer'
 
 import '@novely/solid-renderer/dist/index.css'
 
-import '@novely/i18n'
-
 // import chingchenghanji from './assets/ChingChengHanji.mp3';
 import classRoom from './assets/class.webp';
 import bedroomRoom from './assets/bedroom.webp';
 import masakiNatsukoOk from './assets/Masaki Natsuko.webp';
+
+import { t } from './lang'
 
 const masaki = defineCharacter({
   name: 'Масаки Натсуко',
@@ -66,7 +66,7 @@ engine.withStory({
   'start': [
     action.showBackground(classRoom),
     action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__fadeInUp', 'left: 15%'),
-    action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
+    action.dialog('Masaki Natsuko', t('Привет! Ты <em>новенький</em>, не так ли?')),
     action.choice(
       [
         'Да, я новенький!',
@@ -100,7 +100,7 @@ engine.withStory({
         input.setAttribute('maxlength', '16');
       }
     ),
-    action.dialog('Nezuko', 'Привет, {{name}}! Сколько тебе лет? 😙'),
+    action.dialog('Nezuko', t('Привет, {{name}}! Сколько тебе лет? 😙')),
     action.input(
       'Введите ваш возраст',
       ({ input, error }) => {
@@ -120,11 +120,11 @@ engine.withStory({
       {
         'ok': [
           action.hideCharacter('Masaki Natsuko'),
-          action.dialog('Nezuko', 'Правда {{age}} лет? Загляни ко мне как-нибудь 😉'),
+          action.dialog('Nezuko', t('Правда {int:age} лет? Загляни ко мне как-нибудь 😉')),
           action.end()
         ],
         'no': [
-          action.dialog('Nezuko', 'Тебе {{age}} лет?? Не умею я определять возраст... 😅', 'sad'),
+          action.dialog('Nezuko', t('Тебе {int:age} лет?? Не умею я определять возраст... 😅'), 'sad'),
           action.end()
         ]
       }

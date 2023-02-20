@@ -247,7 +247,10 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
       handle.remove(className, style, duration)(push);
     },
     dialog([person, content, emotion]) {
-      renderer.dialog(templite(typeof content === 'function' ? content() : content, state()), person, emotion)(() => {
+      const value = typeof content === 'function' ? content(stack.value[2][2]) : content;
+      const string = typeof value === 'string' ? value : value(state());
+
+      renderer.dialog(templite(string, state()), person, emotion)(() => {
         enmemory();
         push();
       });

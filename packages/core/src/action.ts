@@ -5,14 +5,16 @@ type ValidAction = [keyof DefaultActionProxyProvider, Parameters<DefaultActionPr
 
 type Story = Record<string, ValidAction[]>;
 
+type DialogContent = string | ((lang: string) => string | ((obj: Record<string, unknown>) => string))
+
 type ActionProxyProvider<Characters extends Record<string, DefaultDefinedCharacter>> = {
   choice: (...choices: ([string, ValidAction[]] | [string, ValidAction[], () => boolean])[]) => ValidAction;
   clear: () => ValidAction;
   condition: <T extends string>(condition: () => T, variants: Record<T, ValidAction[]>) => ValidAction;
   dialog: {
-    <C extends keyof Characters>(person: C, content: (() => string) | string, emotion?: keyof Characters[C]['emotions']): ValidAction;
-    (person: undefined, content: (() => string) | string, emotion?: undefined): ValidAction;
-    (person: string, content: (() => string) | string, emotion?: undefined): ValidAction;
+    <C extends keyof Characters>(person: C, content: DialogContent, emotion?: keyof Characters[C]['emotions']): ValidAction;
+    (person: undefined, content: DialogContent, emotion?: undefined): ValidAction;
+    (person: string, content: DialogContent, emotion?: undefined): ValidAction;
   }
   end: () => ValidAction;
   showBackground: (background: string) => ValidAction;
