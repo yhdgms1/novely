@@ -9,6 +9,7 @@ import { canvasDrawImages, createImage } from './utils'
 import { Game } from './screens/game';
 import { MainMenu } from './screens/mainmenu';
 import { Saves } from './screens/saves';
+import { Settings } from './screens/settings';
 
 interface StateCharacter {
   /**
@@ -97,7 +98,7 @@ interface State {
   dialog: StateDialog
   choices: StateChoices
   input: StateInput
-  screen: "mainmenu" | "game" | "saves"
+  screen: "mainmenu" | "game" | "saves" | "settings"
 }
 
 interface SolidRendererStore extends RendererStore {
@@ -290,6 +291,9 @@ const createSolidRenderer = () => {
           </Match>
           <Match when={state.screen === 'saves'}>
             <Saves setState={/* @once */ setState} storage={/* @once */ storage} set={/* @once */ set} />
+          </Match>
+          <Match when={state.screen === 'settings'}>
+            <Settings setState={/* @once */ setState} storage={/* @once */ storage} />
           </Match>
         </Switch>
       )

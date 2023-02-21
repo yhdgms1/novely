@@ -6,9 +6,10 @@ type ValidAction = [keyof DefaultActionProxyProvider, Parameters<DefaultActionPr
 type Story = Record<string, ValidAction[]>;
 
 type DialogContent = string | ((lang: string) => string | ((obj: Record<string, unknown>) => string))
+type ChoiceContent = string | ((lang: string) => string | ((obj: Record<string, unknown>) => string))
 
 type ActionProxyProvider<Characters extends Record<string, DefaultDefinedCharacter>> = {
-  choice: (...choices: ([string, ValidAction[]] | [string, ValidAction[], () => boolean])[]) => ValidAction;
+  choice: (...choices: ([ChoiceContent, ValidAction[]] | [ChoiceContent, ValidAction[], () => boolean])[]) => ValidAction;
   clear: () => ValidAction;
   condition: <T extends string>(condition: () => T, variants: Record<T, ValidAction[]>) => ValidAction;
   dialog: {
@@ -39,4 +40,4 @@ type ActionProxyProvider<Characters extends Record<string, DefaultDefinedCharact
 type DefaultActionProxyProvider = ActionProxyProvider<Record<string, DefaultDefinedCharacter>>;
 type GetActionParameters<T extends Capitalize<keyof DefaultActionProxyProvider>> = Parameters<DefaultActionProxyProvider[Uncapitalize<T>]>;
 
-export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters }
+export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, DialogContent, ChoiceContent }

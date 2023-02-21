@@ -252,6 +252,15 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           onClick={() => {
+            props.save(false, 'auto');
+            props.setState('screen', 'settings');
+          }}
+        >
+          Настройки
+        </button>
+        <button
+          type="button"
+          onClick={() => {
             props.stack.clear();
             props.setState('screen', 'mainmenu');
           }}

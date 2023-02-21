@@ -1,5 +1,5 @@
 import type { DefaultDefinedCharacter } from './character';
-import type { ActionProxyProvider, Story } from './action';
+import type { ActionProxyProvider, Story, ValidAction, DialogContent, ChoiceContent } from './action';
 import type { Storage } from './storage';
 import type { Save, State } from './types'
 import type { Renderer, RendererInit } from './renderer'
@@ -251,10 +251,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
       handle.remove(className, style, duration)(push);
     },
     dialog([person, content, emotion]) {
-      const value = typeof content === 'function' ? content(stack.value[2][2]) : content;
-      const string = typeof value === 'string' ? value : value(state());
-
-      renderer.dialog(templite(string, state()), person, emotion)(() => {
+      renderer.dialog(unwrap(content), person, emotion)(() => {
         enmemory();
         push();
       });
@@ -267,7 +264,11 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
       return result;
     },
     choice(choices) {
-      renderer.choices(choices)((selected) => {
+      const unwrapped = choices.map(([content, action, visible]) => {
+        return [unwrap(content), action, visible] as [string, ValidAction[], () => boolean];
+      });
+
+      renderer.choices(unwrapped)((selected) => {
         enmemory();
 
         stack.value[0].push(['choice', selected], [null, 0]), render();
@@ -345,6 +346,13 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
 
   const push = () => {
     if (!restoring) next(), render();
+  }
+
+  const unwrap = (content: DialogContent | ChoiceContent) => {
+    const value = typeof content === 'function' ? content(stack.value[2][2]) : content;
+    const string = typeof value === 'string' ? value : value(state());
+
+    return templite(string, state());
   }
 
   return {

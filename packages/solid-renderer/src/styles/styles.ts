@@ -6,7 +6,8 @@ import headlessDialog from './headlessDialog.module.css';
 import mainMenu from './mainMenu.module.css';
 import saves from './saves.module.css';
 import controlPanel from './controlPanel.module.css';
+import settings from './settings.module.css';
 
-Object.assign(style, button, characters, dialog, headlessDialog, mainMenu, saves, controlPanel);
+Object.assign(style, button, characters, dialog, headlessDialog, mainMenu, saves, controlPanel, settings);
 
 export { style }

@@ -1,4 +1,4 @@
-import type { DefaultActionProxyProvider } from './action'
+import type { DefaultActionProxyProvider, ValidAction } from './action'
 import type { DefaultDefinedCharacter } from './character'
 import type { Storage } from './storage'
 import type { Save } from './types'
@@ -32,7 +32,7 @@ type Renderer = {
   character: (character: string) => CharacterHandle;
   background: (background: string) => void;
   dialog: (content: string, character?: string, emotion?: string) => (resolve: () => void) => void;
-  choices: (choices: Parameters<DefaultActionProxyProvider['choice']>) => (resolve: (selected: number) => void) => void;
+  choices: (choices: ([string, ValidAction[]] | [string, ValidAction[], () => boolean])[]) => (resolve: (selected: number) => void) => void;
   input: (question: string, onInput: Parameters<DefaultActionProxyProvider['input']>[1], setup?: Parameters<DefaultActionProxyProvider['input']>[2]) => (resolve: () => void) => void;
   music: (source: string, method: keyof RendererStore['audio']) => AudioHandle;
   clear: () => (resolve: () => void) => void;
