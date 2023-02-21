@@ -1,12 +1,12 @@
 import type { ActionProxyProvider } from './action'
-import type { DefaultDefinedCharacter } from './character'
+import type { Character } from './character'
 import type { Save } from './types'
 
 import { DEFAULT_SAVE } from './constants'
 import { klona } from 'klona/json'
 
 type MatchActionMap = {
-  [Key in keyof ActionProxyProvider<Record<string, DefaultDefinedCharacter>>]: (data: Parameters<ActionProxyProvider<Record<string, DefaultDefinedCharacter>>[Key]>) => void;
+  [Key in keyof ActionProxyProvider<Record<string, Character>>]: (data: Parameters<ActionProxyProvider<Record<string, Character>>[Key]>) => void;
 }
 
 const matchAction = <M extends MatchActionMap>(values: M) => {

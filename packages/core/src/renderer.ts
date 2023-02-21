@@ -1,5 +1,5 @@
 import type { DefaultActionProxyProvider, ValidAction } from './action'
-import type { DefaultDefinedCharacter } from './character'
+import type { Character } from './character'
 import type { Storage } from './storage'
 import type { Save } from './types'
 import type { createStack } from './utils'
@@ -47,7 +47,7 @@ type Renderer = {
 }
 
 type RendererInit = {
-  characters: Record<string, DefaultDefinedCharacter>,
+  characters: Record<string, Character>,
   storage: Storage,
   set: (save: Save) => Promise<void>
   restore: (save?: Save) => Promise<void>;

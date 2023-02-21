@@ -1,4 +1,4 @@
-import type { DefaultDefinedCharacter } from './character';
+import type { Character } from './character';
 import type { ActionProxyProvider, Story, ValidAction, DialogContent, ChoiceContent } from './action';
 import type { Storage } from './storage';
 import type { Save, State } from './types'
@@ -10,7 +10,7 @@ import { klona } from 'klona/json';
 import { DEFAULT_SAVE, USER_ACTION_REQUIRED_ACTIONS, DEFAULT_TRANSLATION } from './constants';
 import { self } from '@novely/i18n';
 
-type Novely = <Characters extends Record<string, DefaultDefinedCharacter>, Inter extends typeof DEFAULT_TRANSLATION>(init: { characters: Characters, storage: Storage, renderer: (characters: RendererInit) => Renderer, initialScreen?: "mainmenu" | "game" | "saves" | "settings", i18n?: (i18n: typeof DEFAULT_TRANSLATION, _self: typeof self) => Inter }) => {
+type Novely = <Characters extends Record<string, Character>, Inter extends typeof DEFAULT_TRANSLATION>(init: { characters: Characters, storage: Storage, renderer: (characters: RendererInit) => Renderer, initialScreen?: "mainmenu" | "game" | "saves" | "settings", i18n?: (i18n: typeof DEFAULT_TRANSLATION, _self: typeof self) => Inter }) => {
   withStory: (s: Story) => void;
   action: ActionProxyProvider<Characters>;
   render: () => void;
@@ -32,7 +32,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
 
   const action = new Proxy({}, {
     get(_, prop) {
-      return (...props: Parameters<ActionProxyProvider<Record<string, DefaultDefinedCharacter>>[keyof ActionProxyProvider<Record<string, DefaultDefinedCharacter>>]>) => {
+      return (...props: Parameters<ActionProxyProvider<Record<string, Character>>[keyof ActionProxyProvider<Record<string, Character>>]>) => {
         return [prop, ...props];
       }
     }

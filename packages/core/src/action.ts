@@ -1,4 +1,4 @@
-import type { DefaultDefinedCharacter, } from './character';
+import type { Character } from './character';
 import type { Thenable } from './types'
 
 type ValidAction = [keyof DefaultActionProxyProvider, Parameters<DefaultActionProxyProvider[keyof DefaultActionProxyProvider]>]
@@ -8,7 +8,7 @@ type Story = Record<string, ValidAction[]>;
 type DialogContent = string | ((lang: string) => string | ((obj: Record<string, unknown>) => string))
 type ChoiceContent = string | ((lang: string) => string | ((obj: Record<string, unknown>) => string))
 
-type ActionProxyProvider<Characters extends Record<string, DefaultDefinedCharacter>> = {
+type ActionProxyProvider<Characters extends Record<string, Character>> = {
   choice: (...choices: ([ChoiceContent, ValidAction[]] | [ChoiceContent, ValidAction[], () => boolean])[]) => ValidAction;
   clear: () => ValidAction;
   condition: <T extends string>(condition: () => T, variants: Record<T, ValidAction[]>) => ValidAction;
@@ -37,7 +37,7 @@ type ActionProxyProvider<Characters extends Record<string, DefaultDefinedCharact
   input: (question: string, onInput: (meta: { input: HTMLInputElement, error: (error: string) => void, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, setup?: (input: HTMLInputElement) => void) => ValidAction;
 }
 
-type DefaultActionProxyProvider = ActionProxyProvider<Record<string, DefaultDefinedCharacter>>;
+type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>>;
 type GetActionParameters<T extends Capitalize<keyof DefaultActionProxyProvider>> = Parameters<DefaultActionProxyProvider[Uncapitalize<T>]>;
 
 export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, DialogContent, ChoiceContent }

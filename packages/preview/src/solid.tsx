@@ -2,44 +2,15 @@ import 'animate.css';
 import 'normalize.css'
 
 import { render } from 'solid-js/web'
-import { novely, defineCharacter, localStorageStorage } from '@novely/core'
+import { novely, localStorageStorage } from '@novely/core'
 import { createSolidRenderer } from '@novely/solid-renderer'
 
 import '@novely/solid-renderer/dist/index.css'
 
-// import chingchenghanji from './assets/ChingChengHanji.mp3';
+import chingchenghanji from './assets/ChingChengHanji.mp3';
 import classRoom from './assets/class.webp';
 import bedroomRoom from './assets/bedroom.webp';
 import masakiNatsukoOk from './assets/Masaki Natsuko.webp';
-
-const masaki = defineCharacter({
-  name: 'Масаки Натсуко',
-  color: '#e29f01',
-  emotions: {
-    ok: masakiNatsukoOk,
-  },
-} as const);
-
-const nezuko = defineCharacter({
-  name: 'Нацуки',
-  color: '#f67288',
-  emotions: {
-    ok: {
-      body: {
-        left: 'https://i.imgur.com/d54g3M3.png',
-        right: 'https://i.imgur.com/Z5ZOl7j.png'
-      },
-      head: 'https://i.imgur.com/fFDRWdU.png'
-    },
-    sad: {
-      body: {
-        left: 'https://i.imgur.com/d54g3M3.png',
-        right: 'https://i.imgur.com/Z5ZOl7j.png'
-      },
-      head: 'https://i.imgur.com/jb5Yejg.png'
-    }
-  }
-} as const)
 
 const { createRenderer, Novely } = createSolidRenderer();
 
@@ -47,8 +18,33 @@ const engine = novely({
   storage: localStorageStorage({ key: 'novely-' }),
   renderer: createRenderer,
   characters: {
-    'Masaki Natsuko': masaki,
-    'Nezuko': nezuko
+    'Masaki Natsuko': {
+      name: 'Масаки Натсуко',
+      color: '#e29f01',
+      emotions: {
+        ok: masakiNatsukoOk,
+      },
+    },
+    'Nezuko': {
+      name: 'Нацуки',
+      color: '#f67288',
+      emotions: {
+        ok: {
+          body: {
+            left: 'https://i.imgur.com/d54g3M3.png',
+            right: 'https://i.imgur.com/Z5ZOl7j.png'
+          },
+          head: 'https://i.imgur.com/fFDRWdU.png'
+        },
+        sad: {
+          body: {
+            left: 'https://i.imgur.com/d54g3M3.png',
+            right: 'https://i.imgur.com/Z5ZOl7j.png'
+          },
+          head: 'https://i.imgur.com/jb5Yejg.png'
+        }
+      }
+    }
   },
   i18n: (i18n, self) => {
     return i18n.extend(
@@ -109,6 +105,8 @@ const { action, state, t } = engine;
 
 engine.withStory({
   'start': [
+    // todo: `Music` должно играть после конца
+    action.playMusic(chingchenghanji),
     action.showBackground(classRoom),
     action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__fadeInUp', 'left: 15%'),
     action.dialog('Masaki Natsuko', t('Привет! Ты <em>новенький</em>, не так ли?')),
@@ -159,9 +157,7 @@ engine.withStory({
       }
     ),
     action.condition(
-      () => {
-        return state().age! <= 16 ? 'ok' : 'no';
-      },
+      () => state().age! <= 16 ? 'ok' : 'no',
       {
         'ok': [
           action.hideCharacter('Masaki Natsuko'),
