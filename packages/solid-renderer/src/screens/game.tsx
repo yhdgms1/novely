@@ -1,4 +1,4 @@
-import type { Renderer, DefaultDefinedCharacter, RendererInit } from '@novely/core'
+import type { Renderer, Character, RendererInit } from '@novely/core'
 import type { VoidComponent } from 'solid-js';
 import type { JSX } from 'solid-js';
 import type { SetStoreFunction } from 'solid-js/store'
@@ -17,7 +17,7 @@ interface GameProps {
   setState: SetStoreFunction<State>;
 
   store: SolidRendererStore;
-  characters: Record<string, DefaultDefinedCharacter>;
+  characters: Record<string, Character>;
   renderer: Renderer;
 
   stack: RendererInit['stack'];

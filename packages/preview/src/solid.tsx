@@ -15,11 +15,15 @@ import masakiNatsukoOk from './assets/Masaki Natsuko.webp';
 const { createRenderer, Novely } = createSolidRenderer();
 
 const engine = novely({
+  languages: ['ru', 'en'],
   storage: localStorageStorage({ key: 'novely-' }),
   renderer: createRenderer,
   characters: {
     'Masaki Natsuko': {
-      name: 'Масаки Натсуко',
+      name: {
+        ru: 'Масаки Натсуко',
+        en: 'Masaki Natsuko'
+      },
       color: '#e29f01',
       emotions: {
         ok: masakiNatsukoOk,

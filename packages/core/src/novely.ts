@@ -10,7 +10,7 @@ import { klona } from 'klona/json';
 import { DEFAULT_SAVE, USER_ACTION_REQUIRED_ACTIONS, DEFAULT_TRANSLATION } from './constants';
 import { self } from '@novely/i18n';
 
-type Novely = <Characters extends Record<string, Character>, Inter extends typeof DEFAULT_TRANSLATION>(init: { characters: Characters, storage: Storage, renderer: (characters: RendererInit) => Renderer, initialScreen?: "mainmenu" | "game" | "saves" | "settings", i18n?: (i18n: typeof DEFAULT_TRANSLATION, _self: typeof self) => Inter }) => {
+type Novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends typeof DEFAULT_TRANSLATION>(init: { languages: Languages[], characters: Characters, storage: Storage, renderer: (characters: RendererInit) => Renderer, initialScreen?: "mainmenu" | "game" | "saves" | "settings", i18n?: (i18n: typeof DEFAULT_TRANSLATION, _self: typeof self) => Inter }) => {
   withStory: (s: Story) => void;
   action: ActionProxyProvider<Characters>;
   render: () => void;
