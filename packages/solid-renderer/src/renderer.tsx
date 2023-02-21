@@ -1,4 +1,4 @@
-import type { Renderer, RendererInit, Storage, RendererStore, DefaultDefinedCharacter, ValidAction } from '@novely/core'
+import type { Renderer, RendererInit, Storage, RendererStore, Character, ValidAction } from '@novely/core'
 import type { JSX } from 'solid-js';
 
 import { Switch, Match } from 'solid-js';
@@ -132,7 +132,7 @@ const createSolidRenderer = () => {
     }
   };
 
-  let characters!: Record<string, DefaultDefinedCharacter>;
+  let characters!: Record<string, Character>;
   let storage!: Storage;
   let set!: RendererInit['set']
   let restore!: RendererInit['restore'];
@@ -169,7 +169,7 @@ const createSolidRenderer = () => {
 
               if (stored) return render(...('head' in stored ? [stored.head, stored.left, stored.right] : [stored]));
 
-              const emotionData = characters[character].emotion(emotion);
+              const emotionData = characters[character].emotions[emotion];
 
               if (typeof emotionData === 'string') {
                 return render(store.characters[character].emotions[emotion] = createImage(emotionData));

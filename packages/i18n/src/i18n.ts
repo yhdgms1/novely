@@ -1,4 +1,4 @@
-import type { PluralType } from "./plural";
+type PluralType = Intl.LDMLPluralRule;
 
 type Params<Value extends string> = Value extends `${infer _Head}{{${infer Param}}}${infer Tail}`
   ? [Param, ...Params<Tail>]

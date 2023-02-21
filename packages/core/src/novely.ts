@@ -3,14 +3,13 @@ import type { ActionProxyProvider, Story, ValidAction, DialogContent, ChoiceCont
 import type { Storage } from './storage';
 import type { Save, State } from './types'
 import type { Renderer, RendererInit } from './renderer'
+import type { SetupI18N } from './internationalization'
 import { matchAction, isNumber, isNull, isString, createStack } from './utils';
 import { all as deepmerge } from 'deepmerge'
-import { default as templite } from 'templite'
 import { klona } from 'klona/json';
-import { DEFAULT_SAVE, USER_ACTION_REQUIRED_ACTIONS, DEFAULT_TRANSLATION } from './constants';
-import { self } from '@novely/i18n';
+import { DEFAULT_SAVE, USER_ACTION_REQUIRED_ACTIONS } from './constants';
 
-type Novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends typeof DEFAULT_TRANSLATION>(init: { languages: Languages[], characters: Characters, storage: Storage, renderer: (characters: RendererInit) => Renderer, initialScreen?: "mainmenu" | "game" | "saves" | "settings", i18n?: (i18n: typeof DEFAULT_TRANSLATION, _self: typeof self) => Inter }) => {
+type Novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupI18N<Languages>>>(init: { languages: Languages[], characters: Characters, storage: Storage, renderer: (characters: RendererInit) => Renderer, initialScreen?: "mainmenu" | "game" | "saves" | "settings", i18n: Inter }) => {
   withStory: (s: Story) => void;
   action: ActionProxyProvider<Characters>;
   render: () => void;
@@ -18,13 +17,12 @@ type Novely = <Languages extends string, Characters extends Record<string, Chara
     (value: State | ((prev: State) => State)): void;
     (): State;
   };
-  t: Inter['t']
+  t: Inter['t'];
 }
 
 // @ts-ignore - Fuck ts
 const novely: Novely = ({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", i18n }) => {
   let story: Story;
-  let internationalization = i18n ? i18n(DEFAULT_TRANSLATION, self) : DEFAULT_TRANSLATION;
 
   const withStory = (s: Story) => {
     story = s;
@@ -349,10 +347,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
   }
 
   const unwrap = (content: DialogContent | ChoiceContent) => {
-    const value = typeof content === 'function' ? content(stack.value[2][2]) : content;
-    const string = typeof value === 'string' ? value : value(state());
-
-    return templite(string, state());
+    return typeof content === 'function' ? content(stack.value[2][2], state()) : content
   }
 
   return {
@@ -360,7 +355,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
     action,
     render,
     state,
-    t: internationalization.t
+    t: i18n.t,
   }
 }
 

@@ -1,1 +1,0 @@
-export type { PluralType } from './types'

@@ -5,8 +5,8 @@ type ValidAction = [keyof DefaultActionProxyProvider, Parameters<DefaultActionPr
 
 type Story = Record<string, ValidAction[]>;
 
-type DialogContent = string | ((lang: string) => string | ((obj: Record<string, unknown>) => string))
-type ChoiceContent = string | ((lang: string) => string | ((obj: Record<string, unknown>) => string))
+type DialogContent = string | ((lang: string, obj: Record<string, unknown>) => string);
+type ChoiceContent = string | ((lang: string, obj: Record<string, unknown>) => string);
 
 type ActionProxyProvider<Characters extends Record<string, Character>> = {
   choice: (...choices: ([ChoiceContent, ValidAction[]] | [ChoiceContent, ValidAction[], () => boolean])[]) => ValidAction;
