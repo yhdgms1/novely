@@ -16,7 +16,7 @@ interface NovelyInit {
 
   renderer: (characters: RendererInit) => Renderer;
 
-  initialScreen?: "mainmenu" | "game" | "saves"
+  initialScreen?: "mainmenu" | "game" | "saves" | "settings"
 }
 
 const novely = <I extends NovelyInit>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", }: I) => {

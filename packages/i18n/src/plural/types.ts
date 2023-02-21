@@ -1,3 +1,3 @@
-type PluralType = 'none' | 'one' | 'some' | 'many'
+type PluralType = Intl.LDMLPluralRule;
 
 export type { PluralType }

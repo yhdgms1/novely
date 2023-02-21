@@ -1,48 +1,84 @@
-import type { PluralType } from './plural';
-import { transform } from './constants'
+import type { PluralType } from "./plural";
 
-type Params<Value extends string> =
-  Value extends `${infer _Head}{${infer Param}}${infer Tail}`
-  ? Param extends `{${string}` ? [] : [Param, ...Params<Tail>]
-  : []
+type Params<Value extends string> = Value extends `${infer _Head}{{${infer Param}}}${infer Tail}`
+  ? [Param, ...Params<Tail>]
+  : [];
 
-type GetParamType<P extends string> = P extends `str:${string}` ? string : P extends `int:${string}` ? number : string | number;
-type ClearParamType<P extends string> = P extends `str:${infer Clear}` ? Clear : P extends `int:${infer Clear}` ? Clear : P;
+type PluralizeFunction<PluralKeys extends string> = (
+  key: PluralKeys,
+  count: string | number
+) => string;
+type LabelFunction<T extends string, PK extends string> = (
+  params: { [Param in Params<T>[number]]: string | number } & { pluralize: PluralizeFunction<PK> }
+) => string;
 
-type PluralizeFunction = (args: Partial<Record<PluralType, string | number>>) => (count: number) => string;
-type LabelFunction<T extends string> = (params: { [Param in Params<T>[number]as ClearParamType<Param>]: GetParamType<Param> } & { pluralize: PluralizeFunction }) => string;
+const self = Symbol();
 
-const self = Symbol('novely-i18n-self');
+// [Lang in LK | LangKeys]: {
+//   [PluralKey in PK]?: Partial<Record<PluralType, string>>;
+// } & {
+//   [PluralKey in PluralKeys]: Partial<Record<PluralType, string>>;
+// };
 
-const createI18N = <PluralizationKeys extends string, Label extends string>(pluralization: { [Key in PluralizationKeys]: (count: number) => PluralType }, translations: { [Lang in PluralizationKeys]: { [L in Label]: typeof self | string | LabelFunction<L> } }) => {
+type I18N<LangKeys extends string, PluralKeys extends string, Label extends string> = {
+  t<L extends Label>(label: L): () => string | ((params?: Record<string, unknown>) => string);
+  pluralize(key: PluralKeys, count: string | number): string;
+  lang(locale?: PluralKeys | (string & {})): void;
+  extend<LK extends string, PK extends string, Lab extends string>(
+    plural:
+      {
+        [Lang in LangKeys | LK]:
+        {
+          [PluralKey in PluralKeys | PK]?: Partial<Record<PluralType, string>>;
+        }
+      },
+    translations: {
+      [Lang in LK | LangKeys]?: {
+        [L in Lab | Label]?: typeof self | string | LabelFunction<L, PK | PluralKeys>;
+      };
+    }
+  ): I18N<LangKeys | LK, PluralKeys | PK, Label | Lab>;
+};
+
+const createI18N = <LangKeys extends string, PluralKeys extends string, Label extends string>(
+  plural: {
+    [Lang in LangKeys]: { [PluralKey in PluralKeys]: Partial<Record<PluralType, string>> };
+  },
+  translations: {
+    [Lang in LangKeys]: { [L in Label]: typeof self | string | LabelFunction<L, PluralKeys> };
+  }
+): I18N<LangKeys, PluralKeys, Label> => {
+  let lang: string;
+  let pr: Intl.PluralRules;
+
   return {
-    t<L extends Label>(label: L) {
-      return (lang: (string & {}) | PluralizationKeys) => {
-        const value = translations[lang as PluralizationKeys][label];
+    t(label) {
+      if (!lang) this.lang();
+
+      return () => {
+        const value = translations[lang as LangKeys][label];
 
         if (value === self) {
-          return transform(label);
-        } else if (typeof value === 'string') {
-          return transform(value);
+          return label;
+        } else if (typeof value === "string") {
+          return value;
         } else {
-          const pluralize = (args: Partial<Record<PluralType, string | number>>) => {
-            return (count: number) => {
-              return args[pluralization[lang as PluralizationKeys](count)] || '';
-            }
-          }
-
-          return (params: Record<string, unknown> = {}) => {
-            return transform(value({ ...params, pluralize } as any));
-          }
+          return (params) => {
+            return value({ ...params, pluralize: this.pluralize } as any);
+          };
         }
-      }
+      };
     },
-    extend() {
-      return null;
-    }
-  }
-}
+    pluralize(key, count) {
+      return String(plural[lang as LangKeys][key][pr.select(Number(count))]);
+    },
+    lang(locale = navigator.language) {
+      (lang = locale), (pr = new Intl.PluralRules(lang));
+    },
+    extend(pl, tr) {
+      return createI18N({ ...plural, ...pl }, { ...translations, ...tr });
+    },
+  };
+};
 
-createI18N.self = self;
-
-export { createI18N, self }
+export { createI18N, self };

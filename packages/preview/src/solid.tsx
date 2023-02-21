@@ -120,11 +120,11 @@ engine.withStory({
       {
         'ok': [
           action.hideCharacter('Masaki Natsuko'),
-          action.dialog('Nezuko', t('Правда {int:age} лет? Загляни ко мне как-нибудь 😉')),
+          action.dialog('Nezuko', t('Правда {{age}} лет? Загляни ко мне как-нибудь 😉')),
           action.end()
         ],
         'no': [
-          action.dialog('Nezuko', t('Тебе {int:age} лет?? Не умею я определять возраст... 😅'), 'sad'),
+          action.dialog('Nezuko', t('Тебе {{age}} лет?? Не умею я определять возраст... 😅'), 'sad'),
           action.end()
         ]
       }

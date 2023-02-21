@@ -59,7 +59,7 @@ const Saves: VoidComponent<SavesProps> = (props) => {
               {save => {
                 const [date, type] = save[2];
 
-                const stringDate = capitalize(new Date(date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
+                const stringDate = capitalize(new Date(date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }));
                 const stringType = type === 'auto' ? <>Автоматическое</> : <>Ручное</>;
 
                 return (

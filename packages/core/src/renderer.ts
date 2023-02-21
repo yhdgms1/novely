@@ -42,7 +42,7 @@ type Renderer = {
     /**
      * Показывает экран, скрывает другие
      */
-    showScreen(name: "mainmenu" | "game" | "saves"): void;
+    showScreen(name: "mainmenu" | "game" | "saves" | "settings"): void;
   }
 }
 
