@@ -12,7 +12,7 @@ type LabelFunction<T extends string, PK extends string> = (
   params: { [Param in Params<T>[number]]: string | number } & { pluralize: PluralizeFunction<PK> }
 ) => string;
 
-const self = Symbol();
+const self = "self" as "self" & {};
 
 type I18N<LangKeys extends string, PluralKeys extends string, Label extends string> = {
   t<L extends Label>(label: L): (lang?: string) => string | ((params?: Record<string, unknown>) => string);
@@ -73,3 +73,4 @@ const createI18N = <LangKeys extends string, PluralKeys extends string, Label ex
 };
 
 export { createI18N, self };
+export type { I18N }

@@ -7,28 +7,31 @@ import { matchAction, isNumber, isNull, isString, createStack } from './utils';
 import { all as deepmerge } from 'deepmerge'
 import { default as templite } from 'templite'
 import { klona } from 'klona/json';
-import { DEFAULT_SAVE, USER_ACTION_REQUIRED_ACTIONS } from './constants'
+import { DEFAULT_SAVE, USER_ACTION_REQUIRED_ACTIONS, DEFAULT_TRANSLATION } from './constants';
 
-interface NovelyInit {
-  characters: Record<string, DefaultDefinedCharacter>;
-
-  storage: Storage
-
-  renderer: (characters: RendererInit) => Renderer;
-
-  initialScreen?: "mainmenu" | "game" | "saves" | "settings"
+type Novely = <Characters extends Record<string, DefaultDefinedCharacter>, Inter extends typeof DEFAULT_TRANSLATION>(init: { characters: Characters, storage: Storage, renderer: (characters: RendererInit) => Renderer, initialScreen?: "mainmenu" | "game" | "saves" | "settings", i18n?: (i18n: typeof DEFAULT_TRANSLATION) => Inter }) => {
+  withStory: (s: Story) => void;
+  action: ActionProxyProvider<Characters>;
+  render: () => void;
+  state: {
+    (value: State | ((prev: State) => State)): void;
+    (): State;
+  };
+  t: Inter['t']
 }
 
-const novely = <I extends NovelyInit>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", }: I) => {
+// @ts-ignore - Fuck ts
+const novely: Novely = ({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", i18n }) => {
   let story: Story;
+  let internationalization = i18n ? i18n(DEFAULT_TRANSLATION) : DEFAULT_TRANSLATION;
 
   const withStory = (s: Story) => {
     story = s;
   }
 
-  const action = new Proxy({} as ActionProxyProvider<I['characters']>, {
+  const action = new Proxy({}, {
     get(_, prop) {
-      return (...props: Parameters<ActionProxyProvider<I['characters']>[keyof ActionProxyProvider<I['characters']>]>) => {
+      return (...props: Parameters<ActionProxyProvider<Record<string, DefaultDefinedCharacter>>[keyof ActionProxyProvider<Record<string, DefaultDefinedCharacter>>]>) => {
         return [prop, ...props];
       }
     }
@@ -347,7 +350,8 @@ const novely = <I extends NovelyInit>({ characters, storage, renderer: createRen
     withStory,
     action,
     render,
-    state
+    state,
+    t: internationalization.t
   }
 }
 

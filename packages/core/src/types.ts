@@ -15,6 +15,6 @@ type SaveLang = string;
 
 type SaveMeta = [SaveDate, SaveType, SaveLang];
 
-type Save = [Path, State, SaveMeta]
+type Save = [Path, State, SaveMeta];
 
 export type { Thenable, Path, Save, State }
