@@ -79,6 +79,7 @@ importers:
   packages/solid-renderer:
     specifiers:
       '@novely/core': workspace:*
+      '@novely/i18n': workspace:*
       '@novely/typewriter': workspace:*
       esbuild: ^0.16.3
       esbuild-css-modules-plugin: ^2.7.1
@@ -87,6 +88,7 @@ importers:
       typescript: ^4.9.5
     dependencies:
       '@novely/core': link:../core
+      '@novely/i18n': link:../i18n
       '@novely/typewriter': link:../typewriter
       solid-headless: 0.13.1_solid-js@1.6.10
       solid-js: 1.6.10

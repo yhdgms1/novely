@@ -3,7 +3,7 @@ import type { ActionProxyProvider, Story, ValidAction, DialogContent, ChoiceCont
 import type { Storage } from './storage';
 import type { Save, State } from './types'
 import type { Renderer, RendererInit } from './renderer'
-import type { SetupI18N } from './internationalization'
+import type { SetupI18N } from '@novely/i18n'
 import { matchAction, isNumber, isNull, isString, createStack } from './utils';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';

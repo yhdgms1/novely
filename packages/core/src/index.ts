@@ -3,8 +3,6 @@ export type { Emotions, Character } from './character'
 export type { CharacterHandle, AudioHandle, RendererStore, Renderer, RendererInit } from './renderer'
 export type { Storage } from './storage'
 export type { Thenable, Path } from './types'
-export type { SetupI18N } from './internationalization'
 
-export { createI18N } from './internationalization'
 export { novely } from './novely'
 export { localStorageStorage } from './storage'

@@ -1,76 +1,61 @@
 type PluralType = Intl.LDMLPluralRule;
+type FunctionalSetupI18N = <LanguageKey extends string, PluralKey extends string, StringKey extends string>(parameters: { [Lang in LanguageKey]: { pluralization: { [Plural in PluralKey]: Partial<Record<PluralType, string>> }; strings: { [Str in StringKey]: string } } }) => I18N<LanguageKey, PluralKey, StringKey>
+type SetupI18N<LanguageKey extends string> = <PluralKey extends string, StringKey extends string>(parameters: { [Lang in LanguageKey]: { pluralization: { [Plural in PluralKey]: Partial<Record<PluralType, string>> }; strings: { [Str in StringKey]: string } } }) => I18N<LanguageKey, PluralKey, StringKey>
 
-type Params<Value extends string> = Value extends `${infer _Head}{{${infer Param}}}${infer Tail}`
-  ? [Param, ...Params<Tail>]
-  : [];
+type I18N<LanguageKey extends string, _PluralKey extends string, StringKey extends string> = {
+  t(key: StringKey): (lang: LanguageKey | (string & {}), obj: Record<string, unknown>) => string;
+}
 
-type PluralizeFunction<PluralKeys extends string> = (
-  key: PluralKeys,
-  count: string | number
-) => string;
-type LabelFunction<T extends string, PK extends string> = (
-  params: { [Param in Params<T>[number]]: string | number } & { pluralize: PluralizeFunction<PK> }
-) => string;
+const RGX = /{{(.*?)}}/g;
 
-const self = Symbol();
-
-type I18N<LangKeys extends string, PluralKeys extends string, Label extends string> = {
-  t<L extends Label>(label: L): (lang?: string) => string | ((params?: Record<string, unknown>) => string);
-  extend<LK extends string, PK extends string, Lab extends string>(
-    plural:
-      {
-        [Lang in LangKeys | LK]:
-        {
-          [PluralKey in PluralKeys | PK]?: Partial<Record<PluralType, string>>;
-        }
-      },
-    translations: {
-      [Lang in LK | LangKeys]?: {
-        [L in Lab | Label]?: typeof self | string | LabelFunction<L, PK | PluralKeys>;
-      };
-    }
-  ): I18N<LangKeys | LK, PluralKeys | PK, Label | Lab>;
-};
-
-const createI18N = <LangKeys extends string, PluralKeys extends string, Label extends string>(
-  plural: {
-    [Lang in LangKeys]: { [PluralKey in PluralKeys]: Partial<Record<PluralType, string>> };
-  },
-  translations: {
-    [Lang in LangKeys]: { [L in Label]: typeof self | string | LabelFunction<L, PluralKeys> };
-  }
-): I18N<LangKeys, PluralKeys, Label> => {
-  let pr: Intl.PluralRules;
-
-  const pluralize = (key: PluralKeys, count: string | number) => {
-    return String(plural[pr.resolvedOptions().locale as LangKeys][key][pr.select(Number(count))]);
-  };
+const createI18N: FunctionalSetupI18N = (parameters) => {
+  let locale: string | undefined;
+  let pr: Intl.PluralRules | undefined;
 
   return {
-    t(label) {
-      return (lang = navigator.language) => {
-        const value = translations[lang as LangKeys][label];
-
-        if (!pr || pr.resolvedOptions().locale !== lang) {
-          pr = new Intl.PluralRules(lang);
+    t(key) {
+      return (lang, obj) => {
+        /**
+         * At first run `locale` and `pr` are not defined.
+         * When `locale` changes, `pr` should be updated`
+         */
+        if (!locale || !pr || lang != locale) {
+          pr = new Intl.PluralRules(locale = lang);
         }
 
-        if (value === self) {
-          return label;
-        } else if (typeof value === "string") {
-          return value;
-        } else {
-          return (params) => {
-            return value({ ...params, pluralize });
-          };
-        }
-      };
-    },
-    extend(pl, tr) {
-      return createI18N({ ...plural, ...pl }, { ...translations, ...tr });
-    },
-  };
-};
+        // @ts-ignore `(string & {})` cannot be used to index type `LanguageKey`.
+        const str = parameters[lang]['strings'][key] as string;
 
-export { createI18N, self };
-export type { I18N }
+        return str.replace(RGX, (x: any, key: any, y: any) => {
+          x = 0;
+          y = obj;
+
+          key = (key as string).trim();
+
+          let at = (key as string).split('@');
+          let plural: string | undefined;
+
+          if (at.length > 1) {
+            ([key, plural] = at);
+          }
+
+          key = (key as string).split('.');
+
+          while (y && x < key.length) {
+            y = y[key[x++]];
+          }
+
+          if (plural && y) {
+            // @ts-ignore `(string & {})` cannot be used to index type `LanguageKey`.
+            y = parameters[lang]['pluralization'][plural][pr!.select(y)];
+          }
+
+          return y != null ? y : '';
+        });
+      }
+    }
+  }
+}
+
+export { createI18N }
+export type { SetupI18N, I18N, FunctionalSetupI18N } 

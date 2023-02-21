@@ -2,7 +2,8 @@ import 'animate.css';
 import 'normalize.css'
 
 import { render } from 'solid-js/web'
-import { novely, localStorageStorage, createI18N } from '@novely/core'
+import { novely, localStorageStorage } from '@novely/core'
+import { createI18N } from '@novely/i18n'
 import { createSolidRenderer } from '@novely/solid-renderer'
 
 import '@novely/solid-renderer/dist/index.css'

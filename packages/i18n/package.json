@@ -1,7 +1,7 @@
 {
   "name": "@novely/i18n",
   "description": "Интернационализация Novely",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "sideEffects": false,
   "types": "./dist/index.d.ts",
@@ -25,7 +25,9 @@
   },
   "homepage": "https://github.com/yhdgms1/novely/tree/main/packages/i18n",
   "keywords": [
-    "i18n"
+    "i18n",
+    "novely",
+    "internationalization"
   ],
   "author": {
     "name": "Artemiy Schukin",
