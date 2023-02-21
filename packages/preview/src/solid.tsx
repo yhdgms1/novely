@@ -50,7 +50,7 @@ const engine = novely({
     'Masaki Natsuko': masaki,
     'Nezuko': nezuko
   },
-  i18n: (i18n) => {
+  i18n: (i18n, self) => {
     return i18n.extend(
       {
         ru: {
@@ -61,14 +61,38 @@ const engine = novely({
             many: 'лет'
           }
         },
+        en: {
+          'лет': {
+            zero: 'years',
+            one: 'years',
+            few: 'years',
+            many: 'years'
+          }
+        },
       },
       {
         ru: {
+          'Привет! Ты <em>новенький</em>, не так ли?': self,
+          'Да, я новенький!': self,
+          'Не хочешь зайти ко мне в гости сегодня? 😜': self,
+          'Не откажусь!': self,
           'Правда {{age}} лет? Загляни ко мне как-нибудь 😉': ({ age, pluralize }) => {
             return `Правда ${age} ${pluralize('лет', age)}? Загляни ко мне как-нибудь 😉`;
           },
           'Тебе {{age}} лет?? Не умею я определять возраст... 😅': ({ age, pluralize }) => {
             return `Тебе ${age} ${pluralize('лет', age)}?? Не умею я определять возраст... 😅`;
+          }
+        },
+        en: {
+          'Привет! Ты <em>новенький</em>, не так ли?': "Hi! You're <em>new</em>, aren't you?",
+          'Да, я новенький!': "Yes, I am new!",
+          'Не хочешь зайти ко мне в гости сегодня? 😜': 'Would you like to come and visit me today? 😜',
+          'Не откажусь!': "I won't say no!",
+          'Правда {{age}} лет? Загляни ко мне как-нибудь 😉': ({ age, pluralize }) => {
+            return `Really ${age} ${pluralize('лет', age)}? Drop by and see me sometime 😉`;
+          },
+          'Тебе {{age}} лет?? Не умею я определять возраст... 😅': ({ age, pluralize }) => {
+            return `You are ${age} ${pluralize('лет', age)} old? I'm not good at determining age... 😅`
           }
         }
       }
@@ -87,7 +111,7 @@ engine.withStory({
   'start': [
     action.showBackground(classRoom),
     action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__fadeInUp', 'left: 15%'),
-    action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
+    action.dialog('Masaki Natsuko', t('Привет! Ты <em>новенький</em>, не так ли?')),
     action.choice(
       [
         'Да, я новенький!',

@@ -12,11 +12,10 @@ type LabelFunction<T extends string, PK extends string> = (
   params: { [Param in Params<T>[number]]: string | number } & { pluralize: PluralizeFunction<PK> }
 ) => string;
 
-const self = "self" as "self" & {};
+const self = Symbol();
 
 type I18N<LangKeys extends string, PluralKeys extends string, Label extends string> = {
   t<L extends Label>(label: L): (lang?: string) => string | ((params?: Record<string, unknown>) => string);
-  pluralize(key: PluralKeys, count: string | number): string;
   extend<LK extends string, PK extends string, Lab extends string>(
     plural:
       {
@@ -43,6 +42,10 @@ const createI18N = <LangKeys extends string, PluralKeys extends string, Label ex
 ): I18N<LangKeys, PluralKeys, Label> => {
   let pr: Intl.PluralRules;
 
+  const pluralize = (key: PluralKeys, count: string | number) => {
+    return String(plural[pr.resolvedOptions().locale as LangKeys][key][pr.select(Number(count))]);
+  };
+
   return {
     t(label) {
       return (lang = navigator.language) => {
@@ -58,13 +61,10 @@ const createI18N = <LangKeys extends string, PluralKeys extends string, Label ex
           return value;
         } else {
           return (params) => {
-            return value({ ...params, pluralize: this.pluralize } as any);
+            return value({ ...params, pluralize });
           };
         }
       };
-    },
-    pluralize(key, count) {
-      return String(plural[pr.resolvedOptions().locale as LangKeys][key][pr.select(Number(count))]);
     },
     extend(pl, tr) {
       return createI18N({ ...plural, ...pl }, { ...translations, ...tr });

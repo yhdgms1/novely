@@ -8,8 +8,9 @@ import { all as deepmerge } from 'deepmerge'
 import { default as templite } from 'templite'
 import { klona } from 'klona/json';
 import { DEFAULT_SAVE, USER_ACTION_REQUIRED_ACTIONS, DEFAULT_TRANSLATION } from './constants';
+import { self } from '@novely/i18n';
 
-type Novely = <Characters extends Record<string, DefaultDefinedCharacter>, Inter extends typeof DEFAULT_TRANSLATION>(init: { characters: Characters, storage: Storage, renderer: (characters: RendererInit) => Renderer, initialScreen?: "mainmenu" | "game" | "saves" | "settings", i18n?: (i18n: typeof DEFAULT_TRANSLATION) => Inter }) => {
+type Novely = <Characters extends Record<string, DefaultDefinedCharacter>, Inter extends typeof DEFAULT_TRANSLATION>(init: { characters: Characters, storage: Storage, renderer: (characters: RendererInit) => Renderer, initialScreen?: "mainmenu" | "game" | "saves" | "settings", i18n?: (i18n: typeof DEFAULT_TRANSLATION, _self: typeof self) => Inter }) => {
   withStory: (s: Story) => void;
   action: ActionProxyProvider<Characters>;
   render: () => void;
@@ -23,7 +24,7 @@ type Novely = <Characters extends Record<string, DefaultDefinedCharacter>, Inter
 // @ts-ignore - Fuck ts
 const novely: Novely = ({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", i18n }) => {
   let story: Story;
-  let internationalization = i18n ? i18n(DEFAULT_TRANSLATION) : DEFAULT_TRANSLATION;
+  let internationalization = i18n ? i18n(DEFAULT_TRANSLATION, self) : DEFAULT_TRANSLATION;
 
   const withStory = (s: Story) => {
     story = s;
