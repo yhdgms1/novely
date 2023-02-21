@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@novely/core": "workspace:*",
-    "@novely/i18n": "workspace:*",
+    "@novely/t9n": "workspace:*",
     "@novely/solid-renderer": "workspace:*",
     "solid-headless": "^0.13.1",
     "solid-js": "1.6.10",

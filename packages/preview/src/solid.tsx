@@ -3,7 +3,7 @@ import 'normalize.css'
 
 import { render } from 'solid-js/web'
 import { novely, localStorageStorage } from '@novely/core'
-import { createI18N } from '@novely/i18n'
+import { createT9N } from '../../t9n/dist'
 import { createSolidRenderer } from '@novely/solid-renderer'
 
 import '@novely/solid-renderer/dist/index.css'
@@ -52,7 +52,7 @@ const engine = novely({
       }
     }
   },
-  i18n: createI18N({
+  t9n: createT9N({
     ru: {
       pluralization: {
         'years': {

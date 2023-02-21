@@ -1,14 +1,14 @@
 type PluralType = Intl.LDMLPluralRule;
-type FunctionalSetupI18N = <LanguageKey extends string, PluralKey extends string, StringKey extends string>(parameters: { [Lang in LanguageKey]: { pluralization: { [Plural in PluralKey]: Partial<Record<PluralType, string>> }; strings: { [Str in StringKey]: string } } }) => I18N<LanguageKey, PluralKey, StringKey>
-type SetupI18N<LanguageKey extends string> = <PluralKey extends string, StringKey extends string>(parameters: { [Lang in LanguageKey]: { pluralization: { [Plural in PluralKey]: Partial<Record<PluralType, string>> }; strings: { [Str in StringKey]: string } } }) => I18N<LanguageKey, PluralKey, StringKey>
+type FunctionalSetupT9N = <LanguageKey extends string, PluralKey extends string, StringKey extends string>(parameters: { [Lang in LanguageKey]: { pluralization: { [Plural in PluralKey]: Partial<Record<PluralType, string>> }; strings: { [Str in StringKey]: string } } }) => T9N<LanguageKey, PluralKey, StringKey>
+type SetupT9N<LanguageKey extends string> = <PluralKey extends string, StringKey extends string>(parameters: { [Lang in LanguageKey]: { pluralization: { [Plural in PluralKey]: Partial<Record<PluralType, string>> }; strings: { [Str in StringKey]: string } } }) => T9N<LanguageKey, PluralKey, StringKey>
 
-type I18N<LanguageKey extends string, _PluralKey extends string, StringKey extends string> = {
+type T9N<LanguageKey extends string, _PluralKey extends string, StringKey extends string> = {
   t(key: StringKey): (lang: LanguageKey | (string & {}), obj: Record<string, unknown>) => string;
 }
 
 const RGX = /{{(.*?)}}/g;
 
-const createI18N: FunctionalSetupI18N = (parameters) => {
+const createT9N: FunctionalSetupT9N = (parameters) => {
   let locale: string | undefined;
   let pr: Intl.PluralRules | undefined;
 
@@ -57,5 +57,5 @@ const createI18N: FunctionalSetupI18N = (parameters) => {
   }
 }
 
-export { createI18N }
-export type { SetupI18N, I18N, FunctionalSetupI18N } 
+export { createT9N }
+export type { SetupT9N, T9N, FunctionalSetupT9N } 

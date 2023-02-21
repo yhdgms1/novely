@@ -1,13 +1,13 @@
-# @novely/i18n
+# @novely/t9n
 
-Примитивный i18n
+Примитивный t9n
 
 ## Использование
 
 ```ts title="main.ts"
-import { createI18N } from "@novely/i18n";
+import { createT9N } from "@novely/t9n";
 
-const { t } = createI18N({
+const { t } = createT9N({
   ru: {
     pluralization: {
       years: {

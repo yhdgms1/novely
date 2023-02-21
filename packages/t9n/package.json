@@ -1,6 +1,6 @@
 {
-  "name": "@novely/i18n",
-  "description": "Интернационализация Novely",
+  "name": "@novely/t9n",
+  "description": "Перевод Novely",
   "version": "0.1.0",
   "type": "module",
   "sideEffects": false,
@@ -23,11 +23,12 @@
   "bugs": {
     "url": "https://github.com/yhdgms1/novely/issues"
   },
-  "homepage": "https://github.com/yhdgms1/novely/tree/main/packages/i18n",
+  "homepage": "https://github.com/yhdgms1/novely/tree/main/packages/t9n",
   "keywords": [
-    "i18n",
     "novely",
-    "internationalization"
+    "internationalization",
+    "translation",
+    "t9n"
   ],
   "author": {
     "name": "Artemiy Schukin",

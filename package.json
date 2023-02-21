@@ -6,8 +6,8 @@
   "scripts": {
     "dev:core": "pnpm --filter=@novely/core... --parallel dev",
     "build:core": "pnpm --filter=@novely/core... --parallel build",
-    "dev:i18n": "pnpm --filter=@novely/i18n... --parallel dev",
-    "build:i18n": "pnpm --filter=@novely/i18n... --parallel build",
+    "dev:t9n": "pnpm --filter=@novely/t9n... --parallel dev",
+    "build:t9n": "pnpm --filter=@novely/t9n... --parallel build",
     "dev:solid": "pnpm --filter=@novely/solid-renderer... --parallel dev",
     "build:solid": "pnpm --filter=@novely/solid-renderer... --parallel build",
     "dev:dom": "pnpm --filter=@novely/dom-renderer... --parallel dev",

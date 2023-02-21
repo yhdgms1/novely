@@ -3,13 +3,13 @@ import type { ActionProxyProvider, Story, ValidAction, DialogContent, ChoiceCont
 import type { Storage } from './storage';
 import type { Save, State } from './types'
 import type { Renderer, RendererInit } from './renderer'
-import type { SetupI18N } from '@novely/i18n'
+import type { SetupT9N } from '../../t9n/dist'
 import { matchAction, isNumber, isNull, isString, createStack } from './utils';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
 import { DEFAULT_SAVE, USER_ACTION_REQUIRED_ACTIONS } from './constants';
 
-type Novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupI18N<Languages>>>(init: { languages: Languages[], characters: Characters, storage: Storage, renderer: (characters: RendererInit) => Renderer, initialScreen?: "mainmenu" | "game" | "saves" | "settings", i18n: Inter }) => {
+type Novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>>(init: { languages: Languages[], characters: Characters, storage: Storage, renderer: (characters: RendererInit) => Renderer, initialScreen?: "mainmenu" | "game" | "saves" | "settings", t9n: Inter }) => {
   withStory: (s: Story) => void;
   action: ActionProxyProvider<Characters>;
   render: () => void;
@@ -21,7 +21,7 @@ type Novely = <Languages extends string, Characters extends Record<string, Chara
 }
 
 // @ts-ignore - Fuck ts
-const novely: Novely = ({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", i18n }) => {
+const novely: Novely = ({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n }) => {
   let story: Story;
 
   const withStory = (s: Story) => {
@@ -355,7 +355,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
     action,
     render,
     state,
-    t: i18n.t,
+    t: t9n.t,
   }
 }
 
