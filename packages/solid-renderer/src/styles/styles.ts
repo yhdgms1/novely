@@ -7,7 +7,8 @@ import mainMenu from './mainMenu.module.css';
 import saves from './saves.module.css';
 import controlPanel from './controlPanel.module.css';
 import settings from './settings.module.css';
+import loading from './loading.module.css';
 
-Object.assign(style, button, characters, dialog, headlessDialog, mainMenu, saves, controlPanel, settings);
+Object.assign(style, button, characters, dialog, headlessDialog, mainMenu, saves, controlPanel, settings, loading);
 
 export { style }

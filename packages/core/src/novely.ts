@@ -233,7 +233,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
 
     let promises: Promise<unknown>[] = [];
 
-    // renderer.ui.showScreen()
+    renderer.ui.showScreen('loading');
 
     for (const [name, { emotions }] of Object.entries(characters)) {
       for (const emotion of Object.keys(emotions)) {

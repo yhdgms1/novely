@@ -10,6 +10,7 @@ import { Game } from './screens/game';
 import { MainMenu } from './screens/mainmenu';
 import { Saves } from './screens/saves';
 import { Settings } from './screens/settings';
+import { Loading } from './screens/loading';
 
 interface StateCharacter {
   /**
@@ -98,7 +99,7 @@ interface State {
   dialog: StateDialog
   choices: StateChoices
   input: StateInput
-  screen: "mainmenu" | "game" | "saves" | "settings"
+  screen: "mainmenu" | "game" | "saves" | "settings" | 'loading'
 }
 
 interface SolidRendererStore extends RendererStore {
@@ -294,6 +295,9 @@ const createSolidRenderer = () => {
           </Match>
           <Match when={state.screen === 'settings'}>
             <Settings setState={/* @once */ setState} storage={/* @once */ storage} />
+          </Match>
+          <Match when={state.screen === 'loading'}>
+            <Loading />
           </Match>
         </Switch>
       )
