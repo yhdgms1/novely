@@ -28,5 +28,29 @@
     "@novely/core": "*",
     "solid-headless": "*",
     "solid-js": "*"
-  }
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yhdgms1/novely/issues"
+  },
+  "homepage": "https://github.com/yhdgms1/novely/tree/main/packages/solid-renderer",
+  "keywords": [
+    "novely",
+    "solid-js",
+    "solid",
+    "renderer",
+    "novel"
+  ],
+  "author": {
+    "name": "Artemiy Schukin",
+    "url": "https://github.com/yhdgms1"
+  },
+  "contributors": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yhdgms1/novely.git"
+  },
+  "files": [
+    "dist/*"
+  ]
 }

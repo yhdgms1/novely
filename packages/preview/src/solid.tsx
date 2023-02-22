@@ -3,7 +3,7 @@ import 'normalize.css'
 
 import { render } from 'solid-js/web'
 import { novely, localStorageStorage } from '@novely/core'
-import { createT9N } from '../../t9n/dist'
+import { createT9N } from '@novely/t9n'
 import { createSolidRenderer } from '@novely/solid-renderer'
 
 import '@novely/solid-renderer/dist/index.css'
