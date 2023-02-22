@@ -4,12 +4,12 @@ import type { Storage } from './storage';
 import type { Save, State } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, createStack } from './utils';
+import { matchAction, isNumber, isNull, isString, createStack, isCSSImage } from './utils';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
 import { DEFAULT_SAVE, USER_ACTION_REQUIRED_ACTIONS } from './constants';
 
-type Novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>>(init: { languages: Languages[], characters: Characters, storage: Storage, renderer: (characters: RendererInit) => Renderer, initialScreen?: "mainmenu" | "game" | "saves" | "settings", t9n: Inter }) => {
+type Novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>>(init: { languages: Languages[], characters: Characters, storage: Storage, renderer: (characters: RendererInit) => Renderer, initialScreen?: "mainmenu" | "game" | "saves" | "settings", t9n: Inter, assetsPreload?: boolean }) => {
   withStory: (s: Story) => void;
   action: ActionProxyProvider<Characters>;
   render: () => void;
@@ -21,16 +21,31 @@ type Novely = <Languages extends string, Characters extends Record<string, Chara
 }
 
 // @ts-ignore - Fuck ts
-const novely: Novely = ({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n }) => {
+const novely: Novely = ({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, assetsPreload }) => {
   let story: Story;
 
   const withStory = (s: Story) => {
     story = s;
+    /**
+     * Load assets after the `action` scripts are executed
+     */
+    preloadAssets();
+  }
+
+  /**
+   * This is used when background is loading
+   */
+  const preload = {
+    background: new Set<string>(),
   }
 
   const action = new Proxy({}, {
     get(_, prop) {
       return (...props: Parameters<ActionProxyProvider<Record<string, Character>>[keyof ActionProxyProvider<Record<string, Character>>]>) => {
+        if (prop === 'showBackground') {
+          if (isCSSImage(props[0] as string)) preload.background.add(props[0] as string);
+        }
+
         return [prop, ...props];
       }
     }
@@ -211,10 +226,60 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
     stack
   });
 
-  /**
-   * Показывает экран
-   */
-  renderer.ui.showScreen(initialScreen);
+  const preloadAssets = () => {
+    /**
+     * We need to load all the characters and their emotions
+     */
+
+    let promises: Promise<unknown>[] = [];
+
+    // renderer.ui.showScreen()
+
+    for (const [name, { emotions }] of Object.entries(characters)) {
+      for (const emotion of Object.keys(emotions)) {
+        promises.push(Promise.resolve(renderer.character(name).withEmotion(emotion)));
+      }
+    }
+
+    for (const bg of preload.background) {
+      promises.push(new Promise((res, rej) => {
+        /**
+         * Create `img` element
+         */
+        const img = document.createElement('img');
+
+        /**
+         * Set `src`
+         */
+        img.crossOrigin = '*';
+        img.src = bg;
+
+        if (img.complete && img.naturalHeight !== 0) {
+          /**
+           * Image is already loaded
+           */
+          res(void 0);
+        } else {
+          /**
+           * Image is uniq, it is safe to use `onload`
+           */
+          img.onload = res;
+          img.onerror = rej;
+        }
+      }));
+    }
+
+    if (!assetsPreload) {
+      /**
+       * Показывает экран
+       */
+      renderer.ui.showScreen(initialScreen);
+    }
+
+    Promise.all(promises).then(() => {
+      renderer.ui.showScreen(initialScreen);
+    });
+  }
 
   const match = matchAction({
     wait([time]) {

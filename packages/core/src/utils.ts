@@ -47,4 +47,10 @@ const createStack = (current: Save, stack = [current]) => {
   }
 }
 
-export { matchAction, isNumber, isNull, isString, createStack }
+const isCSSImage = (str: string) => {
+  const startsWith = String.prototype.startsWith.bind(str);
+
+  return startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data');
+}
+
+export { matchAction, isNumber, isNull, isString, createStack, isCSSImage }

@@ -84,6 +84,8 @@ const engine = novely({
       }
     },
   }),
+
+  assetsPreload: true
 });
 
 const { action, state, t } = engine;
