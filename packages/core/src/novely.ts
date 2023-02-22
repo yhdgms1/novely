@@ -10,13 +10,38 @@ import { klona } from 'klona/json';
 import { DEFAULT_SAVE, USER_ACTION_REQUIRED_ACTIONS } from './constants';
 
 interface NovelyInit<Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>> {
+  /**
+   * An array of languages supported by the game.
+   */
   languages: Languages[];
+  /**
+   * An object containing the characters in the game.
+   */
   characters: Characters;
+  /**
+   * An object that provides access to the game's storage system.
+   */
   storage: Storage;
+  /**
+   * A function that returns a Renderer object used to display the game's content
+   */
   renderer: (characters: RendererInit) => Renderer;
+  /**
+   * An optional property that specifies the initial screen to display when the game starts
+   */
   initialScreen?: "mainmenu" | "game" | "saves" | "settings";
+  /**
+   * An object containing the translation functions used in the game
+   */
   t9n: Inter;
+  /**
+   * An optional property that specifies whether to preload assets when the game starts
+   */
   assetsPreload?: boolean;
+  /**
+   * An optional property that specifies whether the game should use a single save.
+   */
+  singleSave?: boolean;
 }
 
 type Novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>>(init: NovelyInit<Languages, Characters, Inter>) => {
