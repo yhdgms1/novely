@@ -12,6 +12,7 @@ import '@novely/solid-renderer/dist/index.css'
 import classRoom from './assets/class.webp';
 import bedroomRoom from './assets/bedroom.webp';
 import masakiNatsukoOk from './assets/Masaki Natsuko.webp';
+import outsideSchool from './assets/outside.webp';
 
 const { createRenderer, Novely } = createSolidRenderer();
 
@@ -164,6 +165,14 @@ engine.withStory({
   ]
 });
 
-render(() => <Novely />, document.body);
+render(() => (
+  <Novely
+    style={{
+      '--novely-settings-background-image': `url(${outsideSchool})`,
+      '--novely-main-menu-background-image': `url(${outsideSchool})`,
+      '--novely-saves-background-image': `url(${outsideSchool})`,
+    }}
+  />
+), document.body);
 
 export { }

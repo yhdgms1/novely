@@ -35,7 +35,6 @@ const MainMenu: VoidComponent<MainMenuProps> = (props) => {
         [style.root]: true,
         [style.mainMenu]: true
       }}
-      style={{ "background-image": `url(https://i.imgur.com/FKvy1SO.png)` }}
     >
       <div class={style.controls}>
         <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={newGame}>

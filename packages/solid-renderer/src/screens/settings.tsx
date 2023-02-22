@@ -42,7 +42,6 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
         [style.root]: true,
         [style.settings]: true
       }}
-      style={{ "background-image": `url(https://i.imgur.com/FKvy1SO.png)` }}
     >
       <div class={style.controls}>
         <button type="button" class={join(style.button, style.buttonSettings)} onClick={() => setScreen('mainmenu')}>

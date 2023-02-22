@@ -45,7 +45,6 @@ const Saves: VoidComponent<SavesProps> = (props) => {
         [style.root]: true,
         [style.saves]: true
       }}
-      style={{ "background-image": `url(https://i.imgur.com/FKvy1SO.png)` }}
     >
       <div class={style.controls}>
         <button type="button" class={join(style.button, style.buttonSaves)} onClick={() => setScreen('mainmenu')}>

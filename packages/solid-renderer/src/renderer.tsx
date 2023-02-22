@@ -282,25 +282,27 @@ const createSolidRenderer = () => {
         }
       }
     },
-    Novely() {
+    Novely(props: Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children'>) {
       return (
-        <Switch fallback={<>No</>}>
-          <Match when={state.screen === "game"}>
-            <Game state={state} setState={/* @once */ setState} store={/* @once */ store} characters={/* @once */ characters} renderer={/* @once */ renderer} stack={/* @once */ stack} restore={/* @once */ restore} save={/* @once */ save} />
-          </Match>
-          <Match when={state.screen === 'mainmenu'}>
-            <MainMenu setState={/* @once */ setState} storage={/* @once */ storage} restore={/* @once */ restore} />
-          </Match>
-          <Match when={state.screen === 'saves'}>
-            <Saves setState={/* @once */ setState} storage={/* @once */ storage} set={/* @once */ set} />
-          </Match>
-          <Match when={state.screen === 'settings'}>
-            <Settings setState={/* @once */ setState} storage={/* @once */ storage} languages={/* @once */ languages} restore={/* @once */ restore} />
-          </Match>
-          <Match when={state.screen === 'loading'}>
-            <Loading />
-          </Match>
-        </Switch>
+        <div {...props}>
+          <Switch fallback={<>No</>}>
+            <Match when={state.screen === "game"}>
+              <Game state={state} setState={/* @once */ setState} store={/* @once */ store} characters={/* @once */ characters} renderer={/* @once */ renderer} stack={/* @once */ stack} restore={/* @once */ restore} save={/* @once */ save} />
+            </Match>
+            <Match when={state.screen === 'mainmenu'}>
+              <MainMenu setState={/* @once */ setState} storage={/* @once */ storage} restore={/* @once */ restore} />
+            </Match>
+            <Match when={state.screen === 'saves'}>
+              <Saves setState={/* @once */ setState} storage={/* @once */ storage} set={/* @once */ set} />
+            </Match>
+            <Match when={state.screen === 'settings'}>
+              <Settings setState={/* @once */ setState} storage={/* @once */ storage} languages={/* @once */ languages} restore={/* @once */ restore} />
+            </Match>
+            <Match when={state.screen === 'loading'}>
+              <Loading />
+            </Match>
+          </Switch>
+        </div>
       )
     }
   }

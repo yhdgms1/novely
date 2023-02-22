@@ -5,6 +5,7 @@
   z-index: 1;
 
   overflow: hidden;
+  background-image: var(--novely-main-menu-background-image);
 }
 
 .mainMenu > .controls {
