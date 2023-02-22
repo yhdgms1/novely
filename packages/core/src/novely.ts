@@ -227,6 +227,8 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
   });
 
   const preloadAssets = () => {
+    if (!assetsPreload) return;
+
     /**
      * We need to load all the characters and their emotions
      */
