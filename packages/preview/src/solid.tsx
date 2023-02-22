@@ -8,7 +8,7 @@ import { createSolidRenderer } from '@novely/solid-renderer'
 
 import '@novely/solid-renderer/dist/index.css'
 
-import chingchenghanji from './assets/ChingChengHanji.mp3';
+// import chingchenghanji from './assets/ChingChengHanji.mp3';
 import classRoom from './assets/class.webp';
 import bedroomRoom from './assets/bedroom.webp';
 import masakiNatsukoOk from './assets/Masaki Natsuko.webp';
@@ -21,11 +21,10 @@ const engine = novely({
   renderer: createRenderer,
   characters: {
     'Masaki Natsuko': {
-      // name: {
-      //   ru: 'Масаки Натсуко',
-      //   en: 'Masaki Natsuko'
-      // },
-      name: 'Масаки Натсуко',
+      name: {
+        ru: 'Масаки Натсуко',
+        en: 'Masaki Natsuko',
+      },
       color: '#e29f01',
       emotions: {
         ok: masakiNatsukoOk,
@@ -97,7 +96,6 @@ const { action, state, t } = engine;
 engine.withStory({
   'start': [
     // todo: `Music` должно играть после конца
-    action.playMusic(chingchenghanji),
     action.showBackground(classRoom),
     action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__fadeInUp', 'left: 15%'),
     action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),

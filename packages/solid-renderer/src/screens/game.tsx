@@ -117,15 +117,37 @@ const Game: VoidComponent<GameProps> = (props) => {
         style={{ display: props.state.dialog.visible ? 'flex' : 'none' }}
         onClick={onDialogClick}
       >
-        <span
-          class={style.dialogName}
-          style={{
-            color: props.state.dialog.character ? props.state.dialog.character in characters ? characters[props.state.dialog.character].color : '#000' : '#000',
-            display: props.state.dialog.character ? 'block' : 'none'
-          }}
-        >
-          {props.state.dialog.character ? props.state.dialog.character in characters ? characters[props.state.dialog.character].name : props.state.dialog.character : ''}
-        </span>
+        {() => {
+          const character = () => props.state.dialog.character;
+
+          const color = () => {
+            const c = character();
+            const color = c ? c in characters ? characters[c].color : '#000' : '#000';
+
+            return color;
+          }
+
+          const name = () => {
+            const c = character();
+
+            // @ts-ignore @todo: resolve this later
+            const name = c ? c in characters ? typeof characters[c].name === 'string' ? characters[c].name : characters[c].name[props.stack.value[2][2]] : c : '';
+
+            return name as string;
+          }
+
+          return (
+            <span
+              class={style.dialogName}
+              style={{
+                color: color(),
+                display: character() ? 'block' : 'none'
+              }}
+            >
+              {name()}
+            </span>
+          )
+        }}
         <div class={join(style.dialogContainer, style.dialogContainerWithPerson)} data-no-person={!(props.state.dialog.character && props.state.dialog.emotion)}>
           <div class={style.dialogPerson}>
             <Show when={props.state.dialog.character && props.state.dialog.emotion}>
