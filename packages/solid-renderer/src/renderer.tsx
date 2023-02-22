@@ -140,10 +140,11 @@ const createSolidRenderer = () => {
   let save!: RendererInit['save'];
   let stack!: RendererInit['stack'];
   let renderer!: Renderer;
+  let languages!: string[];
 
   return {
     createRenderer(init: RendererInit): Renderer {
-      characters = init.characters, storage = init.storage, set = init.set, restore = init.restore, save = init.save, stack = init.stack;
+      characters = init.characters, storage = init.storage, set = init.set, restore = init.restore, save = init.save, stack = init.stack, languages = init.languages;
 
       return renderer = {
         background(background) {
@@ -294,7 +295,7 @@ const createSolidRenderer = () => {
             <Saves setState={/* @once */ setState} storage={/* @once */ storage} set={/* @once */ set} />
           </Match>
           <Match when={state.screen === 'settings'}>
-            <Settings setState={/* @once */ setState} storage={/* @once */ storage} />
+            <Settings setState={/* @once */ setState} storage={/* @once */ storage} languages={/* @once */ languages} restore={/* @once */ restore} />
           </Match>
           <Match when={state.screen === 'loading'}>
             <Loading />

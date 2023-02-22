@@ -56,7 +56,7 @@ type Novely = <Languages extends string, Characters extends Record<string, Chara
 }
 
 // @ts-ignore - Fuck ts
-const novely: Novely = ({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, assetsPreload }) => {
+const novely: Novely = ({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, assetsPreload }) => {
   let story: Story;
 
   const withStory = (s: Story) => {
@@ -258,7 +258,8 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
     set,
     restore,
     save,
-    stack
+    stack,
+    languages
   });
 
   const preloadAssets = () => {

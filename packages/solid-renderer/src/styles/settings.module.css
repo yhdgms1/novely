@@ -8,3 +8,30 @@
 
   display: flex;
 }
+
+.settings .controls {
+  width: 30vw;
+  height: 100%;
+  padding-left: 1em;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.content {
+  width: 100%;
+  height: 100%;
+  padding-left: 1em;
+
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0;
+
+  list-style: none;
+}

@@ -53,6 +53,7 @@ type RendererInit = {
   restore: (save?: Save) => Promise<void>;
   save: (override?: boolean, type?: Save[2][1]) => Promise<void>;
   stack: ReturnType<typeof createStack>;
+  languages: string[];
 }
 
 export type { CharacterHandle, AudioHandle, RendererStore, Renderer, RendererInit }
