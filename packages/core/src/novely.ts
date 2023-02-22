@@ -9,7 +9,17 @@ import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
 import { DEFAULT_SAVE, USER_ACTION_REQUIRED_ACTIONS } from './constants';
 
-type Novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>>(init: { languages: Languages[], characters: Characters, storage: Storage, renderer: (characters: RendererInit) => Renderer, initialScreen?: "mainmenu" | "game" | "saves" | "settings", t9n: Inter, assetsPreload?: boolean }) => {
+interface NovelyInit<Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>> {
+  languages: Languages[];
+  characters: Characters;
+  storage: Storage;
+  renderer: (characters: RendererInit) => Renderer;
+  initialScreen?: "mainmenu" | "game" | "saves" | "settings";
+  t9n: Inter;
+  assetsPreload?: boolean;
+}
+
+type Novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>>(init: NovelyInit<Languages, Characters, Inter>) => {
   withStory: (s: Story) => void;
   action: ActionProxyProvider<Characters>;
   render: () => void;
