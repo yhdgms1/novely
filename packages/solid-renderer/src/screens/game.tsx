@@ -245,6 +245,12 @@ const Game: VoidComponent<GameProps> = (props) => {
         </div>
       </Dialog>
 
+      <div>
+        <For each={Object.values(props.state.layers)}>
+          {(item) => item?.element}
+        </For>
+      </div>
+
       <div class={style.controlPanel}>
         <button
           type="button"
@@ -274,8 +280,9 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           onClick={() => {
-            props.save(false, 'auto');
-            props.setState('screen', 'settings');
+            props.save(false, 'auto').then(() => {
+              props.setState('screen', 'settings');
+            });
           }}
         >
           Настройки

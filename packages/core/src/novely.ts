@@ -210,9 +210,9 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
               }
             }
 
-            if (action === 'function') {
+            if (action === 'function' || action === 'custom') {
               /**
-               * `action.function` может возвращать Promise. Нужно подожать его `resolve`
+               * Action может возвращать Promise. Нужно подожать его `resolve`
                */
               const result: any = match(action, meta);
 
@@ -394,12 +394,14 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
       // конец!!
     },
     input([question, onInput, setup]) {
-
       renderer.input(question, onInput, setup)(() => {
         enmemory();
         push();
       });
-    }
+    },
+    custom([handler]) {
+      return renderer.custom(handler, push);
+    },
   });
 
   const enmemory = () => {

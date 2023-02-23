@@ -8,6 +8,13 @@ type Story = Record<string, ValidAction[]>;
 type DialogContent = string | ((lang: string, obj: Record<string, unknown>) => string);
 type ChoiceContent = string | ((lang: string, obj: Record<string, unknown>) => string);
 
+type CustomHandlerGetResultDataFunction = {
+  (): Record<string, unknown>;
+  (data: Record<string, unknown>): void;
+}
+type CustomHandlerGetResult = { delete: () => void; data: CustomHandlerGetResultDataFunction; element: HTMLDivElement };
+type CustomHandler = (get: (id: string) => CustomHandlerGetResult) => Thenable<void>;
+
 type ActionProxyProvider<Characters extends Record<string, Character>> = {
   choice: (...choices: ([ChoiceContent, ValidAction[]] | [ChoiceContent, ValidAction[], () => boolean])[]) => ValidAction;
   clear: () => ValidAction;
@@ -35,9 +42,11 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
   function: (fn: () => Thenable<void>) => ValidAction;
 
   input: (question: string, onInput: (meta: { input: HTMLInputElement, error: (error: string) => void, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, setup?: (input: HTMLInputElement) => void) => ValidAction;
+
+  custom: (handler: CustomHandler) => ValidAction;
 }
 
 type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>>;
 type GetActionParameters<T extends Capitalize<keyof DefaultActionProxyProvider>> = Parameters<DefaultActionProxyProvider[Uncapitalize<T>]>;
 
-export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, DialogContent, ChoiceContent }
+export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, DialogContent, ChoiceContent, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction }

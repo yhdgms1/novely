@@ -1,7 +1,7 @@
 .headlessDialog {
   position: fixed;
   inset: 0;
-  z-index: 2;
+  z-index: 20;
   overflow-y: auto;
 }
 
@@ -20,7 +20,7 @@
 
 .headlessDialogPanel {
   text-align: left;
-  z-index: 3;
+  z-index: 21;
 
   width: 100%;
   max-width: 40vw;

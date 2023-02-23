@@ -1,4 +1,4 @@
-import type { Renderer, RendererInit, Storage, RendererStore, Character, ValidAction } from '@novely/core'
+import type { Renderer, RendererInit, Storage, RendererStore, Character, ValidAction, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction } from '@novely/core'
 import type { JSX } from 'solid-js';
 
 import { Switch, Match } from 'solid-js';
@@ -93,17 +93,20 @@ interface StateInput {
   error: string;
 }
 
+type StateLayers = Record<string, CustomHandlerGetResult | undefined>;
+
 interface State {
   background: string;
   characters: Record<string, StateCharacter>
   dialog: StateDialog
   choices: StateChoices
   input: StateInput
+  layers: StateLayers;
   screen: "mainmenu" | "game" | "saves" | "settings" | 'loading'
 }
 
 interface SolidRendererStore extends RendererStore {
-  dialogRef?: HTMLParagraphElement
+  dialogRef?: HTMLParagraphElement;
 }
 
 const createSolidRenderer = () => {
@@ -123,6 +126,7 @@ const createSolidRenderer = () => {
       error: '',
       visible: false
     },
+    layers: {},
     screen: 'mainmenu'
   });
 
@@ -226,6 +230,10 @@ const createSolidRenderer = () => {
               setState('characters', character, { visible: false });
             }
 
+            for (const layer of Object.values(state.layers)) {
+              layer?.delete();
+            }
+
             resolve();
           }
         },
@@ -273,6 +281,45 @@ const createSolidRenderer = () => {
           };
 
           return store.audio[method] = handle;
+        },
+        async custom(fn, resolve) {
+          const get: Parameters<CustomHandler>[0] = (id) => {
+            if (state.layers[id]) return state.layers[id]!;
+
+            const element = <div id={id} /> as HTMLDivElement;
+
+            let _data = {} as Record<string, unknown>;
+
+            const data = (data: Record<string, unknown>) => {
+              if (typeof data === 'undefined') {
+                return _data
+              } else {
+                _data = data;
+                return undefined;
+              }
+            }
+
+            setState('layers', id, () => {
+              return {
+                element,
+                data: data as CustomHandlerGetResultDataFunction,
+                delete() {
+                  setState('layers', id, undefined);
+                }
+              }
+            });
+
+            return state.layers[id]!;
+          };
+
+          await fn(get);
+
+          resolve();
+
+          // хммм
+
+          // resolve();
+          // result ? result.then(resolve) : resolve();
         },
         store,
         ui: {

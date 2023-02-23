@@ -36,6 +36,7 @@ type Renderer = {
   input: (question: string, onInput: Parameters<DefaultActionProxyProvider['input']>[1], setup?: Parameters<DefaultActionProxyProvider['input']>[2]) => (resolve: () => void) => void;
   music: (source: string, method: keyof RendererStore['audio']) => AudioHandle;
   clear: () => (resolve: () => void) => void;
+  custom: (fn: Parameters<DefaultActionProxyProvider['custom']>[0], resolve: () => void) => void;
   store: RendererStore;
 
   ui: {

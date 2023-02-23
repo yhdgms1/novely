@@ -16,7 +16,9 @@
     "build:preview": "pnpm --filter=@novely/preview... --parallel build",
     "preview:preview": "pnpm --filter=@novely/preview... preview",
     "dev:typewriter": "pnpm --filter=@novely/typewriter... --parallel dev",
-    "build:typewriter": "pnpm --filter=@novely/typewriter... --parallel build"
+    "build:typewriter": "pnpm --filter=@novely/typewriter... --parallel build",
+    "dev:particles": "pnpm --filter=@novely/particles... --parallel dev",
+    "build:particles": "pnpm --filter=@novely/particles... --parallel build"
   },
   "devDependencies": {},
   "dependencies": {}

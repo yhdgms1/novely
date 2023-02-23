@@ -14,6 +14,9 @@ import bedroomRoom from './assets/bedroom.webp';
 import masakiNatsukoOk from './assets/Masaki Natsuko.webp';
 import outsideSchool from './assets/outside.webp';
 
+import { particles } from '@novely/particles'
+import { snow } from './particles'
+
 const { createRenderer, Novely } = createSolidRenderer();
 
 const engine = novely({
@@ -100,6 +103,7 @@ engine.withStory({
   'start': [
     // todo: `Music` должно играть после конца
     action.showBackground(classRoom),
+    action.custom(particles(snow)),
     action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__fadeInUp', 'left: 15%'),
     action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
     action.choice(

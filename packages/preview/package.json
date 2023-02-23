@@ -15,11 +15,14 @@
   },
   "dependencies": {
     "@novely/core": "workspace:*",
-    "@novely/t9n": "workspace:*",
+    "@novely/particles": "workspace:*",
     "@novely/solid-renderer": "workspace:*",
+    "@novely/t9n": "workspace:*",
+    "animate.css": "^4.1.1",
+    "normalize.css": "^8.0.1",
     "solid-headless": "^0.13.1",
     "solid-js": "1.6.10",
-    "animate.css": "^4.1.1",
-    "normalize.css": "^8.0.1"
+    "tsparticles-engine": "^2.9.3",
+    "tsparticles-slim": "^2.9.3"
   }
 }
