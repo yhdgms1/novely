@@ -1,4 +1,4 @@
-import type { Renderer, RendererInit, Storage, RendererStore, Character, ValidAction, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction } from '@novely/core'
+import type { Renderer, RendererInit, Storage, RendererStore, Character, ValidAction, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, CustomHandlerGetResultSkipClearOnGoingBackFunction } from '@novely/core'
 import type { JSX } from 'solid-js';
 
 import { Switch, Match } from 'solid-js';
@@ -219,7 +219,7 @@ const createSolidRenderer = () => {
             setState('choices', { choices, resolve, visible: true });
           }
         },
-        clear() {
+        clear(goingBack) {
           return (resolve) => {
             setState('background', '#000');
             setState('choices', { visible: false });
@@ -231,7 +231,14 @@ const createSolidRenderer = () => {
             }
 
             for (const layer of Object.values(state.layers)) {
-              layer?.delete();
+              if (!layer) continue;
+
+              if (goingBack && layer.skipClearOnGoingBack()) {
+                console.log('Nah, wont delete that')
+              } else {
+                console.log('Clearing...')
+                layer.delete();
+              }
             }
 
             resolve();
@@ -282,44 +289,55 @@ const createSolidRenderer = () => {
 
           return store.audio[method] = handle;
         },
-        async custom(fn, resolve) {
+        custom(fn) {
+          const local = {
+            skipClearOnGoingBack: false,
+            storage: {} as Record<string, unknown>,
+            clear: () => { },
+          }
+
+          // @ts-expect-error - It should not
+          const data = (data?: Record<string, unknown>) => {
+            if (!data) {
+              return local.storage;
+            } else {
+              local.storage = data;
+            }
+          }
+
+          // @ts-expect-error - It should not
+          const skipClearOnGoingBack = (value?: boolean) => {
+            if (value) {
+              local.skipClearOnGoingBack = value;
+            } else {
+              return local.skipClearOnGoingBack;
+            }
+          }
+
           const get: Parameters<CustomHandler>[0] = (id) => {
             if (state.layers[id]) return state.layers[id]!;
 
-            const element = <div id={id} /> as HTMLDivElement;
+            setState('layers', id, () => ({
+              element: <div id={id} /> as HTMLDivElement,
+              data: data as CustomHandlerGetResultDataFunction,
+              skipClearOnGoingBack: skipClearOnGoingBack as CustomHandlerGetResultSkipClearOnGoingBackFunction,
+              clear(fn) {
+                local.clear = fn;
+              },
+              delete() {
+                local.clear();
 
-            let _data = {} as Record<string, unknown>;
-
-            const data = (data: Record<string, unknown>) => {
-              if (typeof data === 'undefined') {
-                return _data
-              } else {
-                _data = data;
-                return undefined;
-              }
-            }
-
-            setState('layers', id, () => {
-              return {
-                element,
-                data: data as CustomHandlerGetResultDataFunction,
-                delete() {
-                  setState('layers', id, undefined);
-                }
-              }
-            });
+                setState('layers', id, undefined);
+              },
+            }));
 
             return state.layers[id]!;
           };
 
-          await fn(get);
-
-          resolve();
-
-          // хммм
-
-          // resolve();
-          // result ? result.then(resolve) : resolve();
+          /**
+           * Wait untill it is resolved
+           */
+          return fn(get);
         },
         store,
         ui: {

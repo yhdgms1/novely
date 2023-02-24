@@ -4,7 +4,7 @@ import type { Storage } from './storage';
 import type { Save, State } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, createStack, isCSSImage } from './utils';
+import { matchAction, isNumber, isNull, isString, isCSSImage } from './utils';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
 import { DEFAULT_SAVE, USER_ACTION_REQUIRED_ACTIONS } from './constants';
@@ -97,6 +97,26 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
     stack.value[1] = val as State;
   }
 
+  const createStack = (current: Save, stack = [current]) => {
+    return {
+      get value() {
+        return stack.at(-1)!;
+      },
+      set value(value: Save) {
+        stack[stack.length - 1] = value;
+      },
+      back() {
+        if (stack.length > 1) stack.pop(), goingBack = true;
+      },
+      push(value: Save) {
+        stack.push(value);
+      },
+      clear() {
+        stack = [klona(DEFAULT_SAVE)];
+      }
+    }
+  }
+
   const initial = klona(DEFAULT_SAVE);
   const stack = createStack(initial);
 
@@ -144,6 +164,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
   }
 
   let restoring = false;
+  let goingBack = false;
 
   /**
    * Визуально восстанавливает историю
@@ -167,7 +188,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
      */
     renderer.ui.showScreen('game');
 
-    match('clear', []);
+    match('clear', [goingBack]), goingBack = false;
 
     /**
      * Текущий элемент в истории
@@ -378,12 +399,12 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
     jump([scene]) {
       stack.value[0] = [[null, scene], [null, 0]];
 
-      renderer.clear()(() => {
+      renderer.clear(false)(() => {
         if (!restoring) render();
       })
     },
     clear() {
-      renderer.clear()(push)
+      renderer.clear(goingBack)(push)
     },
     condition([condition]) {
       const value = condition();
@@ -400,7 +421,11 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
       });
     },
     custom([handler]) {
-      return renderer.custom(handler, push);
+      const result = renderer.custom(handler);
+
+      if (!restoring) result ? result.then(push) : push();
+
+      return result;
     },
   });
 

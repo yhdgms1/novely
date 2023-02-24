@@ -20,7 +20,7 @@ const particles = (options: ParticlesOptions): CustomHandler => {
   return async (get) => {
     if (!loaded) {
       /**
-       * Load `tsParticles` in case it is not loaded
+       * Load `tsParticles` in case it's not loaded
        */
       await loadSlim(tsParticles);
       /**
@@ -32,14 +32,20 @@ const particles = (options: ParticlesOptions): CustomHandler => {
     const layer = get('particles');
 
     /**
+     * When `clear` when `goingBack`, do not call the `destroy` method
+     */
+    layer.skipClearOnGoingBack(true);
+
+    /**
      * Remove previous instance
      */
-
-    if (layer.data().instance) {
+    layer.clear(() => {
       /**
        * Get the instance
        */
       const instance = layer.data().instance as Container;
+
+      if (!instance) return;
 
       /**
        * Destroy the instance
@@ -50,7 +56,12 @@ const particles = (options: ParticlesOptions): CustomHandler => {
        * Empty the `data`
        */
       layer.data({});
-    }
+    });
+
+    /**
+     * When restoring when `goingBack`, we should not re-create the `tsParticles`
+     */
+    if (layer.data().instance) return;
 
     const instance = await tsParticles.load('particles', Array.isArray(options) ? options.map(withDefault) : withDefault(options));
 

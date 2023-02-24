@@ -1,8 +1,7 @@
 import type { DefaultActionProxyProvider, ValidAction } from './action'
 import type { Character } from './character'
 import type { Storage } from './storage'
-import type { Save } from './types'
-import type { createStack } from './utils'
+import type { Save, Stack, Thenable } from './types'
 
 interface CharacterHandle {
   canvas: HTMLCanvasElement;
@@ -35,8 +34,8 @@ type Renderer = {
   choices: (choices: ([string, ValidAction[]] | [string, ValidAction[], () => boolean])[]) => (resolve: (selected: number) => void) => void;
   input: (question: string, onInput: Parameters<DefaultActionProxyProvider['input']>[1], setup?: Parameters<DefaultActionProxyProvider['input']>[2]) => (resolve: () => void) => void;
   music: (source: string, method: keyof RendererStore['audio']) => AudioHandle;
-  clear: () => (resolve: () => void) => void;
-  custom: (fn: Parameters<DefaultActionProxyProvider['custom']>[0], resolve: () => void) => void;
+  clear: (goingBack: boolean) => (resolve: () => void) => void;
+  custom: (fn: Parameters<DefaultActionProxyProvider['custom']>[0]) => Thenable<void>;
   store: RendererStore;
 
   ui: {
@@ -53,7 +52,7 @@ type RendererInit = {
   set: (save: Save) => Promise<void>
   restore: (save?: Save) => Promise<void>;
   save: (override?: boolean, type?: Save[2][1]) => Promise<void>;
-  stack: ReturnType<typeof createStack>;
+  stack: Stack;
   languages: string[];
 }
 

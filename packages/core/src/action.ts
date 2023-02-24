@@ -12,7 +12,32 @@ type CustomHandlerGetResultDataFunction = {
   (): Record<string, unknown>;
   (data: Record<string, unknown>): void;
 }
-type CustomHandlerGetResult = { delete: () => void; data: CustomHandlerGetResultDataFunction; element: HTMLDivElement };
+
+type CustomHandlerGetResultSkipClearOnGoingBackFunction = {
+  (): boolean;
+  (value: boolean): void;
+}
+
+type CustomHandlerGetResult = {
+  delete: () => void;
+  /**
+   * Данные
+   */
+  data: CustomHandlerGetResultDataFunction;
+  /**
+   * Элемент слоя
+   */
+  element: HTMLDivElement;
+  /**
+   * Будет ли запускаться очистка при проходе назад
+   */
+  skipClearOnGoingBack: CustomHandlerGetResultSkipClearOnGoingBackFunction
+  /**
+   * Устанавливает обработчик очистки
+   */
+  clear: (fn: () => void) => void;
+};
+
 type CustomHandler = (get: (id: string) => CustomHandlerGetResult) => Thenable<void>;
 
 type ActionProxyProvider<Characters extends Record<string, Character>> = {
@@ -49,4 +74,4 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>>;
 type GetActionParameters<T extends Capitalize<keyof DefaultActionProxyProvider>> = Parameters<DefaultActionProxyProvider[Uncapitalize<T>]>;
 
-export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, DialogContent, ChoiceContent, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction }
+export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, DialogContent, ChoiceContent, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, CustomHandlerGetResultSkipClearOnGoingBackFunction }

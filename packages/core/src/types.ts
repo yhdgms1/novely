@@ -17,4 +17,11 @@ type SaveMeta = [SaveDate, SaveType, SaveLang];
 
 type Save = [Path, State, SaveMeta];
 
-export type { Thenable, Path, Save, State }
+type Stack = {
+  value: Save;
+  back(): void;
+  push(value: Save): void;
+  clear(): void;
+}
+
+export type { Thenable, Path, Save, State, Stack }
