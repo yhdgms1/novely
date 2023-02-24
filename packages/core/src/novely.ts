@@ -250,33 +250,29 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
     });
 
     for await (const [action, meta, i] of indexedQueue) {
-      if (action === 'function') {
+      if (action === 'function' || action === 'custom') {
+        /**
+         * Если `callOnlyLatest` - `true`
+         */
+        if (action === 'custom' && meta[0].callOnlyLatest) {
+          /**
+           * Вычислим `latest` или нет
+           */
+          const next = indexedQueue.slice(i + 1);
+          const latest = !next.some(([_action, _meta]) => _meta[0].toString() === meta[0].toString());
+
+          if (!latest) continue;
+        }
+
         /**
          * Action может возвращать Promise. Нужно подожать его `resolve`
          */
         const result: any = match(action, meta);
 
-        if (result && 'then' in result) {
-          await result;
-        }
-      } else if (action === 'custom') {
-        const next = indexedQueue.slice(i + 1);
-        const latest = !next.some(([_action, _meta]) => _meta[0].toString() === meta[0].toString());
-
-        // todo: TYPES
-
-        if (meta[0].callOnlyLatest && !latest) {
-          continue;
-        }
-
         /**
-         * Action может возвращать Promise. Нужно подожать его `resolve`
+         * Дождёмся окончания
          */
-        const result: any = match(action, meta.concat(latest));
-
-        if (result && 'then' in result) {
-          await result;
-        }
+        if (result && 'then' in result) await result;
       } else {
         match(action, meta);
       }
