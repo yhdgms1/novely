@@ -290,32 +290,32 @@ const createSolidRenderer = () => {
           return store.audio[method] = handle;
         },
         custom(fn) {
-          const local = {
-            skipClearOnGoingBack: false,
-            storage: {} as Record<string, unknown>,
-            clear: () => { },
-          }
-
-          // @ts-expect-error - It should not
-          const data = (data?: Record<string, unknown>) => {
-            if (!data) {
-              return local.storage;
-            } else {
-              local.storage = data;
-            }
-          }
-
-          // @ts-expect-error - It should not
-          const skipClearOnGoingBack = (value?: boolean) => {
-            if (value) {
-              local.skipClearOnGoingBack = value;
-            } else {
-              return local.skipClearOnGoingBack;
-            }
-          }
-
           const get: Parameters<CustomHandler>[0] = (id) => {
             if (state.layers[id]) return state.layers[id]!;
+
+            const local = {
+              skipClearOnGoingBack: false,
+              storage: {} as Record<string, unknown>,
+              clear: () => { },
+            }
+
+            // @ts-expect-error - It should not
+            const data = (data?: Record<string, unknown>) => {
+              if (!data) {
+                return local.storage;
+              } else {
+                local.storage = data;
+              }
+            }
+
+            // @ts-expect-error - It should not
+            const skipClearOnGoingBack = (value?: boolean) => {
+              if (value) {
+                local.skipClearOnGoingBack = value;
+              } else {
+                return local.skipClearOnGoingBack;
+              }
+            }
 
             setState('layers', id, () => ({
               element: <div id={id} /> as HTMLDivElement,

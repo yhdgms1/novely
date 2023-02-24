@@ -15,7 +15,7 @@ import masakiNatsukoOk from './assets/Masaki Natsuko.webp';
 import outsideSchool from './assets/outside.webp';
 
 import { particles } from '@novely/particles'
-import { snow } from './particles'
+import { snow, fireflies } from './particles'
 
 const { createRenderer, Novely } = createSolidRenderer();
 
@@ -103,13 +103,15 @@ engine.withStory({
   'start': [
     // todo: `Music` должно играть после конца
     action.showBackground(classRoom),
-    action.custom(particles(snow)),
+    action.custom(particles(fireflies)),
     action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__fadeInUp', 'left: 15%'),
     action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
     action.choice(
       [
         'Да, я новенький!',
         [
+          // todo: функция должна знать что ну это... да
+          action.custom(particles(snow)),
           action.dialog('Masaki Natsuko', 'Не хочешь зайти ко мне в гости сегодня? 😜'),
           action.choice(
             [
