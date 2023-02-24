@@ -41,7 +41,7 @@ type CustomHandlerGetResult = {
 type CustomHandlerFunction = (get: (id: string) => CustomHandlerGetResult, goingBack: boolean) => Thenable<void>;
 
 type CustomHandler = CustomHandlerFunction & {
-  callOnlyLatest: boolean;
+  callOnlyLatest?: boolean;
 };
 
 type ActionProxyProvider<Characters extends Record<string, Character>> = {
