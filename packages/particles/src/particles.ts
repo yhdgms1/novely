@@ -17,7 +17,7 @@ const withDefault = (options: SingleParticlesOptions) => {
 }
 
 const particles = (options: ParticlesOptions): CustomHandler => {
-  return async (get) => {
+  const handler: CustomHandler = async (get, goingBack) => {
     if (!loaded) {
       /**
        * Load `tsParticles` in case it's not loaded
@@ -58,18 +58,27 @@ const particles = (options: ParticlesOptions): CustomHandler => {
       layer.data({});
     });
 
-    /**
-     * When restoring when `goingBack`, we should not re-create the `tsParticles`
-     */
-    if (layer.data().instance) return;
+    const data = layer.data();
+
+    if (Object.is(data.options, options) && Boolean(data.instance)) return;
+    if (goingBack && Object.is(data.options, options)) return;
+
+    // Да, но он когда запускает первый, идя по массиву, оно уже разное и не Object.is
+    // В этом то и дело
+
+    console.log(options)
 
     const instance = await tsParticles.load('particles', Array.isArray(options) ? options.map(withDefault) : withDefault(options));
 
     /**
      * Set the instance
      */
-    layer.data({ instance });
+    layer.data({ instance, options });
   }
+
+  handler.callOnlyLatest = true;
+
+  return handler;
 }
 
 const hide = (): CustomHandler => {

@@ -38,7 +38,11 @@ type CustomHandlerGetResult = {
   clear: (fn: () => void) => void;
 };
 
-type CustomHandler = (get: (id: string) => CustomHandlerGetResult) => Thenable<void>;
+type CustomHandlerFunction = (get: (id: string) => CustomHandlerGetResult, goingBack: boolean) => Thenable<void>;
+
+type CustomHandler = CustomHandlerFunction & {
+  callOnlyLatest: boolean;
+};
 
 type ActionProxyProvider<Characters extends Record<string, Character>> = {
   choice: (...choices: ([ChoiceContent, ValidAction[]] | [ChoiceContent, ValidAction[], () => boolean])[]) => ValidAction;

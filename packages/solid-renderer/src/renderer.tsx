@@ -289,7 +289,7 @@ const createSolidRenderer = () => {
 
           return store.audio[method] = handle;
         },
-        custom(fn) {
+        custom(fn, goingBack) {
           const get: Parameters<CustomHandler>[0] = (id) => {
             if (state.layers[id]) return state.layers[id]!;
 
@@ -337,7 +337,7 @@ const createSolidRenderer = () => {
           /**
            * Wait untill it is resolved
            */
-          return fn(get);
+          return fn(get, goingBack);
         },
         store,
         ui: {

@@ -188,7 +188,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
      */
     renderer.ui.showScreen('game');
 
-    match('clear', [goingBack]), goingBack = false;
+    match('clear', [goingBack]);
 
     /**
      * Текущий элемент в истории
@@ -207,7 +207,9 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
       return acc;
     }, 0);
 
-    for await (const [type, val] of stack.value[0]) {
+    const queue = [] as [any, any][];
+
+    for (const [type, val] of stack.value[0]) {
       if (type === null) {
         if (isString(val)) {
           current = current[val];
@@ -225,24 +227,13 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
              */
             if (USER_ACTION_REQUIRED_ACTIONS.has(action)) {
               if (index === max && i === val) {
-                match(action, meta);
+                queue.push([action, meta]);
               } else {
                 continue;
               }
             }
 
-            if (action === 'function' || action === 'custom') {
-              /**
-               * Action может возвращать Promise. Нужно подожать его `resolve`
-               */
-              const result: any = match(action, meta);
-
-              if (result && 'then' in result) {
-                await result;
-              }
-            } else {
-              match(action, meta)
-            }
+            queue.push([action, meta]);
           }
 
           current = current[val];
@@ -254,7 +245,44 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
       }
     }
 
-    restoring = false, render();
+    const indexedQueue = queue.map((value, index) => {
+      return value.concat(index) as [any, any, number];
+    });
+
+    for await (const [action, meta, i] of indexedQueue) {
+      if (action === 'function') {
+        /**
+         * Action может возвращать Promise. Нужно подожать его `resolve`
+         */
+        const result: any = match(action, meta);
+
+        if (result && 'then' in result) {
+          await result;
+        }
+      } else if (action === 'custom') {
+        const next = indexedQueue.slice(i + 1);
+        const latest = !next.some(([_action, _meta]) => _meta[0].toString() === meta[0].toString());
+
+        // todo: TYPES
+
+        if (meta[0].callOnlyLatest && !latest) {
+          continue;
+        }
+
+        /**
+         * Action может возвращать Promise. Нужно подожать его `resolve`
+         */
+        const result: any = match(action, meta.concat(latest));
+
+        if (result && 'then' in result) {
+          await result;
+        }
+      } else {
+        match(action, meta);
+      }
+    }
+
+    restoring = false, goingBack = false, render();
   }
 
   const refer = () => {
@@ -421,7 +449,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
       });
     },
     custom([handler]) {
-      const result = renderer.custom(handler);
+      const result = renderer.custom(handler, goingBack);
 
       if (!restoring) result ? result.then(push) : push();
 

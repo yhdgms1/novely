@@ -1,11 +1,16 @@
-import type { ActionProxyProvider } from './action'
+import type { ActionProxyProvider, CustomHandler } from './action'
 import type { Character } from './character'
+import type { Thenable } from './types'
 
 type MatchActionMap = {
   [Key in keyof ActionProxyProvider<Record<string, Character>>]: (data: Parameters<ActionProxyProvider<Record<string, Character>>[Key]>) => void;
 }
 
-const matchAction = <M extends MatchActionMap>(values: M) => {
+type MatchActionMapComplete = Omit<MatchActionMap, 'custom'> & {
+  custom: (value: [handler: CustomHandler]) => Thenable<void>;
+}
+
+const matchAction = <M extends MatchActionMapComplete>(values: M) => {
   return (action: keyof MatchActionMap, props: any) => {
     return values[action](props);
   }
