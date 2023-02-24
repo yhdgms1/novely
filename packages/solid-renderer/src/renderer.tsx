@@ -233,12 +233,10 @@ const createSolidRenderer = () => {
             for (const layer of Object.values(state.layers)) {
               if (!layer) continue;
 
-              if (goingBack && layer.skipClearOnGoingBack()) {
-                console.log('Nah, wont delete that')
-              } else {
-                console.log('Clearing...')
-                layer.delete();
-              }
+              /**
+               * Если происходит переход назад, и слой просит пропустить очистку при переходе назад, то не будем очищать слой
+               */
+              if (!(goingBack && layer.skipClearOnGoingBack())) layer.delete();
             }
 
             resolve();

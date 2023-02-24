@@ -59,14 +59,15 @@ const particles = (options: ParticlesOptions): CustomHandler => {
     });
 
     const data = layer.data();
+    const optionsEqual = data.options === options;
 
-    if (Object.is(data.options, options) && Boolean(data.instance)) return;
-    if (goingBack && Object.is(data.options, options)) return;
-
-    // Да, но он когда запускает первый, идя по массиву, оно уже разное и не Object.is
-    // В этом то и дело
-
-    console.log(options)
+    /**
+     * Skip re-rendering if:
+     * 1) Options has not changed and instance is present
+     * 2) Options has not changed and we are goingBack
+     */
+    if (optionsEqual && Boolean(data.instance)) return;
+    if (optionsEqual && goingBack) return;
 
     const instance = await tsParticles.load('particles', Array.isArray(options) ? options.map(withDefault) : withDefault(options));
 

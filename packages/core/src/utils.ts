@@ -34,4 +34,8 @@ const isCSSImage = (str: string) => {
   return startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data');
 }
 
-export { matchAction, isNumber, isNull, isString, isCSSImage }
+const str = (value: unknown) => {
+  return String(value);
+}
+
+export { matchAction, isNumber, isNull, isString, isCSSImage, str }

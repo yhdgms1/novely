@@ -1,10 +1,10 @@
 import type { Character } from './character';
-import type { ActionProxyProvider, Story, ValidAction, DialogContent, ChoiceContent } from './action';
+import type { ActionProxyProvider, GetActionParameters, Story, ValidAction, DialogContent, ChoiceContent } from './action';
 import type { Storage } from './storage';
 import type { Save, State } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, isCSSImage } from './utils';
+import { matchAction, isNumber, isNull, isString, isCSSImage, str } from './utils';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
 import { DEFAULT_SAVE, USER_ACTION_REQUIRED_ACTIONS } from './constants';
@@ -204,6 +204,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
      */
     const max = stack.value[0].reduce((acc, [type, val]) => {
       if (isNull(type) && isNumber(val)) return acc + 1;
+
       return acc;
     }, 0);
 
@@ -245,21 +246,19 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
       }
     }
 
-    const indexedQueue = queue.map((value, index) => {
-      return value.concat(index) as [any, any, number];
-    });
+    const indexedQueue = queue.map((value, index) => value.concat(index) as [ValidAction[0], ValidAction[1], number]);
 
     for await (const [action, meta, i] of indexedQueue) {
       if (action === 'function' || action === 'custom') {
         /**
          * Если `callOnlyLatest` - `true`
          */
-        if (action === 'custom' && meta[0].callOnlyLatest) {
+        if (action === 'custom' && (meta as GetActionParameters<'Custom'>)[0].callOnlyLatest) {
           /**
            * Вычислим `latest` или нет
            */
           const next = indexedQueue.slice(i + 1);
-          const latest = !next.some(([_action, _meta]) => _meta[0].toString() === meta[0].toString());
+          const latest = !next.some(([_action, _meta]) => str(_meta[0]) === str(meta[0]));
 
           if (!latest) continue;
         }
@@ -267,7 +266,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
         /**
          * Action может возвращать Promise. Нужно подожать его `resolve`
          */
-        const result: any = match(action, meta);
+        const result = match(action, meta);
 
         /**
          * Дождёмся окончания
@@ -436,7 +435,11 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
       if (!restoring) stack.value[0].push(['condition', value], [null, 0]), render();
     },
     end() {
-      // конец!!
+      save(false, 'auto').then(() => {
+        match('clear', []);
+
+        renderer.ui.showScreen('mainmenu');
+      });
     },
     input([question, onInput, setup]) {
       renderer.input(question, onInput, setup)(() => {
