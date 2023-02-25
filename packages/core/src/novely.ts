@@ -449,6 +449,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
     },
     custom([handler]) {
       const result = renderer.custom(handler, goingBack, () => {
+        if (!restoring && handler.requireUserAction) enmemory();
         if (!restoring) push();
       });
 
