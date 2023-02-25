@@ -47,7 +47,7 @@ const video = ({ controls, close, loop, url }: VideoParameters): CustomHandler =
     });
 
     const closeHandler = () => {
-      video.removeEventListener('ended', resolve);
+      video.removeEventListener('ended', closeHandler);
       button.removeEventListener('click', closeHandler);
       
       layer.delete(), resolve();
