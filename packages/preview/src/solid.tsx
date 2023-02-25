@@ -14,6 +14,7 @@ import bedroomRoom from './assets/bedroom.webp';
 import masakiNatsukoOk from './assets/Masaki Natsuko.webp';
 import outsideSchool from './assets/outside.webp';
 
+import { video } from '@novely/video'
 import { particles } from '@novely/particles'
 import { snow, fireflies } from './particles'
 
@@ -104,13 +105,13 @@ engine.withStory({
     // todo: `Music` должно играть после конца
     action.showBackground(classRoom),
     action.custom(particles(fireflies)),
+    action.custom(video({ url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' })),
     action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__fadeInUp', 'left: 15%'),
     action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
     action.choice(
       [
         'Да, я новенький!',
         [
-          // todo: функция должна знать что ну это... да
           action.custom(particles(snow)),
           action.dialog('Masaki Natsuko', 'Не хочешь зайти ко мне в гости сегодня? 😜'),
           action.choice(

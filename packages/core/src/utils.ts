@@ -38,4 +38,8 @@ const str = (value: unknown) => {
   return String(value);
 }
 
-export { matchAction, isNumber, isNull, isString, isCSSImage, str }
+const isUserRequiredAction = (action: keyof MatchActionMapComplete, meta: Parameters<MatchActionMapComplete[keyof MatchActionMapComplete]>) => {
+  return action === 'custom' && meta[0] && (meta[0] as unknown as CustomHandler).requireUserAction;
+}
+
+export { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction }

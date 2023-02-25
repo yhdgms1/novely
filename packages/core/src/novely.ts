@@ -4,7 +4,7 @@ import type { Storage } from './storage';
 import type { Save, State } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, isCSSImage, str } from './utils';
+import { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction } from './utils';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
 import { DEFAULT_SAVE, USER_ACTION_REQUIRED_ACTIONS } from './constants';
@@ -226,7 +226,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
             /**
              * Экшены, для закрытия которых пользователь должен с ними взаимодействовать
              */
-            if (USER_ACTION_REQUIRED_ACTIONS.has(action)) {
+            if (USER_ACTION_REQUIRED_ACTIONS.has(action) || isUserRequiredAction(action, meta)) {
               if (index === max && i === val) {
                 queue.push([action, meta]);
               } else {
@@ -448,9 +448,9 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
       });
     },
     custom([handler]) {
-      const result = renderer.custom(handler, goingBack);
-
-      if (!restoring) result ? result.then(push) : push();
+      const result = renderer.custom(handler, goingBack, () => {
+        if (!restoring) push();
+      });
 
       return result;
     },

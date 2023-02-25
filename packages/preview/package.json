@@ -16,6 +16,7 @@
   "dependencies": {
     "@novely/core": "workspace:*",
     "@novely/particles": "workspace:*",
+    "@novely/video": "workspace:*",
     "@novely/solid-renderer": "workspace:*",
     "@novely/t9n": "workspace:*",
     "animate.css": "^4.1.1",

@@ -87,6 +87,9 @@ importers:
       '@novely/t9n':
         specifier: workspace:*
         version: link:../t9n
+      '@novely/video':
+        specifier: workspace:*
+        version: link:../video
       animate.css:
         specifier: ^4.1.1
         version: 4.1.1
@@ -151,6 +154,19 @@ importers:
         version: 4.9.5
 
   packages/typewriter:
+    devDependencies:
+      tsup:
+        specifier: ^6.6.0
+        version: 6.6.0(typescript@4.9.5)
+      typescript:
+        specifier: ^4.9.5
+        version: 4.9.5
+
+  packages/video:
+    dependencies:
+      '@novely/core':
+        specifier: workspace:*
+        version: link:../core
     devDependencies:
       tsup:
         specifier: ^6.6.0
