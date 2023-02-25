@@ -35,11 +35,9 @@ const video = ({ controls, close, loop, url }: VideoParameters): CustomHandler =
       src: url,
       autoplay: 'autoplay',
       controls: controls ? 'controls' : undefined,
-      loop: loop ? 'loop' : undefined,
+      loop: close ? undefined : loop ? 'loop' : undefined,
       className: styles.video,
     });
-
-    if (close) video.addEventListener('ended', resolve, { once: true });
 
     const button = createElement('button', {
       type: 'button',
@@ -48,14 +46,21 @@ const video = ({ controls, close, loop, url }: VideoParameters): CustomHandler =
       className: styles.button,
     });
 
-    const onButtonClick = () => {
+    const closeHandler = () => {
       video.removeEventListener('ended', resolve);
-      button.removeEventListener('click', onButtonClick);
+      button.removeEventListener('click', closeHandler);
       
       layer.delete(), resolve();
     }
 
-    button.addEventListener('click', onButtonClick, { once: true });
+    /**
+     * Video closes automatically if `close` is provided
+     */
+    if (close) video.addEventListener('ended', closeHandler, { once: true });
+    /**
+     * Button closes video anyway
+     */
+    button.addEventListener('click', closeHandler, { once: true });
 
     layer.element.append(video, button)
   };

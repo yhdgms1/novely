@@ -16,6 +16,7 @@ export const container = css({
 export const video = css({
   maxWidth: '80vw',
   minWidth: '30vw',
+  maxHeight: '60vh',
   borderRadius: '13px',
   boxShadow: '0 21rem 87rem 0 rgba(42,44,58,.15), 11.737rem 22.074rem 32rem 0 rgba(129,165,238,.1)'
 });

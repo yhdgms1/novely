@@ -105,7 +105,7 @@ engine.withStory({
     // todo: `Music` должно играть после конца
     action.showBackground(classRoom),
     action.custom(particles(fireflies)),
-    action.custom(video({ url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', controls: true })),
+    action.custom(video({ url: 'http://techslides.com/demos/sample-videos/small.mp4', controls: true, })),
     action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__fadeInUp', 'left: 15%'),
     action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
     action.choice(
