@@ -3,7 +3,7 @@ import 'normalize.css'
 
 import { render } from 'solid-js/web'
 import { novely, localStorageStorage } from '@novely/core'
-import { createT9N } from '@novely/t9n'
+import { createT9N, RU } from '@novely/t9n'
 import { createSolidRenderer } from '@novely/solid-renderer'
 
 import '@novely/solid-renderer/dist/index.css'
@@ -67,9 +67,10 @@ const engine = novely({
         }
       },
       strings: {
+        ...RU,
         'HowOldAreYou': 'Привет, {{name}}! Сколько тебе лет? 😙',
         'ReallyAgeYears': 'Правда {{age}} {{age@years}}? Загляни ко мне как-нибудь 😉',
-        'YouAreAgeYears': 'Тебе {{age}} {{age@years}}?? Не умею я определять возраст... 😅'
+        'YouAreAgeYears': 'Тебе {{age}} {{age@years}}?? Не умею я определять возраст... 😅',
       }
     },
     en: {
@@ -83,9 +84,10 @@ const engine = novely({
         }
       },
       strings: {
+        ...RU,
         'HowOldAreYou': 'Hi, {{name}}! How old are you? 😙',
         'ReallyAgeYears': 'Really {{age}} {{age@years}}? Drop by and see me sometime 😉',
-        'YouAreAgeYears': "You are {{age}} {{age@years}} old? I'm not good at determining age... 😅"
+        'YouAreAgeYears': "You are {{age}} {{age@years}} old? I'm not good at determining age... 😅",
       }
     },
   }),

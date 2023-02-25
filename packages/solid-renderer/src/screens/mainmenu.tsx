@@ -11,11 +11,12 @@ interface MainMenuProps {
 
   restore: RendererInit['restore'];
   storage: Storage
+  t: RendererInit['t'];
 }
 
 const MainMenu: VoidComponent<MainMenuProps> = (props) => {
   const restore = props.restore.bind(props.restore, undefined);
-  const setScreen = (screen: "mainmenu" | "game" | "saves") => props.setState('screen', screen);
+  const setScreen = (screen: "mainmenu" | "game" | "saves" | "settings") => props.setState('screen', screen);
 
   const newGame = () => {
     props.storage.get().then(prev => {
@@ -38,13 +39,16 @@ const MainMenu: VoidComponent<MainMenuProps> = (props) => {
     >
       <div class={style.controls}>
         <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={newGame}>
-          Новая игра
+          {props.t('NewGame')}
         </button>
         <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={restore}>
-          Загрузить
+          {props.t('LoadSave')}
         </button>
         <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={() => setScreen('saves')}>
-          Сохранения
+          {props.t('Saves')}
+        </button>
+        <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={() => setScreen('settings')}>
+          {props.t('Settings')}
         </button>
       </div>
     </div>

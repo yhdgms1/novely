@@ -1,6 +1,6 @@
 type PluralType = Intl.LDMLPluralRule;
 type FunctionalSetupT9N = <LanguageKey extends string, PluralKey extends string, StringKey extends string>(parameters: { [Lang in LanguageKey]: { pluralization: { [Plural in PluralKey]: Partial<Record<PluralType, string>> }; strings: { [Str in StringKey]: string } } }) => T9N<LanguageKey, PluralKey, StringKey>
-type SetupT9N<LanguageKey extends string> = <PluralKey extends string, StringKey extends string>(parameters: { [Lang in LanguageKey]: { pluralization: { [Plural in PluralKey]: Partial<Record<PluralType, string>> }; strings: { [Str in StringKey]: string } } }) => T9N<LanguageKey, PluralKey, StringKey>
+type SetupT9N<LanguageKey extends string, StringKey extends string> = <PluralKey extends string>(parameters: { [Lang in LanguageKey]: { pluralization: { [Plural in PluralKey]: Partial<Record<PluralType, string>> }; strings: { [Str in StringKey]: string } } }) => T9N<LanguageKey, PluralKey, StringKey>
 
 type T9N<LanguageKey extends string, _PluralKey extends string, StringKey extends string> = {
   t(key: StringKey): (lang: LanguageKey | (string & {}), obj: Record<string, unknown>) => string;

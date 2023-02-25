@@ -145,10 +145,11 @@ const createSolidRenderer = () => {
   let stack!: RendererInit['stack'];
   let renderer!: Renderer;
   let languages!: string[];
+  let t!: RendererInit['t'];
 
   return {
     createRenderer(init: RendererInit): Renderer {
-      characters = init.characters, storage = init.storage, set = init.set, restore = init.restore, save = init.save, stack = init.stack, languages = init.languages;
+      characters = init.characters, storage = init.storage, set = init.set, restore = init.restore, save = init.save, stack = init.stack, languages = init.languages, t = init.t;
 
       return renderer = {
         background(background) {
@@ -335,7 +336,7 @@ const createSolidRenderer = () => {
           /**
            * Wait untill it is resolved
            */
-          const result = fn(get, goingBack, fn.requireUserAction ? resolve : () => {});
+          const result = fn(get, goingBack, fn.requireUserAction ? resolve : () => { });
 
           if (!fn.requireUserAction) result ? result.then(resolve) : resolve()
 
@@ -357,13 +358,13 @@ const createSolidRenderer = () => {
               <Game state={state} setState={/* @once */ setState} store={/* @once */ store} characters={/* @once */ characters} renderer={/* @once */ renderer} stack={/* @once */ stack} restore={/* @once */ restore} save={/* @once */ save} />
             </Match>
             <Match when={state.screen === 'mainmenu'}>
-              <MainMenu setState={/* @once */ setState} storage={/* @once */ storage} restore={/* @once */ restore} />
+              <MainMenu setState={/* @once */ setState} storage={/* @once */ storage} restore={/* @once */ restore} t={/* @once */ t} />
             </Match>
             <Match when={state.screen === 'saves'}>
               <Saves setState={/* @once */ setState} storage={/* @once */ storage} set={/* @once */ set} />
             </Match>
             <Match when={state.screen === 'settings'}>
-              <Settings setState={/* @once */ setState} storage={/* @once */ storage} languages={/* @once */ languages} restore={/* @once */ restore} />
+              <Settings setState={/* @once */ setState} storage={/* @once */ storage} languages={/* @once */ languages} restore={/* @once */ restore} stack={/* @once */ stack} t={/* @once */ t} />
             </Match>
             <Match when={state.screen === 'loading'}>
               <Loading />

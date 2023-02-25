@@ -13,9 +13,12 @@ interface SettingsProps {
   setState: SetStoreFunction<State>;
   restore: RendererInit['restore'];
 
+  stack: RendererInit['stack'];
   storage: Storage;
 
   languages: string[];
+
+  t: RendererInit['t'];
 }
 
 const Settings: VoidComponent<SettingsProps> = (props) => {
@@ -29,6 +32,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
     const data = saves()!;
 
     data[data.length - 1][2][2] = selected;
+    props.stack.value[2][2] = selected;
 
     setScreen('loading');
     props.storage.set(data).then(() => setScreen('settings'));
@@ -45,14 +49,14 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
     >
       <div class={style.controls}>
         <button type="button" class={join(style.button, style.buttonSettings)} onClick={() => setScreen('mainmenu')}>
-          Главный экран
+          {props.t('HomeScreen')}
         </button>
         <button type="button" class={join(style.button, style.buttonSettings)} onClick={() => props.restore()}>
-          К игре
+          {props.t('ToTheGame')}
         </button>
       </div>
-      <Show when={saves.state === 'ready'} fallback={<>В данный момент сохранения {saves.state}</>}>
-        <Show when={saves()} fallback={<>Сохранений нет</>}>
+      <Show when={saves.state === 'ready'} fallback={<>{props.t('AtTheMomentTheSavesAre')} {saves.state}</>}>
+        <Show when={saves()} fallback={<>{props.t('NoSaves')}</>}>
           {() => {
             const latest = saves()!.at(-1)!;
             const current = latest[2][2];
@@ -63,7 +67,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 
             return (
               <div class={style.content}>
-                <label for={id}>Язык</label>
+                <label for={id}>{props.t('Language')}</label>
                 <select id={id} onChange={onSelect}>
                   <For each={props.languages}>
                     {language => {
