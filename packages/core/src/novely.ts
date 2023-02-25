@@ -7,7 +7,7 @@ import type { SetupT9N } from '@novely/t9n'
 import { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction } from './utils';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
-import { DEFAULT_SAVE, USER_ACTION_REQUIRED_ACTIONS } from './constants';
+import { DEFAULT_SAVE, SKIPPED_DURING_RESTORE } from './constants';
 
 interface NovelyInit<Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>> {
   /**
@@ -225,8 +225,9 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
 
             /**
              * Экшены, для закрытия которых пользователь должен с ними взаимодействовать
+             * Также в эту группу входят экшены, которые не должны быть вызваны при восстановлении
              */
-            if (USER_ACTION_REQUIRED_ACTIONS.has(action) || isUserRequiredAction(action, meta)) {
+            if (SKIPPED_DURING_RESTORE.has(action) || isUserRequiredAction(action, meta)) {
               if (index === max && i === val) {
                 queue.push([action, meta]);
               } else {
@@ -427,7 +428,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
       })
     },
     clear() {
-      renderer.clear(goingBack)(push)
+      navigator.vibrate(0), renderer.clear(goingBack)(push);
     },
     condition([condition]) {
       const value = condition();
@@ -455,6 +456,9 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
 
       return result;
     },
+    vibrate(pattern) {
+      navigator.vibrate(pattern), push();
+    }
   });
 
   const enmemory = () => {

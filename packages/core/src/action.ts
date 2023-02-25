@@ -74,6 +74,8 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
   input: (question: string, onInput: (meta: { input: HTMLInputElement, error: (error: string) => void, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, setup?: (input: HTMLInputElement) => void) => ValidAction;
 
   custom: (handler: CustomHandler) => ValidAction;
+
+  vibrate: (...pattern: number[]) => ValidAction;
 }
 
 type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>>;
