@@ -458,6 +458,9 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
     },
     vibrate(pattern) {
       navigator.vibrate(pattern), push();
+    },
+    next() {
+      push();
     }
   });
 

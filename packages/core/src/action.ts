@@ -76,6 +76,8 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
   custom: (handler: CustomHandler) => ValidAction;
 
   vibrate: (...pattern: number[]) => ValidAction;
+
+  next: () => ValidAction;
 }
 
 type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>>;
