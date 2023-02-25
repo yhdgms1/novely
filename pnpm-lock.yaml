@@ -23,6 +23,19 @@ importers:
         specifier: ^4.9.5
         version: 4.9.5
 
+  packages/css:
+    dependencies:
+      csstype:
+        specifier: ^3.1.1
+        version: 3.1.1
+    devDependencies:
+      tsup:
+        specifier: ^6.6.0
+        version: 6.6.0(typescript@4.9.5)
+      typescript:
+        specifier: ^4.9.5
+        version: 4.9.5
+
   packages/dom-renderer:
     dependencies:
       '@novely/core':
@@ -167,6 +180,9 @@ importers:
       '@novely/core':
         specifier: workspace:*
         version: link:../core
+      '@novely/css':
+        specifier: workspace:*
+        version: link:../css
     devDependencies:
       tsup:
         specifier: ^6.6.0

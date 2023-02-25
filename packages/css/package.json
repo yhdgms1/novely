@@ -1,7 +1,7 @@
 {
-  "name": "@novely/video",
-  "description": "Video Action",
-  "version": "0.0.2",
+  "name": "@novely/css",
+  "description": "CSS-in-JS for Novely",
+  "version": "0.1.0",
   "type": "module",
   "sideEffects": false,
   "types": "./dist/index.d.ts",
@@ -14,25 +14,22 @@
     "dev": "tsup --watch",
     "build": "tsup --dts"
   },
-  "dependencies": {
-    "@novely/core": "workspace:*",
-    "@novely/css": "workspace:*"
-  },
   "devDependencies": {
     "tsup": "^6.6.0",
     "typescript": "^4.9.5"
   },
-  "peerDependencies": {
-    "@novely/core": "*"
+  "dependencies": {
+    "csstype": "^3.1.1"
   },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/yhdgms1/novely/issues"
   },
-  "homepage": "https://github.com/yhdgms1/novely/tree/main/packages/particles",
+  "homepage": "https://github.com/yhdgms1/novely/tree/main/packages/css",
   "keywords": [
-    "novely",
-    "video"
+    "css",
+    "css-in-js",
+    "novely"
   ],
   "author": {
     "name": "Artemiy Schukin",

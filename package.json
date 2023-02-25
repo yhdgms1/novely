@@ -19,6 +19,8 @@
     "build:typewriter": "pnpm --filter=@novely/typewriter... --parallel build",
     "dev:particles": "pnpm --filter=@novely/particles... --parallel dev",
     "build:particles": "pnpm --filter=@novely/particles... --parallel build",
+    "dev:css": "pnpm --filter=@novely/css... --parallel dev",
+    "build:css": "pnpm --filter=@novely/css... --parallel build",
     "dev:video": "pnpm --filter=@novely/video... --parallel dev",
     "build:video": "pnpm --filter=@novely/video... --parallel build"
   },
