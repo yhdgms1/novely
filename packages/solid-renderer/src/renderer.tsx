@@ -355,13 +355,13 @@ const createSolidRenderer = () => {
         <div {...props}>
           <Switch fallback={<>No</>}>
             <Match when={state.screen === "game"}>
-              <Game state={state} setState={/* @once */ setState} store={/* @once */ store} characters={/* @once */ characters} renderer={/* @once */ renderer} stack={/* @once */ stack} restore={/* @once */ restore} save={/* @once */ save} />
+              <Game state={state} setState={/* @once */ setState} store={/* @once */ store} characters={/* @once */ characters} renderer={/* @once */ renderer} stack={/* @once */ stack} restore={/* @once */ restore} save={/* @once */ save} t={/* @once */ t} />
             </Match>
             <Match when={state.screen === 'mainmenu'}>
               <MainMenu setState={/* @once */ setState} storage={/* @once */ storage} restore={/* @once */ restore} t={/* @once */ t} />
             </Match>
             <Match when={state.screen === 'saves'}>
-              <Saves setState={/* @once */ setState} storage={/* @once */ storage} set={/* @once */ set} />
+              <Saves setState={/* @once */ setState} storage={/* @once */ storage} set={/* @once */ set} t={/* @once */ t} />
             </Match>
             <Match when={state.screen === 'settings'}>
               <Settings setState={/* @once */ setState} storage={/* @once */ storage} languages={/* @once */ languages} restore={/* @once */ restore} stack={/* @once */ stack} t={/* @once */ t} />

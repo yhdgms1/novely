@@ -2,7 +2,7 @@ import type { DefaultActionProxyProvider, ValidAction } from './action'
 import type { Character } from './character'
 import type { Storage } from './storage'
 import type { Save, Stack, Thenable } from './types'
-import type { BaseTranslationStrings } from '@novely/t9n'
+import type { BaseTranslationStrings, Unmark } from '@novely/t9n'
 
 interface CharacterHandle {
   canvas: HTMLCanvasElement;
@@ -55,7 +55,7 @@ type RendererInit = {
   save: (override?: boolean, type?: Save[2][1]) => Promise<void>;
   stack: Stack;
   languages: string[];
-  t: (key: BaseTranslationStrings) => string;
+  t: (key: keyof Unmark<Record<BaseTranslationStrings, string>>) => string;
 }
 
 export type { CharacterHandle, AudioHandle, RendererStore, Renderer, RendererInit }

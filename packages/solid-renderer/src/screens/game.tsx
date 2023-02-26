@@ -23,6 +23,8 @@ interface GameProps {
   stack: RendererInit['stack'];
   restore: RendererInit['restore'];
   save: RendererInit['save'];
+
+  t: RendererInit['t'];
 }
 
 const Game: VoidComponent<GameProps> = (props) => {
@@ -239,7 +241,7 @@ const Game: VoidComponent<GameProps> = (props) => {
               class={join(style.button, style.buttonInputDialogPanel)}
               aria-disabled={(props.state.input.error || !props.state.input.element?.validity.valid) ? 'true' : 'false'}
             >
-              Подтвердить
+              {props.t('Sumbit')}
             </button>
           </DialogPanel>
         </div>
@@ -259,7 +261,7 @@ const Game: VoidComponent<GameProps> = (props) => {
             props.restore(props.stack.value);
           }}
         >
-          Назад
+          {props.t('GoBack')}
         </button>
         <button
           type="button"
@@ -267,7 +269,7 @@ const Game: VoidComponent<GameProps> = (props) => {
             props.save(false, 'manual');
           }}
         >
-          Сохранение
+          {props.t('DoSave')}
         </button>
         <button
           type="button"
@@ -275,7 +277,7 @@ const Game: VoidComponent<GameProps> = (props) => {
             setAuto(prev => !prev);
           }}
         >
-          Авто: {String(auto())}
+          {props.t(auto() ? 'Auto' : 'Stop')}
         </button>
         <button
           type="button"
@@ -285,7 +287,7 @@ const Game: VoidComponent<GameProps> = (props) => {
             });
           }}
         >
-          Настройки
+          {props.t('Settings')}
         </button>
         <button
           type="button"
@@ -294,7 +296,7 @@ const Game: VoidComponent<GameProps> = (props) => {
             props.setState('screen', 'mainmenu');
           }}
         >
-          Выход
+          {props.t('Exit')}
         </button>
       </div>
     </div>

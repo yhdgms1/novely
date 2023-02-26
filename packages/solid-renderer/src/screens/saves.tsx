@@ -14,6 +14,8 @@ interface SavesProps {
 
   storage: Storage;
   set: RendererInit['set'];
+
+  t: RendererInit['t'];
 }
 
 const Saves: VoidComponent<SavesProps> = (props) => {
@@ -48,27 +50,27 @@ const Saves: VoidComponent<SavesProps> = (props) => {
     >
       <div class={style.controls}>
         <button type="button" class={join(style.button, style.buttonSaves)} onClick={() => setScreen('mainmenu')}>
-          Назад
+          {props.t('GoBack')}
         </button>
       </div>
-      <Show when={saves.state === 'ready'} fallback={<>В данный момент сохранения {saves.state}</>}>
-        <Show when={saves()} fallback={<>Сохранений нет</>}>
+      <Show when={saves.state === 'ready'} fallback={<>{props.t('AtTheMomentTheSavesAre')} {saves.state}</>}>
+        <Show when={saves()} fallback={<>{props.t('NoSaves')}</>}>
           <ol class={style.list}>
             <For each={saves()}>
               {save => {
                 const [date, type] = save[2];
 
                 const stringDate = capitalize(new Date(date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }));
-                const stringType = type === 'auto' ? <>Автоматическое</> : <>Ручное</>;
+                const stringType = props.t(type === 'auto' ? 'Automatic' : 'Manual');
 
                 return (
                   <li>
-                    <button type="button" class={join(style.button, style.buttonSaves)} onClick={props.set.bind(props.set, save)} aria-label={"Загрузить сохранение от " + stringDate}>
+                    <button type="button" class={join(style.button, style.buttonSaves)} onClick={props.set.bind(props.set, save)} aria-label={props.t('LoadASaveFrom') + ' ' + stringDate}>
                       {stringDate}
                       <span style={{ "margin-left": '1em' }}>{stringType}</span>
                     </button>
-                    <button type="reset" class={join(style.button, style.buttonSavesDelete)} aria-label={'Удалить сохранение от ' + stringDate} onClick={[removeSave, date]}>
-                      <span>Удалить</span>
+                    <button type="reset" class={join(style.button, style.buttonSavesDelete)} aria-label={props.t('DeleteASaveFrom') + ' ' + stringDate} onClick={[removeSave, date]}>
+                      <span>{props.t('Remove')}</span>
                     </button>
                   </li>
                 )

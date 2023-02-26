@@ -305,7 +305,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
     save,
     stack,
     languages,
-    t: (key) => t9n.t(key as any)(stack.value[2][2], state()),
+    t: (key) => t9n.t('internal:' + key as any)(stack.value[2][2], state()),
   });
 
   const preloadAssets = () => {
