@@ -11,11 +11,18 @@ type State = Record<string, StateValues>;
 
 type SaveDate = number;
 type SaveType = "manual" | "auto";
-type SaveLang = string;
 
-type SaveMeta = [SaveDate, SaveType, SaveLang];
+type SaveMeta = [SaveDate, SaveType];
 
 type Save = [Path, State, SaveMeta];
+
+type Lang = string;
+type StorageMeta = [Lang]
+
+type StorageData = {
+  saves: Save[];
+  meta: StorageMeta;
+}
 
 type Stack = {
   value: Save;
@@ -24,4 +31,4 @@ type Stack = {
   clear(): void;
 }
 
-export type { Thenable, Path, Save, State, Stack }
+export type { Thenable, Path, Save, State, Stack, StorageData }

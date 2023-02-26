@@ -20,9 +20,9 @@ import { snow, fireflies } from './particles'
 
 const { createRenderer, Novely } = createSolidRenderer();
 
-const engine = novely({
+const engine = await novely({
   languages: ['ru', 'en'],
-  storage: localStorageStorage({ key: 'novely-' }),
+  storage: localStorageStorage({ key: 'novely-saves' }),
   renderer: createRenderer,
   characters: {
     'Masaki Natsuko': {

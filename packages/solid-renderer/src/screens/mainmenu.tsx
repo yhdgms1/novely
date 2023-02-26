@@ -24,7 +24,7 @@ const MainMenu: VoidComponent<MainMenuProps> = (props) => {
        * Новая пустая история
        * todo: брать из констат
        */
-      prev.push([[[null, 'start'], [null, 0]], {}, [Date.now(), 'manual', 'ru']]);
+      prev.saves.push([[[null, 'start'], [null, 0]], {}, [Date.now(), 'manual']]);
 
       props.storage.set(prev).then(restore);
     });

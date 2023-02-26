@@ -4,10 +4,10 @@ import type { Storage } from './storage';
 import type { Save, State } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction } from './utils';
+import { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getLanguage } from './utils';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
-import { DEFAULT_SAVE, SKIPPED_DURING_RESTORE } from './constants';
+import { SKIPPED_DURING_RESTORE, getDefaultSave } from './constants';
 
 interface NovelyInit<Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>> {
   /**
@@ -112,12 +112,13 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
         stack.push(value);
       },
       clear() {
-        stack = [klona(DEFAULT_SAVE)];
+        stack = [getDefaultSave(languages, 'ru')];
       }
     }
   }
 
-  const initial = klona(DEFAULT_SAVE);
+  // todo: load prev save
+  const initial = getDefaultSave(languages);
   const stack = createStack(initial);
 
   const save = async (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
@@ -127,7 +128,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
     const prev = await storage.get();
 
     const date = stack.value[2][0];
-    const isLatest = prev.findIndex(value => value[2][0] === date) === prev.length - 1;
+    const isLatest = prev.saves.findIndex(value => value[2][0] === date) === prev.saves.length - 1;
 
     /**
      * Обновим дату
@@ -137,15 +138,15 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
 
     if (override) {
       if (isLatest) {
-        prev[prev.length - 1] = stack.value;
+        prev.saves[prev.saves.length - 1] = stack.value;
       } else {
-        prev.push(stack.value);
+        prev.saves.push(stack.value);
       }
     } else {
       /**
        * Добавляем текущее сохранение
        */
-      prev.push(stack.value);
+      prev.saves.push(stack.value);
     }
 
     /**
@@ -170,13 +171,14 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
    * Визуально восстанавливает историю
    */
   const restore = async (save?: Save) => {
-    let latest = save ? save : await storage.get().then(value => value.at(-1));
+    // wat
+    let latest = save ? save : await storage.get().then(value => value.saves.at(-1));
 
     /**
      * Если нет сохранённой игры, то запустим ту, которая уже есть
      */
     if (!latest) {
-      await storage.set([initial]);
+      await storage.set({ saves: [initial], meta: ['ru'] });
 
       latest = klona(initial);
     }
@@ -198,6 +200,8 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
      * Текущий элемент `[null, int]`
      */
     let index = 0;
+
+    console.log(stack.value)
 
     /**
      * Число элементов `[null, int]`
@@ -305,7 +309,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
     save,
     stack,
     languages,
-    t: (key) => t9n.i(key as any, stack.value[2][2]),
+    t: (key) => t9n.i(key as any, 'ru'),
   });
 
   const preloadAssets = () => {
@@ -513,7 +517,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
   }
 
   const unwrap = (content: DialogContent | ChoiceContent) => {
-    return typeof content === 'function' ? content(stack.value[2][2], state()) : content
+    return typeof content === 'function' ? content('ru', state()) : content
   }
 
   return {
