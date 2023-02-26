@@ -3,13 +3,13 @@ import type { ActionProxyProvider, GetActionParameters, Story, ValidAction, Dial
 import type { Storage } from './storage';
 import type { Save, State } from './types'
 import type { Renderer, RendererInit } from './renderer'
-import type { SetupT9N, BaseTranslationStrings } from '@novely/t9n'
+import type { SetupT9N } from '@novely/t9n'
 import { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction } from './utils';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
 import { DEFAULT_SAVE, SKIPPED_DURING_RESTORE } from './constants';
 
-interface NovelyInit<Languages extends string, Strings extends BaseTranslationStrings, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages, Strings>>> {
+interface NovelyInit<Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>> {
   /**
    * An array of languages supported by the game.
    */
@@ -44,7 +44,7 @@ interface NovelyInit<Languages extends string, Strings extends BaseTranslationSt
   singleSave?: boolean;
 }
 
-type Novely = <Languages extends string, Strings extends BaseTranslationStrings, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages, Strings>>>(init: NovelyInit<Languages, Strings, Characters, Inter>) => {
+type Novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>>(init: NovelyInit<Languages, Characters, Inter>) => {
   withStory: (s: Story) => void;
   action: ActionProxyProvider<Characters>;
   render: () => void;
@@ -305,7 +305,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
     save,
     stack,
     languages,
-    t: (key) => t9n.t('internal:' + key as any)(stack.value[2][2], state()),
+    t: (key) => t9n.i(key as any, stack.value[2][2]),
   });
 
   const preloadAssets = () => {

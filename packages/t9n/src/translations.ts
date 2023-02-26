@@ -1,21 +1,4 @@
-type Mark<T extends Record<string, string>> = {
-  [Key in keyof T as `internal:${string & Key}`]: T[Key];
-}
-
-type Unmark<T extends Record<string, string>> = {
-  [Key in keyof T as Key extends `internal:${infer Name}` ? Name & string : never]: T[Key];
-}
-
-const { entries, fromEntries } = Object;
-
-/**
- * Marks keys with `internal:` prefix
- */
-const mark = <T extends Record<string, string>>(values: T): Mark<T> => {
-  return fromEntries(entries(values).map(([key, value]) => [`internal:${key}`, value])) as Mark<T>;
-}
-
-const RU = mark({
+const RU = {
   'NewGame': 'Новая игра',
   'HomeScreen': 'Главный экран',
   'ToTheGame': 'К игре',
@@ -36,9 +19,9 @@ const RU = mark({
   'Remove': 'Удалить',
   'LoadASaveFrom': 'Загрузить сохранение от',
   'DeleteASaveFrom': 'Удалить сохранение от',
-});
+};
 
-const EN = mark({
+const EN = {
   'NewGame': 'New Game',
   'HomeScreen': 'Home Screen',
   'ToTheGame': 'To the Game',
@@ -59,9 +42,32 @@ const EN = mark({
   'Remove': 'Remove',
   'LoadASaveFrom': 'Load a save from',
   'DeleteASaveFrom': 'Delete a save from',
-});
+};
+
+const JP = {
+  'NewGame': '新しいゲーム',
+  'HomeScreen': 'ホーム画面',
+  'ToTheGame': 'ゲームへ',
+  'Language': '言語',
+  'AtTheMomentTheSavesAre': '現在のセーブは',
+  'NoSaves': 'セーブがありません',
+  'LoadSave': 'ロード',
+  'Saves': 'セーブ',
+  'Settings': '設定',
+  'Sumbit': '提出する',
+  'GoBack': '戻る',
+  'DoSave': 'セーブする',
+  'Auto': 'オート',
+  'Stop': '停止',
+  'Exit': '終了する',
+  'Automatic': '自動',
+  'Manual': '手動',
+  'Remove': '削除する',
+  'LoadASaveFrom': 'からセーブを読み込む',
+  'DeleteASaveFrom': 'からセーブを削除する',
+};
 
 type BaseTranslationStrings = keyof typeof RU;
 
-export { RU, EN }
-export type { BaseTranslationStrings, Mark, Unmark }
+export { RU, EN, JP }
+export type { BaseTranslationStrings }

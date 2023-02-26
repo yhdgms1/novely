@@ -1,9 +1,12 @@
+import type { BaseTranslationStrings } from './translations';
+
 type PluralType = Intl.LDMLPluralRule;
-type FunctionalSetupT9N = <LanguageKey extends string, PluralKey extends string, StringKey extends string>(parameters: { [Lang in LanguageKey]: { pluralization: { [Plural in PluralKey]: Partial<Record<PluralType, string>> }; strings: { [Str in StringKey]: string } } }) => T9N<LanguageKey, PluralKey, StringKey>
-type SetupT9N<LanguageKey extends string, StringKey extends string> = <PluralKey extends string>(parameters: { [Lang in LanguageKey]: { pluralization: { [Plural in PluralKey]: Partial<Record<PluralType, string>> }; strings: { [Str in StringKey]: string } } }) => T9N<LanguageKey, PluralKey, StringKey>
+type FunctionalSetupT9N = <LanguageKey extends string, PluralKey extends string, StringKey extends string>(parameters: { [Lang in LanguageKey]: { pluralization: { [Plural in PluralKey]: Partial<Record<PluralType, string>> }; internal: { [Key in BaseTranslationStrings]: string }; strings: { [Str in StringKey]: string } } }) => T9N<LanguageKey, PluralKey, StringKey>
+type SetupT9N<LanguageKey extends string> = <PluralKey extends string, StringKey extends string>(parameters: { [Lang in LanguageKey]: { pluralization: { [Plural in PluralKey]: Partial<Record<PluralType, string>> }; internal: { [Key in BaseTranslationStrings]: string }; strings: { [Str in StringKey]: string } } }) => T9N<LanguageKey, PluralKey, StringKey>
 
 type T9N<LanguageKey extends string, _PluralKey extends string, StringKey extends string> = {
   t(key: StringKey): (lang: LanguageKey | (string & {}), obj: Record<string, unknown>) => string;
+  i(key: StringKey, lang: LanguageKey | (string & {})): string;
 }
 
 const RGX = /{{(.*?)}}/g;
@@ -53,6 +56,10 @@ const createT9N: FunctionalSetupT9N = (parameters) => {
           return y != null ? y : '';
         });
       }
+    },
+    i(key, lang) {
+      // @ts-ignore `(string & {})` cannot be used to index type `LanguageKey`.
+      return parameters[lang]['internal'][key] as string;
     }
   }
 }

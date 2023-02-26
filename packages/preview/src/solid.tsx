@@ -58,6 +58,7 @@ const engine = novely({
   },
   t9n: createT9N({
     ru: {
+      internal: RU,
       pluralization: {
         'years': {
           zero: 'лет',
@@ -67,13 +68,13 @@ const engine = novely({
         }
       },
       strings: {
-        ...RU,
         'HowOldAreYou': 'Привет, {{name}}! Сколько тебе лет? 😙',
         'ReallyAgeYears': 'Правда {{age}} {{age@years}}? Загляни ко мне как-нибудь 😉',
         'YouAreAgeYears': 'Тебе {{age}} {{age@years}}?? Не умею я определять возраст... 😅',
       }
     },
     en: {
+      internal: EN,
       pluralization: {
         'years': {
           zero: 'years',
@@ -84,7 +85,6 @@ const engine = novely({
         }
       },
       strings: {
-        ...EN,
         'HowOldAreYou': 'Hi, {{name}}! How old are you? 😙',
         'ReallyAgeYears': 'Really {{age}} {{age@years}}? Drop by and see me sometime 😉',
         'YouAreAgeYears': "You are {{age}} {{age@years}} old? I'm not good at determining age... 😅",

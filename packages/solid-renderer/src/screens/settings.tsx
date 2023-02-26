@@ -70,9 +70,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
                 <label for={id}>{props.t('Language')}</label>
                 <select id={id} onChange={onSelect}>
                   <For each={props.languages}>
-                    {language => {
-                      return <option value={language} selected={language === current}>{capitalize(languageNames.of(language) || language)}</option>
-                    }}
+                    {language => <option value={language} selected={language === current}>{capitalize(languageNames.of(language) || language)}</option>}
                   </For>
                 </select>
               </div>
