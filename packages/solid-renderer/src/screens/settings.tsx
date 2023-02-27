@@ -32,7 +32,12 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
     const data = saves()!;
 
     data.meta[0] = selected;
-    // props.stack.value[2][2] = selected;
+
+    window.$.update(prev => {
+      prev.meta[0] = selected;
+
+      return prev;
+    })
 
     setScreen('loading');
     props.storage.set(data).then(() => setScreen('settings'));
@@ -58,8 +63,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
       <Show when={saves.state === 'ready'} fallback={<>{props.t('AtTheMomentTheSavesAre')} {saves.state}</>}>
         <Show when={saves()} fallback={<>{props.t('NoSaves')}</>}>
           {() => {
-            const latest = saves()!.at(-1)!;
-            const current = latest[2][2];
+            const current = saves()!.meta[0] || 'ru';
 
             const languageNames = new Intl.DisplayNames([current], {
               type: 'language'

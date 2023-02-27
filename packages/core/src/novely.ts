@@ -5,6 +5,7 @@ import type { Save, State } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
 import { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getLanguage } from './utils';
+import { store } from './store';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
 import { SKIPPED_DURING_RESTORE, getDefaultSave } from './constants';
@@ -56,7 +57,7 @@ type Novely = <Languages extends string, Characters extends Record<string, Chara
 }
 
 // @ts-ignore - Fuck ts
-const novely: Novely = ({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, assetsPreload }) => {
+const novely: Novely = async ({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, assetsPreload }) => {
   let story: Story;
 
   const withStory = (s: Story) => {
@@ -112,13 +113,21 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
         stack.push(value);
       },
       clear() {
-        stack = [getDefaultSave(languages, 'ru')];
+        stack = [getDefaultSave(languages, $.get().meta[0])];
       }
     }
   }
 
-  // todo: load prev save
-  const initial = getDefaultSave(languages);
+  const $ = store(await storage.get());
+
+  $.subscribe((value) => {
+    console.log(value);
+  });
+
+  // @ts-ignore - this is temp
+  window.$ = $;
+
+  const initial = ((value) => value.saves.length > 0 && value.saves.at(-1))($.get()) || getDefaultSave(languages);
   const stack = createStack(initial);
 
   const save = async (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
@@ -171,14 +180,13 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
    * Визуально восстанавливает историю
    */
   const restore = async (save?: Save) => {
-    // wat
     let latest = save ? save : await storage.get().then(value => value.saves.at(-1));
 
     /**
      * Если нет сохранённой игры, то запустим ту, которая уже есть
      */
     if (!latest) {
-      await storage.set({ saves: [initial], meta: ['ru'] });
+      await storage.set({ saves: [initial], meta: [getLanguage(languages)] });
 
       latest = klona(initial);
     }
@@ -309,7 +317,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
     save,
     stack,
     languages,
-    t: (key) => t9n.i(key as any, 'ru'),
+    t: (key) => t9n.i(key as any, $.get().meta[0]),
   });
 
   const preloadAssets = () => {
@@ -517,7 +525,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
   }
 
   const unwrap = (content: DialogContent | ChoiceContent) => {
-    return typeof content === 'function' ? content('ru', state()) : content
+    return typeof content === 'function' ? content($.get().meta[0], state()) : content
   }
 
   return {
