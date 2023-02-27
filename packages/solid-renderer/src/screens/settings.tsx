@@ -31,8 +31,8 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 
     const data = saves()!;
 
-    data[data.length - 1][2][2] = selected;
-    props.stack.value[2][2] = selected;
+    data.meta[0] = selected;
+    // props.stack.value[2][2] = selected;
 
     setScreen('loading');
     props.storage.set(data).then(() => setScreen('settings'));

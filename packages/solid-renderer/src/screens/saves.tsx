@@ -28,16 +28,16 @@ const Saves: VoidComponent<SavesProps> = (props) => {
 
     if (!data) return;
 
-    for (let i = 0; i < data.length; i++) {
-      const current = data[i];
+    for (let i = 0; i < data.saves.length; i++) {
+      const current = data.saves[i];
 
       if (current[2][0] === date) {
-        data.splice(i, 1);
+        data.saves.splice(i, 1);
       }
     }
 
     props.storage.set(data).then(() => {
-      mutate(() => [...data]);
+      mutate(() => ({ ...data }));
     });
   }
 
@@ -54,13 +54,13 @@ const Saves: VoidComponent<SavesProps> = (props) => {
         </button>
       </div>
       <Show when={saves.state === 'ready'} fallback={<>{props.t('AtTheMomentTheSavesAre')} {saves.state}</>}>
-        <Show when={saves()} fallback={<>{props.t('NoSaves')}</>}>
+        <Show when={saves()} fallback={props.t('NoSaves')}>
           <ol class={style.list}>
-            <For each={saves()}>
+            <For each={saves()!.saves}>
               {save => {
                 const [date, type] = save[2];
 
-                const stringDate = capitalize(new Date(date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }));
+                const stringDate = capitalize(new Date(date).toLocaleDateString('ru', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }));
                 const stringType = props.t(type === 'auto' ? 'Automatic' : 'Manual');
 
                 return (
