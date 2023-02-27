@@ -1,7 +1,7 @@
-import type { Renderer, RendererInit, Storage, RendererStore, Character, ValidAction, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, CustomHandlerGetResultSkipClearOnGoingBackFunction } from '@novely/core'
+import type { Renderer, RendererInit, Storage, RendererStore, Character, ValidAction, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, CustomHandlerGetResultSkipClearOnGoingBackFunction, Stored, StorageData } from '@novely/core'
 import type { JSX } from 'solid-js';
 
-import { Switch, Match } from 'solid-js';
+import { createEffect, Switch, Match, from } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
 import { canvasDrawImages, createImage } from './utils'
@@ -146,10 +146,11 @@ const createSolidRenderer = () => {
   let renderer!: Renderer;
   let languages!: string[];
   let t!: RendererInit['t'];
+  let $!: Stored<StorageData>;
 
   return {
     createRenderer(init: RendererInit): Renderer {
-      characters = init.characters, storage = init.storage, set = init.set, restore = init.restore, save = init.save, stack = init.stack, languages = init.languages, t = init.t;
+      characters = init.characters, storage = init.storage, set = init.set, restore = init.restore, save = init.save, stack = init.stack, languages = init.languages, t = init.t, $ = init.$;
 
       return renderer = {
         background(background) {
@@ -351,6 +352,13 @@ const createSolidRenderer = () => {
       }
     },
     Novely(props: Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children'>) {
+      const storeData = from($);
+      const update = $.update;
+
+      createEffect(() => {
+        console.log('wooohoo', storeData())
+      });
+
       return (
         <div {...props}>
           <Switch fallback={<>No</>}>

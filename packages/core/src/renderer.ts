@@ -1,8 +1,9 @@
 import type { DefaultActionProxyProvider, ValidAction } from './action'
 import type { Character } from './character'
 import type { Storage } from './storage'
-import type { Save, Stack, Thenable } from './types'
+import type { Save, Stack, StorageData, Thenable } from './types'
 import type { BaseTranslationStrings } from '@novely/t9n'
+import { Stored } from './store'
 
 interface CharacterHandle {
   canvas: HTMLCanvasElement;
@@ -55,7 +56,15 @@ type RendererInit = {
   save: (override?: boolean, type?: Save[2][1]) => Promise<void>;
   stack: Stack;
   languages: string[];
+
+  /**
+   * Translation function
+   */
   t: (key: BaseTranslationStrings) => string;
+  /**
+   * Store that tracks data updates
+   */
+  $: Stored<StorageData>
 }
 
 export type { CharacterHandle, AudioHandle, RendererStore, Renderer, RendererInit }

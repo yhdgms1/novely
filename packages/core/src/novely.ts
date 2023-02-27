@@ -120,10 +120,6 @@ const novely: Novely = async ({ characters, storage, renderer: createRenderer, i
 
   const $ = store(await storage.get());
 
-  $.subscribe((value) => {
-    console.log(value);
-  });
-
   // @ts-ignore - this is temp
   window.$ = $;
 
@@ -317,7 +313,8 @@ const novely: Novely = async ({ characters, storage, renderer: createRenderer, i
     save,
     stack,
     languages,
-    t: (key) => t9n.i(key as any, $.get().meta[0]),
+    t: (key) => t9n.i(key, $.get().meta[0]),
+    $
   });
 
   const preloadAssets = () => {

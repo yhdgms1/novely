@@ -33,6 +33,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 
     data.meta[0] = selected;
 
+    // @ts-ignore
     window.$.update(prev => {
       prev.meta[0] = selected;
 
