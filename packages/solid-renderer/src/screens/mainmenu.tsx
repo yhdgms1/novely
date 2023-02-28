@@ -16,8 +16,6 @@ interface MainMenuProps {
 }
 
 const MainMenu: VoidComponent<MainMenuProps> = (props) => {
-  const setScreen = (screen: "mainmenu" | "game" | "saves" | "settings") => props.setState('screen', screen);
-
   const data = useData()!;
 
   const newGame = () => {
@@ -46,14 +44,14 @@ const MainMenu: VoidComponent<MainMenuProps> = (props) => {
         <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={() => props.restore()}>
           {data.t('LoadSave')}
         </button>
-        <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={() => setScreen('saves')}>
+        <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={() => props.setState('screen', 'saves')}>
           {data.t('Saves')}
         </button>
-        <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={() => setScreen('settings')}>
+        <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={() => props.setState('screen', 'settings')}>
           {data.t('Settings')}
         </button>
-      </div>
-    </div>
+      </div >
+    </div >
   )
 }
 

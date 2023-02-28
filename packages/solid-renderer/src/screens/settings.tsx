@@ -19,8 +19,6 @@ interface SettingsProps {
 }
 
 const Settings: VoidComponent<SettingsProps> = (props) => {
-  const setScreen = (screen: "mainmenu" | "game" | "saves" | "settings" | 'loading') => props.setState('screen', screen)
-
   const data = useData()!;
   const saves = () => data.storeData()!.saves;
   const language = () => data.storeData()!.meta[0];
@@ -31,9 +29,6 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
     data.storeDataUpdate(prev => {
       return prev.meta[0] = selected, prev;
     });
-
-    // setScreen('loading');
-    // data.options.storage.set(data.storeData()!).then(() => setScreen('settings'));
   }
 
   const id = createUniqueId();
@@ -46,7 +41,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
       }}
     >
       <div class={style.controls}>
-        <button type="button" class={join(style.button, style.buttonSettings)} onClick={() => setScreen('mainmenu')}>
+        <button type="button" class={join(style.button, style.buttonSettings)} onClick={() => props.setState('screen', 'mainmenu')}>
           {data.t('HomeScreen')}
         </button>
         <button type="button" class={join(style.button, style.buttonSettings)} onClick={() => props.restore()}>
@@ -71,7 +66,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
           )
         }}
       </Show>
-    </div>
+    </div >
   )
 }
 

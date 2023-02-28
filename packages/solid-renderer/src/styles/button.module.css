@@ -10,6 +10,8 @@
   line-height: 1.2;
 
   cursor: pointer;
+
+  user-select: none;
 }
 
 .button:hover {

@@ -1,10 +1,10 @@
 import type { Character } from './character';
 import type { ActionProxyProvider, GetActionParameters, Story, ValidAction, DialogContent, ChoiceContent } from './action';
 import type { Storage } from './storage';
-import type { Save, State } from './types'
+import type { Save, State, StorageData } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getLanguage } from './utils';
+import { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getLanguage, throttle } from './utils';
 import { store } from './store';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
@@ -120,10 +120,12 @@ const novely: Novely = async ({ characters, storage, renderer: createRenderer, i
 
   const $ = store(await storage.get());
 
-  // todo: make it safe
-  $.subscribe(value => storage.set(value));
+  const onStorageDataChange = (value: StorageData) => storage.set(value);
+  const throttledOnStorageDataChange = throttle(onStorageDataChange, 120);
 
-  const initial = ((value) => value.saves.length > 0 && value.saves.at(-1))($.get()) || getDefaultSave(languages);
+  $.subscribe(throttledOnStorageDataChange);
+
+  const initial = ((value) => value.saves.length > 0 && value.saves.at(-1))($.get()) || getDefaultSave(languages, $.get().meta[0]);
   const stack = createStack(initial);
 
   const save = async (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
@@ -136,13 +138,21 @@ const novely: Novely = async ({ characters, storage, renderer: createRenderer, i
     const isLatest = prev.saves.findIndex(value => value[2][0] === date) === prev.saves.length - 1;
 
     /**
-     * Обновим дату
+     * Обновим дату и тип
      */
     stack.value[2][0] = Date.now();
     stack.value[2][1] = type;
 
     if (override) {
+      /**
+       * Перезапишем
+       */
       if (isLatest) {
+        /**
+         * Сохранения хранятся в массиве. Нельзя перезаписать любое последнее
+         * 
+         * Если перезаписывать старое сохранение, то они не будут идти в хронологическом порядке
+         */
         prev.saves[prev.saves.length - 1] = stack.value;
       } else {
         prev.saves.push(stack.value);
@@ -204,8 +214,6 @@ const novely: Novely = async ({ characters, storage, renderer: createRenderer, i
      * Текущий элемент `[null, int]`
      */
     let index = 0;
-
-    console.log(stack.value)
 
     /**
      * Число элементов `[null, int]`

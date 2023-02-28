@@ -54,4 +54,38 @@ const getLanguage = (languages: string[], language = navigator.language) => {
   return language;
 }
 
-export { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getLanguage }
+/**
+ * @copyright Techlead LLC
+ * @see https://learn.javascript.ru/task/throttle
+ */
+const throttle = <Fn extends ((...args: any[]) => any)>(fn: Fn, ms: number) => {
+  let throttled = false, savedArgs: any, savedThis: any;
+
+  function wrapper() {
+    if (throttled) {
+      savedArgs = arguments;
+      // @ts-ignore
+      savedThis = this;
+
+      return;
+    }
+
+    // @ts-ignore
+    fn.apply(this, arguments);
+
+    throttled = false;
+  }
+
+  setTimeout(function () {
+    throttled = false;
+
+    if (savedArgs) {
+      wrapper.apply(savedThis, savedArgs);
+      savedArgs = savedThis = null;
+    }
+  }, ms);
+
+  return wrapper as unknown as (...args: Parameters<Fn>) => void;
+}
+
+export { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getLanguage, throttle }

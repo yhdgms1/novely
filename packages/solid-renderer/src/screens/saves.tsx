@@ -3,7 +3,7 @@ import type { SetStoreFunction } from 'solid-js/store'
 import type { Storage, RendererInit } from '@novely/core'
 import type { State } from '../renderer'
 
-import { createResource, Show, For } from 'solid-js'
+import { Show, For } from 'solid-js'
 import { capitalize, join } from '../utils'
 import { useData } from '../context'
 
@@ -19,8 +19,6 @@ interface SavesProps {
 }
 
 const Saves: VoidComponent<SavesProps> = (props) => {
-  const setScreen = (screen: "mainmenu" | "game" | "saves") => props.setState('screen', screen)
-
   const data = useData()!;
   const saves = () => data.storeData()!.saves;
   const language = () => data.storeData()!.meta[0];
@@ -49,7 +47,7 @@ const Saves: VoidComponent<SavesProps> = (props) => {
       }}
     >
       <div class={style.controls}>
-        <button type="button" class={join(style.button, style.buttonSaves)} onClick={() => setScreen('mainmenu')}>
+        <button type="button" class={join(style.button, style.buttonSaves)} onClick={() => props.setState('screen', 'mainmenu')}>
           {data.t('GoBack')}
         </button>
       </div>
@@ -77,7 +75,7 @@ const Saves: VoidComponent<SavesProps> = (props) => {
           </For>
         </ol>
       </Show>
-    </div>
+    </div >
   )
 }
 
