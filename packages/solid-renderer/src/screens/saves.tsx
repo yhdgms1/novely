@@ -1,6 +1,5 @@
 import type { VoidComponent } from 'solid-js'
 import type { SetStoreFunction } from 'solid-js/store'
-import type { Storage, RendererInit } from '@novely/core'
 import type { State } from '../renderer'
 
 import { Show, For } from 'solid-js'
@@ -11,11 +10,6 @@ import { style } from '../styles/styles';
 
 interface SavesProps {
   setState: SetStoreFunction<State>;
-
-  storage: Storage;
-  set: RendererInit['set'];
-
-  t: RendererInit['t'];
 }
 
 const Saves: VoidComponent<SavesProps> = (props) => {
@@ -62,7 +56,12 @@ const Saves: VoidComponent<SavesProps> = (props) => {
 
               return (
                 <li>
-                  <button type="button" class={join(style.button, style.buttonSaves)} onClick={props.set.bind(props.set, save)} aria-label={data.t('LoadASaveFrom') + ' ' + stringDate}>
+                  <button
+                    type="button"
+                    class={join(style.button, style.buttonSaves)}
+                    aria-label={data.t('LoadASaveFrom') + ' ' + stringDate}
+                    onClick={() => data.options.set(save)}
+                  >
                     {stringDate}
                     <span style={{ "margin-left": '1em' }}>{stringType}</span>
                   </button>

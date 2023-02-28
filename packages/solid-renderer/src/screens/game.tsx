@@ -1,4 +1,4 @@
-import type { Renderer, Character, RendererInit } from '@novely/core'
+import type { Renderer, Character } from '@novely/core'
 import type { VoidComponent } from 'solid-js';
 import type { JSX } from 'solid-js';
 import type { SetStoreFunction } from 'solid-js/store'
@@ -20,12 +20,6 @@ interface GameProps {
   store: SolidRendererStore;
   characters: Record<string, Character>;
   renderer: Renderer;
-
-  stack: RendererInit['stack'];
-  restore: RendererInit['restore'];
-  save: RendererInit['save'];
-
-  t: RendererInit['t'];
 }
 
 const Game: VoidComponent<GameProps> = (props) => {
@@ -133,11 +127,9 @@ const Game: VoidComponent<GameProps> = (props) => {
 
           const name = () => {
             const c = character();
+            const lang = data.storeData()!.meta[0];
 
-            // @ts-ignore @todo: resolve this later
-            const name = c ? c in characters ? typeof characters[c].name === 'string' ? characters[c].name : characters[c].name[props.stack.value[2][2]] : c : '';
-
-            return name as string;
+            return c ? c in characters ? typeof characters[c].name === 'string' ? characters[c].name as string : (characters[c].name as any)[lang] as string : c : '';
           }
 
           return (
@@ -259,8 +251,8 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           onClick={() => {
-            props.stack.back();
-            props.restore(props.stack.value);
+            data.options.stack.back();
+            data.options.restore(data.options.stack.value);
           }}
         >
           {data.t('GoBack')}
@@ -268,7 +260,7 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           onClick={() => {
-            props.save(false, 'manual');
+            data.options.save(false, 'manual');
           }}
         >
           {data.t('DoSave')}
@@ -284,7 +276,7 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           onClick={() => {
-            props.save(false, 'auto').then(() => {
+            data.options.save(false, 'auto').then(() => {
               props.setState('screen', 'settings');
             });
           }}
@@ -294,7 +286,7 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           onClick={() => {
-            props.stack.clear();
+            data.options.stack.clear();
             props.setState('screen', 'mainmenu');
           }}
         >

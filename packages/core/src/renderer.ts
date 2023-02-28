@@ -49,11 +49,12 @@ type Renderer = {
 }
 
 type RendererInit = {
-  characters: Record<string, Character>,
-  storage: Storage,
-  set: (save: Save) => Promise<void>
+  characters: Record<string, Character>;
+  storage: Storage;
+  set: (save: Save) => Promise<void>;
   restore: (save?: Save) => Promise<void>;
   save: (override?: boolean, type?: Save[2][1]) => Promise<void>;
+  newGame: () => void;
   stack: Stack;
   languages: string[];
 
@@ -64,7 +65,7 @@ type RendererInit = {
   /**
    * Store that tracks data updates
    */
-  $: Stored<StorageData>
+  $: Stored<StorageData>;
 }
 
 export type { CharacterHandle, AudioHandle, RendererStore, Renderer, RendererInit }

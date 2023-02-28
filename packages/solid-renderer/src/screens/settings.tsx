@@ -1,6 +1,5 @@
 import type { VoidComponent, JSX } from 'solid-js'
 import type { SetStoreFunction } from 'solid-js/store'
-import type { RendererInit } from '@novely/core'
 import type { State } from '../renderer'
 
 import { Show, For, createUniqueId } from 'solid-js'
@@ -11,11 +10,6 @@ import { style } from '../styles/styles';
 
 interface SettingsProps {
   setState: SetStoreFunction<State>;
-  restore: RendererInit['restore'];
-
-  stack: RendererInit['stack'];
-
-  t: RendererInit['t'];
 }
 
 const Settings: VoidComponent<SettingsProps> = (props) => {
@@ -44,7 +38,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
         <button type="button" class={join(style.button, style.buttonSettings)} onClick={() => props.setState('screen', 'mainmenu')}>
           {data.t('HomeScreen')}
         </button>
-        <button type="button" class={join(style.button, style.buttonSettings)} onClick={() => props.restore()}>
+        <button type="button" class={join(style.button, style.buttonSettings)} onClick={() => data.options.restore()}>
           {data.t('ToTheGame')}
         </button>
       </div>

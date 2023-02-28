@@ -170,6 +170,16 @@ const novely: Novely = async ({ characters, storage, renderer: createRenderer, i
     return await storage.set(prev);
   }
 
+  const newGame = () => {
+    $.update(prev => {
+      const save = getDefaultSave(languages, $.get().meta[0]);
+
+      prev.saves.push(save), restore(save);
+
+      return prev;
+    });
+  }
+
   /**
    * Устанавливает сохранение
    */
@@ -319,6 +329,7 @@ const novely: Novely = async ({ characters, storage, renderer: createRenderer, i
     set,
     restore,
     save,
+    newGame,
     stack,
     languages,
     t: t9n.i,
