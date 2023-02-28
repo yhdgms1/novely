@@ -120,8 +120,8 @@ const novely: Novely = async ({ characters, storage, renderer: createRenderer, i
 
   const $ = store(await storage.get());
 
-  // @ts-ignore - this is temp
-  window.$ = $;
+  // todo: make it safe
+  $.subscribe(value => storage.set(value));
 
   const initial = ((value) => value.saves.length > 0 && value.saves.at(-1))($.get()) || getDefaultSave(languages);
   const stack = createStack(initial);
@@ -313,7 +313,7 @@ const novely: Novely = async ({ characters, storage, renderer: createRenderer, i
     save,
     stack,
     languages,
-    t: (key) => t9n.i(key, $.get().meta[0]),
+    t: t9n.i,
     $
   });
 

@@ -12,7 +12,12 @@ const Loading: VoidComponent<LoadingProps> = () => {
         [style.loading]: true
       }}
     >
-      <div class={style.ldsEllipsis}><div></div><div></div><div></div><div></div></div>
+      <div class={style.ldsEllipsis}>
+        <div />
+        <div />
+        <div />
+        <div />
+      </div>
     </div>
   )
 }

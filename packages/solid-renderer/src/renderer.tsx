@@ -4,7 +4,9 @@ import type { JSX } from 'solid-js';
 import { createEffect, Switch, Match, from } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
-import { canvasDrawImages, createImage } from './utils'
+import { canvasDrawImages, createImage } from './utils';
+
+import { Provider } from './context';
 
 import { Game } from './screens/game';
 import { MainMenu } from './screens/mainmenu';
@@ -146,11 +148,13 @@ const createSolidRenderer = () => {
   let renderer!: Renderer;
   let languages!: string[];
   let t!: RendererInit['t'];
-  let $!: Stored<StorageData>;
+
+  let options: RendererInit;
 
   return {
     createRenderer(init: RendererInit): Renderer {
-      characters = init.characters, storage = init.storage, set = init.set, restore = init.restore, save = init.save, stack = init.stack, languages = init.languages, t = init.t, $ = init.$;
+      options = init;
+      characters = init.characters, storage = init.storage, set = init.set, restore = init.restore, save = init.save, stack = init.stack, languages = init.languages, t = init.t;
 
       return renderer = {
         background(background) {
@@ -352,32 +356,27 @@ const createSolidRenderer = () => {
       }
     },
     Novely(props: Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children'>) {
-      const storeData = from($);
-      const update = $.update;
-
-      createEffect(() => {
-        console.log('wooohoo', storeData())
-      });
-
       return (
         <div {...props}>
-          <Switch fallback={<>No</>}>
-            <Match when={state.screen === "game"}>
-              <Game state={state} setState={/* @once */ setState} store={/* @once */ store} characters={/* @once */ characters} renderer={/* @once */ renderer} stack={/* @once */ stack} restore={/* @once */ restore} save={/* @once */ save} t={/* @once */ t} />
-            </Match>
-            <Match when={state.screen === 'mainmenu'}>
-              <MainMenu setState={/* @once */ setState} storage={/* @once */ storage} restore={/* @once */ restore} t={/* @once */ t} />
-            </Match>
-            <Match when={state.screen === 'saves'}>
-              <Saves setState={/* @once */ setState} storage={/* @once */ storage} set={/* @once */ set} t={/* @once */ t} />
-            </Match>
-            <Match when={state.screen === 'settings'}>
-              <Settings setState={/* @once */ setState} storage={/* @once */ storage} languages={/* @once */ languages} restore={/* @once */ restore} stack={/* @once */ stack} t={/* @once */ t} />
-            </Match>
-            <Match when={state.screen === 'loading'}>
-              <Loading />
-            </Match>
-          </Switch>
+          <Provider storeData={options.$} options={options} renderer={renderer}>
+            <Switch fallback={<>No</>}>
+              <Match when={state.screen === "game"}>
+                <Game state={state} setState={/* @once */ setState} store={/* @once */ store} characters={/* @once */ characters} renderer={/* @once */ renderer} stack={/* @once */ stack} restore={/* @once */ restore} save={/* @once */ save} t={/* @once */ t} />
+              </Match>
+              <Match when={state.screen === 'mainmenu'}>
+                <MainMenu setState={/* @once */ setState} storage={/* @once */ storage} restore={/* @once */ restore} t={/* @once */ t} />
+              </Match>
+              <Match when={state.screen === 'saves'}>
+                <Saves setState={/* @once */ setState} storage={/* @once */ storage} set={/* @once */ set} t={/* @once */ t} />
+              </Match>
+              <Match when={state.screen === 'settings'}>
+                <Settings setState={/* @once */ setState} restore={/* @once */ restore} stack={/* @once */ stack} t={/* @once */ t} />
+              </Match>
+              <Match when={state.screen === 'loading'}>
+                <Loading />
+              </Match>
+            </Switch>
+          </Provider>
         </div>
       )
     }

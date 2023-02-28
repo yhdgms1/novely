@@ -60,7 +60,7 @@ type RendererInit = {
   /**
    * Translation function
    */
-  t: (key: BaseTranslationStrings) => string;
+  t: (key: BaseTranslationStrings, lang: string) => string;
   /**
    * Store that tracks data updates
    */

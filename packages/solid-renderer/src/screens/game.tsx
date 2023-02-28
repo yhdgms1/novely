@@ -8,6 +8,7 @@ import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
 import { Dialog, DialogPanel } from 'solid-headless';
 
 import { typewriter } from '@novely/typewriter'
+import { useData } from '../context'
 import { canvasDrawImages, url, isCSSImage, join } from '../utils'
 
 import { style } from '../styles/styles';
@@ -28,6 +29,7 @@ interface GameProps {
 }
 
 const Game: VoidComponent<GameProps> = (props) => {
+  const data = useData()!;
   /**
    * Могут быть деструктурированы
    */
@@ -241,7 +243,7 @@ const Game: VoidComponent<GameProps> = (props) => {
               class={join(style.button, style.buttonInputDialogPanel)}
               aria-disabled={(props.state.input.error || !props.state.input.element?.validity.valid) ? 'true' : 'false'}
             >
-              {props.t('Sumbit')}
+              {data.t('Sumbit')}
             </button>
           </DialogPanel>
         </div>
@@ -261,7 +263,7 @@ const Game: VoidComponent<GameProps> = (props) => {
             props.restore(props.stack.value);
           }}
         >
-          {props.t('GoBack')}
+          {data.t('GoBack')}
         </button>
         <button
           type="button"
@@ -269,7 +271,7 @@ const Game: VoidComponent<GameProps> = (props) => {
             props.save(false, 'manual');
           }}
         >
-          {props.t('DoSave')}
+          {data.t('DoSave')}
         </button>
         <button
           type="button"
@@ -277,7 +279,7 @@ const Game: VoidComponent<GameProps> = (props) => {
             setAuto(prev => !prev);
           }}
         >
-          {props.t(auto() ? 'Auto' : 'Stop')}
+          {data.t(auto() ? 'Auto' : 'Stop')}
         </button>
         <button
           type="button"
@@ -287,7 +289,7 @@ const Game: VoidComponent<GameProps> = (props) => {
             });
           }}
         >
-          {props.t('Settings')}
+          {data.t('Settings')}
         </button>
         <button
           type="button"
@@ -296,7 +298,7 @@ const Game: VoidComponent<GameProps> = (props) => {
             props.setState('screen', 'mainmenu');
           }}
         >
-          {props.t('Exit')}
+          {data.t('Exit')}
         </button>
       </div>
     </div>
