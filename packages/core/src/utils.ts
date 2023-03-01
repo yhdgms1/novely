@@ -42,16 +42,19 @@ const isUserRequiredAction = (action: keyof MatchActionMapComplete, meta: Parame
   return action === 'custom' && meta[0] && (meta[0] as unknown as CustomHandler).requireUserAction;
 }
 
-/**
- * Currently language system supports only 2-character values, like `en` or `ru`
- * todo: support language variations, such `en-GB`, `en-CA`, `en-AU`
- */
 const getLanguage = (languages: string[], language = navigator.language) => {
-  language = language.substring(0, 2);
+  if (languages.includes(language)) {
+    return language;
+  } else if (languages.includes((language = language.substring(0, 2)))) {
+    return language;
+  } else if ((language = languages.find((value) => navigator.languages.includes(value))!)) {
+    return language
+  }
 
-  if (!languages.includes(language)) language = languages[0];
-
-  return language;
+  /**
+   * We'v checked the `en-GB` format, `en` format, and maybe any second languages, but there were no matches
+   */
+  return languages[0];
 }
 
 /**

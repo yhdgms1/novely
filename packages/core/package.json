@@ -1,7 +1,7 @@
 {
   "name": "@novely/core",
   "description": "Novely - powerful visual novel engine for creating interactive stories and games with branching narratives and rich multimedia content.",
-  "version": "0.0.0-alpha",
+  "version": "0.0.0-alpha.3",
   "type": "module",
   "sideEffects": false,
   "types": "./dist/index.d.ts",
@@ -21,7 +21,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@novely/t9n": "workspace:*",
+    "@novely/t9n": "*",
     "deepmerge": "^4.3.0",
     "klona": "^2.0.6"
   },

@@ -113,19 +113,25 @@ const novely: Novely = async ({ characters, storage, renderer: createRenderer, i
         stack.push(value);
       },
       clear() {
-        stack = [getDefaultSave(languages, $.get().meta[0])];
+        stack = [getDefaultSave()];
       }
     }
   }
 
-  const $ = store(await storage.get());
+  const stored = await storage.get();
+
+  if (!stored.meta[0]) {
+    stored.meta[0] = getLanguage(languages);
+  }
+
+  const $ = store(stored);
 
   const onStorageDataChange = (value: StorageData) => storage.set(value);
   const throttledOnStorageDataChange = throttle(onStorageDataChange, 120);
 
   $.subscribe(throttledOnStorageDataChange);
 
-  const initial = ((value) => value.saves.length > 0 && value.saves.at(-1))($.get()) || getDefaultSave(languages, $.get().meta[0]);
+  const initial = ((value) => value.saves.length > 0 && value.saves.at(-1))($.get()) || getDefaultSave();
   const stack = createStack(initial);
 
   const save = async (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
@@ -172,7 +178,7 @@ const novely: Novely = async ({ characters, storage, renderer: createRenderer, i
 
   const newGame = () => {
     $.update(prev => {
-      const save = getDefaultSave(languages, $.get().meta[0]);
+      const save = getDefaultSave();
 
       prev.saves.push(save), restore(save);
 
