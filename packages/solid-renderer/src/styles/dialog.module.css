@@ -26,14 +26,14 @@
   color: var(--novely-dialog-color, #ffffff);
 
   border: 3px solid var(--novely-dialog-border-color, #ffffff);
-  border-radius: 14px;
+  border-radius: var(--novely-dialog-border-radius, 14px);
   box-shadow: 1px 1px 4px var(--novely-dialog-box-shadow-color, #00000072);
 
   /* prettier-ignore */
   background-image: var(--novely-dialog-background-image, radial-gradient(#d6608998 20%, transparent 20%), radial-gradient(#d6608998 20%, transparent 20%));
   background-color: var(--novely-dialog-background-color, #f092b4d8);
-  background-position: 0 0, 50px 50px;
-  background-size: 100px 100px;
+  background-position: var(--novely-dialog-background-position, 0 0, 50px 50px);
+  background-size: var(--novely-dialog-background-size, 100px 100px);
 
   display: grid;
   grid-template-rows: auto 1fr;
@@ -81,7 +81,7 @@
   line-height: 1.2;
   width: 100%;
 
-  text-shadow: 1px 0 1px #000, 0 1px 1px #000, -1px 0 1px #000, 0 -1px 1px #000;
+  text-shadow: 1px 0 0 #000, 0 1px 0 #000, -1px 0 0 #000, 0 -1px 0 #000;
 }
 
 .dialogPerson > canvas,

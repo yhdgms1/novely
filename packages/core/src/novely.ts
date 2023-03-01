@@ -337,7 +337,11 @@ const novely: Novely = async ({ characters, storage, renderer: createRenderer, i
   });
 
   const preloadAssets = () => {
-    if (!assetsPreload) return;
+    if (!assetsPreload) {
+      initialScreen === 'game' ? restore() : renderer.ui.showScreen(initialScreen);
+
+      return;
+    }
 
     /**
      * We need to load all the characters and their emotions
@@ -379,13 +383,6 @@ const novely: Novely = async ({ characters, storage, renderer: createRenderer, i
           img.onerror = rej;
         }
       }));
-    }
-
-    if (!assetsPreload) {
-      /**
-       * Показывает экран
-       */
-      renderer.ui.showScreen(initialScreen);
     }
 
     Promise.all(promises).then(() => {
@@ -457,7 +454,11 @@ const novely: Novely = async ({ characters, storage, renderer: createRenderer, i
       })
     },
     clear() {
-      navigator.vibrate(0), renderer.clear(goingBack)(push);
+      try {
+        navigator.vibrate(0)
+      } finally {
+        renderer.clear(goingBack)(push);
+      }
     },
     condition([condition]) {
       const value = condition();
