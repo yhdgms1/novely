@@ -86,3 +86,6 @@ render(
 | `--novely-dialog-background-color`       | `#f092b4d8`                                                                                         |
 | `--novely-dialog-background-position`    | `0 0, 50px 50px`                                                                                    |
 | `--novely-dialog-background-size`        | `100px 100px`                                                                                       |
+| `--novely-settings-background-image`     | none                                                                                                |
+| `--novely-main-menu-background-image`    | none                                                                                                |
+| `--novely-saves-background-image`        | none                                                                                                |
