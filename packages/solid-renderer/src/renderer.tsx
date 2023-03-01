@@ -1,10 +1,12 @@
-import type { Renderer, RendererInit, Storage, RendererStore, Character, ValidAction, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, CustomHandlerGetResultSkipClearOnGoingBackFunction } from '@novely/core'
+import type { Renderer, RendererInit, RendererStore, Character, ValidAction, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, CustomHandlerGetResultSkipClearOnGoingBackFunction } from '@novely/core'
 import type { JSX } from 'solid-js';
 
 import { Switch, Match } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
-import { canvasDrawImages, createImage } from './utils'
+import { canvasDrawImages, createImage } from './utils';
+
+import { Provider } from './context';
 
 import { Game } from './screens/game';
 import { MainMenu } from './screens/mainmenu';
@@ -138,18 +140,12 @@ const createSolidRenderer = () => {
   };
 
   let characters!: Record<string, Character>;
-  let storage!: Storage;
-  let set!: RendererInit['set']
-  let restore!: RendererInit['restore'];
-  let save!: RendererInit['save'];
-  let stack!: RendererInit['stack'];
   let renderer!: Renderer;
-  let languages!: string[];
-  let t!: RendererInit['t'];
+  let options: RendererInit;
 
   return {
     createRenderer(init: RendererInit): Renderer {
-      characters = init.characters, storage = init.storage, set = init.set, restore = init.restore, save = init.save, stack = init.stack, languages = init.languages, t = init.t;
+      options = init, characters = init.characters;
 
       return renderer = {
         background(background) {
@@ -353,23 +349,25 @@ const createSolidRenderer = () => {
     Novely(props: Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children'>) {
       return (
         <div {...props}>
-          <Switch fallback={<>No</>}>
-            <Match when={state.screen === "game"}>
-              <Game state={state} setState={/* @once */ setState} store={/* @once */ store} characters={/* @once */ characters} renderer={/* @once */ renderer} stack={/* @once */ stack} restore={/* @once */ restore} save={/* @once */ save} t={/* @once */ t} />
-            </Match>
-            <Match when={state.screen === 'mainmenu'}>
-              <MainMenu setState={/* @once */ setState} storage={/* @once */ storage} restore={/* @once */ restore} t={/* @once */ t} />
-            </Match>
-            <Match when={state.screen === 'saves'}>
-              <Saves setState={/* @once */ setState} storage={/* @once */ storage} set={/* @once */ set} t={/* @once */ t} />
-            </Match>
-            <Match when={state.screen === 'settings'}>
-              <Settings setState={/* @once */ setState} storage={/* @once */ storage} languages={/* @once */ languages} restore={/* @once */ restore} stack={/* @once */ stack} t={/* @once */ t} />
-            </Match>
-            <Match when={state.screen === 'loading'}>
-              <Loading />
-            </Match>
-          </Switch>
+          <Provider storeData={options.$} options={options} renderer={renderer}>
+            <Switch fallback={<>No</>}>
+              <Match when={state.screen === "game"}>
+                <Game state={state} setState={/* @once */ setState} store={/* @once */ store} characters={/* @once */ characters} renderer={/* @once */ renderer} />
+              </Match>
+              <Match when={state.screen === 'mainmenu'}>
+                <MainMenu setState={/* @once */ setState} />
+              </Match>
+              <Match when={state.screen === 'saves'}>
+                <Saves setState={/* @once */ setState} />
+              </Match>
+              <Match when={state.screen === 'settings'}>
+                <Settings setState={/* @once */ setState} />
+              </Match>
+              <Match when={state.screen === 'loading'}>
+                <Loading />
+              </Match>
+            </Switch>
+          </Provider>
         </div>
       )
     }

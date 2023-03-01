@@ -1,41 +1,28 @@
 import type { VoidComponent, JSX } from 'solid-js'
 import type { SetStoreFunction } from 'solid-js/store'
-import type { Storage, RendererInit } from '@novely/core'
 import type { State } from '../renderer'
 
-import { createResource, Show, For, createUniqueId } from 'solid-js'
-import { capitalize } from '../utils'
+import { Show, For, createUniqueId } from 'solid-js'
+import { capitalize, join } from '../utils'
+import { useData } from '../context'
 
-import { join } from '../utils'
 import { style } from '../styles/styles';
 
 interface SettingsProps {
   setState: SetStoreFunction<State>;
-  restore: RendererInit['restore'];
-
-  stack: RendererInit['stack'];
-  storage: Storage;
-
-  languages: string[];
-
-  t: RendererInit['t'];
 }
 
 const Settings: VoidComponent<SettingsProps> = (props) => {
-  const setScreen = (screen: "mainmenu" | "game" | "saves" | "settings" | 'loading') => props.setState('screen', screen)
-
-  const [saves] = createResource(props.storage.get.bind(props.storage));
+  const data = useData()!;
+  const saves = () => data.storeData()!.saves;
+  const language = () => data.storeData()!.meta[0];
 
   const onSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = (e) => {
     const selected = e.currentTarget.value;
 
-    const data = saves()!;
-
-    data[data.length - 1][2][2] = selected;
-    props.stack.value[2][2] = selected;
-
-    setScreen('loading');
-    props.storage.set(data).then(() => setScreen('settings'));
+    data.storeDataUpdate(prev => {
+      return prev.meta[0] = selected, prev;
+    });
   }
 
   const id = createUniqueId();
@@ -48,37 +35,32 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
       }}
     >
       <div class={style.controls}>
-        <button type="button" class={join(style.button, style.buttonSettings)} onClick={() => setScreen('mainmenu')}>
-          {props.t('HomeScreen')}
+        <button type="button" class={join(style.button, style.buttonSettings)} onClick={() => props.setState('screen', 'mainmenu')}>
+          {data.t('HomeScreen')}
         </button>
-        <button type="button" class={join(style.button, style.buttonSettings)} onClick={() => props.restore()}>
-          {props.t('ToTheGame')}
+        <button type="button" class={join(style.button, style.buttonSettings)} onClick={() => data.options.restore()}>
+          {data.t('ToTheGame')}
         </button>
       </div>
-      <Show when={saves.state === 'ready'} fallback={<>{props.t('AtTheMomentTheSavesAre')} {saves.state}</>}>
-        <Show when={saves()} fallback={<>{props.t('NoSaves')}</>}>
-          {() => {
-            const latest = saves()!.at(-1)!;
-            const current = latest[2][2];
+      <Show when={saves()} fallback={data.t('NoSaves')}>
+        {() => {
+          const languageNames = new Intl.DisplayNames([language()], {
+            type: 'language'
+          });
 
-            const languageNames = new Intl.DisplayNames([current], {
-              type: 'language'
-            });
-
-            return (
-              <div class={style.content}>
-                <label for={id}>{props.t('Language')}</label>
-                <select id={id} onChange={onSelect}>
-                  <For each={props.languages}>
-                    {language => <option value={language} selected={language === current}>{capitalize(languageNames.of(language) || language)}</option>}
-                  </For>
-                </select>
-              </div>
-            )
-          }}
-        </Show>
+          return (
+            <div class={style.content}>
+              <label for={id}>{data.t('Language')}</label>
+              <select id={id} onChange={onSelect}>
+                <For each={data.options.languages}>
+                  {lang => <option value={lang} selected={lang === language()}>{capitalize(languageNames.of(lang) || lang)}</option>}
+                </For>
+              </select>
+            </div>
+          )
+        }}
       </Show>
-    </div>
+    </div >
   )
 }
 

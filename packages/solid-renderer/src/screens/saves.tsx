@@ -1,43 +1,35 @@
 import type { VoidComponent } from 'solid-js'
 import type { SetStoreFunction } from 'solid-js/store'
-import type { Storage, RendererInit } from '@novely/core'
 import type { State } from '../renderer'
 
-import { createResource, Show, For } from 'solid-js'
-import { capitalize } from '../utils'
+import { Show, For } from 'solid-js'
+import { capitalize, join } from '../utils'
+import { useData } from '../context'
 
-import { join } from '../utils'
 import { style } from '../styles/styles';
 
 interface SavesProps {
   setState: SetStoreFunction<State>;
-
-  storage: Storage;
-  set: RendererInit['set'];
-
-  t: RendererInit['t'];
 }
 
 const Saves: VoidComponent<SavesProps> = (props) => {
-  const setScreen = (screen: "mainmenu" | "game" | "saves") => props.setState('screen', screen)
-
-  const [saves, { mutate }] = createResource(props.storage.get.bind(props.storage));
+  const data = useData()!;
+  const saves = () => data.storeData()!.saves;
+  const language = () => data.storeData()!.meta[0];
 
   const removeSave = (date: number) => {
-    const data = saves();
+    const _saves = saves();
 
-    if (!data) return;
-
-    for (let i = 0; i < data.length; i++) {
-      const current = data[i];
+    for (let i = 0; i < _saves.length; i++) {
+      const current = _saves[i];
 
       if (current[2][0] === date) {
-        data.splice(i, 1);
+        _saves.splice(i, 1);
       }
     }
 
-    props.storage.set(data).then(() => {
-      mutate(() => [...data]);
+    data.storeDataUpdate(prev => {
+      return (prev.saves = _saves), prev;
     });
   }
 
@@ -49,37 +41,40 @@ const Saves: VoidComponent<SavesProps> = (props) => {
       }}
     >
       <div class={style.controls}>
-        <button type="button" class={join(style.button, style.buttonSaves)} onClick={() => setScreen('mainmenu')}>
-          {props.t('GoBack')}
+        <button type="button" class={join(style.button, style.buttonSaves)} onClick={() => props.setState('screen', 'mainmenu')}>
+          {data.t('GoBack')}
         </button>
       </div>
-      <Show when={saves.state === 'ready'} fallback={<>{props.t('AtTheMomentTheSavesAre')} {saves.state}</>}>
-        <Show when={saves()} fallback={<>{props.t('NoSaves')}</>}>
-          <ol class={style.list}>
-            <For each={saves()}>
-              {save => {
-                const [date, type] = save[2];
+      <Show when={saves()} fallback={data.t('NoSaves')}>
+        <ol class={style.list}>
+          <For each={saves()}>
+            {save => {
+              const [date, type] = save[2];
 
-                const stringDate = capitalize(new Date(date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }));
-                const stringType = props.t(type === 'auto' ? 'Automatic' : 'Manual');
+              const stringDate = capitalize(new Date(date).toLocaleDateString(language(), { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }));
+              const stringType = data.t(type === 'auto' ? 'Automatic' : 'Manual');
 
-                return (
-                  <li>
-                    <button type="button" class={join(style.button, style.buttonSaves)} onClick={props.set.bind(props.set, save)} aria-label={props.t('LoadASaveFrom') + ' ' + stringDate}>
-                      {stringDate}
-                      <span style={{ "margin-left": '1em' }}>{stringType}</span>
-                    </button>
-                    <button type="reset" class={join(style.button, style.buttonSavesDelete)} aria-label={props.t('DeleteASaveFrom') + ' ' + stringDate} onClick={[removeSave, date]}>
-                      <span>{props.t('Remove')}</span>
-                    </button>
-                  </li>
-                )
-              }}
-            </For>
-          </ol>
-        </Show>
+              return (
+                <li>
+                  <button
+                    type="button"
+                    class={join(style.button, style.buttonSaves)}
+                    aria-label={data.t('LoadASaveFrom') + ' ' + stringDate}
+                    onClick={() => data.options.set(save)}
+                  >
+                    {stringDate}
+                    <span style={{ "margin-left": '1em' }}>{stringType}</span>
+                  </button>
+                  <button type="reset" class={join(style.button, style.buttonSavesDelete)} aria-label={data.t('DeleteASaveFrom') + ' ' + stringDate} onClick={[removeSave, date]}>
+                    <span>{data.t('Remove')}</span>
+                  </button>
+                </li>
+              )
+            }}
+          </For>
+        </ol>
       </Show>
-    </div>
+    </div >
   )
 }
 

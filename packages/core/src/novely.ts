@@ -1,13 +1,14 @@
 import type { Character } from './character';
 import type { ActionProxyProvider, GetActionParameters, Story, ValidAction, DialogContent, ChoiceContent } from './action';
 import type { Storage } from './storage';
-import type { Save, State } from './types'
+import type { Save, State, StorageData } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction } from './utils';
+import { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getLanguage, throttle } from './utils';
+import { store } from './store';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
-import { DEFAULT_SAVE, SKIPPED_DURING_RESTORE } from './constants';
+import { SKIPPED_DURING_RESTORE, getDefaultSave } from './constants';
 
 interface NovelyInit<Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>> {
   /**
@@ -56,7 +57,7 @@ type Novely = <Languages extends string, Characters extends Record<string, Chara
 }
 
 // @ts-ignore - Fuck ts
-const novely: Novely = ({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, assetsPreload }) => {
+const novely: Novely = async ({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, assetsPreload }) => {
   let story: Story;
 
   const withStory = (s: Story) => {
@@ -112,12 +113,19 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
         stack.push(value);
       },
       clear() {
-        stack = [klona(DEFAULT_SAVE)];
+        stack = [getDefaultSave(languages, $.get().meta[0])];
       }
     }
   }
 
-  const initial = klona(DEFAULT_SAVE);
+  const $ = store(await storage.get());
+
+  const onStorageDataChange = (value: StorageData) => storage.set(value);
+  const throttledOnStorageDataChange = throttle(onStorageDataChange, 120);
+
+  $.subscribe(throttledOnStorageDataChange);
+
+  const initial = ((value) => value.saves.length > 0 && value.saves.at(-1))($.get()) || getDefaultSave(languages, $.get().meta[0]);
   const stack = createStack(initial);
 
   const save = async (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
@@ -127,31 +135,49 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
     const prev = await storage.get();
 
     const date = stack.value[2][0];
-    const isLatest = prev.findIndex(value => value[2][0] === date) === prev.length - 1;
+    const isLatest = prev.saves.findIndex(value => value[2][0] === date) === prev.saves.length - 1;
 
     /**
-     * Обновим дату
+     * Обновим дату и тип
      */
     stack.value[2][0] = Date.now();
     stack.value[2][1] = type;
 
     if (override) {
+      /**
+       * Перезапишем
+       */
       if (isLatest) {
-        prev[prev.length - 1] = stack.value;
+        /**
+         * Сохранения хранятся в массиве. Нельзя перезаписать любое последнее
+         * 
+         * Если перезаписывать старое сохранение, то они не будут идти в хронологическом порядке
+         */
+        prev.saves[prev.saves.length - 1] = stack.value;
       } else {
-        prev.push(stack.value);
+        prev.saves.push(stack.value);
       }
     } else {
       /**
        * Добавляем текущее сохранение
        */
-      prev.push(stack.value);
+      prev.saves.push(stack.value);
     }
 
     /**
      * Устанавливаем новое значение
      */
     return await storage.set(prev);
+  }
+
+  const newGame = () => {
+    $.update(prev => {
+      const save = getDefaultSave(languages, $.get().meta[0]);
+
+      prev.saves.push(save), restore(save);
+
+      return prev;
+    });
   }
 
   /**
@@ -170,13 +196,13 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
    * Визуально восстанавливает историю
    */
   const restore = async (save?: Save) => {
-    let latest = save ? save : await storage.get().then(value => value.at(-1));
+    let latest = save ? save : await storage.get().then(value => value.saves.at(-1));
 
     /**
      * Если нет сохранённой игры, то запустим ту, которая уже есть
      */
     if (!latest) {
-      await storage.set([initial]);
+      await storage.set({ saves: [initial], meta: [getLanguage(languages)] });
 
       latest = klona(initial);
     }
@@ -303,13 +329,19 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
     set,
     restore,
     save,
+    newGame,
     stack,
     languages,
-    t: (key) => t9n.i(key as any, stack.value[2][2]),
+    t: t9n.i,
+    $
   });
 
   const preloadAssets = () => {
-    if (!assetsPreload) return;
+    if (!assetsPreload) {
+      initialScreen === 'game' ? restore() : renderer.ui.showScreen(initialScreen);
+
+      return;
+    }
 
     /**
      * We need to load all the characters and their emotions
@@ -351,13 +383,6 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
           img.onerror = rej;
         }
       }));
-    }
-
-    if (!assetsPreload) {
-      /**
-       * Показывает экран
-       */
-      renderer.ui.showScreen(initialScreen);
     }
 
     Promise.all(promises).then(() => {
@@ -429,7 +454,11 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
       })
     },
     clear() {
-      navigator.vibrate(0), renderer.clear(goingBack)(push);
+      try {
+        navigator.vibrate(0)
+      } finally {
+        renderer.clear(goingBack)(push);
+      }
     },
     condition([condition]) {
       const value = condition();
@@ -513,7 +542,7 @@ const novely: Novely = ({ characters, storage, renderer: createRenderer, initial
   }
 
   const unwrap = (content: DialogContent | ChoiceContent) => {
-    return typeof content === 'function' ? content(stack.value[2][2], state()) : content
+    return typeof content === 'function' ? content($.get().meta[0], state()) : content
   }
 
   return {

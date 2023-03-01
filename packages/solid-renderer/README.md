@@ -65,3 +65,27 @@ render(
   document.body
 );
 ```
+
+## CSS Variables API
+
+Возможность настройки пользовательского интерфейса через [CSS Variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) реализуется через следующие переменные:
+
+| Name                                     | Default Value                                                                                       |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `--novely-button-background-color`       | `#ffe9f3`                                                                                           |
+| `--novely-button-border-color`           | `#ffc7df`                                                                                           |
+| `--novely-button-color`                  | `#000000`                                                                                           |
+| `--novely-button-hover-background-color` | `#ffffff`                                                                                           |
+| `--novely-button-hover-border-color`     | `#ffc6d8`                                                                                           |
+| `--novely-button-hover-color`            | `#ffb7a2`                                                                                           |
+| `--novely-dialog-color`                  | `#ffffff`                                                                                           |
+| `--novely-dialog-border-color`           | `#ffffff`                                                                                           |
+| `--novely-dialog-border-radius`          | `14px`                                                                                              |
+| `--novely-dialog-box-shadow-color`       | `#00000072`                                                                                         |
+| `--novely-dialog-background-image`       | `radial-gradient(#d6608998 20%, transparent 20%), radial-gradient(#d6608998 20%, transparent 20%))` |
+| `--novely-dialog-background-color`       | `#f092b4d8`                                                                                         |
+| `--novely-dialog-background-position`    | `0 0, 50px 50px`                                                                                    |
+| `--novely-dialog-background-size`        | `100px 100px`                                                                                       |
+| `--novely-settings-background-image`     | none                                                                                                |
+| `--novely-main-menu-background-image`    | none                                                                                                |
+| `--novely-saves-background-image`        | none                                                                                                |

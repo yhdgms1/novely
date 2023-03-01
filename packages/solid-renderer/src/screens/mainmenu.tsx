@@ -1,34 +1,17 @@
 import type { VoidComponent } from 'solid-js'
 import type { SetStoreFunction } from 'solid-js/store'
 import type { State } from '../renderer'
-import type { RendererInit, Storage } from '@novely/core'
-
 import { join } from '../utils'
+import { useData } from '../context'
+
 import { style } from '../styles/styles';
 
 interface MainMenuProps {
   setState: SetStoreFunction<State>;
-
-  restore: RendererInit['restore'];
-  storage: Storage
-  t: RendererInit['t'];
 }
 
 const MainMenu: VoidComponent<MainMenuProps> = (props) => {
-  const restore = props.restore.bind(props.restore, undefined);
-  const setScreen = (screen: "mainmenu" | "game" | "saves" | "settings") => props.setState('screen', screen);
-
-  const newGame = () => {
-    props.storage.get().then(prev => {
-      /**
-       * Новая пустая история
-       * todo: брать из констат
-       */
-      prev.push([[[null, 'start'], [null, 0]], {}, [Date.now(), 'manual', 'ru']]);
-
-      props.storage.set(prev).then(restore);
-    });
-  }
+  const data = useData()!;
 
   return (
     <div
@@ -38,20 +21,20 @@ const MainMenu: VoidComponent<MainMenuProps> = (props) => {
       }}
     >
       <div class={style.controls}>
-        <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={newGame}>
-          {props.t('NewGame')}
+        <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={data.options.newGame}>
+          {data.t('NewGame')}
         </button>
-        <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={restore}>
-          {props.t('LoadSave')}
+        <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={() => data.options.restore()}>
+          {data.t('LoadSave')}
         </button>
-        <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={() => setScreen('saves')}>
-          {props.t('Saves')}
+        <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={() => props.setState('screen', 'saves')}>
+          {data.t('Saves')}
         </button>
-        <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={() => setScreen('settings')}>
-          {props.t('Settings')}
+        <button type="button" class={join(style.button, style.buttonMainMenu)} onClick={() => props.setState('screen', 'settings')}>
+          {data.t('Settings')}
         </button>
-      </div>
-    </div>
+      </div >
+    </div >
   )
 }
 

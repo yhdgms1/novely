@@ -10,12 +10,14 @@
   line-height: 1.2;
 
   cursor: pointer;
+
+  user-select: none;
 }
 
 .button:hover {
   background-color: var(--novely-button-hover-background-color, #ffffff);
   border-color: var(--novely-button-hover-border-color, #ffc6d8);
-  color: var(--novely-button-color, #ffb7a2);
+  color: var(--novely-button-hover-color, #ffb7a2);
 }
 
 .button[aria-disabled="true"] {

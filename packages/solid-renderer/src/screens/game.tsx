@@ -1,4 +1,4 @@
-import type { Renderer, Character, RendererInit } from '@novely/core'
+import type { Renderer, Character } from '@novely/core'
 import type { VoidComponent } from 'solid-js';
 import type { JSX } from 'solid-js';
 import type { SetStoreFunction } from 'solid-js/store'
@@ -8,6 +8,7 @@ import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
 import { Dialog, DialogPanel } from 'solid-headless';
 
 import { typewriter } from '@novely/typewriter'
+import { useData } from '../context'
 import { canvasDrawImages, url, isCSSImage, join } from '../utils'
 
 import { style } from '../styles/styles';
@@ -19,15 +20,10 @@ interface GameProps {
   store: SolidRendererStore;
   characters: Record<string, Character>;
   renderer: Renderer;
-
-  stack: RendererInit['stack'];
-  restore: RendererInit['restore'];
-  save: RendererInit['save'];
-
-  t: RendererInit['t'];
 }
 
 const Game: VoidComponent<GameProps> = (props) => {
+  const data = useData()!;
   /**
    * Могут быть деструктурированы
    */
@@ -131,11 +127,9 @@ const Game: VoidComponent<GameProps> = (props) => {
 
           const name = () => {
             const c = character();
+            const lang = data.storeData()!.meta[0];
 
-            // @ts-ignore @todo: resolve this later
-            const name = c ? c in characters ? typeof characters[c].name === 'string' ? characters[c].name : characters[c].name[props.stack.value[2][2]] : c : '';
-
-            return name as string;
+            return c ? c in characters ? typeof characters[c].name === 'string' ? characters[c].name as string : (characters[c].name as any)[lang] as string : c : '';
           }
 
           return (
@@ -241,7 +235,7 @@ const Game: VoidComponent<GameProps> = (props) => {
               class={join(style.button, style.buttonInputDialogPanel)}
               aria-disabled={(props.state.input.error || !props.state.input.element?.validity.valid) ? 'true' : 'false'}
             >
-              {props.t('Sumbit')}
+              {data.t('Sumbit')}
             </button>
           </DialogPanel>
         </div>
@@ -257,19 +251,19 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           onClick={() => {
-            props.stack.back();
-            props.restore(props.stack.value);
+            data.options.stack.back();
+            data.options.restore(data.options.stack.value);
           }}
         >
-          {props.t('GoBack')}
+          {data.t('GoBack')}
         </button>
         <button
           type="button"
           onClick={() => {
-            props.save(false, 'manual');
+            data.options.save(false, 'manual');
           }}
         >
-          {props.t('DoSave')}
+          {data.t('DoSave')}
         </button>
         <button
           type="button"
@@ -277,26 +271,26 @@ const Game: VoidComponent<GameProps> = (props) => {
             setAuto(prev => !prev);
           }}
         >
-          {props.t(auto() ? 'Auto' : 'Stop')}
+          {data.t(auto() ? 'Auto' : 'Stop')}
         </button>
         <button
           type="button"
           onClick={() => {
-            props.save(false, 'auto').then(() => {
+            data.options.save(false, 'auto').then(() => {
               props.setState('screen', 'settings');
             });
           }}
         >
-          {props.t('Settings')}
+          {data.t('Settings')}
         </button>
         <button
           type="button"
           onClick={() => {
-            props.stack.clear();
+            data.options.stack.clear();
             props.setState('screen', 'mainmenu');
           }}
         >
-          {props.t('Exit')}
+          {data.t('Exit')}
         </button>
       </div>
     </div>

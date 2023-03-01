@@ -42,4 +42,50 @@ const isUserRequiredAction = (action: keyof MatchActionMapComplete, meta: Parame
   return action === 'custom' && meta[0] && (meta[0] as unknown as CustomHandler).requireUserAction;
 }
 
-export { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction }
+/**
+ * Currently language system supports only 2-character values, like `en` or `ru`
+ * todo: support language variations, such `en-GB`, `en-CA`, `en-AU`
+ */
+const getLanguage = (languages: string[], language = navigator.language) => {
+  language = language.substring(0, 2);
+
+  if (!languages.includes(language)) language = languages[0];
+
+  return language;
+}
+
+/**
+ * @copyright Techlead LLC
+ * @see https://learn.javascript.ru/task/throttle
+ */
+const throttle = <Fn extends ((...args: any[]) => any)>(fn: Fn, ms: number) => {
+  let throttled = false, savedArgs: any, savedThis: any;
+
+  function wrapper() {
+    if (throttled) {
+      savedArgs = arguments;
+      // @ts-ignore
+      savedThis = this;
+
+      return;
+    }
+
+    // @ts-ignore
+    fn.apply(this, arguments);
+
+    throttled = false;
+  }
+
+  setTimeout(function () {
+    throttled = false;
+
+    if (savedArgs) {
+      wrapper.apply(savedThis, savedArgs);
+      savedArgs = savedThis = null;
+    }
+  }, ms);
+
+  return wrapper as unknown as (...args: Parameters<Fn>) => void;
+}
+
+export { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getLanguage, throttle }
