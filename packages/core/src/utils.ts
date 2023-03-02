@@ -1,6 +1,6 @@
 import type { ActionProxyProvider, CustomHandler } from './action'
 import type { Character } from './character'
-import type { Thenable } from './types'
+import type { Save, Thenable } from './types'
 
 type MatchActionMap = {
   [Key in keyof ActionProxyProvider<Record<string, Character>>]: (data: Parameters<ActionProxyProvider<Record<string, Character>>[Key]>) => void;
@@ -40,6 +40,10 @@ const str = (value: unknown) => {
 
 const isUserRequiredAction = (action: keyof MatchActionMapComplete, meta: Parameters<MatchActionMapComplete[keyof MatchActionMapComplete]>) => {
   return action === 'custom' && meta[0] && (meta[0] as unknown as CustomHandler).requireUserAction;
+}
+
+const getDefaultSave = () => {
+  return [[[null, 'start'], [null, 0]], {}, [Date.now(), 'auto']] as Save;
 }
 
 const getLanguage = (languages: string[], language = navigator.language) => {
@@ -91,4 +95,4 @@ const throttle = <Fn extends ((...args: any[]) => any)>(fn: Fn, ms: number) => {
   return wrapper as unknown as (...args: Parameters<Fn>) => void;
 }
 
-export { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getLanguage, throttle }
+export { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getDefaultSave, getLanguage, throttle }

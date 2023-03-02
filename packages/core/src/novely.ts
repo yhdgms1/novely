@@ -4,11 +4,11 @@ import type { Storage } from './storage';
 import type { Save, State, StorageData } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getLanguage, throttle } from './utils';
+import { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getDefaultSave, getLanguage, throttle } from './utils';
 import { store } from './store';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
-import { SKIPPED_DURING_RESTORE, getDefaultSave } from './constants';
+import { SKIPPED_DURING_RESTORE } from './constants';
 
 interface NovelyInit<Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>> {
   /**
