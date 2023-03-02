@@ -1,4 +1,4 @@
-export { createT9N } from './translation'
+export { createT9N, replace } from './translation'
 export { RU, EN, JP } from './translations'
 
 export type { SetupT9N, T9N, FunctionalSetupT9N } from './translation'

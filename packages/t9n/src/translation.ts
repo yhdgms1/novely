@@ -11,6 +11,34 @@ type T9N<LanguageKey extends string, _PluralKey extends string, StringKey extend
 
 const RGX = /{{(.*?)}}/g;
 
+const replace = (str: string, obj: Record<string, unknown>, pluralization?: Record<string, Record<string, PluralType>>, pr?: Intl.PluralRules) => {
+  return str.replace(RGX, (x: any, key: any, y: any) => {
+    x = 0;
+    y = obj;
+
+    key = (key as string).trim();
+
+    let at = (key as string).split('@');
+    let plural: string | undefined;
+
+    if (at.length > 1) {
+      ([key, plural] = at);
+    }
+
+    key = (key as string).split('.');
+
+    while (y && x < key.length) {
+      y = y[key[x++]];
+    }
+
+    if (plural && pluralization && pr && y) {
+      y = pluralization[plural][pr!.select(y)];
+    }
+
+    return y != null ? y : '';
+  });
+}
+
 const createT9N: FunctionalSetupT9N = (parameters) => {
   let locale: string | undefined;
   let pr: Intl.PluralRules | undefined;
@@ -27,34 +55,7 @@ const createT9N: FunctionalSetupT9N = (parameters) => {
         }
 
         // @ts-ignore `(string & {})` cannot be used to index type `LanguageKey`.
-        const str = parameters[lang]['strings'][key] as string;
-
-        return str.replace(RGX, (x: any, key: any, y: any) => {
-          x = 0;
-          y = obj;
-
-          key = (key as string).trim();
-
-          let at = (key as string).split('@');
-          let plural: string | undefined;
-
-          if (at.length > 1) {
-            ([key, plural] = at);
-          }
-
-          key = (key as string).split('.');
-
-          while (y && x < key.length) {
-            y = y[key[x++]];
-          }
-
-          if (plural && y) {
-            // @ts-ignore `(string & {})` cannot be used to index type `LanguageKey`.
-            y = parameters[lang]['pluralization'][plural][pr!.select(y)];
-          }
-
-          return y != null ? y : '';
-        });
+        return replace(parameters[lang]['strings'][key], obj, parameters[lang]['pluralization']);
       }
     },
     i(key, lang) {
@@ -64,5 +65,5 @@ const createT9N: FunctionalSetupT9N = (parameters) => {
   }
 }
 
-export { createT9N }
+export { createT9N, replace }
 export type { SetupT9N, T9N, FunctionalSetupT9N } 

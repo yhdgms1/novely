@@ -9,6 +9,7 @@ import { store } from './store';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
 import { SKIPPED_DURING_RESTORE } from './constants';
+import { replace as replaceT9N } from '@novely/t9n';
 
 interface NovelyInit<Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>> {
   /**
@@ -548,7 +549,10 @@ const novely: Novely = async ({ characters, storage, renderer: createRenderer, i
   }
 
   const unwrap = (content: DialogContent | ChoiceContent) => {
-    return typeof content === 'function' ? content($.get().meta[0], state()) : content
+    const lang = $.get().meta[0];
+    const data = state();
+
+    return replaceT9N(typeof content === 'function' ? content(lang, data) : content, data);
   }
 
   return {
