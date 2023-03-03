@@ -9,7 +9,7 @@
 
 /* @modifiers */
 
-.characters > canvas[style] {
+.characters > canvas {
   position: absolute;
   bottom: 0;
 
