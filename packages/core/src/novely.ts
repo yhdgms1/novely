@@ -46,19 +46,7 @@ interface NovelyInit<Languages extends string, Characters extends Record<string,
   singleSave?: boolean;
 }
 
-type Novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>>(init: NovelyInit<Languages, Characters, Inter>) => {
-  withStory: (s: Story) => void;
-  action: ActionProxyProvider<Characters>;
-  render: () => void;
-  state: {
-    (value: State | ((prev: State) => State)): void;
-    (): State;
-  };
-  t: Inter['t'];
-}
-
-// @ts-ignore - Fuck ts
-const novely: Novely = async ({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, assetsPreload }) => {
+const novely = async <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, assetsPreload }: NovelyInit<Languages, Characters, Inter>) => {
   let story: Story;
 
   const withStory = (s: Story) => {
@@ -76,7 +64,7 @@ const novely: Novely = async ({ characters, storage, renderer: createRenderer, i
     background: new Set<string>(),
   }
 
-  const action = new Proxy({}, {
+  const action = new Proxy({} as ActionProxyProvider<Characters>, {
     get(_, prop) {
       return (...props: Parameters<ActionProxyProvider<Record<string, Character>>[keyof ActionProxyProvider<Record<string, Character>>]>) => {
         if (prop === 'showBackground') {
