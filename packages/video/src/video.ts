@@ -27,9 +27,9 @@ const createElement = <K extends keyof HTMLElementTagNameMap>(name: K, propertie
 
 const video = ({ controls, close, loop, url }: VideoParameters): CustomHandler => {
   const handler: CustomHandler = (get, _, resolve) => {
-    const layer = get('n-video');
+    const { element, delete: remove } = get('n-video');
 
-    layer.element.classList.add(styles.container);
+    element!.classList.add(styles.container);
 
     const video = createElement('video', {
       src: url,
@@ -49,8 +49,8 @@ const video = ({ controls, close, loop, url }: VideoParameters): CustomHandler =
     const closeHandler = () => {
       video.removeEventListener('ended', closeHandler);
       button.removeEventListener('click', closeHandler);
-      
-      layer.delete(), resolve();
+
+      remove(), resolve();
     }
 
     /**
@@ -62,9 +62,12 @@ const video = ({ controls, close, loop, url }: VideoParameters): CustomHandler =
      */
     button.addEventListener('click', closeHandler, { once: true });
 
-    layer.element.append(video, button)
+    element!.append(video, button)
   };
 
+  /**
+   * Make the Novely wait until we click on the video or it ends
+   */
   handler.requireUserAction = true;
 
   return handler;

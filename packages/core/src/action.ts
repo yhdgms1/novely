@@ -9,13 +9,7 @@ type DialogContent = string | ((lang: string, obj: Record<string, unknown>) => s
 type ChoiceContent = string | ((lang: string, obj: Record<string, unknown>) => string);
 
 type CustomHandlerGetResultDataFunction = {
-  (): Record<string, unknown>;
-  (data: Record<string, unknown>): void;
-}
-
-type CustomHandlerGetResultSkipClearOnGoingBackFunction = {
-  (): boolean;
-  (value: boolean): void;
+  (data?: Record<string, unknown>): Record<string, unknown>;
 }
 
 type CustomHandlerGetResult = {
@@ -27,26 +21,23 @@ type CustomHandlerGetResult = {
   /**
    * Элемент слоя
    */
-  element: HTMLDivElement;
+  element: HTMLDivElement | null;
   /**
    * Корневой элемент Novely
    */
   root: HTMLElement;
-  /**
-   * Будет ли запускаться очистка при проходе назад
-   */
-  skipClearOnGoingBack: CustomHandlerGetResultSkipClearOnGoingBackFunction
   /**
    * Устанавливает обработчик очистки
    */
   clear: (fn: () => void) => void;
 };
 
-type CustomHandlerFunction = (get: (id: string) => CustomHandlerGetResult, goingBack: boolean, resolve: () => void) => Thenable<void>;
+type CustomHandlerFunction = (get: (id: string, insert?: boolean) => CustomHandlerGetResult, goingBack: boolean, resolve: () => void) => Thenable<void>;
 
 type CustomHandler = CustomHandlerFunction & {
   callOnlyLatest?: boolean;
-  requireUserAction?: boolean
+  requireUserAction?: boolean;
+  skipClearOnGoingBack?: boolean;
 };
 
 type ActionProxyProvider<Characters extends Record<string, Character>> = {
@@ -90,4 +81,4 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>>;
 type GetActionParameters<T extends Capitalize<keyof DefaultActionProxyProvider>> = Parameters<DefaultActionProxyProvider[Uncapitalize<T>]>;
 
-export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, DialogContent, ChoiceContent, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, CustomHandlerGetResultSkipClearOnGoingBackFunction }
+export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, DialogContent, ChoiceContent, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction }

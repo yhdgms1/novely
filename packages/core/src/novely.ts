@@ -494,7 +494,7 @@ const novely = async <Languages extends string, Characters extends Record<string
     },
     animateCharacter([character, timeout, ...classes]) {
       const handler: CustomHandler = (get) => {
-        const root = get('novely-10p65vo' /** murmur3: animate-character */).root;
+        const root = get('novely-animate-character', false).root;
         const target = root.querySelector(`div[data-characters] > canvas[data-character="${character}"]`);
 
         /**

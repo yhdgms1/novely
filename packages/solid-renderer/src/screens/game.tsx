@@ -85,6 +85,8 @@ const Game: VoidComponent<GameProps> = (props) => {
     resolve?.();
   }
 
+  const layers = () => Object.values(props.state.layers);
+
   return (
     <div class={style.root} style={background()}>
       <div data-characters={true} class={style.characters}>
@@ -241,9 +243,9 @@ const Game: VoidComponent<GameProps> = (props) => {
         </div>
       </Dialog>
 
-      <div>
-        <For each={Object.values(props.state.layers)}>
-          {(item) => item?.element}
+      <div data-custom={true}>
+        <For each={layers()}>
+          {(value) => value!.dom}
         </For>
       </div>
 

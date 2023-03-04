@@ -32,11 +32,6 @@ const particles = (options: ParticlesOptions): CustomHandler => {
     const layer = get('particles');
 
     /**
-     * When `clear` when `goingBack`, do not call the `destroy` method
-     */
-    layer.skipClearOnGoingBack(true);
-
-    /**
      * Remove previous instance
      */
     layer.clear(() => {
@@ -77,7 +72,7 @@ const particles = (options: ParticlesOptions): CustomHandler => {
     layer.data({ instance, options });
   }
 
-  handler.callOnlyLatest = true;
+  handler.callOnlyLatest = handler.skipClearOnGoingBack = true;
 
   return handler;
 }

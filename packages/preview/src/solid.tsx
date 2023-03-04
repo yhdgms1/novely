@@ -14,9 +14,9 @@ import bedroomRoom from './assets/bedroom.webp';
 import masakiNatsukoOk from './assets/Masaki Natsuko.webp';
 import outsideSchool from './assets/outside.webp';
 
-// import { video } from '@novely/video'
-// import { particles } from '@novely/particles'
-// import { snow, fireflies } from './particles'
+import { video } from '@novely/video'
+import { particles } from '@novely/particles'
+import { snow, fireflies } from './particles'
 
 const { createRenderer, Novely } = createSolidRenderer();
 
@@ -106,17 +106,17 @@ engine.withStory({
   'start': [
     // todo: `Music` должно играть после конца
     action.showBackground(classRoom),
-    // action.custom(particles(fireflies)),
+    action.custom(particles(fireflies)),
     action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__fadeInUp', 'left: 15%'),
     action.animateCharacter('Masaki Natsuko', 5000, 'ebebebe'),
     action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
     // action.vibrate(100, 30, 100, 30, 100, 200, 200, 30, 200, 30, 200, 200, 100, 30, 100, 30, 100),
-    // action.custom(video({ url: 'http://techslides.com/demos/sample-videos/small.mp4', controls: true, })),
+    action.custom(video({ url: 'http://techslides.com/demos/sample-videos/small.mp4', controls: true, })),
     action.choice(
       [
         'Да, я новенький!',
         [
-          // action.custom(particles(snow)),
+          action.custom(particles(snow)),
           action.dialog('Masaki Natsuko', 'Не хочешь зайти ко мне в гости сегодня? 😜'),
           action.choice(
             [

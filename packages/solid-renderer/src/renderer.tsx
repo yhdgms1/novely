@@ -1,4 +1,4 @@
-import type { Renderer, RendererInit, RendererStore, Character, ValidAction, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, CustomHandlerGetResultSkipClearOnGoingBackFunction } from '@novely/core'
+import type { Renderer, RendererInit, RendererStore, Character, ValidAction, CustomHandler, CustomHandlerGetResult } from '@novely/core'
 import type { JSX } from 'solid-js';
 
 import { Switch, Match } from 'solid-js';
@@ -95,7 +95,7 @@ interface StateInput {
   error: string;
 }
 
-type StateLayers = Record<string, CustomHandlerGetResult | undefined>;
+type StateLayers = Record<string, { value: CustomHandlerGetResult, fn: CustomHandler; clear: (() => void); dom: null | HTMLDivElement; } | undefined>;
 
 interface State {
   background: string;
@@ -229,13 +229,15 @@ const createSolidRenderer = () => {
               setState('characters', character, { visible: false });
             }
 
-            for (const layer of Object.values(state.layers)) {
+            for (const [id, layer] of Object.entries(state.layers)) {
               if (!layer) continue;
 
               /**
                * Если происходит переход назад, и слой просит пропустить очистку при переходе назад, то не будем очищать слой
                */
-              if (!(goingBack && layer.skipClearOnGoingBack())) layer.delete();
+              if (!(goingBack && layer.fn.skipClearOnGoingBack)) {
+                layer.clear(), setState('layers', id, undefined);
+              }
             }
 
             resolve();
@@ -287,49 +289,53 @@ const createSolidRenderer = () => {
           return store.audio[method] = handle;
         },
         custom(fn, goingBack, resolve) {
-          const get: Parameters<CustomHandler>[0] = (id) => {
-            if (state.layers[id]) return state.layers[id]!;
+          const get: Parameters<CustomHandler>[0] = (id, insert = true) => {
+            /**
+             * Get `chched` value
+             */
+            const cached = state.layers[id];
 
-            const local = {
-              skipClearOnGoingBack: false,
-              storage: {} as Record<string, unknown>,
-              clear: () => { },
+            /**
+             * Return it
+             */
+            if (cached) return cached.value;
+
+            /**
+             * `Clear` function
+             */
+            let clear = () => { };
+            let store = {};
+
+            /**
+             * Function that call the `Clear` defined by the action itself, and then deletes the layer
+             */
+            const topLevelClear = () => {
+              clear(), setState('layers', id, undefined);
             }
 
-            // @ts-expect-error - It should not
-            const data = (data?: Record<string, unknown>) => {
-              if (!data) {
-                return local.storage;
-              } else {
-                local.storage = data;
+            /**
+             * When no need to insert - just do not create it.
+             */
+            const element = insert ? <div id={id} /> as HTMLDivElement : null;
+
+            setState('layers', id, {
+              fn,
+              dom: element,
+              clear: topLevelClear,
+              value: {
+                root,
+                element,
+                delete: topLevelClear,
+                data(data) {
+                  return data ? (store = data) : store;
+                },
+                clear(cb) {
+                  clear = cb;
+                }
               }
-            }
+            });
 
-            // @ts-expect-error - It should not
-            const skipClearOnGoingBack = (value?: boolean) => {
-              if (value) {
-                local.skipClearOnGoingBack = value;
-              } else {
-                return local.skipClearOnGoingBack;
-              }
-            }
-
-            setState('layers', id, () => ({
-              element: <div id={id} /> as HTMLDivElement,
-              root: root,
-              data: data as CustomHandlerGetResultDataFunction,
-              skipClearOnGoingBack: skipClearOnGoingBack as CustomHandlerGetResultSkipClearOnGoingBackFunction,
-              clear(fn) {
-                local.clear = fn;
-              },
-              delete() {
-                local.clear();
-
-                setState('layers', id, undefined);
-              },
-            }));
-
-            return state.layers[id]!;
+            return state.layers[id]!.value;
           };
 
           /**
