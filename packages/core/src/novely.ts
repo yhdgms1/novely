@@ -1,5 +1,5 @@
 import type { Character } from './character';
-import type { ActionProxyProvider, GetActionParameters, Story, ValidAction, DialogContent, ChoiceContent } from './action';
+import type { ActionProxyProvider, GetActionParameters, Story, ValidAction, DialogContent, ChoiceContent, CustomHandler } from './action';
 import type { Storage } from './storage';
 import type { Save, State, StorageData } from './types'
 import type { Renderer, RendererInit } from './renderer'
@@ -109,9 +109,10 @@ const novely = async <Languages extends string, Characters extends Record<string
 
   const stored = await storage.get();
 
-  if (!stored.meta[0]) {
-    stored.meta[0] = getLanguage(languages);
-  }
+  /**
+   * Default `localStorageStorage` cannot determine preferred language, and returns empty array
+   */
+  stored.meta[0] ||= getLanguage(languages);
 
   const $ = store(stored);
 
@@ -482,10 +483,37 @@ const novely = async <Languages extends string, Characters extends Record<string
       return result;
     },
     vibrate(pattern) {
-      navigator.vibrate(pattern), push();
+      try {
+        navigator.vibrate(pattern)
+      } finally {
+        push()
+      }
     },
     next() {
       push();
+    },
+    animateCharacter([character, timeout, ...classes]) {
+      const handler: CustomHandler = (get) => {
+        const root = get('novely-10p65vo' /** murmur3: animate-character */).root;
+        const target = root.querySelector(`div[data-characters] > canvas[data-character="${character}"]`);
+
+        /**
+         * Character is not found in the DOM
+         */
+        if (!target) return;
+
+        const classNames = classes.filter(className => !target.classList.contains(className));
+
+        target.classList.add(...classNames);
+
+        setTimeout(() => {
+          target.classList.remove(...classNames);
+        }, timeout);
+      }
+
+      handler.callOnlyLatest = true;
+
+      return renderer.custom(handler, goingBack, () => { }), push();
     }
   });
 

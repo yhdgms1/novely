@@ -29,6 +29,10 @@ type CustomHandlerGetResult = {
    */
   element: HTMLDivElement;
   /**
+   * Корневой элемент Novely
+   */
+  root: HTMLElement;
+  /**
    * Будет ли запускаться очистка при проходе назад
    */
   skipClearOnGoingBack: CustomHandlerGetResultSkipClearOnGoingBackFunction
@@ -67,6 +71,9 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
   }
   hideCharacter: {
     <C extends keyof Characters>(character: C, className?: string, style?: string, duration?: number): ValidAction
+  }
+  animateCharacter: {
+    <C extends keyof Characters>(character: C, timeout: number, ...classes: string[]): ValidAction;
   }
   wait: (time: number) => ValidAction;
   function: (fn: () => Thenable<void>) => ValidAction;

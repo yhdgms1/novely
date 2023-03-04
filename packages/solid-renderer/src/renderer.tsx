@@ -143,6 +143,8 @@ const createSolidRenderer = () => {
   let renderer!: Renderer;
   let options: RendererInit;
 
+  let root!: HTMLElement;
+
   return {
     createRenderer(init: RendererInit): Renderer {
       options = init, characters = init.characters;
@@ -154,7 +156,7 @@ const createSolidRenderer = () => {
         character(character) {
           if (store.characters[character]) return store.characters[character];
 
-          const canvas = <canvas /> as HTMLCanvasElement;
+          const canvas = <canvas data-character={character} /> as HTMLCanvasElement;
           const ctx = canvas.getContext('2d')!;
 
           return store.characters[character] = {
@@ -314,6 +316,7 @@ const createSolidRenderer = () => {
 
             setState('layers', id, () => ({
               element: <div id={id} /> as HTMLDivElement,
+              root: root,
               data: data as CustomHandlerGetResultDataFunction,
               skipClearOnGoingBack: skipClearOnGoingBack as CustomHandlerGetResultSkipClearOnGoingBackFunction,
               clear(fn) {
@@ -348,7 +351,7 @@ const createSolidRenderer = () => {
     },
     Novely(props: Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children'>) {
       return (
-        <div {...props}>
+        <div {...props} ref={root as HTMLDivElement}>
           <Provider storeData={options.$} options={options} renderer={renderer}>
             <Switch fallback={<>No</>}>
               <Match when={state.screen === "game"}>

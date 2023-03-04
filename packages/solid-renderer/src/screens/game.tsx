@@ -87,7 +87,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 
   return (
     <div class={style.root} style={background()}>
-      <div class={style.characters}>
+      <div data-characters={true} class={style.characters}>
         <For each={Object.entries(props.state.characters)}>
           {([character, data]) => (
             <Show when={data.visible}>
