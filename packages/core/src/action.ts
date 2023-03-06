@@ -1,7 +1,26 @@
 import type { Character } from './character';
 import type { Thenable } from './types'
 
-type ValidAction = [keyof DefaultActionProxyProvider, Parameters<DefaultActionProxyProvider[keyof DefaultActionProxyProvider]>]
+type ValidAction =
+  | ['choice', [number]]
+  | ['clear', []]
+  | ['condition', [() => boolean, Record<string, ValidAction[]>]]
+  | ['dialog', [string | undefined, DialogContent, string | undefined]]
+  | ['end', []]
+  | ['showBackground', [string]]
+  | ['playMusic', [string]]
+  | ['stopMusic', [string]]
+  | ['jump', [string]]
+  | ['showCharacter', [string, keyof Character['emotions'], string?, string?]]
+  | ['hideCharacter', [string, string?, string?, number?]]
+  | ['animateCharacter', [string, number, ...string[]]]
+  | ['wait', [number]]
+  | ['function', [() => Thenable<void>]]
+  | ['input', [string, (meta: { input: HTMLInputElement, error: (error: string) => void, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, ((input: HTMLInputElement) => void)?]]
+  | ['custom', [CustomHandler]]
+  | ['vibrate', [...number[]]]
+  | ['next', []]
+  | ValidAction[]
 
 type Story = Record<string, ValidAction[]>;
 

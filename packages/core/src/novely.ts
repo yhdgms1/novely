@@ -50,7 +50,26 @@ const novely = async <Languages extends string, Characters extends Record<string
   let story: Story;
 
   const withStory = (s: Story) => {
-    story = s;
+    /**
+     * Transforms `(ValidAction | ValidAction[])[]` to `ValidAction[]`
+     */
+    story = Object.fromEntries(Object.entries(s).map(([name, items]) => {
+      const flat = (item: (ValidAction | ValidAction[])[]): ValidAction[] => {
+        return item.flatMap((data) => {
+          const type = data[0];
+
+          /**
+           * This is not just an action like `['name', ...arguments]`, but an array of actions
+           */
+          if (Array.isArray(type)) return flat(data as ValidAction[]);
+
+          return [data as ValidAction];
+        });
+      };
+
+      return [name, flat(items)];
+    }));
+
     /**
      * Load assets after the `action` scripts are executed
      */
@@ -296,7 +315,7 @@ const novely = async <Languages extends string, Characters extends Record<string
          */
         if (result && 'then' in result) await result;
       } else {
-        match(action, meta);
+        match(action as keyof ActionProxyProvider<Record<string, Character<string>>>, meta);
       }
     }
 
