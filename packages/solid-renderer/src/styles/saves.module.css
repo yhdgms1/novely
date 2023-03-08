@@ -13,7 +13,7 @@
 .saves > .controls {
   width: 30vw;
   height: 100%;
-  padding-left: 1em;
+  padding: 0 1em;
 
   display: flex;
   flex-direction: column;
@@ -22,20 +22,33 @@
 
 .saves > .list {
   width: 100%;
-  height: 100%;
-  padding-left: 1em;
+  height: 80%;
+  padding: 0 1em;
 
   display: flex;
-  justify-content: center;
   flex-direction: column;
   align-items: center;
-  flex-grow: 1;
-  flex-shrink: 1;
-  flex-basis: 0;
 
   list-style: none;
+
+  overflow-y: scroll;
 }
 
 .saves > .list > li {
   display: flex;
+}
+
+@media (max-width: 768px) {
+  .saves {
+    flex-direction: column;
+  }
+
+  .saves > .controls {
+    width: auto;
+    height: auto;
+  }
+
+  .saves > .list {
+    height: auto;
+  }
 }

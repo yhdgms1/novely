@@ -10,3 +10,7 @@
   background-position: center;
   background-size: cover;
 }
+
+.root * {
+  box-sizing: border-box;
+}
