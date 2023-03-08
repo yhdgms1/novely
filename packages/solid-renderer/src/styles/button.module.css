@@ -6,7 +6,7 @@
   margin: 0.4em 0;
   padding: 0.4em;
 
-  font-size: 1.8375em;
+  font-size: 1.02em;
   line-height: 1.2;
 
   cursor: pointer;
@@ -36,25 +36,20 @@
 }
 
 .buttonChoices {
-  font-size: 1.02em;
 }
 
 .buttonMainMenu {
   width: 100%;
-  font-size: 1.02em;
 }
 
 .buttonSaves {
   width: 100%;
-  font-size: 1.02em;
 }
 
 .buttonSavesDelete {
-  font-size: 1.02em;
   margin-left: 1em;
 }
 
 .buttonSettings {
   width: 100%;
-  font-size: 1.02em;
 }

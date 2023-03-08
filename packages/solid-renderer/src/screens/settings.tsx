@@ -50,12 +50,14 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 
           return (
             <div class={style.content}>
-              <label for={id}>{data.t('Language')}</label>
-              <select id={id} onChange={onSelect}>
-                <For each={data.options.languages}>
-                  {lang => <option value={lang} selected={lang === language()}>{capitalize(languageNames.of(lang) || lang)}</option>}
-                </For>
-              </select>
+              <div class={style.select}>
+                <label for={id}>{data.t('Language')}</label>
+                <select id={id} onChange={onSelect}>
+                  <For each={data.options.languages}>
+                    {lang => <option value={lang} selected={lang === language()}>{capitalize(languageNames.of(lang) || lang)}</option>}
+                  </For>
+                </select>
+              </div>
             </div>
           )
         }}
