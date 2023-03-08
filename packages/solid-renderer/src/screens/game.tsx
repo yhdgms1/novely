@@ -285,7 +285,7 @@ const Game: VoidComponent<GameProps> = (props) => {
             setAuto(prev => !prev);
           }}
         >
-          {data.t(auto() ? 'Auto' : 'Stop')}
+          {data.t(auto() ? 'Stop' : 'Auto')}
         </button>
         <button
           type="button"
