@@ -53,3 +53,13 @@
 .buttonSettings {
   width: 100%;
 }
+
+.buttonControlPanel {
+  border: 2px solid var(--novely-button-border-color, #ffc7df);
+
+  margin: 0;
+  padding: 0.2em 0.4em;
+
+  font-size: 1em;
+  line-height: 1;
+}

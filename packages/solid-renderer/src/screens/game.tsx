@@ -252,6 +252,10 @@ const Game: VoidComponent<GameProps> = (props) => {
       <div class={style.controlPanel}>
         <button
           type="button"
+          classList={{
+            [style.button]: true,
+            [style.buttonControlPanel]: true
+          }}
           onClick={() => {
             data.options.stack.back();
             data.options.restore(data.options.stack.value);
@@ -261,6 +265,10 @@ const Game: VoidComponent<GameProps> = (props) => {
         </button>
         <button
           type="button"
+          classList={{
+            [style.button]: true,
+            [style.buttonControlPanel]: true
+          }}
           onClick={() => {
             data.options.save(false, 'manual');
           }}
@@ -269,6 +277,10 @@ const Game: VoidComponent<GameProps> = (props) => {
         </button>
         <button
           type="button"
+          classList={{
+            [style.button]: true,
+            [style.buttonControlPanel]: true
+          }}
           onClick={() => {
             setAuto(prev => !prev);
           }}
@@ -277,6 +289,10 @@ const Game: VoidComponent<GameProps> = (props) => {
         </button>
         <button
           type="button"
+          classList={{
+            [style.button]: true,
+            [style.buttonControlPanel]: true
+          }}
           onClick={() => {
             data.options.save(false, 'auto').then(() => {
               props.setState('screen', 'settings');
@@ -287,6 +303,10 @@ const Game: VoidComponent<GameProps> = (props) => {
         </button>
         <button
           type="button"
+          classList={{
+            [style.button]: true,
+            [style.buttonControlPanel]: true
+          }}
           onClick={() => {
             data.options.stack.clear();
             props.setState('screen', 'mainmenu');

@@ -1,6 +1,6 @@
 .controlPanel {
   position: absolute;
-  right: 0;
+  right: 0.4em;
   bottom: 0.4em;
   z-index: 23;
 }
