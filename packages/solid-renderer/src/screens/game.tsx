@@ -313,7 +313,7 @@ const Game: VoidComponent<GameProps> = (props) => {
         </For>
       </div>
 
-      <div class={style.fullscreenText} data-fullscreen-text={true} onClick={clearTypewriterEffect}>
+      <div class={style.fullscreenText} data-fullscreen-text-shown={Boolean(props.state.text.content)} onClick={clearTypewriterEffect}>
         <p ref={store.textRef}>
           &nbsp;
         </p>
