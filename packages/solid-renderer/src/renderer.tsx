@@ -95,6 +95,17 @@ interface StateInput {
   error: string;
 }
 
+interface StateText {
+  /**
+   * Текст
+   */
+  content: string,
+  /**
+   * Функция `resolve`
+   */
+  resolve?: () => void;
+}
+
 type StateLayers = Record<string, { value: CustomHandlerGetResult, fn: CustomHandler; clear: (() => void); dom: null | HTMLDivElement; } | undefined>;
 
 interface State {
@@ -104,11 +115,13 @@ interface State {
   choices: StateChoices
   input: StateInput
   layers: StateLayers;
+  text: StateText;
   screen: "mainmenu" | "game" | "saves" | "settings" | 'loading'
 }
 
 interface SolidRendererStore extends RendererStore {
   dialogRef?: HTMLParagraphElement;
+  textRef?: HTMLParagraphElement;
 }
 
 const createSolidRenderer = () => {
@@ -127,6 +140,9 @@ const createSolidRenderer = () => {
       question: '',
       error: '',
       visible: false
+    },
+    text: {
+      content: '',
     },
     layers: {},
     screen: 'mainmenu'
@@ -346,6 +362,9 @@ const createSolidRenderer = () => {
           if (!fn.requireUserAction) result ? result.then(resolve) : resolve()
 
           return result;
+        },
+        text(content, resolve) {
+          setState('text', { content, resolve });
         },
         store,
         ui: {

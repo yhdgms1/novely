@@ -37,6 +37,7 @@ type Renderer = {
   music: (source: string, method: keyof RendererStore['audio']) => AudioHandle;
   clear: (goingBack: boolean) => (resolve: () => void) => void;
   custom: (fn: Parameters<DefaultActionProxyProvider['custom']>[0], goingBack: boolean, push: () => void) => Thenable<void>;
+  text: (str: string, resolve: () => void) => void;
   store: RendererStore;
 
   ui: {

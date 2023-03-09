@@ -39,19 +39,26 @@ const Game: VoidComponent<GameProps> = (props) => {
 
   const [auto, setAuto] = createSignal(false);
 
+  const getCurrentContent = (): readonly [dialog: string, text: string] => {
+    const state = props.state;
+
+    return [state.dialog.content, state.text.content] as const;
+  }
+
   createEffect(() => {
-    if (props.state && store.dialogRef) {
-      /**
-       * Уничтожаем предыдущий инстанс
-       */
-      writer?.destroy();
-      /**
-       * Создаём новый инстанс
-       */
-      writer = typewriter(store.dialogRef, props.state.dialog.content, () => {
-        if (auto()) onDialogClick();
-      });
-    }
+    const [dialog, text] = getCurrentContent();
+
+    /**
+     * Уничтожаем предыдущий инстанс
+     */
+    writer?.destroy();
+
+    /**
+     * Создаём новый инстанс
+     */
+    writer = typewriter(dialog ? store.dialogRef! : store.textRef!, dialog || text, () => {
+      if (auto()) clearTypewriterEffect();
+    });
   });
 
   const onChoicesButtonClick = ([disabled, i]: [boolean, number]) => {
@@ -63,14 +70,21 @@ const Game: VoidComponent<GameProps> = (props) => {
     resolve?.(i);
   }
 
-  const onDialogClick = () => {
+  const clearTypewriterEffect = () => {
     if (writer && writer.end()) {
       /**
        * Из-за рассинхронизации состояния `resolve` запускается после скрытия диалога
        */
-      const resolve = props.state.dialog.resolve;
+      const resolve = props.state.dialog.resolve || props.state.text.resolve;
 
-      setState('dialog', { content: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
+      const [dialog, text] = getCurrentContent();
+
+      if (dialog) {
+        setState('dialog', { content: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
+      } else if (text) {
+        setState('text', { content: '', resolve: undefined });
+      }
+
       resolve?.();
     }
   }
@@ -115,7 +129,7 @@ const Game: VoidComponent<GameProps> = (props) => {
       <div
         class={style.dialog}
         style={{ display: props.state.dialog.visible ? 'flex' : 'none' }}
-        onClick={onDialogClick}
+        onClick={clearTypewriterEffect}
       >
         {() => {
           const character = () => props.state.dialog.character;
@@ -297,6 +311,12 @@ const Game: VoidComponent<GameProps> = (props) => {
         <For each={layers()}>
           {(value) => value!.dom}
         </For>
+      </div>
+
+      <div class={style.fullscreenText} data-fullscreen-text={true} onClick={clearTypewriterEffect}>
+        <p ref={store.textRef}>
+          &nbsp;
+        </p>
       </div>
     </div>
   )

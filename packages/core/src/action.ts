@@ -20,6 +20,7 @@ type ValidAction =
   | ['custom', [CustomHandler]]
   | ['vibrate', [...number[]]]
   | ['next', []]
+  | ['text', [...string[]]]
   | ValidAction[]
 
 type Story = Record<string, ValidAction[]>;
@@ -95,6 +96,8 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
   vibrate: (...pattern: number[]) => ValidAction;
 
   next: () => ValidAction;
+
+  text: (...text: string[]) => ValidAction;
 }
 
 type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>>;

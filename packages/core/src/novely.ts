@@ -557,6 +557,9 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       handler.callOnlyLatest = true;
 
       return renderer.custom(handler, goingBack, () => { }), push();
+    },
+    text(text) {
+      renderer.text(unwrap(text.join('<br>')), push);
     }
   });
 
