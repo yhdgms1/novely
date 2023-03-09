@@ -1,6 +1,5 @@
 .dialog {
-  min-height: 25vh;
-  max-height: 30vh;
+  min-height: 26vh;
   width: 75%;
 
   position: absolute;
@@ -20,8 +19,9 @@
 
 .dialogContainer {
   height: 100%;
-  min-height: 14.5vh;
-  max-height: 25vh;
+  min-height: 18vh;
+
+  flex-grow: 1;
 
   color: var(--novely-dialog-color, #ffffff);
 
@@ -36,8 +36,11 @@
   background-size: var(--novely-dialog-background-size, 100px 100px);
 
   display: grid;
-  grid-template-rows: auto 1fr;
-  grid-template-columns: 10vmax 1fr;
+
+  grid-template-areas:
+    "pers text"
+    "pers text"
+    "cont cont";
 }
 
 /* @modifiers */
@@ -45,10 +48,15 @@
 .dialogPerson {
   max-height: 25vh;
   max-width: 25vw;
+
+  grid-area: pers;
 }
 
 .dialogContainerWithPerson[data-no-person="true"] {
-  display: block;
+  grid-template-areas:
+    "text text"
+    "text text"
+    "cont cont";
 }
 
 .dialogContainerWithPerson[data-no-person="true"] > .dialogPerson {
@@ -81,7 +89,10 @@
   line-height: 1.2;
   width: 100%;
 
-  text-shadow: 1px 0 0 #000, 0 1px 0 #000, -1px 0 0 #000, 0 -1px 0 #000;
+  grid-area: text;
+
+  /* prettier-ignore */
+  text-shadow: 1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
 }
 
 .dialogPerson > canvas,

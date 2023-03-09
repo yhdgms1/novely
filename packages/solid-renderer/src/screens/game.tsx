@@ -176,6 +176,56 @@ const Game: VoidComponent<GameProps> = (props) => {
           <p class={style.dialogContent} ref={store.dialogRef}>
             &nbsp;
           </p>
+          <div class={style.controlPanel}>
+            <button
+              type="button"
+              class={join(style.button, style.buttonControlPanel)}
+              onClick={() => {
+                data.options.stack.back();
+                data.options.restore(data.options.stack.value);
+              }}
+            >
+              {data.t('GoBack')}
+            </button>
+            <button
+              type="button"
+              class={join(style.button, style.buttonControlPanel)}
+              onClick={() => {
+                data.options.save(false, 'manual');
+              }}
+            >
+              {data.t('DoSave')}
+            </button>
+            <button
+              type="button"
+              class={join(style.button, style.buttonControlPanel)}
+              onClick={() => {
+                setAuto(prev => !prev);
+              }}
+            >
+              {data.t(auto() ? 'Stop' : 'Auto')}
+            </button>
+            <button
+              type="button"
+              class={join(style.button, style.buttonControlPanel)}
+              onClick={() => {
+                data.options.save(false, 'auto');
+                props.setState('screen', 'settings');
+              }}
+            >
+              {data.t('Settings')}
+            </button>
+            <button
+              type="button"
+              class={join(style.button, style.buttonControlPanel)}
+              onClick={() => {
+                data.options.stack.clear();
+                props.setState('screen', 'mainmenu');
+              }}
+            >
+              {data.t('Exit')}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -247,73 +297,6 @@ const Game: VoidComponent<GameProps> = (props) => {
         <For each={layers()}>
           {(value) => value!.dom}
         </For>
-      </div>
-
-      <div class={style.controlPanel}>
-        <button
-          type="button"
-          classList={{
-            [style.button]: true,
-            [style.buttonControlPanel]: true
-          }}
-          onClick={() => {
-            data.options.stack.back();
-            data.options.restore(data.options.stack.value);
-          }}
-        >
-          {data.t('GoBack')}
-        </button>
-        <button
-          type="button"
-          classList={{
-            [style.button]: true,
-            [style.buttonControlPanel]: true
-          }}
-          onClick={() => {
-            data.options.save(false, 'manual');
-          }}
-        >
-          {data.t('DoSave')}
-        </button>
-        <button
-          type="button"
-          classList={{
-            [style.button]: true,
-            [style.buttonControlPanel]: true
-          }}
-          onClick={() => {
-            setAuto(prev => !prev);
-          }}
-        >
-          {data.t(auto() ? 'Stop' : 'Auto')}
-        </button>
-        <button
-          type="button"
-          classList={{
-            [style.button]: true,
-            [style.buttonControlPanel]: true
-          }}
-          onClick={() => {
-            data.options.save(false, 'auto').then(() => {
-              props.setState('screen', 'settings');
-            });
-          }}
-        >
-          {data.t('Settings')}
-        </button>
-        <button
-          type="button"
-          classList={{
-            [style.button]: true,
-            [style.buttonControlPanel]: true
-          }}
-          onClick={() => {
-            data.options.stack.clear();
-            props.setState('screen', 'mainmenu');
-          }}
-        >
-          {data.t('Exit')}
-        </button>
       </div>
     </div>
   )

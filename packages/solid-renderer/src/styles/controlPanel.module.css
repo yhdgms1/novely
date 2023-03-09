@@ -1,6 +1,11 @@
 .controlPanel {
-  position: absolute;
-  right: 0.4em;
-  bottom: 0.4em;
-  z-index: 23;
+  display: flex;
+  justify-content: end;
+
+  grid-area: cont;
+  align-self: end;
+  justify-self: end;
+
+  margin-right: 0.4em;
+  margin-bottom: 0.4em;
 }
