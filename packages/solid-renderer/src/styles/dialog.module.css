@@ -108,9 +108,12 @@
     transform: unset;
   }
 
-  .dialogName,
-  .dialogContent {
+  .dialogName {
     font-size: 1.02em;
+  }
+
+  .dialogContent {
+    font-size: 1.32em;
   }
 
   .dialogContainer {
