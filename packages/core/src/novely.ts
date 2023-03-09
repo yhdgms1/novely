@@ -46,7 +46,7 @@ interface NovelyInit<Languages extends string, Characters extends Record<string,
   singleSave?: boolean;
 }
 
-const novely = async <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, assetsPreload }: NovelyInit<Languages, Characters, Inter>) => {
+const novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, assetsPreload }: NovelyInit<Languages, Characters, Inter>) => {
   let story: Story;
 
   const withStory = (s: Story) => {
@@ -126,19 +126,40 @@ const novely = async <Languages extends string, Characters extends Record<string
     }
   }
 
-  const stored = await storage.get();
-
   /**
-   * Default `localStorageStorage` cannot determine preferred language, and returns empty array
+   * 1) Novely rendered using the `initialData`, you can still start new game or `load` an empty one - this is scary, imagine losing your progress
+   * 2) Actual stored data is loaded, language and etc is changed 
    */
-  stored.meta[0] ||= getLanguage(languages);
+  const initialData: StorageData = {
+    saves: [],
+    meta: [getLanguage(languages)]
+  };
 
-  const $ = store(stored);
+  const $ = store(initialData);
 
-  const onStorageDataChange = (value: StorageData) => storage.set(value);
+  let initialDataLoaded = false;
+
+  const onStorageDataChange = (value: StorageData) => {
+    if (initialDataLoaded) storage.set(value);
+  };
+
   const throttledOnStorageDataChange = throttle(onStorageDataChange, 120);
 
   $.subscribe(throttledOnStorageDataChange);
+
+  storage.get().then(stored => {
+    /**
+     * Default `localStorageStorage` cannot determine preferred language, and returns empty array
+     */
+    stored.meta[0] ||= getLanguage(languages);
+
+    /**
+     * Now the next store updates will entail saving via storage.set
+     */
+    initialDataLoaded = true;
+
+    $.update(() => stored);
+  });
 
   const initial = ((value) => value.saves.length > 0 && value.saves.at(-1))($.get()) || getDefaultSave();
   const stack = createStack(initial);
