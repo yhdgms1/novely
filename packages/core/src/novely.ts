@@ -143,46 +143,43 @@ const novely = async <Languages extends string, Characters extends Record<string
   const initial = ((value) => value.saves.length > 0 && value.saves.at(-1))($.get()) || getDefaultSave();
   const stack = createStack(initial);
 
-  const save = async (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
-    /**
-     * Получаем предыдущее значение
-     */
-    const prev = await storage.get();
+  const save = (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
+    $.update(prev => {
+      const date = stack.value[2][0];
+      const isLatest = prev.saves.findIndex(value => value[2][0] === date) === prev.saves.length - 1;
 
-    const date = stack.value[2][0];
-    const isLatest = prev.saves.findIndex(value => value[2][0] === date) === prev.saves.length - 1;
-
-    /**
-     * Обновим дату и тип
-     */
-    stack.value[2][0] = Date.now();
-    stack.value[2][1] = type;
-
-    if (override) {
       /**
-       * Перезапишем
+       * Обновим дату и тип
        */
-      if (isLatest) {
+      stack.value[2][0] = Date.now();
+      stack.value[2][1] = type;
+
+      if (override) {
         /**
-         * Сохранения хранятся в массиве. Нельзя перезаписать любое последнее
-         * 
-         * Если перезаписывать старое сохранение, то они не будут идти в хронологическом порядке
+         * Перезапишем
          */
-        prev.saves[prev.saves.length - 1] = stack.value;
+        if (isLatest) {
+          /**
+           * Сохранения хранятся в массиве. Нельзя перезаписать любое последнее
+           * 
+           * Если перезаписывать старое сохранение, то они не будут идти в хронологическом порядке
+           */
+          prev.saves[prev.saves.length - 1] = stack.value;
+        } else {
+          prev.saves.push(stack.value);
+        }
       } else {
+        /**
+         * Добавляем текущее сохранение
+         */
         prev.saves.push(stack.value);
       }
-    } else {
-      /**
-       * Добавляем текущее сохранение
-       */
-      prev.saves.push(stack.value);
-    }
 
-    /**
-     * Устанавливаем новое значение
-     */
-    return await storage.set(prev);
+      /**
+       * Устанавливаем новое значение
+       */
+      return prev;
+    });
   }
 
   const newGame = () => {
@@ -211,13 +208,13 @@ const novely = async <Languages extends string, Characters extends Record<string
    * Визуально восстанавливает историю
    */
   const restore = async (save?: Save) => {
-    let latest = save ? save : await storage.get().then(value => value.saves.at(-1));
+    let latest = save ? save : $.get().saves.at(-1);
 
     /**
      * Если нет сохранённой игры, то запустим ту, которая уже есть
      */
     if (!latest) {
-      await storage.set({ saves: [initial], meta: [getLanguage(languages)] });
+      $.update(() => ({ saves: [initial], meta: [getLanguage(languages)] }));
 
       latest = klona(initial);
     }
@@ -340,7 +337,6 @@ const novely = async <Languages extends string, Characters extends Record<string
 
   const renderer = createRenderer({
     characters,
-    storage,
     set,
     restore,
     save,
@@ -481,11 +477,18 @@ const novely = async <Languages extends string, Characters extends Record<string
       if (!restoring) stack.value[0].push(['condition', value], [null, 0]), render();
     },
     end() {
-      save(false, 'auto').then(() => {
-        match('clear', []);
-
-        renderer.ui.showScreen('mainmenu');
-      });
+      /**
+       * Save Current Game
+       */
+      save(false, 'auto');
+      /**
+       * Clear the Scene
+       */
+      match('clear', []);
+      /**
+       * Go to the main menu
+       */
+      renderer.ui.showScreen('mainmenu');
     },
     input([question, onInput, setup]) {
       renderer.input(question, onInput, setup)(() => {

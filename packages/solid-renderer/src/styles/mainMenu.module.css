@@ -11,10 +11,16 @@
 .mainMenu > .controls {
   width: 30vw;
   height: 100%;
-  padding-left: 1em;
+  padding: 0 1em;
 
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .mainMenu > .controls {
+    width: 100%;
+  }
 }

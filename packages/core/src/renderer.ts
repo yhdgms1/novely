@@ -1,6 +1,5 @@
 import type { DefaultActionProxyProvider, ValidAction } from './action'
 import type { Character } from './character'
-import type { Storage } from './storage'
 import type { Save, Stack, StorageData, Thenable } from './types'
 import type { BaseTranslationStrings } from '@novely/t9n'
 import { Stored } from './store'
@@ -50,10 +49,9 @@ type Renderer = {
 
 type RendererInit = {
   characters: Record<string, Character>;
-  storage: Storage;
   set: (save: Save) => Promise<void>;
   restore: (save?: Save) => Promise<void>;
-  save: (override?: boolean, type?: Save[2][1]) => Promise<void>;
+  save: (override?: boolean, type?: Save[2][1]) => void;
   newGame: () => void;
   stack: Stack;
   languages: string[];
