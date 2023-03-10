@@ -8,4 +8,14 @@
   justify-content: center;
 
   text-align: center;
+  font-size: 1.2em;
+}
+
+.fullscreenText[data-fullscreen-text-shown="true"] {
+  background: black;
+  color: white;
+}
+
+.fullscreenText[data-fullscreen-text-shown="true"] > p {
+  cursor: pointer;
 }

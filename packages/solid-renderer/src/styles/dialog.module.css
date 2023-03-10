@@ -39,8 +39,9 @@
 
   grid-template-areas:
     "pers text"
-    "pers text"
-    "cont cont";
+    "pers text";
+
+  padding-bottom: 2.8em;
 }
 
 /* @modifiers */
@@ -55,8 +56,7 @@
 .dialogContainerWithPerson[data-no-person="true"] {
   grid-template-areas:
     "text text"
-    "text text"
-    "cont cont";
+    "text text";
 }
 
 .dialogContainerWithPerson[data-no-person="true"] > .dialogPerson {
