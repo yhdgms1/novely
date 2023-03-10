@@ -14,7 +14,7 @@ import bedroomRoom from './assets/bedroom.webp';
 import masakiNatsukoOk from './assets/Masaki Natsuko.webp';
 import outsideSchool from './assets/outside.webp';
 
-import { video } from '@novely/video'
+// import { video } from '@novely/video'
 import { particles } from '@novely/particles'
 import { snow, fireflies } from './particles'
 
@@ -92,7 +92,7 @@ const engine = await novely({
     },
   }),
 
-  assetsPreload: false
+  initialScreen: 'mainmenu'
 });
 
 const { action, state, t } = engine;

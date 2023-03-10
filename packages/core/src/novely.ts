@@ -37,16 +37,12 @@ interface NovelyInit<Languages extends string, Characters extends Record<string,
    */
   t9n: Inter;
   /**
-   * An optional property that specifies whether to preload assets when the game starts
-   */
-  assetsPreload?: boolean;
-  /**
    * An optional property that specifies whether the game should use a single save.
    */
   singleSave?: boolean;
 }
 
-const novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, assetsPreload }: NovelyInit<Languages, Characters, Inter>) => {
+const novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages }: NovelyInit<Languages, Characters, Inter>) => {
   let story: Story;
 
   const withStory = (s: Story) => {
@@ -71,9 +67,9 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     }));
 
     /**
-     * Load assets after the `action` scripts are executed
+     * When `initialScreen` is not a game, we can safely show it
      */
-    preloadAssets();
+    if (initialScreen !== 'game') renderer.ui.showScreen(initialScreen);
   }
 
   /**
@@ -159,12 +155,19 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     initialDataLoaded = true;
 
     $.update(() => stored);
+
+    /**
+     * When initialScreen is game, then we will load it, but after the data is loaded
+     */
+    if (initialScreen === 'game') restore();
   });
 
   const initial = ((value) => value.saves.length > 0 && value.saves.at(-1))($.get()) || getDefaultSave();
   const stack = createStack(initial);
 
   const save = (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
+    if (!initialDataLoaded) return;
+
     $.update(prev => {
       const date = stack.value[2][0];
       const isLatest = prev.saves.findIndex(value => value[2][0] === date) === prev.saves.length - 1;
@@ -204,6 +207,8 @@ const novely = <Languages extends string, Characters extends Record<string, Char
   }
 
   const newGame = () => {
+    if (!initialDataLoaded) return;
+
     $.update(prev => {
       const save = getDefaultSave();
 
@@ -229,6 +234,8 @@ const novely = <Languages extends string, Characters extends Record<string, Char
    * Визуально восстанавливает историю
    */
   const restore = async (save?: Save) => {
+    if (!initialDataLoaded) return;
+
     let latest = save ? save : $.get().saves.at(-1);
 
     /**
@@ -367,60 +374,6 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     t: t9n.i,
     $
   });
-
-  const preloadAssets = () => {
-    if (!assetsPreload) {
-      initialScreen === 'game' ? restore() : renderer.ui.showScreen(initialScreen);
-
-      return;
-    }
-
-    /**
-     * We need to load all the characters and their emotions
-     */
-
-    let promises: Promise<unknown>[] = [];
-
-    renderer.ui.showScreen('loading');
-
-    for (const [name, { emotions }] of Object.entries(characters)) {
-      for (const emotion of Object.keys(emotions)) {
-        promises.push(Promise.resolve(renderer.character(name).withEmotion(emotion)));
-      }
-    }
-
-    for (const bg of preload.background) {
-      promises.push(new Promise((res, rej) => {
-        /**
-         * Create `img` element
-         */
-        const img = document.createElement('img');
-
-        /**
-         * Set `src`
-         */
-        img.crossOrigin = '*';
-        img.src = bg;
-
-        if (img.complete && img.naturalHeight !== 0) {
-          /**
-           * Image is already loaded
-           */
-          res(void 0);
-        } else {
-          /**
-           * Image is uniq, it is safe to use `onload`
-           */
-          img.onload = res;
-          img.onerror = rej;
-        }
-      }));
-    }
-
-    Promise.all(promises).then(() => {
-      renderer.ui.showScreen(initialScreen);
-    });
-  }
 
   const match = matchAction({
     wait([time]) {
