@@ -512,7 +512,10 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       return renderer.custom(handler, goingBack, () => { }), push();
     },
     text(text) {
-      renderer.text(unwrap(text.join('<br>')), push);
+      renderer.text(text.map(unwrap).join(' '), () => {
+        enmemory();
+        push();
+      });
     }
   });
 

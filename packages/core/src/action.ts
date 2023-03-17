@@ -27,6 +27,7 @@ type Story = Record<string, ValidAction[]>;
 
 type DialogContent = string | ((lang: string, obj: Record<string, unknown>) => string);
 type ChoiceContent = string | ((lang: string, obj: Record<string, unknown>) => string);
+type TextContent = string | ((lang: string, obj: Record<string, unknown>) => string);
 
 type CustomHandlerGetResultDataFunction = {
   (data?: Record<string, unknown>): Record<string, unknown>;
@@ -97,7 +98,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 
   next: () => ValidAction;
 
-  text: (...text: string[]) => ValidAction;
+  text: (...text: TextContent[]) => ValidAction;
 }
 
 type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>>;
