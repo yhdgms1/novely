@@ -108,6 +108,7 @@ engine.withStory({
     action.showBackground(classRoom),
     action.custom(particles(fireflies)),
     action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__fadeInUp', 'left: 15%'),
+    action.animateCharacter('Masaki Natsuko', 500, 'awd'),
     action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
     action.text('Привет', 'Ты, должно быть, это самое, да?'),
     // action.custom(video({ url: 'http://techslides.com/demos/sample-videos/small.mp4', controls: true, })),

@@ -483,12 +483,18 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       push();
     },
     animateCharacter([character, timeout, ...classes]) {
-      const handler: CustomHandler = (get) => {
-        const root = get('novely-animate-character', false).root;
-        const target = root.querySelector(`div[data-characters] > canvas[data-character="${character}"]`);
+      const handler: CustomHandler = () => {
+        const char = renderer.store.characters[character];
 
         /**
-         * Character is not found in the DOM
+         * Character is not defined, maybe, `animateCharacter` was called before `showCharacter`
+         */
+        if (!char) return;
+
+        const target = char.canvas;
+
+        /**
+         * Character is not found
          */
         if (!target) return;
 

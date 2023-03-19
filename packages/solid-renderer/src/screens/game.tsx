@@ -48,8 +48,6 @@ const Game: VoidComponent<GameProps> = (props) => {
   createEffect(() => {
     const [dialog, text] = getCurrentContent();
 
-    console.log(dialog, text)
-
     /**
      * Уничтожаем предыдущий инстанс
      */
