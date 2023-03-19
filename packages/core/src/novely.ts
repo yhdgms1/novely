@@ -408,10 +408,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       handle.remove(className, style, duration)(push);
     },
     dialog([person, content, emotion]) {
-      renderer.dialog(unwrap(content), person, emotion)(() => {
-        enmemory();
-        push();
-      });
+      renderer.dialog(unwrap(content), person, emotion)(forward);
     },
     function([fn]) {
       const result = fn();
@@ -465,10 +462,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       renderer.ui.showScreen('mainmenu');
     },
     input([question, onInput, setup]) {
-      renderer.input(question, onInput, setup)(() => {
-        enmemory();
-        push();
-      });
+      renderer.input(question, onInput, setup)(forward);
     },
     custom([handler]) {
       const result = renderer.custom(handler, goingBack, () => {
@@ -512,10 +506,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       return renderer.custom(handler, goingBack, () => { }), push();
     },
     text(text) {
-      renderer.text(text.map(unwrap).join(' '), () => {
-        enmemory();
-        push();
-      });
+      renderer.text(text.map(unwrap).join(' '), forward);
     }
   });
 
@@ -550,6 +541,11 @@ const novely = <Languages extends string, Characters extends Record<string, Char
      * Иначе добавляет новое `[null int]`
      */
     stack.value[0].push([null, 0]);
+  }
+
+  const forward = () => {
+    enmemory();
+    push();
   }
 
   const render = () => {

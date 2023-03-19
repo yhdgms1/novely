@@ -48,6 +48,8 @@ const Game: VoidComponent<GameProps> = (props) => {
   createEffect(() => {
     const [dialog, text] = getCurrentContent();
 
+    console.log(dialog, text)
+
     /**
      * Уничтожаем предыдущий инстанс
      */
@@ -77,13 +79,8 @@ const Game: VoidComponent<GameProps> = (props) => {
        */
       const resolve = props.state.dialog.resolve || props.state.text.resolve;
 
-      const [dialog, text] = getCurrentContent();
-
-      if (dialog) {
-        setState('dialog', { content: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
-      } else if (text) {
-        setState('text', { content: '', resolve: undefined });
-      }
+      setState('dialog', { content: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
+      setState('text', { content: '', resolve: undefined });
 
       resolve?.();
     }
