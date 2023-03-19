@@ -4,7 +4,7 @@ import type { Storage } from './storage';
 import type { Save, State, StorageData } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getDefaultSave, getLanguage, throttle } from './utils';
+import { matchAction, isNumber, isNull, isString, str, isUserRequiredAction, getDefaultSave, getLanguage, throttle } from './utils';
 import { store } from './store';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
@@ -72,20 +72,9 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     if (initialScreen !== 'game') renderer.ui.showScreen(initialScreen);
   }
 
-  /**
-   * This is used when background is loading
-   */
-  const preload = {
-    background: new Set<string>(),
-  }
-
   const action = new Proxy({} as ActionProxyProvider<Characters>, {
     get(_, prop) {
       return (...props: Parameters<ActionProxyProvider<Record<string, Character>>[keyof ActionProxyProvider<Record<string, Character>>]>) => {
-        if (prop === 'showBackground') {
-          if (isCSSImage(props[0] as string)) preload.background.add(props[0] as string);
-        }
-
         return [prop, ...props];
       }
     }
@@ -209,9 +198,9 @@ const novely = <Languages extends string, Characters extends Record<string, Char
   const newGame = () => {
     if (!initialDataLoaded) return;
 
-    $.update(prev => {
-      const save = getDefaultSave();
+    const save = getDefaultSave();
 
+    $.update(prev => {
       prev.saves.push(save), restore(save);
 
       return prev;
