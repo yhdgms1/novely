@@ -569,7 +569,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     action,
     render,
     state,
-    t: t9n.t,
+    t: t9n.t as Inter['t'],
   }
 }
 

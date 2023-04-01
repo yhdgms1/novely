@@ -104,4 +104,4 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>>;
 type GetActionParameters<T extends Capitalize<keyof DefaultActionProxyProvider>> = Parameters<DefaultActionProxyProvider[Uncapitalize<T>]>;
 
-export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, DialogContent, ChoiceContent, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction }
+export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, DialogContent, ChoiceContent, TextContent, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, }
