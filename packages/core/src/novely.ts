@@ -45,6 +45,7 @@ interface NovelyInit<Languages extends string, Characters extends Record<string,
 const novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages }: NovelyInit<Languages, Characters, Inter>) => {
   let story: Story;
 
+  // @todo: find bug here
   const withStory = (s: Story) => {
     /**
      * Transforms `(ValidAction | ValidAction[])[]` to `ValidAction[]`
