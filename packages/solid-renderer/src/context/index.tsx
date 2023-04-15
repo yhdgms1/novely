@@ -45,7 +45,7 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
 }
 
 const useData = () => {
-  return useContext(Context);
+  return useContext(Context)!;
 }
 
 export { Provider, useData }

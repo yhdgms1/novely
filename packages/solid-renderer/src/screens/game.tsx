@@ -23,7 +23,7 @@ interface GameProps {
 }
 
 const Game: VoidComponent<GameProps> = (props) => {
-  const data = useData()!;
+  const data = useData();
   /**
    * Могут быть деструктурированы
    */

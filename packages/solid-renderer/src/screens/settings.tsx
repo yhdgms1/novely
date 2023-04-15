@@ -13,7 +13,7 @@ interface SettingsProps {
 }
 
 const Settings: VoidComponent<SettingsProps> = (props) => {
-  const data = useData()!;
+  const data = useData();
   const saves = () => data.storeData()!.saves;
   const language = () => data.storeData()!.meta[0];
 

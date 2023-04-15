@@ -11,7 +11,7 @@ interface MainMenuProps {
 }
 
 const MainMenu: VoidComponent<MainMenuProps> = (props) => {
-  const data = useData()!;
+  const data = useData();
 
   return (
     <div
