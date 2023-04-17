@@ -1,0 +1,22 @@
+{
+	"name": "project-name",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview",
+		"format": "prettier --write ."
+	},
+	"dependencies": {
+		"solid-js": "~1.7.3",
+		"normalize.css": "~8.0.1",
+		"@novely/core": "^0.0.0-alpha.17",
+		"@novely/t9n": "^0.3.0",
+		"@novely/solid-renderer": "^0.0.0-alpha.11"
+	},
+	"devDependencies": {
+		"vite": "~4.2.1",
+		"vite-plugin-solid": "~2.7.0"
+	}
+}
