@@ -1,4 +1,4 @@
-import type { Renderer, Character } from '@novely/core'
+import type { Renderer, Character as CharacterType } from '@novely/core'
 import type { VoidComponent } from 'solid-js';
 import type { JSX } from 'solid-js';
 import type { SetStoreFunction } from 'solid-js/store'
@@ -6,6 +6,7 @@ import type { State, SolidRendererStore } from '../renderer'
 
 import { createEffect, createSignal, For, Show } from 'solid-js';
 import { DialogName } from '../components/DialogName';
+import { Character } from '../components/Character';
 import { Dialog, DialogPanel } from 'solid-headless';
 
 import { typewriter } from '@novely/typewriter'
@@ -19,7 +20,7 @@ interface GameProps {
   setState: SetStoreFunction<State>;
 
   store: SolidRendererStore;
-  characters: Record<string, Character>;
+  characters: Record<string, CharacterType>;
   renderer: Renderer;
 }
 
@@ -103,21 +104,11 @@ const Game: VoidComponent<GameProps> = (props) => {
         <For each={Object.entries(props.state.characters)}>
           {([character, data]) => (
             <Show when={data.visible}>
-              {() => {
-                const canvas = store.characters[character].canvas;
-
-                /**
-                 * При одинаковых значениях `className` или `style` не будет вызван ещё раз и анимация не будет перезапущена
-                 */
-                createEffect(() => {
-                  void canvas.offsetWidth;
-
-                  if (data.className) canvas.classList.value = data.className;
-                  if (data.style) canvas.style.cssText = data.style;
-                });
-
-                return canvas
-              }}
+              <Character
+                character={character}
+                data={data}
+                characters={store.characters}
+              />
             </Show>
           )}
         </For>

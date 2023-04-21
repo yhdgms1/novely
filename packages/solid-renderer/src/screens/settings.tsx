@@ -2,7 +2,7 @@ import type { VoidComponent, JSX } from 'solid-js'
 import type { SetStoreFunction } from 'solid-js/store'
 import type { State } from '../renderer'
 
-import { Show, For, createUniqueId } from 'solid-js'
+import { Show, For, createUniqueId, createMemo } from 'solid-js'
 import { capitalize, join } from '../utils'
 import { useData } from '../context'
 
@@ -17,8 +17,12 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
   const saves = () => data.storeData()!.saves;
   const language = () => data.storeData()!.meta[0];
 
-  const onSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = (e) => {
-    const selected = e.currentTarget.value;
+  const languageNames = createMemo(() => new Intl.DisplayNames([language()], {
+    type: 'language'
+  }));
+
+  const onSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = ({ currentTarget }) => {
+    const selected = currentTarget.value;
 
     data.storeDataUpdate(prev => {
       return prev.meta[0] = selected, prev;
@@ -43,24 +47,16 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
         </button>
       </div>
       <Show when={saves()} fallback={data.t('NoSaves')}>
-        {() => {
-          const languageNames = new Intl.DisplayNames([language()], {
-            type: 'language'
-          });
-
-          return (
-            <div class={style.content}>
-              <div class={style.select}>
-                <label for={id}>{data.t('Language')}</label>
-                <select id={id} onChange={onSelect}>
-                  <For each={data.options.languages}>
-                    {lang => <option value={lang} selected={lang === language()}>{capitalize(languageNames.of(lang) || lang)}</option>}
-                  </For>
-                </select>
-              </div>
-            </div>
-          )
-        }}
+        <div class={style.content}>
+          <div class={style.select}>
+            <label for={id}>{data.t('Language')}</label>
+            <select id={id} onChange={onSelect}>
+              <For each={data.options.languages}>
+                {lang => <option value={lang} selected={lang === language()}>{capitalize(languageNames().of(lang) || lang)}</option>}
+              </For>
+            </select>
+          </div>
+        </div>
       </Show>
     </div >
   )
