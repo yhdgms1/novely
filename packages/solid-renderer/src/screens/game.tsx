@@ -4,7 +4,8 @@ import type { JSX } from 'solid-js';
 import type { SetStoreFunction } from 'solid-js/store'
 import type { State, SolidRendererStore } from '../renderer'
 
-import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
+import { createEffect, createSignal, For, Show } from 'solid-js';
+import { DialogName } from '../components/DialogName';
 import { Dialog, DialogPanel } from 'solid-headless';
 
 import { typewriter } from '@novely/typewriter'
@@ -31,11 +32,11 @@ const Game: VoidComponent<GameProps> = (props) => {
 
   let writer: ReturnType<typeof typewriter> | undefined;
 
-  const background = createMemo(() => {
+  const background = () => {
     const is = isCSSImage(props.state.background)
 
     return { "background-image": is ? url(props.state.background) : '', "background-color": is ? undefined : props.state.background } as Partial<JSX.CSSProperties>
-  });
+  };
 
   const [auto, setAuto] = createSignal(false);
 
@@ -126,35 +127,11 @@ const Game: VoidComponent<GameProps> = (props) => {
         style={{ display: props.state.dialog.visible ? 'flex' : 'none' }}
         onClick={clearTypewriterEffect}
       >
-        {() => {
-          const character = () => props.state.dialog.character;
-
-          const color = () => {
-            const c = character();
-            const color = c ? c in characters ? characters[c].color : '#000' : '#000';
-
-            return color;
-          }
-
-          const name = () => {
-            const c = character();
-            const lang = data.storeData()!.meta[0];
-
-            return c ? c in characters ? typeof characters[c].name === 'string' ? characters[c].name as string : (characters[c].name as any)[lang] as string : c : '';
-          }
-
-          return (
-            <span
-              class={style.dialogName}
-              style={{
-                color: color(),
-                display: character() ? 'block' : 'none'
-              }}
-            >
-              {name()}
-            </span>
-          )
-        }}
+        <DialogName
+          character={props.state.dialog.character}
+          characters={characters}
+          lang={data.storeData()!.meta[0]}
+        />
         <div class={join(style.dialogContainer, style.dialogContainerWithPerson)} data-no-person={!(props.state.dialog.character && props.state.dialog.emotion)}>
           <div class={style.dialogPerson}>
             <Show when={props.state.dialog.character && props.state.dialog.emotion}>

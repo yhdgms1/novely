@@ -11,7 +11,7 @@
   "devDependencies": {
     "typescript": "^4.9.5",
     "vite": "^4.1.0",
-    "vite-plugin-solid": "^2.5.0"
+    "vite-plugin-solid": "^2.7.0"
   },
   "dependencies": {
     "@novely/core": "workspace:*",
@@ -22,7 +22,7 @@
     "animate.css": "^4.1.1",
     "normalize.css": "^8.0.1",
     "solid-headless": "^0.13.1",
-    "solid-js": "1.6.10",
+    "solid-js": "1.7.3",
     "tsparticles-engine": "^2.9.3",
     "tsparticles-slim": "^2.9.3"
   }

@@ -2,7 +2,11 @@ import { defineConfig } from "vite";
 import { default as solidPlugin } from "vite-plugin-solid";
 
 export default defineConfig({
-  plugins: [solidPlugin()],
+  plugins: [
+    solidPlugin({
+      hot: false,
+    }),
+  ],
   build: {
     modulePreload: false,
     rollupOptions: {
