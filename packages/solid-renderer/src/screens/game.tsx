@@ -125,10 +125,14 @@ const Game: VoidComponent<GameProps> = (props) => {
         />
         <div class={join(style.dialogContainer, style.dialogContainerWithPerson)} data-no-person={!(props.state.dialog.character && props.state.dialog.emotion)}>
           <div class={style.dialogPerson}>
-            <Show when={props.state.dialog.character && props.state.dialog.emotion}>
-              {() => {
-                const character = props.state.dialog.character!;
-                const emotion = props.state.dialog.emotion!;
+            <Show when={props.state.dialog.emotion} keyed>
+              {(emotion) => {
+                const character = props.state.dialog.character;
+
+                /**
+                 * Если персонажа нет
+                 */
+                if (!character) return null;
 
                 /**
                  * Если эмоция ещё не загружена - загрузим её
@@ -142,7 +146,7 @@ const Game: VoidComponent<GameProps> = (props) => {
                 /**
                  * Если элемент - картинка, не будем выполнять лишнюю отрисовку на `canvas`
                  */
-                if ('src' in image) return image.alt = '', image;
+                if ('src' in image) return image;
 
                 const [canvas] = canvasDrawImages(undefined, undefined, Object.values(image));
 

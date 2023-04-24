@@ -159,7 +159,7 @@ engine.withStory({
       }
     ),
     action.condition(
-      () => state().age! <= 16 ? 'ok' : 'no',
+      () => state().age! as number <= 16 ? 'ok' : 'no',
       {
         'ok': [
           action.hideCharacter('Masaki Natsuko'),

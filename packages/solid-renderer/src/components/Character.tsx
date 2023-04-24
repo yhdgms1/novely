@@ -20,7 +20,7 @@ const Character: VoidComponent<CharacterProps> = (props) => {
     if (props.data.style) canvas().style.cssText = props.data.style;
   });
 
-  return canvas
+  return canvas()
 }
 
 export { Character }
