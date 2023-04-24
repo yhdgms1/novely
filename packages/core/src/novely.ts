@@ -1,7 +1,7 @@
 import type { Character } from './character';
 import type { ActionProxyProvider, GetActionParameters, Story, ValidAction, DialogContent, ChoiceContent, CustomHandler } from './action';
 import type { Storage } from './storage';
-import type { Save, State, StorageData } from './types'
+import type { Save, State, StorageData, DeepPartial } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
 import { matchAction, isNumber, isNull, isString, str, isUserRequiredAction, getDefaultSave, getLanguage, throttle } from './utils';
@@ -11,7 +11,7 @@ import { klona } from 'klona/json';
 import { SKIPPED_DURING_RESTORE } from './constants';
 import { replace as replaceT9N } from '@novely/t9n';
 
-interface NovelyInit<Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>> {
+interface NovelyInit<Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>, StateScheme extends State> {
   /**
    * An array of languages supported by the game.
    */
@@ -40,9 +40,13 @@ interface NovelyInit<Languages extends string, Characters extends Record<string,
    * An optional property that specifies whether the game should use a single save.
    */
   singleSave?: boolean;
+  /**
+   * Initial state value
+   */
+  state?: StateScheme;
 }
 
-const novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages }: NovelyInit<Languages, Characters, Inter>) => {
+const novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>, StateScheme extends State>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages }: NovelyInit<Languages, Characters, Inter, StateScheme>) => {
   let story: Story;
 
   // @todo: find bug here
@@ -81,15 +85,15 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     }
   });
 
-  function state(value: State | ((prev: State) => State)): void;
-  function state(): State;
-  function state(value?: State | ((prev: State) => State)): State | void {
-    if (!value) return stack.value[1]
+  function state(value: DeepPartial<StateScheme> | ((prev: StateScheme) => StateScheme)): void;
+  function state(): StateScheme;
+  function state(value?: DeepPartial<StateScheme> | ((prev: StateScheme) => StateScheme)): StateScheme | void {
+    if (!value) return stack.value[1] as StateScheme | void;
 
     const prev = stack.value[1];
-    const val = typeof value === 'function' ? value(prev as State) : deepmerge([prev, value]);
+    const val = typeof value === 'function' ? value(prev as StateScheme) : deepmerge([prev, value]);
 
-    stack.value[1] = val as State;
+    stack.value[1] = val as StateScheme;
   }
 
   const createStack = (current: Save, stack = [current]) => {

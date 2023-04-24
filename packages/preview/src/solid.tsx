@@ -90,6 +90,10 @@ const engine = await novely({
       }
     },
   }),
+  state: {
+    name: '',
+    age: 0,
+  },
 
   initialScreen: 'mainmenu'
 });
@@ -159,7 +163,7 @@ engine.withStory({
       }
     ),
     action.condition(
-      () => state().age! as number <= 16 ? 'ok' : 'no',
+      () => state().age <= 16 ? 'ok' : 'no',
       {
         'ok': [
           action.hideCharacter('Masaki Natsuko'),
