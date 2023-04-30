@@ -37,10 +37,6 @@ interface NovelyInit<Languages extends string, Characters extends Record<string,
    */
   t9n: Inter;
   /**
-   * An optional property that specifies whether the game should use a single save.
-   */
-  singleSave?: boolean;
-  /**
    * Initial state value
    */
   state?: StateScheme;
