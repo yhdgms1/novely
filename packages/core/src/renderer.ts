@@ -32,7 +32,7 @@ type Renderer = {
   character: (character: string) => CharacterHandle;
   background: (background: string) => void;
   dialog: (content: string, name: string, character?: string, emotion?: string) => (resolve: () => void) => void;
-  choices: (choices: ([string, ValidAction[]] | [string, ValidAction[], () => boolean])[]) => (resolve: (selected: number) => void) => void;
+  choices: (question: string, choices: ([string, ValidAction[]] | [string, ValidAction[], () => boolean])[]) => (resolve: (selected: number) => void) => void;
   input: (question: string, onInput: Parameters<DefaultActionProxyProvider['input']>[1], setup?: Parameters<DefaultActionProxyProvider['input']>[2]) => (resolve: () => void) => void;
   music: (source: string, method: keyof RendererStore['audio']) => AudioHandle;
   clear: (goingBack: boolean) => (resolve: () => void) => void;

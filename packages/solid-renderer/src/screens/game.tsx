@@ -68,7 +68,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 
     const resolve = props.state.choices.resolve;
 
-    setState('choices', { choices: [], visible: false, resolve: undefined });
+    setState('choices', { choices: [], visible: false, resolve: undefined, question: '' });
     resolve?.(i);
   }
 
@@ -172,16 +172,18 @@ const Game: VoidComponent<GameProps> = (props) => {
             &#8203;
           </span>
           <DialogPanel class={style.headlessDialogPanel}>
+            <p aria-hidden={!props.state.choices.question}>{props.state.choices.question || <>ᅠ</>}</p>
             <For each={props.state.choices.choices}>
               {([text, _, active], i) => {
                 const disabled = active ? !active() : false;
+                const index = i();
 
                 return (
                   <button
                     type="button"
                     aria-disabled={disabled}
                     class={join(style.button, style.buttonChoices)}
-                    onClick={[onChoicesButtonClick, [disabled, i()]]}
+                    onClick={[onChoicesButtonClick, [disabled, index]]}
                   >
                     {text}
                   </button>

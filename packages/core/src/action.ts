@@ -62,7 +62,10 @@ type CustomHandler = CustomHandlerFunction & {
 };
 
 type ActionProxyProvider<Characters extends Record<string, Character>> = {
-  choice: (...choices: ([ChoiceContent, ValidAction[]] | [ChoiceContent, ValidAction[], () => boolean])[]) => ValidAction;
+  choice: {
+    (...choices: ([ChoiceContent, ValidAction[]] | [ChoiceContent, ValidAction[], () => boolean])[]): ValidAction;
+    (question: string, ...choices: ([ChoiceContent, ValidAction[]] | [ChoiceContent, ValidAction[], () => boolean])[]): ValidAction;
+  }
   clear: () => ValidAction;
   condition: <T extends string>(condition: () => T, variants: Record<T, ValidAction[]>) => ValidAction;
   dialog: {

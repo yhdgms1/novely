@@ -417,15 +417,31 @@ const novely = <Languages extends string, Characters extends Record<string, Char
 
       return result;
     },
-    choice(choices) {
+    choice([question, ...choices]) {
+      const isWithoutQuestion = Array.isArray(question);
+
+      if (isWithoutQuestion) {
+        /**
+         * Первый элемент может быть как строкой, так и элементов выбора
+         */
+        choices.unshift(question as unknown as [ChoiceContent, ValidAction[], () => boolean]);
+        /**
+         * Значит, текст не требуется
+         */
+        question = '';
+      }
+
       const unwrapped = choices.map(([content, action, visible]) => {
         return [unwrap(content), action, visible] as [string, ValidAction[], () => boolean];
       });
 
-      renderer.choices(unwrapped)((selected) => {
+      renderer.choices(question, unwrapped)((selected) => {
         enmemory();
 
-        stack.value[0].push(['choice', selected], [null, 0]), render();
+        /**
+         * Если был вопрос, то `index` смещается на единицу назад, поэтому нужно добавить единицу
+         */
+        stack.value[0].push(['choice', isWithoutQuestion ? selected : selected + 1], [null, 0]), render();
       });
     },
     jump([scene]) {

@@ -67,6 +67,10 @@ interface StateChoices {
    */
   resolve?: (selected: number) => void;
   /**
+   * Вопрос (а что выбирать)
+   */
+  question: string;
+  /**
    * Выборы
    */
   choices: ([string, ValidAction[]] | [string, ValidAction[], () => boolean])[];
@@ -138,6 +142,7 @@ const createSolidRenderer = () => {
       visible: false
     },
     choices: {
+      question: '',
       visible: false,
       choices: []
     },
@@ -234,15 +239,15 @@ const createSolidRenderer = () => {
             setState('dialog', () => ({ content, name, character, emotion, visible: true, resolve }));
           }
         },
-        choices(choices) {
+        choices(question, choices) {
           return (resolve) => {
-            setState('choices', { choices, resolve, visible: true });
+            setState('choices', { choices, question, resolve, visible: true });
           }
         },
         clear(goingBack) {
           return (resolve) => {
             setState('background', '#000');
-            setState('choices', { visible: false });
+            setState('choices', { choices: [], visible: false, resolve: undefined, question: '' });
             setState('input', { element: undefined, question: '', visible: false });
             setState('dialog', { visible: false, content: '', name: '' });
             setState('text', { content: '' });
