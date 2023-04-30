@@ -95,8 +95,6 @@ const novely = <Languages extends string, Characters extends Record<string, Char
   const createStack = (current: Save, stack = [current]) => {
     return {
       get value() {
-        console.log(stack);
-
         return stack.at(-1)!;
       },
       set value(value: Save) {
