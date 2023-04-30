@@ -79,7 +79,7 @@ const Game: VoidComponent<GameProps> = (props) => {
        */
       const resolve = props.state.dialog.resolve || props.state.text.resolve;
 
-      setState('dialog', { content: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
+      setState('dialog', { content: '', name: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
       setState('text', { content: '', resolve: undefined });
 
       resolve?.();
@@ -120,8 +120,8 @@ const Game: VoidComponent<GameProps> = (props) => {
       >
         <DialogName
           character={props.state.dialog.character}
+          name={props.state.dialog.name}
           characters={characters}
-          lang={data.storeData()!.meta[0]}
         />
         <div class={join(style.dialogContainer, style.dialogContainerWithPerson)} data-no-person={!(props.state.dialog.character && props.state.dialog.emotion)}>
           <div class={style.dialogPerson}>

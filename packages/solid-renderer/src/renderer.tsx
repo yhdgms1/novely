@@ -51,6 +51,10 @@ interface StateDialog {
    */
   visible: boolean;
   /**
+   * Имя персонажа
+   */
+  name: string;
+  /**
    * Функция `resolve`
    */
   resolve?: () => void;
@@ -130,6 +134,7 @@ const createSolidRenderer = () => {
     characters: {},
     dialog: {
       content: '',
+      name: '',
       visible: false
     },
     choices: {
@@ -224,9 +229,9 @@ const createSolidRenderer = () => {
             }
           }
         },
-        dialog(content, character, emotion) {
+        dialog(content, name, character, emotion) {
           return (resolve) => {
-            setState('dialog', () => ({ content, character, emotion, visible: true, resolve }));
+            setState('dialog', () => ({ content, name, character, emotion, visible: true, resolve }));
           }
         },
         choices(choices) {
@@ -239,7 +244,7 @@ const createSolidRenderer = () => {
             setState('background', '#000');
             setState('choices', { visible: false });
             setState('input', { element: undefined, question: '', visible: false });
-            setState('dialog', { visible: false, content: '' });
+            setState('dialog', { visible: false, content: '', name: '' });
             setState('text', { content: '' });
 
             for (const character of Object.keys(state.characters)) {

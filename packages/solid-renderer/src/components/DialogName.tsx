@@ -5,7 +5,7 @@ import { style } from '../styles/styles';
 interface DialogNameProps {
   character?: string;
   characters: Record<string, Character>;
-  lang: string;
+  name: string;
 }
 
 const DialogName: VoidComponent<DialogNameProps> = (props) => {
@@ -14,13 +14,6 @@ const DialogName: VoidComponent<DialogNameProps> = (props) => {
     const cs = props.characters;
 
     return c ? c in cs ? cs[c].color : '#000' : '#000';
-  }
-
-  const name = () => {
-    const c = props.character;
-    const cs = props.characters;
-
-    return c ? c in cs ? typeof cs[c].name === 'string' ? cs[c].name as string : (cs[c].name as Record<string, string>)[props.lang] : c : '';
   }
 
   return (
@@ -32,7 +25,7 @@ const DialogName: VoidComponent<DialogNameProps> = (props) => {
         visibility: props.character ? 'visible' : 'hidden',
       }}
     >
-      {name() || <>ᅠ</>}
+      {props.name || <>ᅠ</>}
     </span>
   )
 }

@@ -397,8 +397,18 @@ const novely = <Languages extends string, Characters extends Record<string, Char
 
       handle.remove(className, style, duration)(push);
     },
-    dialog([person, content, emotion]) {
-      renderer.dialog(unwrap(content), person, emotion)(forward);
+    dialog([character, content, emotion]) {
+      /**
+       * Имя персонажа, с учетом выбранного языка
+       */
+      const name = (() => {
+        const c = character, cs = characters;
+        const lang = $.get().meta[0];
+
+        return c ? c in cs ? typeof cs[c].name === 'string' ? cs[c].name as string : (cs[c].name as Record<string, string>)[lang] : c : '';
+      })();
+
+      renderer.dialog(unwrap(content), unwrap(name), character, emotion)(forward);
     },
     function([fn]) {
       const result = fn();
