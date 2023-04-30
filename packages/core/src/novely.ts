@@ -46,7 +46,7 @@ interface NovelyInit<Languages extends string, Characters extends Record<string,
   state?: StateScheme;
 }
 
-const novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>, StateScheme extends State>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages }: NovelyInit<Languages, Characters, Inter, StateScheme>) => {
+const novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>, StateScheme extends State>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, state: defaultState }: NovelyInit<Languages, Characters, Inter, StateScheme>) => {
   let story: Story;
 
   // @todo: find bug here
@@ -99,6 +99,8 @@ const novely = <Languages extends string, Characters extends Record<string, Char
   const createStack = (current: Save, stack = [current]) => {
     return {
       get value() {
+        console.log(stack);
+
         return stack.at(-1)!;
       },
       set value(value: Save) {
@@ -111,7 +113,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
         stack.push(value);
       },
       clear() {
-        stack = [getDefaultSave()];
+        stack = [getDefaultSave(klona(defaultState))];
       }
     }
   }
@@ -156,7 +158,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     if (initialScreen === 'game') restore();
   });
 
-  const initial = ((value) => value.saves.length > 0 && value.saves.at(-1))($.get()) || getDefaultSave();
+  const initial = getDefaultSave(klona(defaultState));
   const stack = createStack(initial);
 
   const save = (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
@@ -203,7 +205,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
   const newGame = () => {
     if (!initialDataLoaded) return;
 
-    const save = getDefaultSave();
+    const save = getDefaultSave(klona(defaultState));
 
     $.update(prev => {
       prev.saves.push(save), restore(save);

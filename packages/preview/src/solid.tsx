@@ -19,7 +19,7 @@ import { snow, fireflies } from './particles'
 
 const { createRenderer, Novely } = createSolidRenderer();
 
-const engine = await novely({
+const engine = novely({
   languages: ['ru', 'en'],
   storage: localStorageStorage({ key: 'novely-saves' }),
   renderer: createRenderer,
@@ -168,7 +168,7 @@ engine.withStory({
         'ok': [
           action.hideCharacter('Masaki Natsuko'),
           action.dialog('Nezuko', t('ReallyAgeYears')),
-          action.end()
+          action.end(),
         ],
         'no': [
           action.dialog('Nezuko', t('YouAreAgeYears'), 'sad'),

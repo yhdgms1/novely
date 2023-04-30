@@ -42,8 +42,8 @@ const isUserRequiredAction = (action: keyof MatchActionMapComplete, meta: Parame
   return action === 'custom' && meta[0] && (meta[0] as unknown as CustomHandler).requireUserAction;
 }
 
-const getDefaultSave = () => {
-  return [[[null, 'start'], [null, 0]], {}, [Date.now(), 'auto']] as Save;
+const getDefaultSave = (state = {}) => {
+  return [[[null, 'start'], [null, 0]], state, [Date.now(), 'auto']] as Save;
 }
 
 const getLanguage = (languages: string[], language = navigator.language) => {
