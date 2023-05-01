@@ -68,6 +68,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
   }
   clear: () => ValidAction;
   condition: <T extends string>(condition: () => T, variants: Record<T, ValidAction[]>) => ValidAction;
+  exit: () => ValidAction;
   dialog: {
     <C extends keyof Characters>(person: C, content: DialogContent, emotion?: keyof Characters[C]['emotions']): ValidAction;
     (person: undefined, content: DialogContent, emotion?: undefined): ValidAction;

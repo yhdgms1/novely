@@ -4,7 +4,7 @@ import type { JSX } from 'solid-js';
 import type { SetStoreFunction } from 'solid-js/store'
 import type { State, SolidRendererStore } from '../renderer'
 
-import { createEffect, createSignal, For, Show } from 'solid-js';
+import { createEffect, createSignal, untrack, For, Show } from 'solid-js';
 import { DialogName } from '../components/DialogName';
 import { Character } from '../components/Character';
 import { Dialog, DialogPanel } from 'solid-headless';
@@ -59,7 +59,7 @@ const Game: VoidComponent<GameProps> = (props) => {
      * Создаём новый инстанс
      */
     writer = typewriter(dialog ? store.dialogRef! : store.textRef!, dialog || text, () => {
-      if (auto()) clearTypewriterEffect();
+      if (auto()) untrack(clearTypewriterEffect);
     });
   });
 

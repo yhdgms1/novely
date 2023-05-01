@@ -529,6 +529,20 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     },
     text(text) {
       renderer.text(text.map(unwrap).join(' '), forward);
+    },
+    exit() {
+      const path = stack.value[0];
+
+      for (let i = path.length - 1; i > 0; i--) {
+        if (path[i][0] !== 'choice' && path[i][0] !== 'condition') continue;
+
+        stack.value[0] = path.slice(0, i);
+        next();
+
+        break;
+      }
+
+      render();
     }
   });
 
@@ -546,10 +560,11 @@ const novely = <Languages extends string, Characters extends Record<string, Char
   }
 
   const next = () => {
+    const path = stack.value[0];
     /**
      * Последний элемент пути
      */
-    const last = stack.value[0][stack.value[0].length - 1]!;
+    const last = path[path.length - 1]!;
 
     /**
      * Если он вида `[null, int]` - увеличивает `int`
@@ -562,26 +577,26 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     /**
      * Иначе добавляет новое `[null int]`
      */
-    stack.value[0].push([null, 0]);
-  }
-
-  const forward = () => {
-    enmemory();
-    push();
+    path.push([null, 0]);
   }
 
   const render = () => {
     const referred = refer();
 
-    if (referred) {
-      const [action, ...props] = referred;
+    if (!(referred && Array.isArray(referred))) return;
 
-      match(action, props);
-    }
+    const [action, ...props] = referred;
+
+    match(action, props);
   }
 
   const push = () => {
     if (!restoring) next(), render();
+  }
+
+  const forward = () => {
+    enmemory();
+    push();
   }
 
   const unwrap = (content: DialogContent | ChoiceContent) => {

@@ -1,6 +1,6 @@
 type Thenable<T> = T | Promise<T>;
 
-type PathItem = [null, number | string] | ['choice' & Record<never, never>, number] | ['condition' & Record<never, never>, string];
+type PathItem = [null, number | string] | ['choice' & Record<never, never>, number] | ['condition' & Record<never, never>, string] | ['exit' & Record<never, never>];
 type Path = PathItem[];
 
 type State = Record<string, any>;
