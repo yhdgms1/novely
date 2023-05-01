@@ -461,7 +461,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     condition([condition]) {
       const value = condition();
 
-      if (!restoring) stack.value[0].push(['condition', value], [null, 0]), render();
+      if (!restoring) stack.value[0].push(['condition', String(value)], [null, 0]), render();
     },
     end() {
       /**

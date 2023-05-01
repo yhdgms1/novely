@@ -67,7 +67,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
     (question: string, ...choices: ([ChoiceContent, ValidAction[]] | [ChoiceContent, ValidAction[], () => boolean])[]): ValidAction;
   }
   clear: () => ValidAction;
-  condition: <T extends string>(condition: () => T, variants: Record<T, ValidAction[]>) => ValidAction;
+  condition: <T extends string | true | false>(condition: () => T, variants: Record<T extends true ? 'true' : T extends false ? 'false' : T, ValidAction[]>) => ValidAction;
   exit: () => ValidAction;
   dialog: {
     <C extends keyof Characters>(person: C, content: DialogContent, emotion?: keyof Characters[C]['emotions']): ValidAction;
