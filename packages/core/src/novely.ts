@@ -583,7 +583,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
   const render = () => {
     const referred = refer();
 
-    if (!(referred && Array.isArray(referred))) return;
+    if (!Array.isArray(referred)) return;
 
     const [action, ...props] = referred;
 
