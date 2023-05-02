@@ -220,7 +220,17 @@ const createSolidRenderer = () => {
             },
             append(className, style) {
               clearTimeout(state.characters[character]?.timeoutId);
-              setState('characters', character, { className, style, visible: true })
+
+              if (className === state.characters[character]?.className) {
+                /**
+                 * `createStore` does not allow to manage how comparison works
+                 */
+                setState('characters', character, { className: '' });
+              }
+
+              setTimeout(() => {
+                setState('characters', character, { className, style, visible: true })
+              }, 4);
             },
             remove(className, style, duration) {
               return (resolve) => {
