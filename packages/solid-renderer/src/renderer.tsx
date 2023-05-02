@@ -304,6 +304,10 @@ const createSolidRenderer = () => {
 
           const element = new Audio(source);
 
+          const onClick = () => {
+            removeEventListener('click', onClick), element.play();
+          }
+
           const handle = {
             element,
             pause: element.pause,
@@ -311,13 +315,10 @@ const createSolidRenderer = () => {
               /**
                * Пользователь должен сначала взаимодействовать с документом
                */
-              const onClick = () => {
-                removeEventListener('click', onClick), element.play();
-              }
-
               addEventListener('click', onClick);
             },
             stop() {
+              removeEventListener('click', onClick);
               element.pause();
               element.currentTime = 0;
             }
@@ -346,7 +347,7 @@ const createSolidRenderer = () => {
             /**
              * Function that call the `Clear` defined by the action itself, and then deletes the layer
              */
-            const topLevelClear = () => {
+            const clearManager = () => {
               clear(), setState('layers', id, undefined);
             }
 
@@ -358,11 +359,11 @@ const createSolidRenderer = () => {
             setState('layers', id, {
               fn,
               dom: element,
-              clear: topLevelClear,
+              clear: clearManager,
               value: {
                 root,
                 element,
-                delete: topLevelClear,
+                delete: clearManager,
                 data(data) {
                   return data ? (store = data) : store;
                 },
