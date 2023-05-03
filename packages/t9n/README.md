@@ -18,7 +18,12 @@ const { t } = createT9N({
       },
     },
     strings: {
-      hi: "Меня зовут {{name}}, мне {{age}} {{age@years}}! 👋",
+      hi: "Меня зовут {{name%capitalize}}, мне {{age}} {{age@years}}! 👋",
+    },
+    actions: {
+      capitalize: (str) => {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+      },
     },
   },
   en: {
