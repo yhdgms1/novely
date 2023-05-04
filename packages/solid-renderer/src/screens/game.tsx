@@ -172,7 +172,9 @@ const Game: VoidComponent<GameProps> = (props) => {
             &#8203;
           </span>
           <DialogPanel class={style.headlessDialogPanel}>
-            <p aria-hidden={!props.state.choices.question}>{props.state.choices.question || <>ᅠ</>}</p>
+            <span aria-hidden={!props.state.choices.question} class={style.headlessDialogPanelLabel}>
+              {props.state.choices.question || <>ᅠ</>}
+            </span>
             <For each={props.state.choices.choices}>
               {([text, _, active], i) => {
                 const disabled = active ? !active() : false;

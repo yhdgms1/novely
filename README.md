@@ -1,3 +1,3 @@
-# Novely - Novel Engine for creating interactive stories with branched narratives
+# Novely - Novel Engine for creating interactive stories
 
 See more on [website](https://novely.pages.dev)

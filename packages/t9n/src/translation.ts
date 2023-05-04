@@ -12,7 +12,7 @@ type T9N<LanguageKey extends string, StringKey extends string> = {
 
 const RGX = /{{(.*?)}}/g;
 
-const replace = (str: string, obj: Record<string, unknown>, pluralization: Record<string, Record<string, PluralType>>, actions: Partial<Record<string, (str: string) => string>>, pr: Intl.PluralRules) => {
+const replace = (str: string, obj: Record<string, unknown>, pluralization?: Record<string, Record<string, PluralType>>, actions?: Partial<Record<string, (str: string) => string>>, pr?: Intl.PluralRules) => {
   return str.replace(RGX, (x: any, key: string, y: any) => {
     x = 0;
     y = obj;
@@ -23,7 +23,7 @@ const replace = (str: string, obj: Record<string, unknown>, pluralization: Recor
 
     while (y && x < path.length) y = y[path[x++]];
 
-    if (plural && pluralization && y) {
+    if (plural && pluralization && y && pr) {
       y = pluralization[plural][pr.select(y)];
     }
 

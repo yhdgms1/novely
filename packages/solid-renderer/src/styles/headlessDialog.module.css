@@ -31,6 +31,11 @@
   align-items: stretch;
 }
 
+.headlessDialogPanelLabel {
+  user-select: none;
+  font-size: 1.2375em;
+}
+
 @media (max-width: 768px) {
   .headlessDialogPanel {
     max-width: 95vw;
