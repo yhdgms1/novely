@@ -1,5 +1,5 @@
 import type { Character } from './character';
-import type { ActionProxyProvider, GetActionParameters, Story, ValidAction, DialogContent, ChoiceContent, CustomHandler } from './action';
+import type { ActionProxyProvider, GetActionParameters, Story, ValidAction, Unwrappable, CustomHandler } from './action';
 import type { Storage } from './storage';
 import type { Save, State, StorageData, DeepPartial } from './types'
 import type { Renderer, RendererInit } from './renderer'
@@ -315,7 +315,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
            * Вычислим `latest` или нет
            */
           const next = indexedQueue.slice(i + 1);
-          const latest = !next.some(([_action, _meta]) => str(_meta[0]) === str(meta[0]));
+          const latest = !next.some(([_action, _meta]) => _meta && meta && str(_meta[0]) === str(meta[0]));
 
           if (!latest) continue;
         }
@@ -424,7 +424,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
         /**
          * Первый элемент может быть как строкой, так и элементов выбора
          */
-        choices.unshift(question as unknown as [ChoiceContent, ValidAction[], () => boolean]);
+        choices.unshift(question as unknown as [Unwrappable, ValidAction[], () => boolean]);
         /**
          * Значит, текст не требуется
          */
@@ -435,7 +435,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
         return [unwrap(content), action, visible] as [string, ValidAction[], () => boolean];
       });
 
-      renderer.choices(question, unwrapped)((selected) => {
+      renderer.choices(unwrap(question), unwrapped)((selected) => {
         enmemory();
 
         /**
@@ -478,7 +478,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       renderer.ui.showScreen('mainmenu');
     },
     input([question, onInput, setup]) {
-      renderer.input(question, onInput, setup)(forward);
+      renderer.input(unwrap(question), onInput, setup)(forward);
     },
     custom([handler]) {
       const result = renderer.custom(handler, goingBack, () => {
@@ -599,7 +599,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     push();
   }
 
-  const unwrap = (content: DialogContent | ChoiceContent) => {
+  const unwrap = (content: Unwrappable) => {
     const lang = $.get().meta[0];
     const data = state();
 

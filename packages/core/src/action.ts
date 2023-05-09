@@ -5,7 +5,7 @@ type ValidAction =
   | ['choice', [number]]
   | ['clear', []]
   | ['condition', [() => boolean, Record<string, ValidAction[]>]]
-  | ['dialog', [string | undefined, DialogContent, string | undefined]]
+  | ['dialog', [string | undefined, Unwrappable, string | undefined]]
   | ['end', []]
   | ['showBackground', [string]]
   | ['playMusic', [string]]
@@ -21,13 +21,12 @@ type ValidAction =
   | ['vibrate', [...number[]]]
   | ['next', []]
   | ['text', [...string[]]]
+  | ['exit']
   | ValidAction[]
 
 type Story = Record<string, ValidAction[]>;
 
-type DialogContent = string | ((lang: string, obj: Record<string, unknown>) => string);
-type ChoiceContent = string | ((lang: string, obj: Record<string, unknown>) => string);
-type TextContent = string | ((lang: string, obj: Record<string, unknown>) => string);
+type Unwrappable = string | ((lang: string, obj: Record<string, unknown>) => string);
 
 type CustomHandlerGetResultDataFunction = {
   (data?: Record<string, unknown>): Record<string, unknown>;
@@ -63,16 +62,16 @@ type CustomHandler = CustomHandlerFunction & {
 
 type ActionProxyProvider<Characters extends Record<string, Character>> = {
   choice: {
-    (...choices: ([ChoiceContent, ValidAction[]] | [ChoiceContent, ValidAction[], () => boolean])[]): ValidAction;
-    (question: string, ...choices: ([ChoiceContent, ValidAction[]] | [ChoiceContent, ValidAction[], () => boolean])[]): ValidAction;
+    (...choices: ([Unwrappable, ValidAction[]] | [Unwrappable, ValidAction[], () => boolean])[]): ValidAction;
+    (question: Unwrappable, ...choices: ([Unwrappable, ValidAction[]] | [Unwrappable, ValidAction[], () => boolean])[]): ValidAction;
   }
   clear: () => ValidAction;
   condition: <T extends string | true | false>(condition: () => T, variants: Record<T extends true ? 'true' : T extends false ? 'false' : T, ValidAction[]>) => ValidAction;
   exit: () => ValidAction;
   dialog: {
-    <C extends keyof Characters>(person: C, content: DialogContent, emotion?: keyof Characters[C]['emotions']): ValidAction;
-    (person: undefined, content: DialogContent, emotion?: undefined): ValidAction;
-    (person: string, content: DialogContent, emotion?: undefined): ValidAction;
+    <C extends keyof Characters>(person: C, content: Unwrappable, emotion?: keyof Characters[C]['emotions']): ValidAction;
+    (person: undefined, content: Unwrappable, emotion?: undefined): ValidAction;
+    (person: string, content: Unwrappable, emotion?: undefined): ValidAction;
   }
   end: () => ValidAction;
   showBackground: (background: string) => ValidAction;
@@ -94,7 +93,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
   wait: (time: number) => ValidAction;
   function: (fn: () => Thenable<void>) => ValidAction;
 
-  input: (question: string, onInput: (meta: { input: HTMLInputElement, error: (error: string) => void, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, setup?: (input: HTMLInputElement) => void) => ValidAction;
+  input: (question: Unwrappable, onInput: (meta: { input: HTMLInputElement, error: (error: string) => void, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, setup?: (input: HTMLInputElement) => void) => ValidAction;
 
   custom: (handler: CustomHandler) => ValidAction;
 
@@ -102,10 +101,10 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 
   next: () => ValidAction;
 
-  text: (...text: TextContent[]) => ValidAction;
+  text: (...text: Unwrappable[]) => ValidAction;
 }
 
 type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>>;
 type GetActionParameters<T extends Capitalize<keyof DefaultActionProxyProvider>> = Parameters<DefaultActionProxyProvider[Uncapitalize<T>]>;
 
-export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, DialogContent, ChoiceContent, TextContent, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, }
+export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, Unwrappable, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, }
