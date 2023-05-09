@@ -1,7 +1,7 @@
 {
   "name": "@novely/t9n",
   "description": "Перевод Novely",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "type": "module",
   "sideEffects": false,
   "types": "./dist/index.d.ts",

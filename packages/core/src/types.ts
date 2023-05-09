@@ -13,7 +13,8 @@ type SaveMeta = [SaveDate, SaveType];
 type Save = [Path, State, SaveMeta];
 
 type Lang = string;
-type StorageMeta = [Lang]
+type TypewriterSpeed = number;
+type StorageMeta = [Lang, TypewriterSpeed]
 
 type StorageData = {
   saves: Save[];

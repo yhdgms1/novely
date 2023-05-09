@@ -1,11 +1,9 @@
-const timeout = () => Math.min(100 * Math.random() + 100, 140);
-
 /**
  * Typewriter
  * @param node The node where the typewriter effect will be
  * @param text Text to be written by typewriter effect
  */
-const typewriter = (node: HTMLElement, text: string, cb?: () => void) => {
+const typewriter = (node: HTMLElement, text: string, cb?: () => void, timeout = () => Math.min(90 * Math.random() + 100, 90)) => {
   let id!: number;
 
   const root = document.createElement('span');

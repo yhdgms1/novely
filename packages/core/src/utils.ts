@@ -46,6 +46,10 @@ const getDefaultSave = (state = {}) => {
   return [[[null, 'start'], [null, 0]], state, [Date.now(), 'auto']] as Save;
 }
 
+const getTypewriterSpeed = () => {
+  return 90;
+}
+
 const getLanguage = (languages: string[], language = navigator.language) => {
   if (languages.includes(language)) {
     return language;
@@ -95,4 +99,4 @@ const throttle = <Fn extends ((...args: any[]) => any)>(fn: Fn, ms: number) => {
   return wrapper as unknown as (...args: Parameters<Fn>) => void;
 }
 
-export { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getDefaultSave, getLanguage, throttle }
+export { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getDefaultSave, getTypewriterSpeed, getLanguage, throttle }

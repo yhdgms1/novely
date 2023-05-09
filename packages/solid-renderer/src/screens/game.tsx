@@ -58,9 +58,16 @@ const Game: VoidComponent<GameProps> = (props) => {
     /**
      * Создаём новый инстанс
      */
-    writer = typewriter(dialog ? store.dialogRef! : store.textRef!, dialog || text, () => {
-      if (auto()) untrack(clearTypewriterEffect);
-    });
+    writer = typewriter(
+      dialog ? store.dialogRef! : store.textRef!,
+      dialog || text,
+      () => {
+        if (auto()) untrack(clearTypewriterEffect);
+      },
+      () => {
+        return data.storeData()!.meta[1]
+      }
+    );
   });
 
   const onChoicesButtonClick = ([disabled, i]: [boolean, number]) => {

@@ -4,7 +4,7 @@ import type { Storage } from './storage';
 import type { Save, State, StorageData, DeepPartial } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, str, isUserRequiredAction, getDefaultSave, getLanguage, throttle } from './utils';
+import { matchAction, isNumber, isNull, isString, str, isUserRequiredAction, getDefaultSave, getTypewriterSpeed, getLanguage, throttle } from './utils';
 import { store } from './store';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
@@ -118,7 +118,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
    */
   const initialData: StorageData = {
     saves: [],
-    meta: [getLanguage(languages)]
+    meta: [getLanguage(languages), getTypewriterSpeed()]
   };
 
   const $ = store(initialData);
@@ -138,6 +138,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
      * Default `localStorageStorage` cannot determine preferred language, and returns empty array
      */
     stored.meta[0] ||= getLanguage(languages);
+    stored.meta[1] ||= 90;
 
     /**
      * Now the next store updates will entail saving via storage.set
@@ -232,7 +233,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
      * Если нет сохранённой игры, то запустим ту, которая уже есть
      */
     if (!latest) {
-      $.update(() => ({ saves: [initial], meta: [getLanguage(languages)] }));
+      $.update(() => ({ saves: [initial], meta: [getLanguage(languages), getTypewriterSpeed()] }));
 
       latest = klona(initial);
     }

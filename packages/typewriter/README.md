@@ -13,7 +13,9 @@ const writer = typewriter(
   // Опциональный callback
   () => {
     console.log("Воспроизведение закончилось без использования метода `end`");
-  }
+  },
+  // Скорость текста
+  () => 90
 );
 
 buttonStop.onclick = () => {
