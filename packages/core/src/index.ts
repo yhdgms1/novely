@@ -1,4 +1,4 @@
-export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, Unwrappable, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, } from './action'
+export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, Unwrappable, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, FunctionableValue } from './action'
 export type { Emotions, Character } from './character'
 export type { CharacterHandle, AudioHandle, RendererStore, Renderer, RendererInit } from './renderer'
 export type { Storage } from './storage'

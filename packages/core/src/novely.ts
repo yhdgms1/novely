@@ -4,7 +4,7 @@ import type { Storage } from './storage';
 import type { Save, State, StorageData, DeepPartial } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, str, isUserRequiredAction, getDefaultSave, getTypewriterSpeed, getLanguage, throttle } from './utils';
+import { matchAction, isNumber, isNull, isString, str, isUserRequiredAction, getDefaultSave, getTypewriterSpeed, getLanguage, throttle, isFunction } from './utils';
 import { store } from './store';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
@@ -87,7 +87,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     if (!value) return stack.value[1] as StateScheme | void;
 
     const prev = stack.value[1];
-    const val = typeof value === 'function' ? value(prev as StateScheme) : deepmerge([prev, value]);
+    const val = isFunction(value) ? value(prev as StateScheme) : deepmerge([prev, value]);
 
     stack.value[1] = val as StateScheme;
   }
@@ -371,7 +371,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       /**
        * `restoring` может поменяться на `true` перед тем как запуститься `push` из `setTimeout`
        */
-      if (!restoring) setTimeout(push, time);
+      if (!restoring) setTimeout(push, isFunction(time) ? time() : time);
     },
     showBackground([background]) {
       renderer.background(background);
@@ -604,7 +604,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     const lang = $.get().meta[0];
     const data = state();
 
-    return replaceT9N(typeof content === 'function' ? content(lang, data) : content, data);
+    return replaceT9N(isFunction(content) ? content(lang, data) : content, data);
   }
 
   return {

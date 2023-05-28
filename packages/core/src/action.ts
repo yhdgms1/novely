@@ -14,7 +14,7 @@ type ValidAction =
   | ['showCharacter', [string, keyof Character['emotions'], string?, string?]]
   | ['hideCharacter', [string, string?, string?, number?]]
   | ['animateCharacter', [string, number, ...string[]]]
-  | ['wait', [number]]
+  | ['wait', [FunctionableValue<number>]]
   | ['function', [() => Thenable<void>]]
   | ['input', [string, (meta: { input: HTMLInputElement, error: (error: string) => void, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, ((input: HTMLInputElement) => void)?]]
   | ['custom', [CustomHandler]]
@@ -27,6 +27,7 @@ type ValidAction =
 type Story = Record<string, ValidAction[]>;
 
 type Unwrappable = string | ((lang: string, obj: Record<string, unknown>) => string);
+type FunctionableValue<T> = T | (() => T);
 
 type CustomHandlerGetResultDataFunction = {
   (data?: Record<string, unknown>): Record<string, unknown>;
@@ -90,7 +91,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
   animateCharacter: {
     <C extends keyof Characters>(character: C, timeout: number, ...classes: string[]): ValidAction;
   }
-  wait: (time: number) => ValidAction;
+  wait: (time: FunctionableValue<number>) => ValidAction;
   function: (fn: () => Thenable<void>) => ValidAction;
 
   input: (question: Unwrappable, onInput: (meta: { input: HTMLInputElement, error: (error: string) => void, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, setup?: (input: HTMLInputElement) => void) => ValidAction;
@@ -107,4 +108,4 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>>;
 type GetActionParameters<T extends Capitalize<keyof DefaultActionProxyProvider>> = Parameters<DefaultActionProxyProvider[Uncapitalize<T>]>;
 
-export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, Unwrappable, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, }
+export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, Unwrappable, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, FunctionableValue }

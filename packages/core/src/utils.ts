@@ -28,6 +28,10 @@ const isString = (val: unknown): val is string => {
   return typeof val === 'string';
 }
 
+const isFunction = (val: unknown): val is ((...parameters: any[]) => any) => {
+  return typeof val === 'function';
+}
+
 const isCSSImage = (str: string) => {
   const startsWith = String.prototype.startsWith.bind(str);
 
@@ -99,4 +103,4 @@ const throttle = <Fn extends ((...args: any[]) => any)>(fn: Fn, ms: number) => {
   return wrapper as unknown as (...args: Parameters<Fn>) => void;
 }
 
-export { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getDefaultSave, getTypewriterSpeed, getLanguage, throttle }
+export { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getDefaultSave, getTypewriterSpeed, getLanguage, throttle, isFunction }
