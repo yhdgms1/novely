@@ -138,7 +138,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
      * Default `localStorageStorage` cannot determine preferred language, and returns empty array
      */
     stored.meta[0] ||= getLanguage(languages);
-    stored.meta[1] ||= 90;
+    stored.meta[1] ||= getTypewriterSpeed();
 
     /**
      * Now the next store updates will entail saving via storage.set
