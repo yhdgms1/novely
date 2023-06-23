@@ -2,7 +2,7 @@
   "name": "@novely/vscode-highlight",
   "displayName": "Novely Story Language Highlight",
   "description": "Highlighting for format for novel stories",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.79.0"
   },
