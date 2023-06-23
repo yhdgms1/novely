@@ -1,0 +1,10 @@
+{
+  "comments": {},
+  "brackets": [],
+  "autoClosingPairs": [
+    ["\"", "\""],
+  ],
+  "surroundingPairs": [
+    ["\"", "\""],
+  ]
+}

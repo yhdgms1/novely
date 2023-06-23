@@ -1,0 +1,74 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Novely",
+	"patterns": [
+		{
+      "include": "#numbers"
+    },
+    {
+      "include": "#strings"
+    },
+		{
+      "name": "novely.story-key",
+      "match": "^\\w+(?=\\n)",
+      "captures": {
+        "0": {
+          "name": "string.quoted.triple"
+        }
+      }
+    },
+    {
+      "name": "novely.js-value-start",
+      "match": "<",
+      "captures": {
+        "0": { "name": "entity.name.type" }
+      }
+    },
+    {
+      "name": "novely.js-value",
+      "match": "(?<=<)\\w+",
+      "captures": {
+        "0": { "name": "constant.character" }
+      }
+    },
+    {
+      "name": "novely.map",
+      "match": "\\*",
+      "captures": {
+        "0": { "name": "entity.name.type" }
+      }
+    },
+    {
+      "name": "novely.string-start",
+      "match": "\/",
+      "captures": {
+        "0": { "name": "entity.name.type" }
+      }
+    },
+    {
+      "name": "novely.action",
+      "match": "(@\\b\\w*)",
+      "captures": {
+        "0": { "name": "keyword.control" }
+      }
+    }
+	],
+	"repository": {
+		"keywords": {
+			"patterns": []
+		},
+		"numbers": {
+			"patterns": [
+				{
+          "name": "constant.numeric.float.nvly",
+          "match": "\\b[0-9][0-9_]*(\\.[0-9][0-9_]*)?([eE][+-]?[0-9_]+)?\\b"
+        },
+        {
+          "name": "constant.numeric.decimal.nvly",
+          "match": "\\b[0-9][0-9_]*\\b"
+        }
+			]
+		}
+	},
+	"scopeName": "novely"
+}
