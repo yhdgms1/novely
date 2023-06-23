@@ -17,18 +17,21 @@
         }
       }
     },
-    {
-      "name": "novely.js-value-start",
-      "match": "<",
+		{
+      "name": "novely.reserved",
+      "match": "<(\\$values1)",
       "captures": {
-        "0": { "name": "entity.name.type" }
+        "0": {
+          "name": "invalid.illegal"
+        }
       }
     },
     {
-      "name": "novely.js-value",
-      "match": "(?<=<)\\w+",
+      "name": "novely.js-values",
+      "match": "(<)(.*?)(\\n)",
       "captures": {
-        "0": { "name": "constant.character" }
+        "0": { "name": "constant.character" },
+        "1": { "name": "entity.name.type" }
       }
     },
     {
