@@ -2,7 +2,7 @@ import type { DefaultActionProxyProvider, ValidAction } from './action'
 import type { Character } from './character'
 import type { Save, Stack, StorageData, Thenable } from './types'
 import type { BaseTranslationStrings } from '@novely/t9n'
-import { Stored } from './store'
+import type { Stored } from './store'
 
 interface CharacterHandle {
   canvas: HTMLCanvasElement;

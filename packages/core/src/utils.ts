@@ -76,30 +76,26 @@ const getLanguage = (languages: string[], language = navigator.language) => {
 const throttle = <Fn extends ((...args: any[]) => any)>(fn: Fn, ms: number) => {
   let throttled = false, savedArgs: any, savedThis: any;
 
-  function wrapper() {
+  function wrapper(this: any) {
     if (throttled) {
       savedArgs = arguments;
-      // @ts-ignore
       savedThis = this;
-
       return;
     }
 
-    // @ts-ignore
-    fn.apply(this, arguments);
+    fn.apply(this, arguments as unknown as any[]);
 
-    throttled = false;
+    throttled = true;
+
+    setTimeout(function() {
+      throttled = false;
+      
+      if (savedArgs) {
+        wrapper.apply(savedThis, savedArgs);
+        savedArgs = savedThis = null;
+      }
+    }, ms);
   }
-
-  setTimeout(function () {
-    throttled = false;
-
-    if (savedArgs) {
-      wrapper.apply(savedThis, savedArgs);
-      savedArgs = savedThis = null;
-    }
-  }, ms);
-
   return wrapper as unknown as (...args: Parameters<Fn>) => void;
 }
 
