@@ -11,6 +11,10 @@ const transform = (ast: Ast) => {
     return `$values1.${value.content}`
   }
 
+  const print_array = (value: Extract<AstNode, { type: "Array" }>): string => {
+    return `[${value.children.map(print_with_unknown_printer).join(',')}]`;
+  }
+
   const print_value = (value: Extract<AstNode, { type: "Value" }>) => {
     const numeralized = Number(value.content);
 
@@ -31,18 +35,8 @@ const transform = (ast: Ast) => {
     return result + '}'
   }
 
-  const print_action = (value: Extract<AstNode, { type: "Action" }>) => {
-    const children = value.children.map(child => {
-      if (child.type === 'Value') {
-        return print_value(child)
-      } else if (child.type === 'JSValue') {
-        return print_js_value(child)
-      } else if (child.type === 'Map') {
-        return print_map(child);
-      }
-
-      return '';
-    });
+  const print_action = (value: Extract<AstNode, { type: "Action" }>): string => {
+    const children = value.children.map(print_with_unknown_printer);
 
     return `["${value.name}", ${children.join(',')}],`
   }
@@ -56,6 +50,8 @@ const transform = (ast: Ast) => {
       return print_map(child);
     } else if (child.type === 'Action') {
       return print_action(child)
+    } else if (child.type === 'Array') {
+      return print_array(child);
     } else {
       return '';
     }

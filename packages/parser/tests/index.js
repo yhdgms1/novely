@@ -28,4 +28,6 @@ test('transforms', () => {
   )
 })
 
+console.log(transform(parse(input)))
+
 test.run()

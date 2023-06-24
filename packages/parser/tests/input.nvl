@@ -19,6 +19,17 @@ start
       map_item2
         !dialog Person "text again"
   !wait 100
+  !choice
+    \Choice Text
+    =
+      \Text
+      =
+        !dialog Name Content
+    =
+      \Text
+      =
+        !dialog Name Content
+  !end
 dojo
   !wait
     400

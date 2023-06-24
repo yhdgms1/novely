@@ -60,6 +60,11 @@ const parse = (source: string) => {
         type: 'Map',
         children: []
       }
+    } else if (expression === '=') {
+      return {
+        type: "Array",
+        children: []
+      }
     } else if (expression.startsWith('%')) {
       return {
         type: 'JSValue',

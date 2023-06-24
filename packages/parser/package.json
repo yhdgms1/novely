@@ -1,7 +1,7 @@
 {
   "name": "@novely/parser",
   "description": "Novely Story Format Parser",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "sideEffects": false,
   "types": "./dist/index.d.ts",

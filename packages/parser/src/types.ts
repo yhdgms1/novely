@@ -25,6 +25,10 @@ type AstNode =
       type: "MapItem",
       name: string,
       children: Exclude<AstNode, { type: "Property" | "MapItem" }>[],
+    }
+  | {
+      type: "Array",
+      children: Exclude<AstNode, { type: "Property" | "MapItem" }>[],
     };
 
 type Ast = Extract<AstNode, { type: "Property" }>[];

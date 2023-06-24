@@ -250,7 +250,7 @@ importers:
   packages/vite-plugin-nvl:
     dependencies:
       '@novely/parser':
-        specifier: 0.0.2
+        specifier: 0.2.0
         version: link:../parser
     devDependencies:
       tsup:
@@ -1268,7 +1268,7 @@ packages:
       deepmerge: ^4.3.0
       klona: ^2.0.6
     dependencies:
-      '@novely/t9n': 0.4.1
+      '@novely/t9n': 0.5.0
       deepmerge: 4.3.1
       klona: 2.0.6
     dev: false
@@ -1279,13 +1279,17 @@ packages:
       deepmerge: ^4.3.0
       klona: ^2.0.6
     dependencies:
-      '@novely/t9n': 0.4.1
+      '@novely/t9n': 0.5.0
       deepmerge: 4.3.1
       klona: 2.0.6
     dev: false
 
   /@novely/t9n@0.4.1:
     resolution: {integrity: sha512-rxIieBXeYD5nWzuaDurqAKpCIChqkaADzD0qdDRgs5D0YJliAcfrCvaNXQnFAe8ESr7JbQisE/GlHvzoVwn6iw==}
+    dev: false
+
+  /@novely/t9n@0.5.0:
+    resolution: {integrity: sha512-it8cedegcJDRNVaXCd5CuqCICCqbnTP6GIAlXn3XpRWKOqx2gjL/q6u6CuB/ITxY6L1+Vs9JdvijuGraHWMaJg==}
     dev: false
 
   /@types/babel__core@7.20.1:

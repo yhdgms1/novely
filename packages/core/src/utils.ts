@@ -96,6 +96,7 @@ const throttle = <Fn extends ((...args: any[]) => any)>(fn: Fn, ms: number) => {
       }
     }, ms);
   }
+  
   return wrapper as unknown as (...args: Parameters<Fn>) => void;
 }
 

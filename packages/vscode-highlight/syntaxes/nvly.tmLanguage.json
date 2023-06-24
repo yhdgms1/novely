@@ -42,6 +42,13 @@
       }
     },
     {
+      "name": "novely.array",
+      "match": "=",
+      "captures": {
+        "0": { "name": "entity.name.type" }
+      }
+    },
+    {
       "name": "novely.character-escape",
       "match": "\\\\.",
       "captures": {
