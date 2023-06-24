@@ -4,6 +4,10 @@ const transform = (ast: Ast) => {
   let code = '($values1) => ({';
 
   const print_js_value = (value: Extract<AstNode, { type: "JSValue" }>) => {
+    if (['undefined', 'null', 'window', 'globalThis'].some(reserved => value.content.startsWith(reserved))) {
+      return value.content;
+    }
+
     return `$values1.${value.content}`
   }
 
@@ -40,7 +44,7 @@ const transform = (ast: Ast) => {
       return '';
     });
 
-    return `["${value.name}", ${children.join(',')}]`
+    return `["${value.name}", ${children.join(',')}],`
   }
 
   const print_with_unknown_printer = (child: AstNode) => {
