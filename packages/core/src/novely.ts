@@ -25,6 +25,10 @@ interface NovelyInit<Languages extends string, Characters extends Record<string,
    */
   storage: Storage;
   /**
+   * Delay loading data until Promise is resolved
+   */
+  storageDelay?: Promise<void>;
+  /**
    * A function that returns a Renderer object used to display the game's content
    */
   renderer: (characters: RendererInit) => Renderer;
@@ -42,7 +46,7 @@ interface NovelyInit<Languages extends string, Characters extends Record<string,
   state?: StateScheme;
 }
 
-const novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>, StateScheme extends State>({ characters, storage, renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, state: defaultState }: NovelyInit<Languages, Characters, Inter, StateScheme>) => {
+const novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>, StateScheme extends State>({ characters, storage, storageDelay = Promise.resolve(), renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, state: defaultState }: NovelyInit<Languages, Characters, Inter, StateScheme>) => {
   let story: Story;
 
   // @todo: find bug here
@@ -133,25 +137,33 @@ const novely = <Languages extends string, Characters extends Record<string, Char
 
   $.subscribe(throttledOnStorageDataChange);
 
-  storage.get().then(stored => {
-    /**
-     * Default `localStorageStorage` cannot determine preferred language, and returns empty array
-     */
-    stored.meta[0] ||= getLanguage(languages);
-    stored.meta[1] ||= getTypewriterSpeed();
+  const getStoredData = () => {
+    storage.get().then(stored => {
+      /**
+       * Default `localStorageStorage` cannot determine preferred language, and returns empty array
+       */
+      stored.meta[0] ||= getLanguage(languages);
+      stored.meta[1] ||= getTypewriterSpeed();
+  
+      /**
+       * Now the next store updates will entail saving via storage.set
+       */
+      initialDataLoaded = true;
+  
+      $.update(() => stored);
+  
+      /**
+       * When initialScreen is game, then we will load it, but after the data is loaded
+       */
+      if (initialScreen === 'game') restore();
+    });
+  }
 
-    /**
-     * Now the next store updates will entail saving via storage.set
-     */
-    initialDataLoaded = true;
-
-    $.update(() => stored);
-
-    /**
-     * When initialScreen is game, then we will load it, but after the data is loaded
-     */
-    if (initialScreen === 'game') restore();
-  });
+  /**
+   * By default this is resolved immediately, but also can be delayed.
+   * I.e. storage has not loaded yet
+   */
+  storageDelay.then(getStoredData)
 
   const initial = getDefaultSave(klona(defaultState));
   const stack = createStack(initial);
