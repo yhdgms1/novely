@@ -7,7 +7,7 @@ export default defineConfig((options) => {
     sourcemap: true,
     target: 'es2022',
     format: ['esm'],
-    minify: true,
+    minify: false,
     bundle: true,
     dts: options.dts,
     watch: options.watch,

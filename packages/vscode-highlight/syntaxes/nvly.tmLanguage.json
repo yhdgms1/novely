@@ -28,7 +28,7 @@
     },
     {
       "name": "novely.js-values",
-      "match": "(%)(.*?)(\\n)",
+      "match": "(%)(.*?)(\\n| )",
       "captures": {
         "0": { "name": "constant.character" },
         "1": { "name": "entity.name.type" }
@@ -39,6 +39,13 @@
       "match": "\\*",
       "captures": {
         "0": { "name": "entity.name.type" }
+      }
+    },
+    {
+      "name": "novely.character-escape",
+      "match": "\\\\.",
+      "captures": {
+        "0": { "name": "constant.character.escape" }
       }
     },
     {

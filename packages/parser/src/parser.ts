@@ -31,13 +31,13 @@ const parse = (source: string) => {
   const elevator: AstNode[] = [];
 
   const parse_expression = (expression: string, parent: AstNode | undefined): AstNode => {
-    if (expression.startsWith('@')) {
+    if (expression.startsWith('!')) {
       const [name, ...items] = expression.slice(1).split(' ');
 
       const content = items.join(' ');
 
       const matches = Array.from(content.matchAll(/(?:"([^"]*)")|([^"\s]+)/gm)).map(([_, one, two]) => one || two).map(match => {
-        if (match.startsWith('<')) {
+        if (match.startsWith('%')) {
           return {
             type: 'JSValue',
             content: match.slice(1)
@@ -60,12 +60,12 @@ const parse = (source: string) => {
         type: 'Map',
         children: []
       }
-    } else if (expression.startsWith('<')) {
+    } else if (expression.startsWith('%')) {
       return {
         type: 'JSValue',
         content: expression.slice(1)
       }
-    } else if (expression.startsWith('/')) {
+    } else if (expression.startsWith('\\')) {
       return {
         type: 'Value',
         content: expression.slice(1)

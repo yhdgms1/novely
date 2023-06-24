@@ -1,0 +1,28 @@
+start
+  !showBackground %class_background
+  !showCharacter Person emotion mini-emotion
+  !showCharacter Person "very happy"
+  !dialog
+    \Person
+    \
+      Текст
+      С переносами
+  !dialog
+    %fromJS
+    \
+      %shouldBeFromJSThisIsAError
+  !condition
+    %jsCondition
+    *
+      map_item1
+        !dialog Person text
+      map_item2
+        !dialog Person "text again"
+  !wait 100
+dojo
+  !wait
+    400
+    500
+    600
+    700
+    800

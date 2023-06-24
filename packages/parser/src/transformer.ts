@@ -58,7 +58,7 @@ const transform = (ast: Ast) => {
   }
 
   const print_map_item = (value: Extract<AstNode, { type: "MapItem" }>) => {
-    let result = value.name + ': [';
+    let result = value.name + ':[';
 
     for (const child of value.children) {
       result += print_with_unknown_printer(child) + ','
@@ -70,16 +70,16 @@ const transform = (ast: Ast) => {
   for (const top of ast) {
     if (top.name === '') continue;
 
-    code += top.name + ': ['
+    code += top.name + ':['
 
     for (const child of top.children) {
       code += print_with_unknown_printer(child);
     }
 
-    code += '], '
+    code += '],'
   }
 
-  return code + ' })';
+  return code + '})';
 }
 
 export { transform }

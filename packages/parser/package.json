@@ -12,14 +12,14 @@
   },
   "scripts": {
     "dev": "tsup --watch",
-    "build": "tsup --dts"
+    "build": "tsup --dts",
+    "test": "npm run build && node ./tests"
   },
-  "dependencies": {},
   "devDependencies": {
     "tsup": "^6.6.0",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "uvu": "^0.5.6"
   },
-  "peerDependencies": {},
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/yhdgms1/novely/issues"
