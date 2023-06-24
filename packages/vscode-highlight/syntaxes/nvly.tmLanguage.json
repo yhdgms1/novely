@@ -50,7 +50,7 @@
     },
     {
       "name": "novely.string-start",
-      "match": "(\/|\\\\)",
+      "match": "  (\\\\)",
       "captures": {
         "0": { "name": "entity.name.type" }
       }
