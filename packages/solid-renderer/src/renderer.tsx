@@ -218,7 +218,7 @@ const createSolidRenderer = () => {
 
               return render(head, left, right);
             },
-            append(className, style) {
+            append(className, style, restoring) {
               clearTimeout(state.characters[character]?.timeoutId);
 
               if (className === state.characters[character]?.className) {
@@ -228,12 +228,28 @@ const createSolidRenderer = () => {
                 setState('characters', character, { className: '' });
               }
 
-              setTimeout(() => {
-                setState('characters', character, { className, style, visible: true })
-              }, 4);
+              const show = () => {
+                setState('characters', character, { className, style, visible: true });
+              }
+
+              /**
+               * During restoring do not apply effects because removing that way will run before delayed show
+               */
+              if (restoring) return show();
+              setTimeout(show, 4);
             },
             remove(className, style, duration) {
-              return (resolve) => {
+              return (resolve, restoring) => {
+                if (restoring) {
+                  /**
+                   * Ignore remove animations, because it is not shown anyway
+                   */
+                  setState('characters', character, { visible: false });
+                  resolve();
+
+                  return;
+                }
+
                 const timeoutId = setTimeout(() => {
                   setState('characters', character, { visible: false });
                   resolve();

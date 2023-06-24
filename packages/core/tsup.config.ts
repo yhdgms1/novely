@@ -8,7 +8,7 @@ export default defineConfig((options) => {
     format: ['esm', 'iife'],
     bundle: true,
     minify: false,
-    dts: options.dts,
+    dts: true,
     watch: options.watch,
     globalName: 'Novely'
   }

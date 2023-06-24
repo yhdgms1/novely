@@ -400,15 +400,13 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     showCharacter([character, emotion, className, style]) {
       const handle = renderer.character(character);
 
-      handle.append(className, style);
+      handle.append(className, style, restoring);
       handle.withEmotion(emotion)();
 
       push()
     },
     hideCharacter([character, className, style, duration]) {
-      const handle = renderer.character(character);
-
-      handle.remove(className, style, duration)(push);
+      renderer.character(character).remove(className, style, duration)(push, restoring);
     },
     dialog([character, content, emotion]) {
       /**

@@ -38,7 +38,7 @@ const transform = (ast: Ast) => {
   const print_action = (value: Extract<AstNode, { type: "Action" }>): string => {
     const children = value.children.map(print_with_unknown_printer);
 
-    return `["${value.name}", ${children.join(',')}],`
+    return `["${value.name}", ${children.join(',')}]`
   }
 
   const print_with_unknown_printer = (child: AstNode) => {
@@ -73,7 +73,7 @@ const transform = (ast: Ast) => {
     code += top.name + ':['
 
     for (const child of top.children) {
-      code += print_with_unknown_printer(child);
+      code += print_with_unknown_printer(child) + ','
     }
 
     code += '],'

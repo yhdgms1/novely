@@ -25,6 +25,7 @@ start
       \Text
       =
         !dialog Name Content
+        !dialog Name Content
     =
       \Text
       =

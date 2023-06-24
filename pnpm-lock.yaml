@@ -178,6 +178,9 @@ importers:
         specifier: ^2.10.1
         version: 2.10.1
     devDependencies:
+      '@novely/vite-plugin-nvl':
+        specifier: workspace:^
+        version: link:../vite-plugin-nvl
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
@@ -191,8 +194,8 @@ importers:
   packages/solid-renderer:
     dependencies:
       '@novely/core':
-        specifier: ^0.0.1
-        version: 0.0.1(deepmerge@4.3.1)(klona@2.0.6)
+        specifier: workspace:*
+        version: link:../core
       '@novely/typewriter':
         specifier: ^0.1.0
         version: link:../typewriter
@@ -250,7 +253,7 @@ importers:
   packages/vite-plugin-nvl:
     dependencies:
       '@novely/parser':
-        specifier: 0.2.0
+        specifier: ^0.2.1
         version: link:../parser
     devDependencies:
       tsup:
@@ -1264,17 +1267,6 @@ packages:
 
   /@novely/core@0.0.0-beta.7(deepmerge@4.3.1)(klona@2.0.6):
     resolution: {integrity: sha512-cS7HLk4AL4vNcj/l/5cO2GEeoiRYahvherUcSNNwJSmZ8Jt3LkwjGLruR9rQVsKZ2jjHxYE1UJsuhT9mdYGPeg==}
-    peerDependencies:
-      deepmerge: ^4.3.0
-      klona: ^2.0.6
-    dependencies:
-      '@novely/t9n': 0.5.0
-      deepmerge: 4.3.1
-      klona: 2.0.6
-    dev: false
-
-  /@novely/core@0.0.1(deepmerge@4.3.1)(klona@2.0.6):
-    resolution: {integrity: sha512-5z83MwTy4K9E3QhinXsGCkT8yIc5qhhW3WU2iV5wAYR4CKQjNDPI2Vb5udjcgcESlMJ833u5jF+W/F9b/8coeg==}
     peerDependencies:
       deepmerge: ^4.3.0
       klona: ^2.0.6

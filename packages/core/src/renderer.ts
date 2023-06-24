@@ -9,8 +9,8 @@ interface CharacterHandle {
   ctx: CanvasRenderingContext2D;
 
   withEmotion: (emotion: string) => () => void;
-  append: (className?: string, style?: string) => void;
-  remove: (className?: string, style?: string, duration?: number) => (resolve: () => void) => void;
+  append: (className?: string, style?: string, restoring?: boolean) => void;
+  remove: (className?: string, style?: string, duration?: number) => (resolve: () => void, restoring: boolean) => void;
 
   emotions: Record<string, HTMLImageElement | Record<"head" | "left" | "right", HTMLImageElement>>
 }
