@@ -1,6 +1,6 @@
 {
-  "name": "@novely/typewriter",
-  "description": "Эффект пишущей машинки",
+  "name": "@novely/vite-plugin-nvl",
+  "description": "Vite Plugin for Novely Story Language",
   "version": "0.1.0",
   "type": "module",
   "sideEffects": false,
@@ -16,17 +16,22 @@
   },
   "devDependencies": {
     "tsup": "^6.7.0",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "vite": "^4.3.9"
+  },
+  "peerDependencies": {
+    "vite": "^4.3.9"
   },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/yhdgms1/novely/issues"
   },
-  "homepage": "https://github.com/yhdgms1/novely/tree/main/packages/typewriter",
+  "homepage": "https://github.com/yhdgms1/novely/tree/main/packages/vite-plugin-nvl",
   "keywords": [
-    "typewriter",
-    "effect",
-    "novely"
+    "novely",
+    "language",
+    "vite",
+    "plugin"
   ],
   "author": {
     "name": "Artemiy Schukin",
@@ -39,5 +44,8 @@
   },
   "files": [
     "dist/*"
-  ]
+  ],
+  "dependencies": {
+    "@novely/parser": "workspace:^"
+  }
 }

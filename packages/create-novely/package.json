@@ -14,11 +14,11 @@
   },
   "devDependencies": {
     "@types/prompts": "^2.4.4",
-    "tsup": "^6.6.0",
+    "tsup": "^6.7.0",
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "kolorist": "^1.7.0",
+    "kolorist": "^1.8.0",
     "prompts": "^2.4.2"
   },
   "license": "ISC",

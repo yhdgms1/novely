@@ -9,14 +9,14 @@
 		"format": "prettier --write ."
 	},
 	"dependencies": {
-		"solid-js": "~1.7.4",
-		"normalize.css": "~8.0.1",
-		"@novely/core": "^0.0.0-beta.5",
+		"@novely/core": "0.0.0-beta.7",
+		"@novely/solid-renderer": "workspace:0.0.0-beta.5",
 		"@novely/t9n": "^0.4.1",
-		"@novely/solid-renderer": "^0.0.0-beta.4"
+		"normalize.css": "~8.0.1",
+		"solid-js": "~1.7.6"
 	},
 	"devDependencies": {
-		"vite": "~4.3.4",
+		"vite": "~4.3.9",
 		"vite-plugin-solid": "~2.7.0"
 	}
 }
