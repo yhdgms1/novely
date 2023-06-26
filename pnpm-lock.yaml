@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 importers:
 
   .: {}
@@ -169,9 +165,6 @@ importers:
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
-      solid-headless:
-        specifier: ^0.13.1
-        version: 0.13.1(solid-js@1.7.3)
       solid-js:
         specifier: 1.7.3
         version: 1.7.3
@@ -203,9 +196,6 @@ importers:
       '@novely/typewriter':
         specifier: ^0.1.0
         version: link:../typewriter
-      solid-headless:
-        specifier: ^0.13.1
-        version: 0.13.1(solid-js@1.7.3)
       solid-js:
         specifier: 1.7.3
         version: 1.7.3
@@ -2374,16 +2364,6 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /solid-headless@0.13.1(solid-js@1.7.3):
-    resolution: {integrity: sha512-FZJai49YmdBu6oEo8aJGPMQ1Qn8xiW0cnD6vNFDIQWMKJdXEUtDEwz0hTR9aZ7Epq3IkrZs+98E0vNiv1+pZpA==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      solid-js: ^1.2
-    dependencies:
-      solid-js: 1.7.3
-      solid-use: 0.6.2(solid-js@1.7.3)
-    dev: false
-
   /solid-js@1.7.3:
     resolution: {integrity: sha512-4hwaF/zV/xbNeBBIYDyu3dcReOZBECbO//mrra6GqOrKy4Soyo+fnKjpZSa0nODm6j1aL0iQRh/7ofYowH+jzw==}
     dependencies:
@@ -2417,15 +2397,6 @@ packages:
       '@babel/types': 7.22.5
       solid-js: 1.7.6
     dev: true
-
-  /solid-use@0.6.2(solid-js@1.7.3):
-    resolution: {integrity: sha512-0ShJ5s+4PIN0pJB/BtsQucsZB+xnUeeTGaxErQDu6USn5jygZWXicAtOEvFbI8gv40xE751uY1Tz7Aib9lxL/Q==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      solid-js: ^1.5
-    dependencies:
-      solid-js: 1.7.3
-    dev: false
 
   /source-map-js@1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
@@ -2975,3 +2946,7 @@ packages:
     resolution: {integrity: sha512-2eHWfjaoXgTBC2jNM1LRef62VQa0umtvRiDSk6HSzW7RvS5YtkabJrwYLLEKWBc8a5U2PTSCs+dJjUTJdlHsWQ==}
     engines: {node: '>= 14'}
     dev: true
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false

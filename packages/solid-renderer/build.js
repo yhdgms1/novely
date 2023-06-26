@@ -5,7 +5,7 @@ const dev = process.argv.at(2) === "--watch";
 
 build({
   entryPoints: ["./src/index.ts"],
-  external: ["solid-js", "solid-headless"],
+  external: ["solid-js"],
   charset: "utf8",
   jsx: "preserve",
   platform: "browser",

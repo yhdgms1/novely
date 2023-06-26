@@ -7,7 +7,7 @@ import type { State, SolidRendererStore } from '../renderer'
 import { createEffect, createSignal, untrack, For, Show } from 'solid-js';
 import { DialogName } from '../components/DialogName';
 import { Character } from '../components/Character';
-import { Dialog, DialogPanel } from 'solid-headless';
+import { Modal } from '../components/Modal';
 
 import { typewriter } from '@novely/typewriter'
 import { useData } from '../context'
@@ -167,9 +167,8 @@ const Game: VoidComponent<GameProps> = (props) => {
         </div>
       </div>
 
-      <Dialog
-        isOpen={props.state.choices.visible}
-        class={style.headlessDialog}
+      <Modal
+        isOpen={() => props.state.choices.visible}
       >
         <div class={style.headlessDialogContainer}>
           <span
@@ -178,7 +177,7 @@ const Game: VoidComponent<GameProps> = (props) => {
           >
             &#8203;
           </span>
-          <DialogPanel class={style.headlessDialogPanel}>
+          <div class={style.headlessDialogPanel}>
             <span aria-hidden={!props.state.choices.question} class={style.headlessDialogPanelLabel}>
               {props.state.choices.question || <>ᅠ</>}
             </span>
@@ -199,13 +198,12 @@ const Game: VoidComponent<GameProps> = (props) => {
                 )
               }}
             </For>
-          </DialogPanel>
+          </div>
         </div>
-      </Dialog>
+      </Modal>
 
-      <Dialog
-        isOpen={props.state.input.visible}
-        class={style.headlessDialog}
+      <Modal
+        isOpen={() => props.state.input.visible}
       >
         <div class={style.headlessDialogContainer}>
           <span
@@ -214,7 +212,7 @@ const Game: VoidComponent<GameProps> = (props) => {
           >
             &#8203;
           </span>
-          <DialogPanel class={join(style.headlessDialogPanel, style.inputDialogPanel)}>
+          <div class={join(style.headlessDialogPanel, style.inputDialogPanel)}>
             <label for="novely-input" class={style.inputDialogLabel}>
               <span>
                 {props.state.input.question}
@@ -231,9 +229,9 @@ const Game: VoidComponent<GameProps> = (props) => {
             >
               {data.t('Sumbit')}
             </button>
-          </DialogPanel>
+          </div>
         </div>
-      </Dialog>
+      </Modal>
 
       <div data-custom={true}>
         <For each={layers()}>
