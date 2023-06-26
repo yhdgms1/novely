@@ -585,7 +585,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       return result;
     },
     vibrate(pattern) {
-      vibrate(...pattern);
+      vibrate(pattern);
       push()
     },
     next() {

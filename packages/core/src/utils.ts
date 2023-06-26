@@ -96,7 +96,7 @@ const throttle = <Fn extends ((...args: any[]) => any)>(fn: Fn, ms: number) => {
   return wrapper as unknown as (...args: Parameters<Fn>) => void;
 }
 
-const vibrate = (...pattern: number[]) => {
+const vibrate = (pattern: VibratePattern) => {
   try {
     if ('vibrate' in navigator) {
       navigator.vibrate(pattern);
