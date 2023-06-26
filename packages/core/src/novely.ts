@@ -328,9 +328,9 @@ const novely = <Languages extends string, Characters extends Record<string, Char
            * Вычислим `latest` или нет
            */
           const next = indexedQueue.slice(i + 1);
-          const latest = !next.some(([_action, _meta]) => _meta && meta && str(_meta[0]) === str(meta[0]));
+          const notLatest = next.some(([_action, _meta]) => _meta && meta && str(_meta[0]) === str(meta[0]));
 
-          if (!latest) continue;
+          if (notLatest) continue;
         }
 
         /**
@@ -348,7 +348,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
           /**
            * Проверка на возможный `undefined`
            */
-          if (!meta || !_meta) return false;
+          if (!_meta || !meta) return false;
 
           /**
            * Будет ли персонаж скрыт в будущем
@@ -366,6 +366,17 @@ const novely = <Languages extends string, Characters extends Record<string, Char
 
         if (skip) continue;
         
+        match(action, meta);
+      } else if (action === 'showBackground') {
+        const next = indexedQueue.slice(i + 1);
+        /**
+         * Такая же оптимизация применяется к фонам.
+         * Если фон изменится, то нет смысла устанавливать текущий
+         */
+        const notLatest = next.some(([_action]) => action === _action);
+
+        if (notLatest) continue;
+
         match(action, meta);
       } else {
         match(action, meta);
