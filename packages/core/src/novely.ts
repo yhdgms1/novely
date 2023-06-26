@@ -4,7 +4,7 @@ import type { Storage } from './storage';
 import type { Save, State, StorageData, DeepPartial } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction } from './utils';
+import { matchAction, isNumber, isNull, isString, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction, vibrate } from './utils';
 import { store } from './store';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
@@ -543,10 +543,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       })
     },
     clear() {
-      try {
-        navigator.vibrate(0)
-      } catch {};
-
+      vibrate(0);
       renderer.clear(goingBack)(push);
     },
     condition([condition]) {
@@ -588,10 +585,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       return result;
     },
     vibrate(pattern) {
-      try {
-        navigator.vibrate(pattern)
-      } catch {};
-
+      vibrate(...pattern);
       push()
     },
     next() {
