@@ -545,9 +545,9 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     clear() {
       try {
         navigator.vibrate(0)
-      } finally {
-        renderer.clear(goingBack)(push);
-      }
+      } catch {};
+
+      renderer.clear(goingBack)(push);
     },
     condition([condition]) {
       const value = condition();
@@ -590,9 +590,9 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     vibrate(pattern) {
       try {
         navigator.vibrate(pattern)
-      } finally {
-        push()
-      }
+      } catch {};
+
+      push()
     },
     next() {
       push();

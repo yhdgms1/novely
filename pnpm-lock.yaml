@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 importers:
 
   .: {}
@@ -45,10 +49,10 @@ importers:
   packages/create-novely/template-solid-js:
     dependencies:
       '@novely/core':
-        specifier: 0.0.0-beta.7
-        version: 0.0.0-beta.7(deepmerge@4.3.1)(klona@2.0.6)
+        specifier: '*'
+        version: link:../../core
       '@novely/solid-renderer':
-        specifier: workspace:0.0.0-beta.5
+        specifier: '*'
         version: link:../../solid-renderer
       '@novely/t9n':
         specifier: ^0.4.1
@@ -1265,23 +1269,8 @@ packages:
       fastq: 1.15.0
     dev: true
 
-  /@novely/core@0.0.0-beta.7(deepmerge@4.3.1)(klona@2.0.6):
-    resolution: {integrity: sha512-cS7HLk4AL4vNcj/l/5cO2GEeoiRYahvherUcSNNwJSmZ8Jt3LkwjGLruR9rQVsKZ2jjHxYE1UJsuhT9mdYGPeg==}
-    peerDependencies:
-      deepmerge: ^4.3.0
-      klona: ^2.0.6
-    dependencies:
-      '@novely/t9n': 0.5.0
-      deepmerge: 4.3.1
-      klona: 2.0.6
-    dev: false
-
   /@novely/t9n@0.4.1:
     resolution: {integrity: sha512-rxIieBXeYD5nWzuaDurqAKpCIChqkaADzD0qdDRgs5D0YJliAcfrCvaNXQnFAe8ESr7JbQisE/GlHvzoVwn6iw==}
-    dev: false
-
-  /@novely/t9n@0.5.0:
-    resolution: {integrity: sha512-it8cedegcJDRNVaXCd5CuqCICCqbnTP6GIAlXn3XpRWKOqx2gjL/q6u6CuB/ITxY6L1+Vs9JdvijuGraHWMaJg==}
     dev: false
 
   /@types/babel__core@7.20.1:
