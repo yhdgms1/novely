@@ -316,7 +316,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       }
     }
 
-    const indexedQueue = queue.map((value, index) => value.concat(index) as [ValidAction[0], ValidAction[1], number]);
+    const indexedQueue = queue.map((value, index) => value.concat(index) as [Exclude<ValidAction[0], ValidAction>, ValidAction[1], number]);
 
     for await (const [action, meta, i] of indexedQueue) {
       if (action === 'function' || action === 'custom') {
@@ -342,12 +342,37 @@ const novely = <Languages extends string, Characters extends Record<string, Char
          * Дождёмся окончания
          */
         if (result && 'then' in result) await result;
+      } else if (action === 'showCharacter') {
+        const next = indexedQueue.slice(i + 1);
+        const skip = next.some(([_action, _meta]) => {
+          /**
+           * Проверка на возможный `undefined`
+           */
+          if (!meta || !_meta) return false;
+
+          /**
+           * Будет ли персонаж скрыт в будущем
+           * Нет смысла при загрузке сохранения загружать и отрисовывать персонажа, который будет скрыт
+           */
+          const hidden = _action === 'hideCharacter' && _meta[0] === meta[0];
+          /**
+           * Не нужно запускать рендер персонажа, если после этого будет ещё один рендер этого персонажа
+           * Таким образом избегаем ситуации, когда при загрузке вследствие гонки при загрузки изображений отрисовывается не последняя эмоция
+           */
+          const notLatest = _action === action && _meta[0] === meta[0];
+
+          return hidden || notLatest;
+        })
+
+        if (skip) continue;
+        
+        match(action, meta);
       } else {
-        match(action as keyof ActionProxyProvider<Record<string, Character<string>>>, meta);
+        match(action, meta);
       }
     }
 
-    restoring = false, goingBack = false, render();
+    restoring = goingBack = false, render();
   }
 
   const refer = () => {
@@ -510,6 +535,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       push();
     },
     animateCharacter([character, timeout, ...classes]) {
+      // @todo: add clear
       const handler: CustomHandler = () => {
         const char = renderer.store.characters[character];
 
