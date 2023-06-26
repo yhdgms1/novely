@@ -287,10 +287,7 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           class={join(style.button, style.buttonControlPanel)}
-          onClick={() => {
-            data.options.stack.clear();
-            props.setState('screen', 'mainmenu');
-          }}
+          onClick={data.options.exit}
         >
           {data.t('Exit')}
         </button>

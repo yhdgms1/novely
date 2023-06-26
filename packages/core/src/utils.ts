@@ -46,10 +46,6 @@ const isUserRequiredAction = (action: keyof MatchActionMapComplete, meta: Parame
   return action === 'custom' && meta[0] && (meta[0] as unknown as CustomHandler).requireUserAction;
 }
 
-const getDefaultSave = (state = {}) => {
-  return [[[null, 'start'], [null, 0]], state, [Date.now(), 'auto']] as Save;
-}
-
 const getTypewriterSpeed = () => {
   return 90;
 }
@@ -100,4 +96,4 @@ const throttle = <Fn extends ((...args: any[]) => any)>(fn: Fn, ms: number) => {
   return wrapper as unknown as (...args: Parameters<Fn>) => void;
 }
 
-export { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getDefaultSave, getTypewriterSpeed, getLanguage, throttle, isFunction }
+export { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction }

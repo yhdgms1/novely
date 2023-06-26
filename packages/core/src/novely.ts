@@ -4,7 +4,7 @@ import type { Storage } from './storage';
 import type { Save, State, StorageData, DeepPartial } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, str, isUserRequiredAction, getDefaultSave, getTypewriterSpeed, getLanguage, throttle, isFunction } from './utils';
+import { matchAction, isNumber, isNull, isString, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction } from './utils';
 import { store } from './store';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
@@ -48,6 +48,14 @@ interface NovelyInit<Languages extends string, Characters extends Record<string,
 
 const novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>, StateScheme extends State>({ characters, storage, storageDelay = Promise.resolve(), renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, state: defaultState }: NovelyInit<Languages, Characters, Inter, StateScheme>) => {
   let story: Story;
+  let times = new Set<number>();
+
+  /**
+   * Сохраняет временные метки, созданные в данной сессии
+   */
+  const intime = (value: number) => {
+    return times.add(value), value;
+  }
 
   // @todo: find bug here
   const withStory = (s: Story) => {
@@ -95,6 +103,10 @@ const novely = <Languages extends string, Characters extends Record<string, Char
 
     stack.value[1] = val as StateScheme;
   }
+
+  const getDefaultSave = (state = {}) => {
+    return [[[null, 'start'], [null, 0]], state, [intime(Date.now()), 'auto']] as Save;
+  }  
 
   const createStack = (current: Save, stack = [current]) => {
     return {
@@ -178,33 +190,29 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       /**
        * Обновим дату и тип
        */
-      stack.value[2][0] = Date.now();
+      stack.value[2][0] = intime(Date.now());
       stack.value[2][1] = type;
 
-      if (override) {
-        /**
-         * Перезапишем
-         */
-        if (isLatest) {
-          /**
-           * Сохранения хранятся в массиве. Нельзя перезаписать любое последнее
-           * 
-           * Если перезаписывать старое сохранение, то они не будут идти в хронологическом порядке
-           */
-          prev.saves[prev.saves.length - 1] = stack.value;
-        } else {
-          prev.saves.push(stack.value);
-        }
-      } else {
-        /**
-         * Добавляем текущее сохранение
-         */
+      if (!override || !isLatest) {
         prev.saves.push(stack.value);
+        return prev;
       }
 
       /**
-       * Устанавливаем новое значение
+       * Берём последнее сохранение
        */
+      const latest = prev.saves.at(-1);
+
+      /**
+       * Если тип сохранения такой же, а также оно было создано в той же сессии,
+       * То можно допустить перезапись
+       */
+      if (latest && latest[2][1] === type && times.has(date)) {
+        prev.saves[prev.saves.length - 1] = stack.value;
+      } else {
+        prev.saves.push(stack.value);
+      }
+
       return prev;
     });
   }
@@ -232,6 +240,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
 
   let restoring = false;
   let goingBack = false;
+  let interacted = false;
 
   /**
    * Визуально восстанавливает историю
@@ -402,12 +411,47 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     return current;
   }
 
+  const exit = () => {
+    const current = stack.value;
+
+    stack.clear();
+    renderer.ui.showScreen('mainmenu');
+
+    /**
+     * First two save elements and it's type
+     */
+    const [[first, second],, [time, type]] = current;
+
+    if (type === 'auto' && first && second) {
+      /**
+       * Если сохранение похоже на начальное, и при этом игрок не взаимодействовал с игрой, и оно было создано в текущей сессии, то удаляем его
+       */
+      if (first[0] === null && first[1] === 'start' && second[0] === null && !interacted && times.has(time)) {
+        $.update((prev) => {
+          prev.saves = prev.saves.filter(save => save !== current);
+
+          return prev;
+        })
+      }
+    }
+
+    /**
+     * Reset interactive value
+     */
+    interactivity(false);
+    /**
+     * Reset session times
+     */
+    times.clear();
+  }
+
   const renderer = createRenderer({
     characters,
     set,
     restore,
     save,
     newGame,
+    exit,
     stack,
     languages,
     t: t9n.i,
@@ -488,7 +532,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
         /**
          * Если был вопрос, то `index` смещается на единицу назад, поэтому нужно добавить единицу
          */
-        stack.value[0].push(['choice', isWithoutQuestion ? selected : selected + 1], [null, 0]), render();
+        stack.value[0].push(['choice', isWithoutQuestion ? selected : selected + 1], [null, 0]), render(), interactivity(true);
       });
     },
     jump([scene]) {
@@ -523,13 +567,21 @@ const novely = <Languages extends string, Characters extends Record<string, Char
        * Go to the main menu
        */
       renderer.ui.showScreen('mainmenu');
+      /**
+       * Reset interactive value
+       */
+      interactivity(false);
+      /**
+       * Reset session times
+       */
+      times.clear();
     },
     input([question, onInput, setup]) {
       renderer.input(unwrap(question), onInput, setup)(forward);
     },
     custom([handler]) {
       const result = renderer.custom(handler, goingBack, () => {
-        if (!restoring && handler.requireUserAction) enmemory();
+        if (!restoring && handler.requireUserAction) enmemory(), interactivity(true);
         if (!restoring) push();
       });
 
@@ -599,12 +651,11 @@ const novely = <Languages extends string, Characters extends Record<string, Char
 
     const current = klona(stack.value);
 
-    current[0] = klona(stack.value[0]);
-
-    current[2][0] = new Date().valueOf();
     current[2][1] = 'auto';
 
     stack.push(current);
+
+    save(true, 'auto');
   }
 
   const next = () => {
@@ -645,6 +696,11 @@ const novely = <Languages extends string, Characters extends Record<string, Char
   const forward = () => {
     enmemory();
     push();
+    interactivity(true)
+  }
+
+  const interactivity = (value = false) => {
+    interacted = value;
   }
 
   const unwrap = (content: Unwrappable) => {
