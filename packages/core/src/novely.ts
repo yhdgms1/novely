@@ -598,8 +598,8 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       push();
     },
     animateCharacter([character, timeout, ...classes]) {
-      // @todo: add clear
-      const handler: CustomHandler = () => {
+      const handler: CustomHandler = (get) => {
+        const { clear } = get('@@internal-animate-character');
         const char = renderer.store.characters[character];
 
         /**
@@ -618,9 +618,16 @@ const novely = <Languages extends string, Characters extends Record<string, Char
 
         target.classList.add(...classNames);
 
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           target.classList.remove(...classNames);
         }, timeout);
+
+        clear(() => {
+          /**
+           * Clear timeout, because when you will game re-runs some callback might remove classes from character
+           */
+          clearTimeout(timeoutId);
+        });
       }
 
       handler.callOnlyLatest = true;
