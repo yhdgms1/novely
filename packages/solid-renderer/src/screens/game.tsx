@@ -41,33 +41,49 @@ const Game: VoidComponent<GameProps> = (props) => {
 
   const [auto, setAuto] = createSignal(false);
 
-  const getCurrentContent = (): readonly [dialog: string, text: string] => {
+  const getCurrentContent = (): readonly [element: HTMLElement | undefined, text: string] => {
     const state = props.state;
 
-    return [state.dialog.content, state.text.content] as const;
+    if (state.dialog.content) {
+      return [store.dialogRef, state.dialog.content]
+    } else {
+      return [store.textRef, state.text.content]
+    }
   }
 
   createEffect(() => {
-    const [dialog, text] = getCurrentContent();
+    const [element, text] = getCurrentContent();
 
     /**
-     * Уничтожаем предыдущий инстанс
+     * Stop animation
      */
     writer?.destroy();
 
     /**
-     * Создаём новый инстанс
+     * In case element is not present do not start the typewriter
      */
-    writer = typewriter(
-      dialog ? store.dialogRef! : store.textRef!,
-      dialog || text,
-      () => {
-        if (auto()) untrack(clearTypewriterEffect);
+    if (!element) return;
+
+    /**
+     * Start new instance
+     */
+    writer = typewriter({
+      node: element,
+      text,
+      ended() {
+        /**
+         * Ended without user interaction and `auto` mode is enabled
+         */
+        const next = untrack(auto);
+
+        if (next) {
+          untrack(clearTypewriterEffect);
+        }
       },
-      () => {
+      speed() {
         return data.storeData()!.meta[1]
       }
-    );
+    });
   });
 
   const onChoicesButtonClick = ([disabled, i]: [boolean, number]) => {
@@ -81,9 +97,6 @@ const Game: VoidComponent<GameProps> = (props) => {
 
   const clearTypewriterEffect = () => {
     if (writer && writer.end()) {
-      /**
-       * Из-за рассинхронизации состояния `resolve` запускается после скрытия диалога
-       */
       const resolve = props.state.dialog.resolve || props.state.text.resolve;
 
       setState('dialog', { content: '', name: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
@@ -225,7 +238,7 @@ const Game: VoidComponent<GameProps> = (props) => {
             <button
               onClick={onInputButtonClick}
               class={join(style.button, style.buttonInputDialogPanel)}
-              aria-disabled={(props.state.input.error || !props.state.input.element?.validity.valid) ? 'true' : 'false'}
+              aria-disabled={Boolean(props.state.input.error || !props.state.input.element?.validity.valid)}
             >
               {data.t('Sumbit')}
             </button>

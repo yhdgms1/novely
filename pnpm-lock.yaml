@@ -194,7 +194,7 @@ importers:
         specifier: workspace:*
         version: link:../core
       '@novely/typewriter':
-        specifier: ^0.1.0
+        specifier: workspace:*
         version: link:../typewriter
       solid-js:
         specifier: 1.7.3

@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@novely/core": "workspace:*",
-    "@novely/typewriter": "^0.1.0",
+    "@novely/typewriter": "workspace:*",
     "solid-js": "1.7.3"
   },
   "peerDependencies": {

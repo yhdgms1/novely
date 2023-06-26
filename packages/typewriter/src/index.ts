@@ -1,11 +1,30 @@
+interface TypewriterOptions {
+  /**
+   * The node where the typewriter effect will be ran
+   */
+  node: HTMLElement,
+  /**
+   * Text to be written by typewriter effect
+   */
+  text: string,
+  /**
+   * Time for letter to be written
+   */
+  speed?: () => number;
+  /**
+   * Writed did it work itself
+   */
+  ended?: () => void;
+}
+
+const defaultSpeed = () => {
+  return Math.min(90 * Math.random() + 100, 90);
+}
+
 /**
  * Typewriter
- * @param node The node where the typewriter effect will be
- * @param text Text to be written by typewriter effect
  */
-const typewriter = (node: HTMLElement, text: string, cb?: () => void, timeout = () => Math.min(90 * Math.random() + 100, 90)) => {
-  let id!: number;
-
+const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOptions) => {
   const root = document.createElement('span');
   root.innerHTML = text;
 
@@ -38,23 +57,43 @@ const typewriter = (node: HTMLElement, text: string, cb?: () => void, timeout = 
 
   let end = false;
 
-  /**
-   * Clear's the timeout
-   */
-  const clear = () => {
-    clearTimeout(id)
+  let frame: number;
+
+  const enqueue = () => {
+    frame = requestAnimationFrame(queue)
+  }
+
+  const dequeue = () => {
+    cancelAnimationFrame(frame);
   };
+
+  let timeout = 0;
+  let start = 0;
+
+  const queue: FrameRequestCallback = (time) => {
+    if (time >= start + timeout) {
+      start = time;
+      timeout = speed();
+      
+      process();
+    } else if (!end) {
+      enqueue();
+    } else {
+      dequeue();
+    }
+  }
 
   const process = () => {
     if (full[current]?.length > pos) {
       emptied[current].textContent += full[current][pos++];
-      setTimeout(process, timeout());
+      enqueue();
     } else if (current++ < full.length) {
       pos = 0;
-      process();
+      enqueue();
     } else {
       end = true;
-      cb && (id = setTimeout(cb, 790));
+      dequeue();
+      ended && ended();
     }
   }
 
@@ -65,14 +104,16 @@ const typewriter = (node: HTMLElement, text: string, cb?: () => void, timeout = 
      * Did the typewriter ended it's task
      */
     end() {
-      if (end) return clear(), root.remove(), true;
-      return clear(), root.innerHTML = text, end = true, false;
+      dequeue();
+
+      if (end) return root.remove(), true;
+      return root.innerHTML = text, end = true, false;
     },
     /**
      * Destroy
      */
     destroy() {
-      clear(); root.remove();
+      dequeue(); root.remove();
     }
   }
 }
