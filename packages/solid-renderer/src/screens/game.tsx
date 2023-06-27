@@ -194,6 +194,7 @@ const Game: VoidComponent<GameProps> = (props) => {
           <div class="dialog-panel">
             <span
               class="dialog-panel-label"
+              data-used={Boolean(props.state.choices.question)}
               aria-hidden={!props.state.choices.question}
             >
               {props.state.choices.question || <>ᅠ</>}
