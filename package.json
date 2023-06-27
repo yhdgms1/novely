@@ -10,8 +10,6 @@
     "build:t9n": "pnpm --filter=@novely/t9n... --parallel build",
     "dev:solid": "pnpm --filter=@novely/solid-renderer... --parallel dev",
     "build:solid": "pnpm --filter=@novely/solid-renderer... --parallel build",
-    "dev:dom": "pnpm --filter=@novely/dom-renderer... --parallel dev",
-    "build:dom": "pnpm --filter=@novely/dom-renderer... --parallel build",
     "dev:preview": "pnpm --filter=@novely/preview... --parallel dev",
     "build:preview": "pnpm --filter=@novely/preview... --parallel build",
     "preview:preview": "pnpm --filter=@novely/preview... preview",

@@ -80,37 +80,6 @@ importers:
         specifier: ^4.9.5
         version: 4.9.5
 
-  packages/dom-renderer:
-    dependencies:
-      '@novely/core':
-        specifier: workspace:*
-        version: link:../core
-      '@novely/typewriter':
-        specifier: workspace:*
-        version: link:../typewriter
-    devDependencies:
-      '@babel/core':
-        specifier: ^7.22.5
-        version: 7.22.5
-      '@babel/plugin-syntax-jsx':
-        specifier: ^7.22.5
-        version: 7.22.5(@babel/core@7.22.5)
-      '@babel/preset-typescript':
-        specifier: ^7.22.5
-        version: 7.22.5(@babel/core@7.22.5)
-      esbuild:
-        specifier: ^0.16.17
-        version: 0.16.17
-      esbuild-plugin-babel:
-        specifier: ^0.2.3
-        version: 0.2.3(@babel/core@7.22.5)
-      grim-jsx:
-        specifier: ^0.16.1
-        version: 0.16.1(@babel/core@7.22.5)
-      typescript:
-        specifier: ^4.9.5
-        version: 4.9.5
-
   packages/parser:
     devDependencies:
       tsup:
@@ -267,10 +236,6 @@ packages:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.3
       '@jridgewell/trace-mapping': 0.3.18
-    dev: true
-
-  /@artemis69/im@0.2.0:
-    resolution: {integrity: sha512-998G7YgnyYCVYukZHU6MLMDz1d1S8mNrJE0TrScV0MgKtYAAT7IcQi5g6tuVBovWt9wHOUO9DebuTsh3V+QH6w==}
     dev: true
 
   /@babel/code-frame@7.22.5:
@@ -1510,14 +1475,6 @@ packages:
     resolution: {integrity: sha512-r6dCgNpRhPwiWlxbHzZQ/d9swfPaEJGi8ekqRBwQYaR3WmA5VkqQfBWSDDjuJU1ntO+W9tHx8OHV/96Q8e0dVw==}
     dev: true
 
-  /esbuild-plugin-babel@0.2.3(@babel/core@7.22.5):
-    resolution: {integrity: sha512-hGLL31n+GvBhkHUpPCt1sU4ynzOH7I1IUkKhera66jigi4mHFPL6dfJo44L6/1rfcZudXx+wGdf9VOifzDPqYQ==}
-    peerDependencies:
-      '@babel/core': ^7.0.0
-    dependencies:
-      '@babel/core': 7.22.5
-    dev: true
-
   /esbuild@0.16.17:
     resolution: {integrity: sha512-G8LEkV0XzDMNwXKgM0Jwu3nY3lSTwSGY6XbxM9cr9+s0T/qSV1q1JVPBGzm3dcjhCic9+emZDmMffkwgPeOeLg==}
     engines: {node: '>=12'}
@@ -1712,16 +1669,6 @@ packages:
       ignore: 5.2.4
       merge2: 1.4.1
       slash: 3.0.0
-    dev: true
-
-  /grim-jsx@0.16.1(@babel/core@7.22.5):
-    resolution: {integrity: sha512-FzSKVp5C3OytHUpFl9DdKFcLdZyN/NCkRwWnqNkc8fsXY/1BTM1LinbvGZCzmg2v6k+1dF/UBpjv/2CkDApFRg==}
-    peerDependencies:
-      '@babel/core': ^7.17.9
-    dependencies:
-      '@artemis69/im': 0.2.0
-      '@babel/core': 7.22.5
-      '@babel/plugin-syntax-jsx': 7.22.5(@babel/core@7.22.5)
     dev: true
 
   /has-flag@3.0.0:
