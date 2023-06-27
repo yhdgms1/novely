@@ -22,9 +22,10 @@
   text-align: left;
   z-index: 21;
 
-  width: 100%;
-  max-width: 40vw;
   min-height: 40vh;
+
+  padding-left: 0.25em;
+  padding-right: 0.25em;
 
   display: flex;
   flex-direction: column;
