@@ -1,5 +1,6 @@
 const SKIPPED_DURING_RESTORE = new Set([
   'dialog',
+  'choice',
   'input',
   'vibrate',
   'text'

@@ -39,7 +39,7 @@ const Saves: VoidComponent<SavesProps> = (props) => {
         </button>
       </div>
       <Show when={saves()} fallback={data.t('NoSaves')}>
-        <ol class="saves__column saves__list">
+        <ol class="saves__list">
           <For each={saves()}>
             {save => {
               const [date, type] = save[2];
