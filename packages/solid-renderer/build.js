@@ -1,10 +1,9 @@
 import { build } from "esbuild";
-import { default as cssModulesPlugin } from "esbuild-css-modules-plugin";
 
 const dev = process.argv.at(2) === "--watch";
 
 build({
-  entryPoints: ["./src/index.ts"],
+  entryPoints: ["./src/index.ts", './src/styles/index.css'],
   external: ["solid-js"],
   charset: "utf8",
   jsx: "preserve",
@@ -15,13 +14,5 @@ build({
     ".js": ".jsx",
   },
   bundle: true,
-  plugins: [
-    cssModulesPlugin({
-      v2: true,
-      v2CssModulesOption: {
-        pattern: "n-[local]",
-      },
-    }),
-  ],
   watch: dev,
 });

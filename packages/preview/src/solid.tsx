@@ -6,7 +6,7 @@ import { novely, localStorageStorage } from '@novely/core'
 import { createT9N, RU, EN } from '@novely/t9n'
 import { createSolidRenderer } from '@novely/solid-renderer'
 
-import '@novely/solid-renderer/dist/index.css'
+import '@novely/solid-renderer/dist/styles/index.css'
 
 import classRoom from './assets/class.webp';
 import bedroomRoom from './assets/bedroom.webp';
