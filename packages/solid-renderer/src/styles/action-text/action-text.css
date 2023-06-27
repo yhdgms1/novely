@@ -1,20 +1,21 @@
-.fullscreenText {
+.action-text {
   position: absolute;
   inset: 0;
   z-index: 2;
 
   display: none;
-  align-items: center;
-  justify-content: center;
 
   text-align: center;
   font-size: 1.5em;
 }
 
-.fullscreenText[data-fullscreen-text-shown="true"] {
+.action-text[data-shown="true"] {
   display: flex;
+  align-items: center;
+  justify-content: center;
 
   background: var(--novely-fullscreen-backgroun-color, rgba(0, 0, 0, 0.3));
+  
   text-shadow: var(
     --novely-fullscreen-text-shadow,
     2px 2px 4px rgba(0, 0, 0, 0.5)
@@ -22,6 +23,6 @@
   color: var(--novely-fullscreen-text-color, white);
 }
 
-.fullscreenText[data-fullscreen-text-shown="true"] > span {
+.action-text[data-shown="true"] > span {
   cursor: pointer;
 }

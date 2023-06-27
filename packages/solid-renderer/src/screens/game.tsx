@@ -11,9 +11,7 @@ import { Modal } from '../components/Modal';
 
 import { typewriter } from '@novely/typewriter'
 import { useData } from '../context'
-import { canvasDrawImages, url, isCSSImage, join } from '../utils'
-
-import { style } from '../styles/styles';
+import { canvasDrawImages, url, isCSSImage } from '../utils'
 
 interface GameProps {
   state: State;
@@ -119,8 +117,8 @@ const Game: VoidComponent<GameProps> = (props) => {
   const layers = () => Object.values(props.state.layers);
 
   return (
-    <div class={style.root} style={background()}>
-      <div data-characters={true} class={style.characters}>
+    <div class="root" style={background()}>
+      <div data-characters={true} class="characters">
         <For each={Object.entries(props.state.characters)}>
           {([character, data]) => (
             <Show when={data.visible}>
@@ -134,7 +132,7 @@ const Game: VoidComponent<GameProps> = (props) => {
         </For>
       </div>
       <div
-        class={style.dialog}
+        class="action-dialog"
         style={{ display: props.state.dialog.visible ? 'flex' : 'none' }}
         onClick={clearTypewriterEffect}
       >
@@ -143,8 +141,11 @@ const Game: VoidComponent<GameProps> = (props) => {
           name={props.state.dialog.name}
           characters={characters}
         />
-        <div class={join(style.dialogContainer, style.dialogContainerWithPerson)} data-no-person={!(props.state.dialog.character && props.state.dialog.emotion)}>
-          <div class={style.dialogPerson}>
+        <div 
+          class="action-dialog-container"
+          data-no-person={!(props.state.dialog.character && props.state.dialog.emotion)}
+        >
+          <div class="action-dialog-person">
             <Show when={props.state.dialog.emotion} keyed>
               {(emotion) => {
                 const character = props.state.dialog.character;
@@ -174,7 +175,7 @@ const Game: VoidComponent<GameProps> = (props) => {
               }}
             </Show>
           </div>
-          <p class={style.dialogContent} ref={store.dialogRef}>
+          <p class="action-dialog-content" ref={store.dialogRef}>
             &nbsp;
           </p>
         </div>
@@ -183,15 +184,18 @@ const Game: VoidComponent<GameProps> = (props) => {
       <Modal
         isOpen={() => props.state.choices.visible}
       >
-        <div class={style.headlessDialogContainer}>
+        <div class="dialog-container">
           <span
-            class={style.headlessDialogFix}
+            class="dialog-fix"
             aria-hidden="true"
           >
             &#8203;
           </span>
-          <div class={style.headlessDialogPanel}>
-            <span aria-hidden={!props.state.choices.question} class={style.headlessDialogPanelLabel}>
+          <div class="dialog-panel">
+            <span
+              class="dialog-panel-label"
+              aria-hidden={!props.state.choices.question}
+            >
               {props.state.choices.question || <>ᅠ</>}
             </span>
             <For each={props.state.choices.choices}>
@@ -202,8 +206,8 @@ const Game: VoidComponent<GameProps> = (props) => {
                 return (
                   <button
                     type="button"
+                    class="button"
                     aria-disabled={disabled}
-                    class={join(style.button, style.buttonChoices)}
                     onClick={[onChoicesButtonClick, [disabled, index]]}
                   >
                     {text}
@@ -218,15 +222,15 @@ const Game: VoidComponent<GameProps> = (props) => {
       <Modal
         isOpen={() => props.state.input.visible}
       >
-        <div class={style.headlessDialogContainer}>
+        <div class="dialog-container">
           <span
-            class={style.headlessDialogFix}
+            class="dialog-fix"
             aria-hidden="true"
           >
             &#8203;
           </span>
-          <div class={join(style.headlessDialogPanel, style.inputDialogPanel)}>
-            <label for="novely-input" class={style.inputDialogLabel}>
+          <div class="dialog-panel input-dialog-panel">
+            <label for="novely-input" class="input-dialog-label">
               <span>
                 {props.state.input.question}
               </span>
@@ -236,8 +240,8 @@ const Game: VoidComponent<GameProps> = (props) => {
               </span>
             </label>
             <button
+              class="button dialog-input__button"
               onClick={onInputButtonClick}
-              class={join(style.button, style.buttonInputDialogPanel)}
               aria-disabled={Boolean(props.state.input.error || !props.state.input.element?.validity.valid)}
             >
               {data.t('Sumbit')}
@@ -252,14 +256,14 @@ const Game: VoidComponent<GameProps> = (props) => {
         </For>
       </div>
 
-      <div class={style.fullscreenText} data-fullscreen-text-shown={Boolean(props.state.text.content)} ref={store.textRef} onClick={clearTypewriterEffect}>
+      <div class="action-text" data-shown={Boolean(props.state.text.content)} ref={store.textRef} onClick={clearTypewriterEffect}>
         &nbsp;
       </div>
 
-      <div class={style.controlPanel}>
+      <div class="control-panel">
         <button
           type="button"
-          class={join(style.button, style.buttonControlPanel)}
+          class="button control-panel__button"
           onClick={() => {
             data.options.stack.back();
             data.options.restore(data.options.stack.value);
@@ -269,7 +273,7 @@ const Game: VoidComponent<GameProps> = (props) => {
         </button>
         <button
           type="button"
-          class={join(style.button, style.buttonControlPanel)}
+          class="button control-panel__button"
           onClick={() => {
             data.options.save(false, 'manual');
           }}
@@ -278,7 +282,7 @@ const Game: VoidComponent<GameProps> = (props) => {
         </button>
         <button
           type="button"
-          class={join(style.button, style.buttonControlPanel)}
+          class="button control-panel__button"
           onClick={() => {
             setAuto(prev => !prev);
           }}
@@ -287,7 +291,7 @@ const Game: VoidComponent<GameProps> = (props) => {
         </button>
         <button
           type="button"
-          class={join(style.button, style.buttonControlPanel)}
+          class="button control-panel__button"
           onClick={() => {
             data.options.save(false, 'auto');
             props.setState('screen', 'settings');
@@ -297,7 +301,7 @@ const Game: VoidComponent<GameProps> = (props) => {
         </button>
         <button
           type="button"
-          class={join(style.button, style.buttonControlPanel)}
+          class="button control-panel__button"
           onClick={data.options.exit}
         >
           {data.t('Exit')}

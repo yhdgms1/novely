@@ -1,4 +1,4 @@
-.dialog {
+.action-dialog {
   min-height: 26vh;
   width: 75%;
 
@@ -17,7 +17,7 @@
   user-select: none;
 }
 
-.dialogContainer {
+.action-dialog-container {
   height: 100%;
   min-height: 18vh;
 
@@ -44,33 +44,27 @@
   padding-bottom: 2.8em;
 }
 
-/* @modifiers */
+.action-dialog-container[data-no-person="true"] {
+  grid-template-areas:
+    "text text"
+    "text text";
+}
 
-.dialogPerson {
+.action-dialog-person {
   max-height: 25vh;
   max-width: 25vw;
 
   grid-area: pers;
 }
 
-.dialogContainerWithPerson[data-no-person="true"] {
-  grid-template-areas:
-    "text text"
-    "text text";
-}
-
-.dialogContainerWithPerson[data-no-person="true"] > .dialogPerson {
-  display: none;
-}
-
-.dialogName,
-.dialogContent {
+.action-dialog-name,
+.action-dialog-content {
   display: block;
   padding: 1vmin;
   margin: 0;
 }
 
-.dialogName {
+.action-dialog-name {
   font-size: 1.4375em;
   line-height: 1.2;
 
@@ -84,7 +78,7 @@
   box-shadow: 1px 1px 3px #00000042;
 }
 
-.dialogContent {
+.action-dialog-content {
   font-size: 2.2375em;
   line-height: 1.2;
   width: 100%;
@@ -95,28 +89,31 @@
   text-shadow: 1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
 }
 
-.dialogPerson > canvas,
-.dialogPerson > img {
+/**
+ * className cannot be applied to these elements
+ */
+.action-dialog-person > canvas,
+.action-dialog-person > img {
   height: 100%;
 }
 
-@media (max-width: 768px) {
-  .dialog {
+@media (orientation: portrait) {
+  .action-dialog {
     width: 100%;
     bottom: 0;
     left: unset;
     transform: unset;
   }
 
-  .dialogName {
+  .action-dialog-name {
     font-size: 1.02em;
   }
 
-  .dialogContent {
+  .action-dialog-content {
     font-size: 1.32em;
   }
 
-  .dialogContainer {
+  .action-dialog-container {
     border-radius: 14px 14px 0 0;
   }
 }

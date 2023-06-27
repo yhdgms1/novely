@@ -1,0 +1,20 @@
+.settings {
+  position: absolute;
+  inset: 0;
+
+  z-index: 1;
+
+  padding: 0 1em;
+  gap: 1em;
+
+  overflow: hidden;
+  background-image: var(--novely-settings-background-image);
+
+  display: flex;
+}
+
+@media (orientation: portrait) {
+  .settings {
+    flex-direction: column-reverse;
+  }
+}

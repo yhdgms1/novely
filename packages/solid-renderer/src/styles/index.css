@@ -1,0 +1,16 @@
+
+@import './root/index.css';
+
+@import './main-menu/index.css';
+@import './loading/index.css';
+@import './settings/index.css';
+@import './saves/index.css';
+
+@import './button/index.css';
+@import './characters/index.css';
+@import './control-panel/index.css';
+@import './action-text/index.css';
+@import './select/index.css';
+@import './action-dialog/index.css';
+@import './dialog/index.css';
+@import './input-dialog/index.css';

@@ -1,0 +1,22 @@
+.saves__list {
+  width: 100%;
+  height: 100%;
+
+  padding: 0 1em;
+
+  display: grid;
+  align-content: flex-start;
+  justify-content: center;
+  justify-items: stretch;
+
+  list-style: none;
+
+  overflow-y: scroll;
+
+  margin-block-start: 0;
+  margin-block-end: 0;
+}
+
+.saves__list-item {
+  display: flex;
+}

@@ -1,0 +1,10 @@
+.main-menu {
+  overflow: hidden;
+  background-image: var(--novely-main-menu-background-image);
+
+  padding: 0 1em;
+
+  display: grid;
+  justify-content: start;
+  align-content: center;
+}

@@ -1,0 +1,13 @@
+.saves__button {
+  min-width: 30vw;
+}
+
+.saves__button-load {
+  width: 100%;
+}
+
+@media (orientation: portrait) {
+  .saves__button {
+    min-width: 80%;
+  }
+}

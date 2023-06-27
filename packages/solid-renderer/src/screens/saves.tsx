@@ -3,10 +3,8 @@ import type { SetStoreFunction } from 'solid-js/store'
 import type { State } from '../renderer'
 
 import { Show, For } from 'solid-js'
-import { capitalize, join } from '../utils'
+import { capitalize } from '../utils'
 import { useData } from '../context'
-
-import { style } from '../styles/styles';
 
 interface SavesProps {
   setState: SetStoreFunction<State>;
@@ -34,19 +32,14 @@ const Saves: VoidComponent<SavesProps> = (props) => {
   }
 
   return (
-    <div
-      classList={{
-        [style.root]: true,
-        [style.saves]: true
-      }}
-    >
-      <div class={style.controls}>
-        <button type="button" class={join(style.button, style.buttonSaves)} onClick={() => props.setState('screen', 'mainmenu')}>
+    <div class="root saves">
+      <div class="saves__column">
+        <button type="button" class="button saves__button" onClick={() => props.setState('screen', 'mainmenu')}>
           {data.t('GoBack')}
         </button>
       </div>
       <Show when={saves()} fallback={data.t('NoSaves')}>
-        <ol class={style.list}>
+        <ol class="saves__column saves__list">
           <For each={saves()}>
             {save => {
               const [date, type] = save[2];
@@ -55,17 +48,17 @@ const Saves: VoidComponent<SavesProps> = (props) => {
               const stringType = data.t(type === 'auto' ? 'Automatic' : 'Manual');
 
               return (
-                <li>
+                <li class="saves__list-item">
                   <button
                     type="button"
-                    class={join(style.button, style.buttonSaves)}
+                    class="button saves__button-load"
                     aria-label={data.t('LoadASaveFrom') + ' ' + stringDate}
                     onClick={() => data.options.set(save)}
                   >
                     {stringDate}
                     <span style={{ "margin-left": '1em' }}>{stringType}</span>
                   </button>
-                  <button type="reset" class={join(style.button, style.buttonSavesDelete)} aria-label={data.t('DeleteASaveFrom') + ' ' + stringDate} onClick={[removeSave, date]}>
+                  <button type="reset" class="button" aria-label={data.t('DeleteASaveFrom') + ' ' + stringDate} onClick={[removeSave, date]}>
                     <span>{data.t('Remove')}</span>
                   </button>
                 </li>

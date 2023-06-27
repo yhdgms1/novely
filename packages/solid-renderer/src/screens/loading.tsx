@@ -1,18 +1,11 @@
 import type { VoidComponent } from 'solid-js'
 
-import { style } from '../styles/styles';
-
 interface LoadingProps { }
 
 const Loading: VoidComponent<LoadingProps> = () => {
   return (
-    <div
-      classList={{
-        [style.root]: true,
-        [style.loading]: true
-      }}
-    >
-      <div class={style.ldsEllipsis}>
+    <div class="root loading">
+      <div class="loading__animation">
         <div />
         <div />
         <div />

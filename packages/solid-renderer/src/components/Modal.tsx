@@ -1,6 +1,5 @@
 import type { FlowComponent, Accessor } from 'solid-js';
 import { untrack, createEffect, on, onCleanup, Show } from 'solid-js';
-import { style } from '../styles/styles';
 
 const clickOutside = (node: HTMLElement, handler: () => void) => {
   const handleClick = (event: MouseEvent) =>
@@ -54,8 +53,8 @@ const Modal: FlowComponent<ModalProps> = (props) => {
     <Show when={props.isOpen()}>
       <div 
         role="dialog"
+        class="dialog"
         aria-modal={true}
-        class={style.headlessDialog}
         ref={(element) => {
           modalWindow = element;
           clickOutside(element, close);

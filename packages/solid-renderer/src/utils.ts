@@ -40,8 +40,4 @@ const url = <T extends string>(str: T): `url(${T})` => {
   return `url(${str})`;
 }
 
-const join = (...elements: (string | boolean)[]) => {
-  return elements.filter(Boolean).join(' ');
-}
-
-export { isCSSImage, canvasDrawImages, url, createImage, capitalize, join }
+export { isCSSImage, canvasDrawImages, url, createImage, capitalize }

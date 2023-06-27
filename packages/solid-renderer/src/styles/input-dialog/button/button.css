@@ -1,0 +1,7 @@
+.dialog-input__button {
+  font-size: 1.2375em;
+  padding: 0.4em 0.6em;
+
+  width: -moz-fit-content;
+  width: fit-content;
+}

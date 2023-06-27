@@ -1,6 +1,5 @@
 import type { Character } from '@novely/core'
 import type { VoidComponent } from 'solid-js';
-import { style } from '../styles/styles';
 
 interface DialogNameProps {
   character?: string;
@@ -18,7 +17,7 @@ const DialogName: VoidComponent<DialogNameProps> = (props) => {
 
   return (
     <span
-      class={style.dialogName}
+      class="action-dialog-name"
       style={{
         color: color(),
         opacity: props.character ? 1 : 0,

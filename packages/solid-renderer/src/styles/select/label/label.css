@@ -1,0 +1,9 @@
+.select__label {
+  background: var(--novely-select-label-background, #ffe9f3);
+
+  color: var(--novely-select-color, #000);
+  font-size: 1.02em;
+
+  padding: 0.25em 0.5em;
+  border-radius: 0.25em;
+}

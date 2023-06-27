@@ -3,10 +3,8 @@ import type { SetStoreFunction } from 'solid-js/store'
 import type { State } from '../renderer'
 
 import { For, createUniqueId, createMemo } from 'solid-js'
-import { capitalize, join } from '../utils'
+import { capitalize } from '../utils'
 import { useData } from '../context'
-
-import { style } from '../styles/styles';
 
 interface SettingsProps {
   setState: SetStoreFunction<State>;
@@ -38,35 +36,31 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
     });
   }
 
-  const id = createUniqueId();
+  const languageSelectID = createUniqueId();
+  const speedSelectID = createUniqueId();
 
   return (
-    <div
-      classList={{
-        [style.root]: true,
-        [style.settings]: true
-      }}
-    >
-      <div class={style.controls}>
-        <button type="button" class={join(style.button, style.buttonSettings)} onClick={() => props.setState('screen', 'mainmenu')}>
+    <div class="root settings">
+      <div class="settings__column">
+        <button type="button" class="button settings__button" onClick={() => props.setState('screen', 'mainmenu')}>
           {data.t('HomeScreen')}
         </button>
-        <button type="button" class={join(style.button, style.buttonSettings)} onClick={() => data.options.restore()}>
+        <button type="button" class="button settings__button" onClick={() => data.options.restore()}>
           {data.t('ToTheGame')}
         </button>
       </div>
-      <div class={style.content}>
-        <div class={style.select}>
-          <label for={id}>{data.t('Language')}</label>
-          <select id={id} onChange={onLanguageSelect}>
+      <div class="settings__column">
+        <div class="select">
+          <label class="select__label" for={languageSelectID}>{data.t('Language')}</label>
+          <select class="select__select" id={languageSelectID} onChange={onLanguageSelect}>
             <For each={data.options.languages}>
               {lang => <option value={lang} selected={lang === language()}>{capitalize(languageNames().of(lang) || lang)}</option>}
             </For>
           </select>
         </div>
-        <div class={style.select}>
-          <label for={id}>{data.t('TextSpeed')}</label>
-          <select id={id} onChange={onSpeedSelect}>
+        <div class="select">
+          <label class="select__label" for={speedSelectID}>{data.t('TextSpeed')}</label>
+          <select class="select__select" id={speedSelectID} onChange={onSpeedSelect}>
             <For each={[90, 140, 190]}>
               {speed => <option value={speed} selected={speed === textSpeed()}>{speed}</option>}
             </For>
