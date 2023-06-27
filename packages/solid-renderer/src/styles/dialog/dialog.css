@@ -32,6 +32,12 @@
 }
 
 .dialog-panel-label {
+  background: var(--novely-dialog-panel-label-background, #ffe9f3);
+  color: var(--novely-dialog-panel-label-color, #000);
+
+  padding: 0.25em 0.5em;
+  border-radius: 0.25em;
+
   user-select: none;
   font-size: 1.2375em;
 }
