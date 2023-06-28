@@ -117,3 +117,17 @@
     border-radius: 14px 14px 0 0;
   }
 }
+
+@media only screen and (orientation: landscape) and (hover: none) and (pointer: coarse) {
+  .action-dialog-content {
+    font-size: 1.32em;
+    line-height: 1.15;
+  }
+}
+
+@media only screen and (orientation: landscape) and (hover: hover) and (pointer: coarse) {
+  .action-dialog-content {
+    font-size: 1.32em;
+    line-height: 1.15;
+  }
+}
