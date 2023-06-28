@@ -4,6 +4,7 @@
 
 .saves__button-load {
   width: 100%;
+  touch-action: auto !important;
 }
 
 @media (orientation: portrait) {
