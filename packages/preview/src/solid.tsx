@@ -95,6 +95,8 @@ const engine = novely({
     age: 0,
   },
 
+  autosaves: true,
+
   initialScreen: 'mainmenu'
 });
 
@@ -168,14 +170,16 @@ engine.withStory({
         'ok': [
           action.hideCharacter('Masaki Natsuko'),
           action.dialog('Nezuko', t('ReallyAgeYears')),
-          action.end(),
+          action.exit(),
         ],
         'no': [
           action.dialog('Nezuko', t('YouAreAgeYears'), 'sad'),
-          action.end()
+          action.exit()
         ]
       }
-    )
+    ),
+    action.dialog('Nezuko', 'Сейчас будет выход'),
+    action.end()
   ]
 });
 

@@ -38,35 +38,37 @@ const Saves: VoidComponent<SavesProps> = (props) => {
           {data.t('GoBack')}
         </button>
       </div>
-      <Show when={saves()} fallback={data.t('NoSaves')}>
-        <ol class="saves__list">
-          <For each={saves()}>
-            {save => {
-              const [date, type] = save[2];
+      <div class="saves__list-container">
+        <Show when={saves()} fallback={data.t('NoSaves')}>
+          <ol class="saves__list">
+            <For each={saves()}>
+              {save => {
+                const [date, type] = save[2];
 
-              const stringDate = capitalize(new Date(date).toLocaleDateString(language(), { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }));
-              const stringType = data.t(type === 'auto' ? 'Automatic' : 'Manual');
+                const stringDate = capitalize(new Date(date).toLocaleDateString(language(), { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }));
+                const stringType = data.t(type === 'auto' ? 'Automatic' : 'Manual');
 
-              return (
-                <li class="saves__list-item">
-                  <button
-                    type="button"
-                    class="button saves__button-load"
-                    aria-label={data.t('LoadASaveFrom') + ' ' + stringDate}
-                    onClick={() => data.options.set(save)}
-                  >
-                    {stringDate}
-                    <span style={{ "margin-left": '1em' }}>{stringType}</span>
-                  </button>
-                  <button type="reset" class="button" aria-label={data.t('DeleteASaveFrom') + ' ' + stringDate} onClick={[removeSave, date]}>
-                    <span>{data.t('Remove')}</span>
-                  </button>
-                </li>
-              )
-            }}
-          </For>
-        </ol>
-      </Show>
+                return (
+                  <li class="saves__list-item">
+                    <button
+                      type="button"
+                      class="button saves__button-load"
+                      aria-label={data.t('LoadASaveFrom') + ' ' + stringDate}
+                      onClick={() => data.options.set(save)}
+                    >
+                      {stringDate}
+                      <span style={{ "margin-left": '1em' }}>{stringType}</span>
+                    </button>
+                    <button type="reset" class="button" aria-label={data.t('DeleteASaveFrom') + ' ' + stringDate} onClick={[removeSave, date]}>
+                      <span>{data.t('Remove')}</span>
+                    </button>
+                  </li>
+                )
+              }}
+            </For>
+          </ol>
+        </Show>
+      </div>
     </div >
   )
 }

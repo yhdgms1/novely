@@ -44,9 +44,14 @@ interface NovelyInit<Languages extends string, Characters extends Record<string,
    * Initial state value
    */
   state?: StateScheme;
+  /**
+   * Enable autosaves or disable
+   * @default true
+   */
+  autosaves?: boolean;
 }
 
-const novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>, StateScheme extends State>({ characters, storage, storageDelay = Promise.resolve(), renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, state: defaultState }: NovelyInit<Languages, Characters, Inter, StateScheme>) => {
+const novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>, StateScheme extends State>({ characters, storage, storageDelay = Promise.resolve(), renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, state: defaultState, autosaves = true }: NovelyInit<Languages, Characters, Inter, StateScheme>) => {
   let story: Story;
   let times = new Set<number>();
 
@@ -106,7 +111,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
 
   const getDefaultSave = (state = {}) => {
     return [[[null, 'start'], [null, 0]], state, [intime(Date.now()), 'auto']] as Save;
-  }  
+  }
 
   const createStack = (current: Save, stack = [current]) => {
     return {
@@ -156,14 +161,14 @@ const novely = <Languages extends string, Characters extends Record<string, Char
        */
       stored.meta[0] ||= getLanguage(languages);
       stored.meta[1] ||= getTypewriterSpeed();
-  
+
       /**
        * Now the next store updates will entail saving via storage.set
        */
       initialDataLoaded = true;
-  
+
       $.update(() => stored);
-  
+
       /**
        * When initialScreen is game, then we will load it, but after the data is loaded
        */
@@ -183,18 +188,26 @@ const novely = <Languages extends string, Characters extends Record<string, Char
   const save = (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
     if (!initialDataLoaded) return;
 
+    /**
+     * When autosaves diabled just return
+     */
+    if (!autosaves && type === 'auto') return;
+
+    const current = klona(stack.value);
+
     $.update(prev => {
-      const date = stack.value[2][0];
+      const date = current[2][0];
       const isLatest = prev.saves.findIndex(value => value[2][0] === date) === prev.saves.length - 1;
 
       /**
        * Обновим дату и тип
        */
-      stack.value[2][0] = intime(Date.now());
-      stack.value[2][1] = type;
+      current[2][0] = intime(Date.now());
+      current[2][1] = type;
 
       if (!override || !isLatest) {
-        prev.saves.push(stack.value);
+        prev.saves.push(current);
+
         return prev;
       }
 
@@ -208,9 +221,9 @@ const novely = <Languages extends string, Characters extends Record<string, Char
        * То можно допустить перезапись
        */
       if (latest && latest[2][1] === type && times.has(date)) {
-        prev.saves[prev.saves.length - 1] = stack.value;
+        prev.saves[prev.saves.length - 1] = current;
       } else {
-        prev.saves.push(stack.value);
+        prev.saves.push(current);
       }
 
       return prev;
@@ -222,11 +235,16 @@ const novely = <Languages extends string, Characters extends Record<string, Char
 
     const save = getDefaultSave(klona(defaultState));
 
-    $.update(prev => {
-      prev.saves.push(save), restore(save);
+    /**
+     * Initial save is automatic, and should be ignored when autosaves is turned off
+     */
+    if (autosaves) {
+      $.update(prev => {
+        return prev.saves.push(save), prev;
+      });
+    }
 
-      return prev;
-    });
+    restore(save);
   }
 
   /**
@@ -374,7 +392,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
         })
 
         if (skip) continue;
-        
+
         match(action, meta);
       } else if (action === 'showBackground') {
         const next = indexedQueue.slice(i + 1);
@@ -420,7 +438,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     /**
      * First two save elements and it's type
      */
-    const [[first, second],, [time, type]] = current;
+    const [[first, second], , [time, type]] = current;
 
     if (type === 'auto' && first && second) {
       /**
@@ -552,10 +570,6 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       if (!restoring) stack.value[0].push(['condition', String(value)], [null, 0]), render();
     },
     end() {
-      /**
-       * Save Current Game
-       */
-      save(false, 'auto');
       /**
        * Clear the Scene
        */
