@@ -21,36 +21,46 @@ const defaultSpeed = () => {
   return Math.min(90 * Math.random() + 100, 90);
 }
 
+const collectTextNodes = (el: HTMLElement | ChildNode | Node) => {
+  const items: ChildNode[] = [];
+
+  el.childNodes.forEach(child => {
+    if (child.nodeName === '#text') items.push(child)
+    else items.push(...collectTextNodes(child));
+  });
+
+  return items;
+}
+
 /**
  * Typewriter
  */
 const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOptions) => {
-  const root = document.createElement('span');
-  root.innerHTML = text;
+  /**
+   * Set content
+   */
+  node.innerHTML = text;
 
-  const traverse = (el: HTMLElement | ChildNode | Node, erase: boolean) => {
-    const items = [] as ChildNode[];
-
-    el.childNodes.forEach(child => {
-      if (child.nodeName === '#text') {
-        items.push(child);
-
-        if (erase) child.textContent = '';
-      }
-
-      items.push(...traverse(child, erase));
+  const nodes = collectTextNodes(node).map((child) => {
+    const letters = [...child.textContent!].map(char => {
+      const text = document.createElement('span');
+  
+      /**
+       * The content is the same, but letter is invisible
+       */
+      text.textContent = char;
+      text.style.cssText = 'opacity: 0;';
+  
+      return text;
     });
 
-    return items;
-  }
+    /**
+     * Replace `Text` with `HTMLParagraphElement`s
+     */
+    child.replaceWith(...letters);
 
-  /**
-   * The simplest division into graphemes. Does not work with more complex symbols
-   */
-  const full = traverse(root.cloneNode(true), false).map((child) => [...child.textContent!]);
-  const emptied = traverse(root, true);
-
-  node.appendChild(root);
+    return letters;
+  });
 
   let current = 0;
   let pos = 0;
@@ -70,6 +80,11 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
   let timeout = 0;
   let start = 0;
 
+  /**
+   * Node that is used to
+   */
+  let container: Text;
+
   const queue: FrameRequestCallback = (time) => {
     if (time >= start + timeout) {
       start = time;
@@ -84,10 +99,21 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
   }
 
   const process = () => {
-    if (full[current]?.length > pos) {
-      emptied[current].textContent += full[current][pos++];
+    const block = nodes[current];
+
+    if (block?.length > pos) {      
+      const span = block[pos];
+      const text = span.textContent!;
+
+      if (pos++ === 0) {
+        span.replaceWith(container = document.createTextNode(text));
+      } else {
+        container.textContent += text;
+        span.remove()
+      }
+
       enqueue();
-    } else if (current++ < full.length) {
+    } else if (current++ < nodes.length) {
       pos = 0;
       enqueue();
     } else {
@@ -101,19 +127,33 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
 
   return {
     /**
-     * Did the typewriter ended it's task
+     * End
      */
     end() {
       dequeue();
 
-      if (end) return root.remove(), true;
-      return root.innerHTML = text, end = true, false;
+      /**
+       * Should we really end
+       */
+      if (end) {
+        node.innerHTML = '';
+        return end;
+      }
+
+      /**
+       * Or just complete text immediately
+       */
+      node.innerHTML = text;
+      end = true;
+
+      return false;
     },
     /**
      * Destroy
      */
     destroy() {
-      dequeue(); root.remove();
+      node.innerHTML = '';
+      dequeue();
     }
   }
 }

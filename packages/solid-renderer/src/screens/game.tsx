@@ -61,6 +61,10 @@ const Game: VoidComponent<GameProps> = (props) => {
      * In case element is not present do not start the typewriter
      */
     if (!element) return;
+    /**
+     * When text is empty
+     */
+    if (!text) return;
 
     /**
      * Start new instance
