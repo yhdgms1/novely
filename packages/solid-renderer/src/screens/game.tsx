@@ -269,10 +269,7 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           class="button control-panel__button"
-          onClick={() => {
-            data.options.stack.back();
-            data.options.restore(data.options.stack.value);
-          }}
+          onClick={data.options.back}
         >
           {data.t('GoBack')}
         </button>

@@ -463,6 +463,10 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     times.clear();
   }
 
+  const back = () => {
+    return stack.back(), restore(stack.value);
+  }
+
   const renderer = createRenderer({
     characters,
     set,
@@ -470,6 +474,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     save,
     newGame,
     exit,
+    back,
     stack,
     languages,
     t: t9n.i,

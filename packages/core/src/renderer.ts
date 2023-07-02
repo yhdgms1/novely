@@ -55,6 +55,7 @@ type RendererInit = {
   save: (override?: boolean, type?: Save[2][1]) => void;
   newGame: () => void;
   exit: () => void;
+  back: () => Promise<void>;
   stack: Stack;
   languages: string[];
 
