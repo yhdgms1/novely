@@ -8,11 +8,6 @@ import { createSolidRenderer } from '@novely/solid-renderer'
 
 import '@novely/solid-renderer/dist/styles/index.css'
 
-import classRoom from './assets/class.webp';
-import bedroomRoom from './assets/bedroom.webp';
-import masakiNatsukoOk from './assets/Masaki Natsuko.webp';
-import outsideSchool from './assets/outside.webp';
-
 // import { video } from '@novely/video'
 import { particles } from '@novely/particles'
 import { snow, fireflies } from './particles'
@@ -24,19 +19,28 @@ const engine = novely({
   storage: localStorageStorage({ key: 'novely-saves' }),
   renderer: createRenderer,
   characters: {
-    'Masaki Natsuko': {
+    'Sayori': {
       name: {
-        ru: 'Масаки Натсуко',
-        en: 'Masaki Natsuko',
+        ru: 'Саёри',
+        en: 'Sayori',
       },
-      color: '#e29f01',
+      color: '#ce606a',
       emotions: {
-        ok: masakiNatsukoOk,
+        ok: {
+          body: {
+            left: 'https://i.imgur.com/cCKs0wZ.png',
+            right: 'https://i.imgur.com/Bl1rDMd.png'
+          },
+          head: 'https://i.imgur.com/fvXCgNx.png'
+        },
       },
     },
-    'Nezuko': {
-      name: 'Нацуки',
-      color: '#f67288',
+    'Natsuki': {
+      name: {
+        ru: 'Нацуки',
+        en: 'Natsuki'
+      },
+      color: '#f58eb1',
       emotions: {
         ok: {
           body: {
@@ -68,8 +72,8 @@ const engine = novely({
       },
       strings: {
         'HowOldAreYou': 'Привет, {{name}}! Сколько тебе лет? 😙',
-        'ReallyAgeYears': 'Правда {{age}} {{age@years}}? Загляни ко мне как-нибудь 😉',
-        'YouAreAgeYears': 'Тебе {{age}} {{age@years}}?? Не умею я определять возраст... 😅',
+        'ReallyAgeYears': 'Правда {{age}} {{age@years}}? Загляни ко мне как-нибудь',
+        'YouAreAgeYears': 'Тебе {{age}} {{age@years}}? Старик',
       }
     },
     en: {
@@ -85,11 +89,12 @@ const engine = novely({
       },
       strings: {
         'HowOldAreYou': 'Hi, {{name}}! How old are you? 😙',
-        'ReallyAgeYears': 'Really {{age}} {{age@years}}? Drop by and see me sometime 😉',
-        'YouAreAgeYears': "You are {{age}} {{age@years}} old? I'm not good at determining age... 😅",
+        'ReallyAgeYears': 'Really {{age}} {{age@years}}? Drop by and see me sometime',
+        'YouAreAgeYears': "You are {{age}} {{age@years}} old? Старик",
       }
     },
   }),
+
   state: {
     name: '',
     age: 0,
@@ -110,11 +115,11 @@ const { action, state, t } = engine;
 engine.withStory({
   'start': [
     // todo: `Music` должно играть после конца
-    action.showBackground(classRoom),
+    action.showBackground('https://i.imgur.com/96NUxvz.png'),
     action.custom(particles(fireflies)),
-    action.showCharacter('Masaki Natsuko', 'ok', 'animate__animated animate__fadeInUp', 'left: 15%'),
-    action.animateCharacter('Masaki Natsuko', 500, 'awd'),
-    action.dialog('Masaki Natsuko', 'Привет! Ты <em>новенький</em>, не так ли?'),
+    action.showCharacter('Sayori', 'ok', 'animate__animated animate__fadeInUp', 'left: 15%'),
+    action.animateCharacter('Sayori', 500, 'awd'),
+    action.dialog('Sayori', 'Привет! Ты <em>новенький</em>, не так ли?'),
     // action.custom(video({ url: 'http://techslides.com/demos/sample-videos/small.mp4', controls: true, })),
     action.choice(
       'Ты новенький?',
@@ -122,7 +127,7 @@ engine.withStory({
         'Да, я новенький!',
         [
           action.custom(particles(snow)),
-          action.dialog('Masaki Natsuko', 'Не хочешь зайти ко мне в гости сегодня? 😜'),
+          action.dialog('Sayori', 'Не хочешь зайти ко мне в гости сегодня?'),
           action.choice(
             [
               'Не откажусь!',
@@ -134,12 +139,12 @@ engine.withStory({
     )
   ],
   'act-1': [
-    action.showBackground(bedroomRoom),
-    action.showCharacter('Masaki Natsuko', 'ok', '', 'left: 15%'),
-    action.dialog('Masaki Natsuko', 'Добро пожаловать'),
-    action.showCharacter('Nezuko', 'ok', 'animate__animated animate__fadeInUp', 'right: 15%'),
-    action.dialog('Nezuko', 'Сестрёнка, кого ты привела?!'),
-    action.dialog('Masaki Natsuko', 'Знакомься, это'),
+    action.showBackground('https://i.imgur.com/L50iCQZ.png'),
+    action.showCharacter('Sayori', 'ok', '', 'left: 15%'),
+    action.dialog('Sayori', 'Добро пожаловать'),
+    action.showCharacter('Natsuki', 'ok', 'animate__animated animate__fadeInUp', 'right: 15%'),
+    action.dialog('Natsuki', 'Кого ты привела?!'),
+    action.dialog('Sayori', 'Знакомься, это'),
     action.input(
       'Введите ваше имя',
       ({ input, error }) => {
@@ -151,7 +156,7 @@ engine.withStory({
         input.setAttribute('maxlength', '16');
       }
     ),
-    action.dialog('Nezuko', t('HowOldAreYou')),
+    action.dialog('Natsuki', t('HowOldAreYou')),
     action.input(
       'Введите ваш возраст',
       ({ input, error }) => {
@@ -168,17 +173,17 @@ engine.withStory({
       () => state().age <= 16 ? 'ok' : 'no',
       {
         'ok': [
-          action.hideCharacter('Masaki Natsuko'),
-          action.dialog('Nezuko', t('ReallyAgeYears')),
+          action.hideCharacter('Sayori'),
+          action.dialog('Natsuki', t('ReallyAgeYears')),
           action.exit(),
         ],
         'no': [
-          action.dialog('Nezuko', t('YouAreAgeYears'), 'sad'),
+          action.dialog('Natsuki', t('YouAreAgeYears'), 'sad'),
           action.exit()
         ]
       }
     ),
-    action.dialog('Nezuko', 'Сейчас будет выход'),
+    action.dialog('Natsuki', 'Сейчас будет выход'),
     action.end()
   ]
 });
@@ -186,9 +191,9 @@ engine.withStory({
 render(() => (
   <Novely
     style={{
-      '--novely-settings-background-image': `url(${outsideSchool})`,
-      '--novely-main-menu-background-image': `url(${outsideSchool})`,
-      '--novely-saves-background-image': `url(${outsideSchool})`,
+      '--novely-settings-background-image': `url(https://i.imgur.com/pYRK2zS.png)`,
+      '--novely-main-menu-background-image': `url(https://i.imgur.com/pYRK2zS.png)`,
+      '--novely-saves-background-image': `url(https://i.imgur.com/pYRK2zS.png)`,
     }}
   />
 ), document.body);

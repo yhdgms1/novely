@@ -559,11 +559,12 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       });
     },
     jump([scene]) {
-      stack.value[0] = [[null, scene], [null, 0]];
+      /**
+       * `-1` index is used here because `clear` will run `next` that will increase index to `0`
+       */
+      stack.value[0] = [[null, scene], [null, -1]];
 
-      renderer.clear(false)(() => {
-        if (!restoring) render();
-      })
+      match('clear', []);
     },
     clear() {
       vibrate(0);

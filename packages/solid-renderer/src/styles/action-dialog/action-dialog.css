@@ -35,26 +35,15 @@
   background-position: var(--novely-dialog-background-position, 0 0, 50px 50px);
   background-size: var(--novely-dialog-background-size, 100px 100px);
 
-  display: grid;
-
-  grid-template-areas:
-    "pers text"
-    "pers text";
+  display: flex;
+  flex-wrap: nowrap;
 
   padding-bottom: 2.8em;
-}
-
-.action-dialog-container[data-no-person="true"] {
-  grid-template-areas:
-    "text text"
-    "text text";
 }
 
 .action-dialog-person {
   max-height: 25vh;
   max-width: 25vw;
-
-  grid-area: pers;
 }
 
 .action-dialog-name,
@@ -79,12 +68,11 @@
 }
 
 .action-dialog-content {
-  font-size: 2.2375em;
-  line-height: 1.2;
   width: 100%;
 
-  grid-area: text;
-
+  font-size: 2.2375em;
+  line-height: 1.2;
+  
   /* prettier-ignore */
   text-shadow: 1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
 }
@@ -94,7 +82,10 @@
  */
 .action-dialog-person > canvas,
 .action-dialog-person > img {
-  height: 100%;
+  max-height: 100%;
+  max-width: 100%;
+
+  object-fit: contain;
 }
 
 @media (orientation: portrait) {
