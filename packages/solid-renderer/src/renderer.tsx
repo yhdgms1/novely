@@ -190,7 +190,7 @@ const createSolidRenderer = () => {
             ctx,
             emotions: {},
             withEmotion(emotion) {
-              const stored = store.characters[character].emotions[emotion];
+              const stored = this.emotions[emotion];
 
               const render = (...images: HTMLImageElement[]) => {
                 return () => {
@@ -198,19 +198,25 @@ const createSolidRenderer = () => {
                 }
               }
 
-              if (stored) return render(...('head' in stored ? [stored.head, stored.left, stored.right] : [stored]));
+              if (stored) {
+                if (stored instanceof HTMLImageElement) {
+                  return render(stored);
+                }
+
+                return render(...Object.values(stored));
+              }
 
               const emotionData = characters[character].emotions[emotion];
 
               if (typeof emotionData === 'string') {
-                return render(store.characters[character].emotions[emotion] = createImage(emotionData));
+                return render(this.emotions[emotion] = createImage(emotionData));
               }
 
               const head = createImage(emotionData.head);
               const left = createImage(emotionData.body.left);
               const right = createImage(emotionData.body.right);
 
-              store.characters[character].emotions[emotion] = {
+              this.emotions[emotion] = {
                 head,
                 left,
                 right
