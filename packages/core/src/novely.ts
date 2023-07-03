@@ -197,7 +197,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
 
     $.update(prev => {
       const date = current[2][0];
-      const isLatest = prev.saves.findIndex(value => value[2][0] === date) === prev.saves.length - 1;
+      const isLatest = prev.saves.findLastIndex(value => times.has(value[2][0])) === prev.saves.length - 1;
 
       /**
        * Обновим дату и тип
