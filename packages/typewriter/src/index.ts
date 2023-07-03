@@ -44,13 +44,13 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
   const nodes = collectTextNodes(node).map((child) => {
     const letters = [...child.textContent!].map(char => {
       const text = document.createElement('span');
-  
+
       /**
        * The content is the same, but letter is invisible
        */
       text.textContent = char;
       text.style.cssText = 'opacity: 0;';
-  
+
       return text;
     });
 
@@ -89,7 +89,7 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
     if (time >= start + timeout) {
       start = time;
       timeout = speed();
-      
+
       process();
     } else if (!end) {
       enqueue();
@@ -101,7 +101,7 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
   const process = () => {
     const block = nodes[current];
 
-    if (block?.length > pos) {      
+    if (block?.length > pos) {
       const span = block[pos];
       const text = span.textContent!;
 
@@ -152,8 +152,8 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
      * Destroy
      */
     destroy() {
-      node.innerHTML = '';
       dequeue();
+      node.innerHTML = '';
     }
   }
 }

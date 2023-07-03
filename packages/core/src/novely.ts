@@ -4,7 +4,7 @@ import type { Storage } from './storage';
 import type { Save, State, StorageData, DeepPartial } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction, vibrate } from './utils';
+import { matchAction, isNumber, isNull, isString, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction, vibrate, findLastIndex } from './utils';
 import { store } from './store';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
@@ -51,12 +51,27 @@ interface NovelyInit<Languages extends string, Characters extends Record<string,
   autosaves?: boolean;
 }
 
-const novely = <Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>, StateScheme extends State>({ characters, storage, storageDelay = Promise.resolve(), renderer: createRenderer, initialScreen = "mainmenu", t9n, languages, state: defaultState, autosaves = true }: NovelyInit<Languages, Characters, Inter, StateScheme>) => {
+const novely = <
+  Languages extends string,
+  Characters extends Record<string, Character<Languages>>,
+  Inter extends ReturnType<SetupT9N<Languages>>,
+  StateScheme extends State
+>({
+  characters,
+  storage,
+  storageDelay = Promise.resolve(),
+  renderer: createRenderer,
+  initialScreen = "mainmenu",
+  t9n,
+  languages,
+  state: defaultState,
+  autosaves = true,
+}: NovelyInit<Languages, Characters, Inter, StateScheme>) => {
   let story: Story;
   let times = new Set<number>();
 
   /**
-   * Сохраняет временные метки, созданные в данной сессии
+   * Saves timestamps created in this session
    */
   const intime = (value: number) => {
     return times.add(value), value;
@@ -196,11 +211,20 @@ const novely = <Languages extends string, Characters extends Record<string, Char
     const current = klona(stack.value);
 
     $.update(prev => {
-      const date = current[2][0];
-      const isLatest = prev.saves.findLastIndex(value => times.has(value[2][0])) === prev.saves.length - 1;
+      /**
+       * Find latest save that were created in current session, and check if it is latest in an array
+       * 
+       * We check if save was created in current session and it is latest in array
+       * When it is not then replacing it will break logical chain
+       * 
+       * [auto save 1]
+       * [manual save 1]
+       * [auto save 2] <- should not replace first auto save 
+       */
+      const isLatest = findLastIndex(prev.saves, value => times.has(value[2][0])) === prev.saves.length - 1;
 
       /**
-       * Обновим дату и тип
+       * Update type and time information
        */
       current[2][0] = intime(Date.now());
       current[2][1] = type;
@@ -212,15 +236,14 @@ const novely = <Languages extends string, Characters extends Record<string, Char
       }
 
       /**
-       * Берём последнее сохранение
+       * Get latest
        */
       const latest = prev.saves.at(-1);
 
       /**
-       * Если тип сохранения такой же, а также оно было создано в той же сессии,
-       * То можно допустить перезапись
+       * When that save is the same type, replace it
        */
-      if (latest && latest[2][1] === type && times.has(date)) {
+      if (latest && latest[2][1] === type) {
         prev.saves[prev.saves.length - 1] = current;
       } else {
         prev.saves.push(current);
@@ -248,7 +271,7 @@ const novely = <Languages extends string, Characters extends Record<string, Char
   }
 
   /**
-   * Устанавливает сохранение
+   * Set's the save
    */
   const set = (save: Save) => {
     stack.value = save;

@@ -83,16 +83,16 @@ const throttle = <Fn extends ((...args: any[]) => any)>(fn: Fn, ms: number) => {
 
     throttled = true;
 
-    setTimeout(function() {
+    setTimeout(function () {
       throttled = false;
-      
+
       if (savedArgs) {
         wrapper.apply(savedThis, savedArgs);
         savedArgs = savedThis = null;
       }
     }, ms);
   }
-  
+
   return wrapper as unknown as (...args: Parameters<Fn>) => void;
 }
 
@@ -101,7 +101,17 @@ const vibrate = (pattern: VibratePattern) => {
     if ('vibrate' in navigator) {
       navigator.vibrate(pattern);
     }
-  } catch {}
+  } catch { }
 }
 
-export { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction, vibrate }
+const findLastIndex = <T>(array: T[], fn: (item: T) => boolean) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    if (fn(array[i])) {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
+export { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction, vibrate, findLastIndex }
