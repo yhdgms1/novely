@@ -213,7 +213,7 @@ importers:
   packages/vite-plugin-nvl:
     dependencies:
       '@novely/parser':
-        specifier: ^0.2.1
+        specifier: ^0.2.2
         version: link:../parser
     devDependencies:
       tsup:

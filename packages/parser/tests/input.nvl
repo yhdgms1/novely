@@ -38,3 +38,9 @@ dojo
     600
     700
     800
+  !function
+    %() => $values1.state({ health: $values.state().health - 1 });
+  !function
+    %attachItem('hat')
+  !function %attachItem('hat')
+  !showCharacter %getCharacter() Happy

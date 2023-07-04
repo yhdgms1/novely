@@ -2,7 +2,7 @@
   "name": "novely-story-highlight",
   "displayName": "Novely Story Language Highlight",
   "description": "Highlighting for format for novel stories",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.79.0"
   },
@@ -17,8 +17,8 @@
     "languages": [
       {
         "id": "nvly",
-        "aliases": ["Novely", "nvly"],
-        "extensions": [".nvly", ".nvl", ".nly"],
+        "aliases": ["Novely", "nvly", "nvl"],
+        "extensions": [".nvl", ".nvly", ".novely"],
         "configuration": "./language-configuration.json"
       }
     ],
