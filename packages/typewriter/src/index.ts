@@ -1,36 +1,5 @@
-interface TypewriterOptions {
-  /**
-   * The node where the typewriter effect will be ran
-   */
-  node: HTMLElement,
-  /**
-   * Text to be written by typewriter effect
-   */
-  text: string,
-  /**
-   * Time for letter to be written
-   */
-  speed?: () => number;
-  /**
-   * Writed did it work itself
-   */
-  ended?: () => void;
-}
-
-const defaultSpeed = () => {
-  return Math.min(90 * Math.random() + 100, 90);
-}
-
-const collectTextNodes = (el: HTMLElement | ChildNode | Node) => {
-  const items: ChildNode[] = [];
-
-  el.childNodes.forEach(child => {
-    if (child.nodeName === '#text') items.push(child)
-    else items.push(...collectTextNodes(child));
-  });
-
-  return items;
-}
+import type { TypewriterOptions } from './types';
+import { defaultSpeed, collectTextNodes } from './utils';
 
 /**
  * Typewriter
@@ -151,7 +120,7 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
       /**
        * Or just complete text immediately
        */
-      node.innerHTML = text;
+      node.innerHTML = text.replace(/ /, '&#8197;');
       end = true;
 
       return false;
