@@ -120,7 +120,7 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
       /**
        * Or just complete text immediately
        */
-      node.innerHTML = text.replace(/ /, '&#8197;');
+      node.innerHTML = text.replace(/ /gm, '&#8197;');
       end = true;
 
       return false;
