@@ -1,2 +1,2 @@
-@import 'normalize.css';
-@import '@novely/solid-renderer/dist/index.css';
+@import 'modern-normalize';
+@import '@novely/solid-renderer/dist/styles/index.css';

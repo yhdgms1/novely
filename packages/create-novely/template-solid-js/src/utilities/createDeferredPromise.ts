@@ -1,7 +1,7 @@
-const createDeferredPromise = () => {
-  let resolve!: (value: unknown) => void, reject!: (value: unknown) => void;
+const createDeferredPromise = <T extends unknown = void>() => {
+  let resolve!: (value: T) => void, reject!: (value: T) => void;
 
-  const promise = new Promise((_resolve, _reject) => {
+  const promise = new Promise<T>((_resolve, _reject) => {
     resolve = _resolve, reject = _reject;
   });
 

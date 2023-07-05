@@ -1,6 +1,7 @@
 import { novely, localStorageStorage } from '@novely/core';
 import { createT9N, EN } from '@novely/t9n';
 import { createSolidRenderer } from '@novely/solid-renderer';
+import { initialized } from './global';
 
 const solidRenderer = createSolidRenderer();
 
@@ -17,6 +18,7 @@ const engine = novely({
   renderer: solidRenderer.createRenderer,
   storage: localStorageStorage({ key: 'my-game' }),
   t9n: translation,
+  storageDelay: initialized.promise,
   characters: {
     Natsuki: {
       name: {

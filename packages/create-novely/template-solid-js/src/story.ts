@@ -1,12 +1,7 @@
 import { engine } from './engine'
-import { createDeferredPromise } from './utilities';
+import { initialized } from './global'
 
 const { withStory, t, action: a, state } = engine;
-
-/**
- * Resolve when game is fully initialized
- */
-const initialized = createDeferredPromise();
 
 withStory({
   start: [
@@ -47,6 +42,8 @@ withStory({
   ],
 });
 
-initialized.resolve(0);
+const end = () => {
+  initialized.resolve();
+}
 
-export { initialized }
+export { end }
