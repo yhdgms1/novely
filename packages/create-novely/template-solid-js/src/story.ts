@@ -42,8 +42,8 @@ withStory({
   ],
 });
 
-const end = () => {
+const setup = () => {
   initialized.resolve();
 }
 
-export { end }
+export { setup }

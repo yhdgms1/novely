@@ -1,8 +1,6 @@
 import { render } from 'solid-js/web'
-import { solidRenderer } from './engine'
-import { end } from './story'
-
-const { Novely } = solidRenderer;
+import { Novely } from './engine'
+import { setup } from './story'
 
 const App = () => {
   const background = 'url("https://i.imgur.com/y9zRBhe.png")';
@@ -18,6 +16,5 @@ const App = () => {
   )
 }
 
-end();
-
+setup();
 render(() => <App />, document.body);

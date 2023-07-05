@@ -3,7 +3,7 @@ import { createT9N, EN } from '@novely/t9n';
 import { createSolidRenderer } from '@novely/solid-renderer';
 import { initialized } from './global';
 
-const solidRenderer = createSolidRenderer();
+const { createRenderer, Novely } = createSolidRenderer();
 
 const translation = createT9N({
   en: {
@@ -15,7 +15,7 @@ const translation = createT9N({
 
 const engine = novely({
   languages: ['en'],
-  renderer: solidRenderer.createRenderer,
+  renderer: createRenderer,
   storage: localStorageStorage({ key: 'my-game' }),
   t9n: translation,
   storageDelay: initialized.promise,
@@ -52,4 +52,4 @@ const engine = novely({
   },
 });
 
-export { engine, solidRenderer };
+export { engine, Novely };
