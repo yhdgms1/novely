@@ -46,10 +46,10 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
       const text = document.createElement('span');
 
       /**
-       * Space will have zero width, so we are replacing it with non-breaking space
+       * Space will have zero width, so we are replacing it with four-per-em space
        */
       if (char === ' ') {
-        text.innerHTML = '&nbsp;'
+        text.innerHTML = '&#8197;'
       } else {
         text.textContent = char;
       }
