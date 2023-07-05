@@ -636,7 +636,7 @@ const novely = <
     },
     animateCharacter([character, timeout, ...classes]) {
       const handler: CustomHandler = (get) => {
-        const { clear } = get('@@internal-animate-character');
+        const { clear } = get('@@internal-animate-character', false);
         const char = renderer.store.characters[character];
 
         /**
