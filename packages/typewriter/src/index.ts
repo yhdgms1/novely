@@ -46,10 +46,18 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
       const text = document.createElement('span');
 
       /**
+       * Space will have zero width, so we are replacing it with non-breaking space
+       */
+      if (char === ' ') {
+        text.innerHTML = '&nbsp;'
+      } else {
+        text.textContent = char;
+      }
+
+      /**
        * The content is the same, but letter is invisible
        */
-      text.textContent = char;
-      text.style.cssText = 'opacity: 0;';
+      text.style.opacity = '0';
 
       return text;
     });

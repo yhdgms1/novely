@@ -5,6 +5,4 @@ import { createDeferredPromise } from './utilities';
  */
 const initialized = createDeferredPromise();
 
-initialized.promise.then(console.log)
-
 export { initialized }

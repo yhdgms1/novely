@@ -179,9 +179,7 @@ const Game: VoidComponent<GameProps> = (props) => {
               }}
             </Show>
           </div>
-          <p class="action-dialog-content" ref={store.dialogRef}>
-            &nbsp;
-          </p>
+          <p class="action-dialog-content" ref={store.dialogRef} />
         </div>
       </div>
 
@@ -261,8 +259,8 @@ const Game: VoidComponent<GameProps> = (props) => {
         </For>
       </div>
 
-      <div class="action-text" data-shown={Boolean(props.state.text.content)} ref={store.textRef} onClick={clearTypewriterEffect}>
-        &nbsp;
+      <div class="action-text" data-shown={Boolean(props.state.text.content)} onClick={clearTypewriterEffect}>
+        <span ref={store.textRef} />
       </div>
 
       <div class="control-panel">

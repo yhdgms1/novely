@@ -118,6 +118,7 @@ engine.withStory({
     action.showBackground('https://i.imgur.com/96NUxvz.png'),
     action.custom(particles(fireflies)),
     action.showCharacter('Sayori', 'ok', 'animate__animated animate__fadeInUp', 'left: 15%'),
+    action.text('Показывается текст, в нём есть пробелы'),
     action.animateCharacter('Sayori', 500, 'awd'),
     action.dialog('Sayori', 'Привет! Ты <em>новенький</em>, не так ли?'),
     // action.custom(video({ url: 'http://techslides.com/demos/sample-videos/small.mp4', controls: true, })),
