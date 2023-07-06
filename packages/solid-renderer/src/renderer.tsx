@@ -278,7 +278,11 @@ const createSolidRenderer = () => {
         },
         clear(goingBack) {
           return (resolve) => {
-            setState('background', '#000');
+            /**
+             * Background will be set anyway during `restore` call, but not clearing it will remove black flashing
+             */
+            if (!goingBack) setState('background', '#000');
+
             setState('choices', { choices: [], visible: false, resolve: undefined, question: '' });
             setState('input', { element: undefined, question: '', visible: false });
             setState('dialog', { visible: false, content: '', name: '' });

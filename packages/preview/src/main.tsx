@@ -4,7 +4,7 @@ import { createT9N, RU, EN } from '@novely/t9n'
 import { createSolidRenderer } from '@novely/solid-renderer'
 
 // import { video } from '@novely/video'
-import { particles } from '@novely/particles'
+import { particles, hide } from '@novely/particles'
 import { snow, fireflies } from './particles'
 
 import outdoor from './assets/outdoor.png'
@@ -92,6 +92,7 @@ engine.withStory({
     action.jump('next')
   ],
   'next': [
+    action.custom(hide()),
     action.text(t('StartText')),
     action.custom(particles(snow)),
     action.showBackground(outdoor),
