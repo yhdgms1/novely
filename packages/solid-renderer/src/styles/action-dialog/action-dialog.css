@@ -2,10 +2,10 @@
   min-height: 26vh;
   width: 75%;
 
-  position: absolute;
+  position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 0.4em;
+  bottom: 0.4rem;
   z-index: 22;
 
   text-align: left;
@@ -38,7 +38,7 @@
   display: flex;
   flex-wrap: nowrap;
 
-  padding-bottom: 2.8em;
+  padding-bottom: 2.8rem;
 }
 
 .action-dialog-person {
@@ -54,7 +54,7 @@
 }
 
 .action-dialog-name {
-  font-size: 1.4375em;
+  font-size: 1.4375rem;
   line-height: 1.2;
 
   background: #ffffff;
@@ -70,7 +70,7 @@
 .action-dialog-content {
   width: 100%;
 
-  font-size: 2.2375em;
+  font-size: 2.2375rem;
   line-height: 1.2;
   
   /* prettier-ignore */
@@ -97,21 +97,29 @@
   }
 
   .action-dialog-name {
-    font-size: 1.02em;
+    font-size: 1.02rem;
   }
 
   .action-dialog-content {
-    font-size: 1.32em;
+    font-size: 1.32rem;
   }
 
   .action-dialog-container {
     border-radius: 14px 14px 0 0;
   }
+
+  .action-dialog-content {
+    text-shadow: none;
+  }
 }
 
 @media only screen and (orientation: landscape) and (pointer: coarse) {
   .action-dialog-content {
-    font-size: 1.32em;
+    font-size: 1.32rem;
     line-height: 1.15;
+  }
+
+  .action-dialog-content {
+    text-shadow: none;
   }
 }

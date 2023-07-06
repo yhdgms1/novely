@@ -422,11 +422,11 @@ const createSolidRenderer = () => {
         }
       }
     },
-    Novely(props: Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children'>) {
+    Novely(props: Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children' | 'ref'>) {
       return (
         <div {...props} ref={root as HTMLDivElement}>
           <Provider storeData={options.$} options={options} renderer={renderer}>
-            <Switch fallback={<>No</>}>
+            <Switch>
               <Match when={state.screen === "game"}>
                 <Game state={state} setState={/* @once */ setState} store={/* @once */ store} characters={/* @once */ characters} renderer={/* @once */ renderer} />
               </Match>

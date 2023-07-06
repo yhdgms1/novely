@@ -3,10 +3,10 @@
   border: 4px solid var(--novely-button-border-color, #ffc7df);
   color: var(--novely-button-color, #000);
 
-  margin: 0.4em 0;
-  padding: 0.4em;
+  margin: 0.4rem 0;
+  padding: 0.4rem;
 
-  font-size: 1.02em;
+  font-size: 1.02rem;
   line-height: 1.2;
 
   cursor: pointer;

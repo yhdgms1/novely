@@ -1,11 +1,6 @@
 .saves {
-  position: absolute;
-  inset: 0;
-
-  z-index: 1;
-
-  padding: 0 1em;
-  gap: 1em;
+  padding: 0 1rem;
+  gap: 1rem;
 
   overflow: hidden;
 

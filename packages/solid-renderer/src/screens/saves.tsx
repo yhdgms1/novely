@@ -57,9 +57,14 @@ const Saves: VoidComponent<SavesProps> = (props) => {
                       onClick={() => data.options.set(save)}
                     >
                       {stringDate}
-                      <span style={{ "margin-left": '1em' }}>{stringType}</span>
+                      <span class="saves__button-load__type">{stringType}</span>
                     </button>
-                    <button type="reset" class="button" aria-label={data.t('DeleteASaveFrom') + ' ' + stringDate} onClick={[removeSave, date]}>
+                    <button
+                      type="reset"
+                      class="button saves__button-reset"
+                      aria-label={data.t('DeleteASaveFrom') + ' ' + stringDate}
+                      onClick={[removeSave, date]}
+                    >
                       <span>{data.t('Remove')}</span>
                     </button>
                   </li>

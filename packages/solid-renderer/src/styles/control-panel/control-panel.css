@@ -1,10 +1,10 @@
 .control-panel {
   z-index: 23;
-  position: absolute;
+  position: fixed;
 
   display: flex;
   justify-content: end;
 
-  right: 0.4em;
-  bottom: 0.4em;
+  right: 0.4rem;
+  bottom: 0.4rem;
 }

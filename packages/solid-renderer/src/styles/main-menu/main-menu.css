@@ -2,9 +2,14 @@
   overflow: hidden;
   background-image: var(--novely-main-menu-background-image);
 
-  padding: 0 1em;
+  padding: 0 1rem;
 
   display: grid;
-  justify-content: start;
   align-content: center;
+}
+
+@media (orientation: landscape) {
+  .main-menu { 
+    justify-content: start;
+  }
 }
