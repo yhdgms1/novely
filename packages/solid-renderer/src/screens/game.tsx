@@ -8,6 +8,7 @@ import { createEffect, createSignal, untrack, For, Show } from 'solid-js';
 import { DialogName } from '../components/DialogName';
 import { Character } from '../components/Character';
 import { Modal } from '../components/Modal';
+import { Icon } from '../components/Icon';
 
 import { typewriter } from '@novely/typewriter'
 import { useData } from '../context'
@@ -267,22 +268,31 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           class="button control-panel__button"
+          title={data.t('GoBack')}
           onClick={data.options.back}
         >
-          {data.t('GoBack')}
+          <span class="control-panel__button__content">
+            {data.t('GoBack')}
+          </span>
+          <Icon class="control-panel__button__icon" children={Icon.Back()} />
         </button>
         <button
           type="button"
           class="button control-panel__button"
+          title={data.t('DoSave')}
           onClick={() => {
             data.options.save(false, 'manual');
           }}
         >
-          {data.t('DoSave')}
+          <span class="control-panel__button__content">
+            {data.t('DoSave')}
+          </span>
+          <Icon class="control-panel__button__icon" children={Icon.Save()} />
         </button>
         <button
           type="button"
           class="button control-panel__button"
+          title={data.t(auto() ? 'Stop' : 'Auto')}
           onClick={() => {
             setAuto(prev => !prev);
           }}
@@ -292,19 +302,27 @@ const Game: VoidComponent<GameProps> = (props) => {
         <button
           type="button"
           class="button control-panel__button"
+          title={data.t('Settings')}
           onClick={() => {
             data.options.save(false, 'auto');
             props.setState('screen', 'settings');
           }}
         >
-          {data.t('Settings')}
+          <span class="control-panel__button__content">
+            {data.t('Settings')}
+          </span>
+          <Icon class="control-panel__button__icon" children={Icon.Settings()} />
         </button>
         <button
           type="button"
           class="button control-panel__button"
+          title={data.t('Exit')}
           onClick={data.options.exit}
         >
-          {data.t('Exit')}
+          <span class="control-panel__button__content">
+            {data.t('Exit')}
+          </span>
+          <Icon class="control-panel__button__icon" children={Icon.Exit()} />
         </button>
       </div>
     </div>
