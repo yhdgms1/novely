@@ -1,16 +1,14 @@
-import 'animate.css';
-import 'normalize.css'
-
 import { render } from 'solid-js/web'
 import { novely, localStorageStorage } from '@novely/core'
 import { createT9N, RU, EN } from '@novely/t9n'
 import { createSolidRenderer } from '@novely/solid-renderer'
 
-import '@novely/solid-renderer/dist/styles/index.css'
-
 // import { video } from '@novely/video'
 import { particles } from '@novely/particles'
 import { snow, fireflies } from './particles'
+
+import outdoor from './assets/outdoor.png'
+import lily_ok from './assets/lily.png'
 
 const { createRenderer, Novely } = createSolidRenderer();
 
@@ -19,45 +17,16 @@ const engine = novely({
   storage: localStorageStorage({ key: 'novely-saves' }),
   renderer: createRenderer,
   characters: {
-    'Sayori': {
+    'Lily': {
       name: {
-        ru: 'Саёри',
-        en: 'Sayori',
+        ru: 'Лилия',
+        en: 'Lily',
       },
-      color: '#ce606a',
+      color: '#ed5c87',
       emotions: {
-        ok: {
-          body: {
-            left: 'https://i.imgur.com/cCKs0wZ.png',
-            right: 'https://i.imgur.com/Bl1rDMd.png'
-          },
-          head: 'https://i.imgur.com/fvXCgNx.png'
-        },
+        ok: lily_ok
       },
     },
-    'Natsuki': {
-      name: {
-        ru: 'Нацуки',
-        en: 'Natsuki'
-      },
-      color: '#f58eb1',
-      emotions: {
-        ok: {
-          body: {
-            left: 'https://i.imgur.com/d54g3M3.png',
-            right: 'https://i.imgur.com/Z5ZOl7j.png'
-          },
-          head: 'https://i.imgur.com/fFDRWdU.png'
-        },
-        sad: {
-          body: {
-            left: 'https://i.imgur.com/d54g3M3.png',
-            right: 'https://i.imgur.com/Z5ZOl7j.png'
-          },
-          head: 'https://i.imgur.com/jb5Yejg.png'
-        }
-      }
-    }
   },
   t9n: createT9N({
     ru: {
@@ -71,9 +40,14 @@ const engine = novely({
         }
       },
       strings: {
+        'StartText': 'На улице прекрасный день, ты открываешь глаза и встречаешь...',
         'HowOldAreYou': 'Привет, {{name}}! Сколько тебе лет? 😙',
         'ReallyAgeYears': 'Правда {{age}} {{age@years}}? Загляни ко мне как-нибудь',
         'YouAreAgeYears': 'Тебе {{age}} {{age@years}}? Старик',
+        'EnterYourName': 'Введи имя',
+        'EnterYourAge': 'Введи возраст',
+        'ChoiceText': 'Текст выбора',
+        'ChoiceVariant': 'Вариант выбора'
       }
     },
     en: {
@@ -88,9 +62,14 @@ const engine = novely({
         }
       },
       strings: {
+        'StartText': "It's a beautiful day outside, you open your eyes and meet...",
         'HowOldAreYou': 'Hi, {{name}}! How old are you? 😙',
         'ReallyAgeYears': 'Really {{age}} {{age@years}}? Drop by and see me sometime',
-        'YouAreAgeYears': "You are {{age}} {{age@years}} old? Старик",
+        'YouAreAgeYears': "You are {{age}} {{age@years}} old? Geezer",
+        'EnterYourName': 'Enter your name',
+        'EnterYourAge': 'Enter your age',
+        'ChoiceText': 'Choice text',
+        'ChoiceVariant': 'Choice variant'
       }
     },
   }),
@@ -107,47 +86,18 @@ const engine = novely({
 
 const { action, state, t } = engine;
 
-/**
- * todo: проверить будет ли работать анимация как тут
- * @see https://youtu.be/8c34MKT2n6I?list=PLejGw9J2xE9WFYI08jbVMgI2moQdN3a2X&t=1809
- */
-
 engine.withStory({
   'start': [
-    // todo: `Music` должно играть после конца
-    action.showBackground('https://i.imgur.com/96NUxvz.png'),
-    action.custom(particles(fireflies)),
-    action.showCharacter('Sayori', 'ok', 'animate__animated animate__fadeInUp', 'left: 15%'),
-    action.text('Показывается текст, в нём есть пробелы'),
-    action.animateCharacter('Sayori', 500, 'awd'),
-    action.dialog('Sayori', 'Привет! Ты <em>новенький</em>, не так ли?'),
-    // action.custom(video({ url: 'http://techslides.com/demos/sample-videos/small.mp4', controls: true, })),
-    action.choice(
-      'Ты новенький?',
-      [
-        'Да, я новенький!',
-        [
-          action.custom(particles(snow)),
-          action.dialog('Sayori', 'Не хочешь зайти ко мне в гости сегодня?'),
-          action.choice(
-            [
-              'Не откажусь!',
-              [action.jump('act-1')]
-            ]
-          )
-        ]
-      ]
-    )
+    action.custom(particles(fireflies)), // should not be visible
+    action.jump('next')
   ],
-  'act-1': [
-    action.showBackground('https://i.imgur.com/L50iCQZ.png'),
-    action.showCharacter('Sayori', 'ok', '', 'left: 15%'),
-    action.dialog('Sayori', 'Добро пожаловать'),
-    action.showCharacter('Natsuki', 'ok', 'animate__animated animate__fadeInUp', 'right: 15%'),
-    action.dialog('Natsuki', 'Кого ты привела?!'),
-    action.dialog('Sayori', 'Знакомься, это'),
+  'next': [
+    action.text(t('StartText')),
+    action.custom(particles(snow)),
+    action.showBackground(outdoor),
+    action.showCharacter('Lily', 'ok'),
     action.input(
-      'Введите ваше имя',
+      t('EnterYourName'),
       ({ input, error }) => {
         error(input.validationMessage);
         state({ name: input.value });
@@ -157,34 +107,44 @@ engine.withStory({
         input.setAttribute('maxlength', '16');
       }
     ),
-    action.dialog('Natsuki', t('HowOldAreYou')),
+    action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__backInUp'),
+    action.dialog('Lily', t('HowOldAreYou')),
     action.input(
-      'Введите ваш возраст',
+      t('EnterYourAge'),
       ({ input, error }) => {
         error(input.validationMessage);
         state({ age: input.valueAsNumber })
       },
       (input) => {
         input.setAttribute('type', 'number');
-        input.setAttribute('min', '14');
-        input.setAttribute('max', '88');
+        input.setAttribute('min', '6');
+        input.setAttribute('max', '99');
       }
     ),
     action.condition(
-      () => state().age <= 16 ? 'ok' : 'no',
+      () => state().age <= 18 ? 'ok' : 'no',
       {
         'ok': [
-          action.hideCharacter('Sayori'),
-          action.dialog('Natsuki', t('ReallyAgeYears')),
+          action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__backInUp'),
+          action.dialog('Lily', t('ReallyAgeYears'), 'ok'),
           action.exit(),
         ],
         'no': [
-          action.dialog('Natsuki', t('YouAreAgeYears'), 'sad'),
+          action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__backInUp'),
+          action.dialog('Lily', t('YouAreAgeYears')),
           action.exit()
         ]
       }
     ),
-    action.dialog('Natsuki', 'Сейчас будет выход'),
+    action.choice(
+      t('ChoiceText'),
+      [
+        t('ChoiceVariant'),
+        [
+          action.exit()
+        ]
+      ]
+    ),
     action.end()
   ]
 });
@@ -192,9 +152,9 @@ engine.withStory({
 render(() => (
   <Novely
     style={{
-      '--novely-settings-background-image': `url(https://i.imgur.com/pYRK2zS.png)`,
-      '--novely-main-menu-background-image': `url(https://i.imgur.com/pYRK2zS.png)`,
-      '--novely-saves-background-image': `url(https://i.imgur.com/pYRK2zS.png)`,
+      '--novely-settings-background-image': `url(${outdoor})`,
+      '--novely-main-menu-background-image': `url(${outdoor})`,
+      '--novely-saves-background-image': `url(${outdoor})`,
     }}
   />
 ), document.body);

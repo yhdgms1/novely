@@ -7,6 +7,8 @@
 
   text-align: center;
   font-size: 1.5em;
+
+  user-select: none;
 }
 
 .action-text[data-shown="true"] {
@@ -25,4 +27,6 @@
 
 .action-text[data-shown="true"] > span {
   cursor: pointer;
+  
+  user-select: none;
 }
