@@ -3,6 +3,8 @@ import { createT9N, EN } from '@novely/t9n';
 import { createSolidRenderer } from '@novely/solid-renderer';
 import { initialized } from './global';
 
+import lily from './assets/lily.png';
+
 const { createRenderer, Novely } = createSolidRenderer();
 
 const translation = createT9N({
@@ -20,34 +22,21 @@ const engine = novely({
   t9n: translation,
   storageDelay: initialized.promise,
   characters: {
-    Natsuki: {
+    Lily: {
       name: {
-        en: 'Natsuki'
+        en: 'Lily'
       },
-      color: '#c44475',
+      color: '#ed5c87',
       emotions: {
-        crying: {
-          head: 'https://i.imgur.com/jb5Yejg.png',
-          body: {
-            right: 'https://i.imgur.com/Z5ZOl7j.png',
-            left: 'https://i.imgur.com/d54g3M3.png'
-          }
-        },
-        astonished: {
-          head: 'https://i.imgur.com/fFDRWdU.png',
-          body: {
-            right: 'https://i.imgur.com/Z5ZOl7j.png',
-            left: 'https://i.imgur.com/d54g3M3.png'
-          }
-        },
-        happy: {
-          head: 'https://i.imgur.com/qqLtENM.png',
-          body: {
-            right: 'https://i.imgur.com/Z5ZOl7j.png',
-            left: 'https://i.imgur.com/d54g3M3.png'
-          }
-        }
+        normal: lily
       }
+    },
+    You: {
+      name: {
+        en: 'You'
+      },
+      color: '#000000',
+      emotions: {}
     }
   },
 });

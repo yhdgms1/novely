@@ -2,8 +2,10 @@ import { render } from 'solid-js/web'
 import { Novely } from './engine'
 import { setup } from './story'
 
+import outdoor from  './assets/outdoor.png';
+
 const App = () => {
-  const background = 'url("https://i.imgur.com/y9zRBhe.png")';
+  const background = `url("${outdoor}")`;
 
   return (
     <Novely
