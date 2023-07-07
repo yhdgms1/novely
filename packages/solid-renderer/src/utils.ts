@@ -40,4 +40,17 @@ const url = <T extends string>(str: T): `url(${T})` => {
   return `url(${str})`;
 }
 
-export { isCSSImage, canvasDrawImages, url, createImage, capitalize }
+const escaped: Record<string, string> = {
+	'"': '&quot;',
+	"'": '&#39;',
+	'&': '&amp;',
+	'<': '&lt;',
+	'>': '&gt;'
+};
+
+const escape = (str: string) => {
+	return String(str).replace(/["'&<>]/g, match => escaped[match]);
+}
+
+
+export { isCSSImage, canvasDrawImages, url, createImage, capitalize, escape }

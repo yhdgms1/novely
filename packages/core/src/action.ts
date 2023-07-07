@@ -61,6 +61,26 @@ type CustomHandler = CustomHandlerFunction & {
   skipClearOnGoingBack?: boolean;
 };
 
+interface ActionInputOnInputMeta {
+  /**
+   * Input Element itself
+   */
+  input: HTMLInputElement;
+  /**
+   * Function to show error message or hide it
+   * @param error Error message or empty string to remove it
+   */
+  error: (error: string) => void;
+  /**
+   * Input Event
+   */
+  event: InputEvent & { currentTarget: HTMLInputElement };
+  /**
+   * Sanitized `input.value`
+   */
+  value: string
+}
+
 type ActionProxyProvider<Characters extends Record<string, Character>> = {
   choice: {
     (...choices: ([Unwrappable, ValidAction[]] | [Unwrappable, ValidAction[], () => boolean])[]): ValidAction;
@@ -94,7 +114,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
   wait: (time: FunctionableValue<number>) => ValidAction;
   function: (fn: () => Thenable<void>) => ValidAction;
 
-  input: (question: Unwrappable, onInput: (meta: { input: HTMLInputElement, error: (error: string) => void, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, setup?: (input: HTMLInputElement) => void) => ValidAction;
+  input: (question: Unwrappable, onInput: (meta: ActionInputOnInputMeta) => void, setup?: (input: HTMLInputElement) => void) => ValidAction;
 
   custom: (handler: CustomHandler) => ValidAction;
 
@@ -108,4 +128,4 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>>;
 type GetActionParameters<T extends Capitalize<keyof DefaultActionProxyProvider>> = Parameters<DefaultActionProxyProvider[Uncapitalize<T>]>;
 
-export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, Unwrappable, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, FunctionableValue }
+export type { ValidAction, Story, ActionProxyProvider, DefaultActionProxyProvider, GetActionParameters, Unwrappable, CustomHandler, CustomHandlerGetResult, CustomHandlerGetResultDataFunction, FunctionableValue, ActionInputOnInputMeta }

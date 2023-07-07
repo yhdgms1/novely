@@ -101,9 +101,9 @@ engine.withStory({
     action.showCharacter('Lily', 'ok'),
     action.input(
       t('EnterYourName'),
-      ({ input, error }) => {
+      ({ input, value, error }) => {
         error(input.validationMessage);
-        state({ name: input.value });
+        state({ name: value });
       },
       (input) => {
         input.setAttribute('minlength', '2');
@@ -120,7 +120,7 @@ engine.withStory({
       },
       (input) => {
         input.setAttribute('type', 'number');
-        input.setAttribute('min', '6');
+        input.setAttribute('min', '0');
         input.setAttribute('max', '99');
       }
     ),

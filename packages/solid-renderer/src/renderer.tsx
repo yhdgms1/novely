@@ -4,7 +4,7 @@ import type { JSX } from 'solid-js';
 import { Switch, Match, createEffect } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
-import { canvasDrawImages, createImage } from './utils';
+import { canvasDrawImages, createImage, escape } from './utils';
 
 import { Provider } from './context';
 
@@ -316,12 +316,22 @@ const createSolidRenderer = ({ fullscreen = false }: CreateSolidRendererOptions 
         },
         input(question, onInput, setup) {
           return (resolve) => {
-            const errorHandler = (value: string) => {
+            const error = (value: string) => {
               setState('input', { error: value });
             }
 
             const onInputHandler: JSX.EventHandlerUnion<HTMLInputElement, InputEvent> = (event) => {
-              onInput({ input, event, error: errorHandler });
+              let value: string | undefined;
+
+              onInput({
+                input,
+                event,
+                error,
+                get value() {
+                  if (value) return value;
+                  return value = escape(input.value);
+                }
+              });
             };
 
             const input = <input type="text" name="novely-input" required autocomplete="off" onInput={onInputHandler} /> as HTMLInputElement;
