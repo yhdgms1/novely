@@ -1,7 +1,7 @@
 import type { Renderer, RendererInit, RendererStore, Character, ValidAction, CustomHandler, CustomHandlerGetResult } from '@novely/core'
 import type { JSX } from 'solid-js';
 
-import { Switch, Match } from 'solid-js';
+import { Switch, Match, createEffect } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
 import { canvasDrawImages, createImage } from './utils';
@@ -132,7 +132,15 @@ interface SolidRendererStore extends RendererStore {
   textRef?: HTMLParagraphElement;
 }
 
-const createSolidRenderer = () => {
+interface CreateSolidRendererOptions {
+  /**
+   * Enter fullscreen mode when opening a game, exit when opening main-menu
+   * @default false
+   */
+  fullscreen?: boolean;
+}
+
+const createSolidRenderer = ({ fullscreen = false }: CreateSolidRendererOptions = {}) => {
   const [state, setState] = createStore<State>({
     background: '',
     characters: {},
@@ -423,6 +431,28 @@ const createSolidRenderer = () => {
       }
     },
     Novely(props: Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children' | 'ref'>) {
+      createEffect(() => {
+        /**
+         * Access `screen` outside of if statement
+         */
+        const screen = state.screen;
+
+        if (fullscreen && document.fullscreenEnabled) {
+          /**
+           * Will not work when initial screen is set to `game` because user interaction is required
+           */
+          if (screen === 'game' && !document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+
+            /**
+             * When mainmenu is opened, then exit fullscreen
+             */
+          } else if (screen === 'mainmenu' && document.fullscreenElement && 'exitFullscreen' in document) {
+            document.exitFullscreen().catch(() => {})
+          }
+        }
+      });
+
       return (
         <div {...props} ref={root as HTMLDivElement}>
           <Provider storeData={options.$} options={options} renderer={renderer}>

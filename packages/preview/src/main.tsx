@@ -10,7 +10,9 @@ import { snow, fireflies } from './particles'
 import outdoor from './assets/outdoor.png'
 import lily_ok from './assets/lily.png'
 
-const { createRenderer, Novely } = createSolidRenderer();
+const { createRenderer, Novely } = createSolidRenderer({
+  fullscreen: true
+});
 
 const engine = novely({
   languages: ['ru', 'en'],
