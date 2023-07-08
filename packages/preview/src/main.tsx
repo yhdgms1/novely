@@ -3,9 +3,8 @@ import { novely, localStorageStorage } from '@novely/core'
 import { createT9N, RU, EN } from '@novely/t9n'
 import { createSolidRenderer } from '@novely/solid-renderer'
 
-// import { video } from '@novely/video'
 import { particles, hide } from '@novely/particles'
-import { snow, fireflies } from './particles'
+import { snow } from './particles'
 
 import outdoor from './assets/outdoor.png'
 import lily_ok from './assets/lily.png'
@@ -43,13 +42,12 @@ const engine = novely({
       },
       strings: {
         'StartText': 'На улице прекрасный день, ты открываешь глаза и встречаешь...',
-        'HowOldAreYou': 'Привет, {{name}}! Сколько тебе лет? 😙',
-        'ReallyAgeYears': 'Правда {{age}} {{age@years}}? Загляни ко мне как-нибудь',
-        'YouAreAgeYears': 'Тебе {{age}} {{age@years}}? Старик',
+        'HowOldAreYou': 'Привет! Сколько тебе лет?',
         'EnterYourName': 'Введи имя',
         'EnterYourAge': 'Введи возраст',
-        'ChoiceText': 'Текст выбора',
-        'ChoiceVariant': 'Вариант выбора'
+        'AreYouLost': 'Тебе {{age}} {{age@years}}? Малышь, ты потерялся?',
+        'ChoiceAreYouLost': 'Ты потерялся?',
+        'YesHelpMe': 'Да, помоги мне'
       }
     },
     en: {
@@ -65,19 +63,17 @@ const engine = novely({
       },
       strings: {
         'StartText': "It's a beautiful day outside, you open your eyes and meet...",
-        'HowOldAreYou': 'Hi, {{name}}! How old are you? 😙',
-        'ReallyAgeYears': 'Really {{age}} {{age@years}}? Drop by and see me sometime',
-        'YouAreAgeYears': "You are {{age}} {{age@years}} old? Geezer",
+        'HowOldAreYou': 'Hi! How old are you?',
         'EnterYourName': 'Enter your name',
         'EnterYourAge': 'Enter your age',
-        'ChoiceText': 'Choice text',
-        'ChoiceVariant': 'Choice variant'
+        'AreYouLost': 'You are {{age}} {{age@years}}? Are you lost?',
+        'ChoiceAreYouLost': 'Are you lost?',
+        'YesHelpMe': 'Yes, help me'
       }
     },
   }),
 
   state: {
-    name: '',
     age: 0,
   },
 
@@ -90,27 +86,12 @@ const { action, state, t } = engine;
 
 engine.withStory({
   'start': [
-    action.custom(particles(fireflies)), // should not be visible
-    action.jump('next')
-  ],
-  'next': [
     action.custom(hide()),
     action.text(t('StartText')),
     action.custom(particles(snow)),
     action.showBackground(outdoor),
     action.showCharacter('Lily', 'ok'),
-    action.input(
-      t('EnterYourName'),
-      ({ input, value, error }) => {
-        error(input.validationMessage);
-        state({ name: value });
-      },
-      (input) => {
-        input.setAttribute('minlength', '2');
-        input.setAttribute('maxlength', '16');
-      }
-    ),
-    action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__backInUp'),
+    action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
     action.dialog('Lily', t('HowOldAreYou')),
     action.input(
       t('EnterYourAge'),
@@ -124,29 +105,27 @@ engine.withStory({
         input.setAttribute('max', '99');
       }
     ),
+    action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
     action.condition(
-      () => state().age <= 18 ? 'ok' : 'no',
+      () => state().age <= 6,
       {
-        'ok': [
-          action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__backInUp'),
-          action.dialog('Lily', t('ReallyAgeYears'), 'ok'),
-          action.exit(),
-        ],
-        'no': [
-          action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__backInUp'),
-          action.dialog('Lily', t('YouAreAgeYears')),
+        'true': [
+          action.dialog('Lily', t('AreYouLost')),
+          action.choice(
+            t('AreYouLost'),
+            [
+              t('YesHelpMe'),
+              [
+                action.exit()
+              ]
+            ]
+          ),
           action.exit()
+        ],
+        'false': [
+          action.exit(),
         ]
       }
-    ),
-    action.choice(
-      t('ChoiceText'),
-      [
-        t('ChoiceVariant'),
-        [
-          action.exit()
-        ]
-      ]
     ),
     action.end()
   ]
