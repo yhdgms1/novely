@@ -112,7 +112,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
     <C extends keyof Characters>(character: C, timeout: number, ...classes: string[]): ValidAction;
   }
   wait: (time: FunctionableValue<number>) => ValidAction;
-  function: (fn: () => Thenable<void>) => ValidAction;
+  function: (fn: (restoring: boolean, goingBack: boolean) => Thenable<void>) => ValidAction;
 
   input: (question: Unwrappable, onInput: (meta: ActionInputOnInputMeta) => void, setup?: (input: HTMLInputElement) => void) => ValidAction;
 

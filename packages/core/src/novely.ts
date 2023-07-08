@@ -548,7 +548,7 @@ const novely = <
       renderer.dialog(unwrap(content), unwrap(name), character, emotion)(forward);
     },
     function([fn]) {
-      const result = fn();
+      const result = fn(restoring, goingBack);
 
       if (!restoring) result ? result.then(push) : push();
 
