@@ -52,5 +52,4 @@ const escape = (str: string) => {
 	return String(str).replace(/["'&<>]/g, match => escaped[match]);
 }
 
-
 export { isCSSImage, canvasDrawImages, url, createImage, capitalize, escape }

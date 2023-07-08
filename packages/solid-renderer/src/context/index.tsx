@@ -10,7 +10,7 @@ interface DataContext {
   options: RendererInit;
   renderer: Renderer;
 
-  t: (key: BaseTranslationStrings) => string;
+  t: (key: BaseTranslationStrings | (string & {})) => string;
 }
 
 const Context = createContext<DataContext>();
@@ -32,8 +32,8 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
     options: props.options,
     renderer: props.renderer,
 
-    t: (key: BaseTranslationStrings) => {
-      return props.options.t(key, storeData()!.meta[0])
+    t: (key: BaseTranslationStrings | (string & {})) => {
+      return props.options.t(key as BaseTranslationStrings, storeData()!.meta[0])
     }
   }
 

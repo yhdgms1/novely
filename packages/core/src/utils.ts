@@ -1,6 +1,6 @@
 import type { ActionProxyProvider, CustomHandler } from './action'
 import type { Character } from './character'
-import type { Save, Thenable } from './types'
+import type { TypewriterSpeed, Thenable } from './types'
 
 type MatchActionMap = {
   [Key in keyof ActionProxyProvider<Record<string, Character>>]: (data: Parameters<ActionProxyProvider<Record<string, Character>>[Key]>) => void;
@@ -46,8 +46,8 @@ const isUserRequiredAction = (action: keyof MatchActionMapComplete, meta: Parame
   return action === 'custom' && meta[0] && (meta[0] as unknown as CustomHandler).requireUserAction;
 }
 
-const getTypewriterSpeed = () => {
-  return 90;
+const getTypewriterSpeed = (): TypewriterSpeed => {
+  return 'Medium'
 }
 
 const getLanguage = (languages: string[], language = navigator.language) => {

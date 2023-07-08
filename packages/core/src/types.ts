@@ -13,7 +13,7 @@ type SaveMeta = [SaveDate, SaveType];
 type Save = [Path, State, SaveMeta];
 
 type Lang = string;
-type TypewriterSpeed = number;
+type TypewriterSpeed = "Slow" | "Medium" | "Fast" | "Auto" | (string & {});
 type StorageMeta = [Lang, TypewriterSpeed]
 
 type StorageData = {
@@ -43,4 +43,4 @@ type DeepPartial<T> = unknown extends T
   }
   : T;
 
-export type { Thenable, Path, Save, State, Stack, StorageData, DeepPartial }
+export type { Thenable, Path, Save, State, Stack, StorageData, StorageMeta, TypewriterSpeed, Lang, DeepPartial }

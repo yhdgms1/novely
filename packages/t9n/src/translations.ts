@@ -18,10 +18,16 @@ const RU = {
   'Remove': 'Удалить',
   'LoadASaveFrom': 'Загрузить сохранение от',
   'DeleteASaveFrom': 'Удалить сохранение от',
-  'TextSpeed': 'Скорость Текста'
+  'TextSpeed': 'Скорость Текста',
+  'TextSpeedSlow': 'Медленная',
+  'TextSpeedMedium': 'Средняя',
+  'TextSpeedFast': 'Быстрая',
+  'TextSpeedAuto': 'Автоматическая'
 };
 
-const EN = {
+type BaseTranslationStrings = keyof typeof RU;
+
+const EN: Record<BaseTranslationStrings, string> = {
   'NewGame': 'New Game',
   'HomeScreen': 'Home Screen',
   'ToTheGame': 'To the Game',
@@ -41,10 +47,12 @@ const EN = {
   'Remove': 'Remove',
   'LoadASaveFrom': 'Load a save from',
   'DeleteASaveFrom': 'Delete a save from',
-  'TextSpeed': 'Text Speed'
+  'TextSpeed': 'Text Speed',
+  'TextSpeedSlow': 'Slow',
+  'TextSpeedMedium': 'Medium',
+  'TextSpeedFast': 'Fast',
+  'TextSpeedAuto': 'Auto'
 };
-
-type BaseTranslationStrings = keyof typeof RU;
 
 export { RU, EN }
 export type { BaseTranslationStrings }

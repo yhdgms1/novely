@@ -20,19 +20,15 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
     type: 'language'
   }));
 
-  const onLanguageSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = ({ currentTarget }) => {
-    const selected = currentTarget.value;
-
+  const onLanguageSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = ({ currentTarget: { value } }) => {
     data.storeDataUpdate(prev => {
-      return prev.meta[0] = selected, prev;
+      return prev.meta[0] = value, prev;
     });
   }
 
-  const onSpeedSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = ({ currentTarget }) => {
-    const selected = +currentTarget.value;
-
+  const onSpeedSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = ({ currentTarget: { value } }) => {
     data.storeDataUpdate(prev => {
-      return prev.meta[1] = selected, prev;
+      return prev.meta[1] = value, prev;
     });
   }
 
@@ -61,8 +57,12 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
         <div class="select">
           <label class="select__label" for={speedSelectID}>{data.t('TextSpeed')}</label>
           <select class="select__select" id={speedSelectID} onChange={onSpeedSelect}>
-            <For each={[90, 140, 190]}>
-              {speed => <option value={speed} selected={speed === textSpeed()}>{speed}</option>}
+            <For each={['Slow', 'Medium', 'Fast', 'Auto']}>
+              {speed => (
+                <option value={speed} selected={speed === textSpeed()}>
+                  {data.t('TextSpeed' + speed)}
+                </option>
+              )}
             </For>
           </select>
         </div>

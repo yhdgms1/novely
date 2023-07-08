@@ -4,7 +4,7 @@ import type { JSX } from 'solid-js';
 import type { SetStoreFunction } from 'solid-js/store'
 import type { State, SolidRendererStore } from '../renderer'
 
-import { createEffect, createSignal, untrack, For, Show } from 'solid-js';
+import { createEffect, createSignal, untrack, For, Show } from 'solid-js'
 import { DialogName } from '../components/DialogName';
 import { Character } from '../components/Character';
 import { Modal } from '../components/Modal';
@@ -13,6 +13,7 @@ import { Icon } from '../components/Icon';
 import { typewriter } from '@novely/typewriter'
 import { useData } from '../context'
 import { canvasDrawImages, url, isCSSImage } from '../utils'
+import { TEXT_SPEED_MAP } from '../constants'
 
 interface GameProps {
   state: State;
@@ -67,6 +68,8 @@ const Game: VoidComponent<GameProps> = (props) => {
      */
     if (!text) return;
 
+    const speed = data.storeData()!.meta[1];
+
     /**
      * Start new instance
      */
@@ -83,9 +86,7 @@ const Game: VoidComponent<GameProps> = (props) => {
           untrack(clearTypewriterEffect);
         }
       },
-      speed() {
-        return data.storeData()!.meta[1]
-      }
+      speed: TEXT_SPEED_MAP[speed]
     });
   });
 
