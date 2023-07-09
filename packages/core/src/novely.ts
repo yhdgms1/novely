@@ -1,7 +1,7 @@
 import type { Character } from './character';
 import type { ActionProxyProvider, GetActionParameters, Story, ValidAction, Unwrappable, CustomHandler } from './action';
 import type { Storage } from './storage';
-import type { Save, State, StorageData, DeepPartial } from './types'
+import type { Save, State, StorageData, DeepPartial, NovelyScreen, Migration } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
 import { matchAction, isNumber, isNull, isString, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction, vibrate, findLastIndex } from './utils';
@@ -35,7 +35,7 @@ interface NovelyInit<Languages extends string, Characters extends Record<string,
   /**
    * An optional property that specifies the initial screen to display when the game starts
    */
-  initialScreen?: "mainmenu" | "game" | "saves" | "settings";
+  initialScreen?: NovelyScreen;
   /**
    * An object containing the translation functions used in the game
    */
@@ -49,6 +49,10 @@ interface NovelyInit<Languages extends string, Characters extends Record<string,
    * @default true
    */
   autosaves?: boolean;
+  /**
+   * Migration from old saves to newer
+   */
+  migrations?: Migration[]
 }
 
 const novely = <
@@ -66,6 +70,7 @@ const novely = <
   languages,
   state: defaultState,
   autosaves = true,
+  migrations = []
 }: NovelyInit<Languages, Characters, Inter, StateScheme>) => {
   let story: Story;
   let times = new Set<number>();
@@ -171,6 +176,14 @@ const novely = <
 
   const getStoredData = () => {
     storage.get().then(stored => {
+      /**
+       * Migration is done only once (when game loads it's data), and then is saves the updated format
+       */
+      for (const migration of migrations) {
+        // @ts-expect-error Types does not match between versions, that's why unknown used here, but error appers that way, but it is expected
+        stored = migration(stored);
+      }
+
       /**
        * Default `localStorageStorage` cannot determine preferred language, and returns empty array
        */
@@ -757,7 +770,6 @@ const novely = <
   return {
     withStory,
     action,
-    render,
     state,
     t: t9n.t as Inter['t'],
   }

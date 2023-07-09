@@ -16,6 +16,8 @@ type Lang = string;
 type TypewriterSpeed = "Slow" | "Medium" | "Fast" | "Auto" | (string & {});
 type StorageMeta = [Lang, TypewriterSpeed]
 
+type Migration = (save: unknown) => unknown;
+
 type StorageData = {
   saves: Save[];
   meta: StorageMeta;
@@ -27,6 +29,8 @@ type Stack = {
   push(value: Save): void;
   clear(): void;
 }
+
+type NovelyScreen = "mainmenu" | "game" | "saves" | "settings";
 
 /**
  * @see https://pendletonjones.com/deep-partial
@@ -43,4 +47,4 @@ type DeepPartial<T> = unknown extends T
   }
   : T;
 
-export type { Thenable, Path, Save, State, Stack, StorageData, StorageMeta, TypewriterSpeed, Lang, DeepPartial }
+export type { Thenable, Path, Save, State, Stack, StorageData, StorageMeta, TypewriterSpeed, Lang, DeepPartial, NovelyScreen, Migration }
