@@ -20,8 +20,8 @@
     "tsparticles-slim": "^2.10.1"
   },
   "devDependencies": {
-    "tsup": "^6.7.0",
-    "typescript": "^4.9.5"
+    "tsup": "^7.1.0",
+    "typescript": "^5.1.6"
   },
   "peerDependencies": {
     "@novely/core": "*",
