@@ -6,7 +6,7 @@ type FunctionalSetupT9N = <LanguageKey extends string, PluralKey extends string,
 type SetupT9N<LanguageKey extends string> = <PluralKey extends string, StringKey extends string, Actions extends string>(parameters: { [Lang in LanguageKey]: { pluralization: { [Plural in PluralKey]: Partial<Record<PluralType, string>> }; internal: { [Key in BaseTranslationStrings]: string }; strings: { [Str in StringKey]: string }; actions?: { [Action in Actions]?: (value: string) => string; } } }) => T9N<LanguageKey, StringKey>
 
 type T9N<LanguageKey extends string, StringKey extends string> = {
-  t(key: StringKey): (lang: LanguageKey | (string & {}), obj: Record<string, unknown>) => string;
+  t(key: StringKey | Record<LanguageKey, string>): (lang: LanguageKey | (string & {}), obj: Record<string, unknown>) => string;
   i(key: StringKey, lang: LanguageKey | (string & {})): string;
 }
 
@@ -50,8 +50,13 @@ const createT9N: FunctionalSetupT9N = (parameters) => {
           pr = new Intl.PluralRules(locale = lang);
         }
 
+        // @ts-ignore
+        const str: string = typeof key === 'object' ? key[lang] : parameters[lang]['strings'][key];
+
+        if (!str) return '';
+
         // @ts-ignore `(string & {})` cannot be used to index type `LanguageKey`.
-        return replace(parameters[lang]['strings'][key], obj, parameters[lang]['pluralization'], parameters[lang]['actions'], pr);
+        return replace(str, obj, parameters[lang]['pluralization'], parameters[lang]['actions'], pr);
       }
     },
     i(key, lang) {

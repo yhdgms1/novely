@@ -7,7 +7,7 @@ export default defineConfig((options) => {
     target: 'es2022',
     format: ['esm'],
     minify: true,
-    dts: options.dts,
+    dts: true,
     watch: options.watch,
   }
 })

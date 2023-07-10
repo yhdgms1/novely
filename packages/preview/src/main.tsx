@@ -117,6 +117,14 @@ engine.withStory({
     action.showBackground(outdoor),
     action.showCharacter('Lily', 'ok'),
     action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+    action.dialog(
+      'Lily',
+      t({
+        en: 'Hello!',
+        ru: 'Привет!'
+      })
+    ),
+    action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
     action.dialog('Lily', t('HowOldAreYou')),
     action.input(
       t('EnterYourAge'),

@@ -763,8 +763,9 @@ const novely = <
   const unwrap = (content: Unwrappable) => {
     const lang = $.get().meta[0];
     const data = state();
+    const str = isFunction(content) ? content(lang, data) : typeof content === 'object' ? content[lang] : content;
 
-    return replaceT9N(isFunction(content) ? content(lang, data) : content, data);
+    return replaceT9N(str, data);
   }
 
   return {
