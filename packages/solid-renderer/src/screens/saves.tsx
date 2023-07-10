@@ -12,8 +12,8 @@ interface SavesProps {
 
 const Saves: VoidComponent<SavesProps> = (props) => {
   const data = useData();
-  const saves = () => data.storeData()!.saves;
-  const language = () => data.storeData()!.meta[0];
+  const saves = () => data.storeData().saves;
+  const language = () => data.storeData().meta[0];
 
   const removeSave = (date: number) => {
     const _saves = saves();
@@ -39,8 +39,8 @@ const Saves: VoidComponent<SavesProps> = (props) => {
         </button>
       </div>
       <div class="saves__list-container">
-        <Show when={saves()} fallback={data.t('NoSaves')}>
-          <ol class="saves__list">
+        <ol class="saves__list">
+          <Show when={saves().length > 0} fallback={data.t('NoSaves')}>
             <For each={saves()}>
               {save => {
                 const [date, type] = save[2];
@@ -71,8 +71,8 @@ const Saves: VoidComponent<SavesProps> = (props) => {
                 )
               }}
             </For>
-          </ol>
-        </Show>
+          </Show>
+        </ol>
       </div>
     </div >
   )

@@ -26,6 +26,7 @@ interface GameProps {
 
 const Game: VoidComponent<GameProps> = (props) => {
   const data = useData();
+
   /**
    * Могут быть деструктурированы
    */
@@ -68,7 +69,7 @@ const Game: VoidComponent<GameProps> = (props) => {
      */
     if (!text) return;
 
-    const speed = data.storeData()!.meta[1];
+    const speed = data.storeData().meta[1];
 
     /**
      * Start new instance

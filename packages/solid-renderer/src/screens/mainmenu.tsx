@@ -2,7 +2,7 @@ import type { VoidComponent } from 'solid-js'
 import type { SetStoreFunction } from 'solid-js/store'
 import type { State } from '../renderer'
 import type { NovelyScreen } from '@novely/core'
-import { For } from 'solid-js';
+import { For, Show } from 'solid-js';
 import { useData } from '../context'
 
 interface MainMenuProps {
@@ -12,6 +12,7 @@ interface MainMenuProps {
 
 const MainMenu: VoidComponent<MainMenuProps> = (props) => {
   const data = useData();
+  const language = () => data.storeData().meta[0];
   
   const goto = (screen: NovelyScreen | (string & {})) => {
     props.setState('screen', screen);
@@ -31,9 +32,13 @@ const MainMenu: VoidComponent<MainMenuProps> = (props) => {
       <button type="button" class="button main-menu__button" onClick={() => props.setState('screen', 'settings')}>
         {data.t('Settings')}
       </button>
-      <For each={props.state.mainmenu.items}>
-        {item => <button {...item(goto)} />}
-      </For>
+      <Show when={language()} keyed>
+        {(_) => (
+          <For each={props.state.mainmenu.items}>
+            {item => <button {...item(goto)} />}
+          </For>
+        )}
+      </Show>
     </div>
   )
 }

@@ -82,7 +82,7 @@ const engine = novely({
   initialScreen: 'mainmenu'
 });
 
-const { action, state, t } = engine;
+const { action, state, t, unwrap } = engine;
 
 registerScreen('achievements', () => {
   return {
@@ -103,7 +103,10 @@ registerScreen('achievements', () => {
 registerMainmenuItem((goto) => ({
   type: 'button',
   class: 'button main-menu__button',
-  textContent: 'Достижения',
+  textContent: unwrap({
+    en: 'Achievements',
+    ru: 'Достижения'
+  }),
   onClick: () => {
     goto('achievements')
   }

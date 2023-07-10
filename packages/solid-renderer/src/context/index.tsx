@@ -1,10 +1,10 @@
 import type { Accessor, FlowComponent } from 'solid-js';
 import type { Renderer, RendererInit, StorageData, Stored, BaseTranslationStrings } from '@novely/core';
 
-import { from, createContext, useContext } from "solid-js";
+import { from, createContext, useContext, Show } from "solid-js";
 
 interface DataContext {
-  storeData: Accessor<StorageData | undefined>;
+  storeData: Accessor<StorageData>;
   storeDataUpdate: (fn: (prev: StorageData) => StorageData) => void;
 
   options: RendererInit;
@@ -26,20 +26,22 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
   const storeData = from(props.storeData);
 
   const value: DataContext = {
-    storeData: storeData,
+    storeData: storeData as Accessor<StorageData>,
     storeDataUpdate: props.storeData.update,
 
     options: props.options,
     renderer: props.renderer,
 
-    t: (key: BaseTranslationStrings | (string & {})) => {
-      return props.options.t(key as BaseTranslationStrings, storeData()!.meta[0])
+    t(key: BaseTranslationStrings | (string & {})) {
+      return props.options.t(key as BaseTranslationStrings, this.storeData().meta[0])
     }
   }
 
   return (
     <Context.Provider value={value}>
-      {props.children}
+      <Show when={storeData()}>
+        {props.children}
+      </Show>
     </Context.Provider>
   )
 }

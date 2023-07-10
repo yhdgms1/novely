@@ -13,8 +13,8 @@ interface SettingsProps {
 const Settings: VoidComponent<SettingsProps> = (props) => {
   const data = useData();
 
-  const language = () => data.storeData()!.meta[0];
-  const textSpeed = () => data.storeData()!.meta[1];
+  const language = () => data.storeData().meta[0];
+  const textSpeed = () => data.storeData().meta[1];
 
   const languageNames = createMemo(() => new Intl.DisplayNames([language()], {
     type: 'language'
