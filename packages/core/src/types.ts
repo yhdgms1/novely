@@ -4,6 +4,7 @@ type PathItem = [null, number | string] | ['choice' & Record<never, never>, numb
 type Path = PathItem[];
 
 type State = Record<string, any>;
+type Data = Record<string, any>;
 
 type SaveDate = number;
 type SaveType = "manual" | "auto";
@@ -20,7 +21,7 @@ type Migration = (save: unknown) => unknown;
 
 type StorageData = {
   saves: Save[];
-  data: Record<string, unknown>;
+  data: Data;
   meta: StorageMeta;
 }
 
@@ -48,4 +49,4 @@ type DeepPartial<T> = unknown extends T
   }
   : T;
 
-export type { Thenable, Path, Save, State, Stack, StorageData, StorageMeta, TypewriterSpeed, Lang, DeepPartial, NovelyScreen, Migration }
+export type { Thenable, Path, Save, State, Stack, StorageData, StorageMeta, TypewriterSpeed, Lang, DeepPartial, NovelyScreen, Migration, Data }

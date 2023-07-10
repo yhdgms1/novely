@@ -1,7 +1,7 @@
 import type { Character } from './character';
 import type { ActionProxyProvider, GetActionParameters, Story, ValidAction, Unwrappable, CustomHandler } from './action';
 import type { Storage } from './storage';
-import type { Save, State, StorageData, DeepPartial, NovelyScreen, Migration } from './types'
+import type { Save, State, Data, StorageData, DeepPartial, NovelyScreen, Migration } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
 import { matchAction, isNumber, isNull, isString, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction, vibrate, findLastIndex } from './utils';
@@ -11,7 +11,7 @@ import { klona } from 'klona/json';
 import { SKIPPED_DURING_RESTORE } from './constants';
 import { replace as replaceT9N } from '@novely/t9n';
 
-interface NovelyInit<Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>, StateScheme extends State> {
+interface NovelyInit<Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>, StateScheme extends State, DataScheme extends Data> {
   /**
    * An array of languages supported by the game.
    */
@@ -45,6 +45,10 @@ interface NovelyInit<Languages extends string, Characters extends Record<string,
    */
   state?: StateScheme;
   /**
+   * Initial data value
+   */
+  data?: DataScheme;
+  /**
    * Enable autosaves or disable
    * @default true
    */
@@ -59,7 +63,8 @@ const novely = <
   Languages extends string,
   Characters extends Record<string, Character<Languages>>,
   Inter extends ReturnType<SetupT9N<Languages>>,
-  StateScheme extends State
+  StateScheme extends State,
+  DataScheme extends Data
 >({
   characters,
   storage,
@@ -69,9 +74,10 @@ const novely = <
   t9n,
   languages,
   state: defaultState,
+  data: defaultData,
   autosaves = true,
   migrations = []
-}: NovelyInit<Languages, Characters, Inter, StateScheme>) => {
+}: NovelyInit<Languages, Characters, Inter, StateScheme, DataScheme>) => {
   let story: Story;
   let times = new Set<number>();
 
