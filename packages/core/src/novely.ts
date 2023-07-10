@@ -760,6 +760,14 @@ const novely = <
     interacted = value;
   }
 
+  /**
+   * Unwraps translatable content to string
+   * 
+   * @example ```
+   * unwrap(t('Hello'));
+   * unwrap({ en: 'Hello', ru: 'Привет' });
+   * ```
+   */
   const unwrap = (content: Unwrappable) => {
     const lang = $.get().meta[0];
     const data = state();
@@ -772,6 +780,7 @@ const novely = <
     withStory,
     action,
     state,
+    unwrap,
     t: t9n.t as Inter['t'],
   }
 }
