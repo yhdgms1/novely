@@ -20,6 +20,7 @@ type Migration = (save: unknown) => unknown;
 
 type StorageData = {
   saves: Save[];
+  data: Record<string, unknown>;
   meta: StorageMeta;
 }
 

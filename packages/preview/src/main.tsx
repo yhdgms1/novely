@@ -91,7 +91,7 @@ registerScreen('achievements', () => {
         <div>
           Твои Достижения
 
-          <button data-novely-goto="mainmenu">
+          <button type="button" class="button" data-novely-goto="mainmenu">
             Выйти
           </button>
         </div>

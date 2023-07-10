@@ -14,7 +14,7 @@ const localStorageStorage = (options: LocalStorageStorageSettings): Storage => {
     async get() {
       const value = localStorage.getItem(options.key);
 
-      return value ? JSON.parse(value) : { saves: [], meta: [] };
+      return value ? JSON.parse(value) : { saves: [], data: {}, meta: [] };
     },
     async set(data) {
       localStorage.setItem(options.key, JSON.stringify(data));

@@ -159,7 +159,8 @@ const novely = <
    */
   const initialData: StorageData = {
     saves: [],
-    meta: [getLanguage(languages), getTypewriterSpeed()]
+    data: {},
+    meta: [getLanguage(languages), getTypewriterSpeed()],
   };
 
   const $ = store(initialData);
@@ -177,10 +178,10 @@ const novely = <
   const getStoredData = () => {
     storage.get().then(stored => {
       /**
-       * Migration is done only once (when game loads it's data), and then is saves the updated format
+       * Migration is done only once (when game loads it's data), and then it saves the updated format
        */
       for (const migration of migrations) {
-        // @ts-expect-error Types does not match between versions, that's why unknown used here, but error appers that way, but it is expected
+        // @ts-expect-error Types does not match between versions
         stored = migration(stored);
       }
 
@@ -297,7 +298,7 @@ const novely = <
   let interacted = false;
 
   /**
-   * Визуально восстанавливает историю
+   * Restore
    */
   const restore = async (save?: Save) => {
     if (!initialDataLoaded) return;
@@ -305,21 +306,17 @@ const novely = <
     let latest = save ? save : $.get().saves.at(-1);
 
     /**
-     * Если нет сохранённой игры, то запустим ту, которая уже есть
+     * When there is no game, then make a new game
      */
     if (!latest) {
-      $.update(() => ({ saves: [initial], meta: [getLanguage(languages), getTypewriterSpeed()] }));
+      $.update(() => ({ saves: [initial], data: {}, meta: [getLanguage(languages), getTypewriterSpeed()] }));
 
       latest = klona(initial);
     }
 
     restoring = true, stack.value = latest;
 
-    /**
-     * Показать экран игры
-     */
     renderer.ui.showScreen('game');
-
     match('clear', [goingBack]);
 
     /**
@@ -685,7 +682,7 @@ const novely = <
       return renderer.custom(handler, goingBack, () => { }), push();
     },
     text(text) {
-      renderer.text(text.map(unwrap).join(' '), forward);
+      renderer.text(text.map((content) => unwrap(content)).join(' '), forward);
     },
     exit() {
       const path = stack.value[0];
@@ -766,21 +763,28 @@ const novely = <
    * @example ```
    * unwrap(t('Hello'));
    * unwrap({ en: 'Hello', ru: 'Привет' });
+   * unwrap('Hello, {{name}}');
    * ```
    */
-  const unwrap = (content: Unwrappable) => {
-    const lang = $.get().meta[0];
-    const data = state();
-    const str = isFunction(content) ? content(lang, data) : typeof content === 'object' ? content[lang] : content;
+  const unwrap = (content: Unwrappable, global = false) => {
+    const { data, meta: [lang] } = $.get();
 
-    return replaceT9N(str, data);
+    const str = isFunction(content) ? content(lang, data) : typeof content === 'object' ? content[lang] : content;
+    const obj = global ? data : state();
+
+    return replaceT9N(str, obj);
   }
 
   return {
     withStory,
     action,
     state,
-    unwrap,
+    /**
+     * Unwraps translatable content to a string value
+     */
+    unwrap(content: Exclude<Unwrappable, Record<string, string>> | Record<Languages, string>) {
+      return unwrap(content, true);
+    },
     t: t9n.t as Inter['t'],
   }
 }
