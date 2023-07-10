@@ -689,6 +689,8 @@ const novely = <
         }, timeout);
 
         clear(() => {
+          target.classList.remove(...classNames);
+          
           /**
            * Clear timeout, because when you will game re-runs some callback might remove classes from character
            */
