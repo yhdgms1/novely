@@ -138,7 +138,7 @@ const Game: VoidComponent<GameProps> = (props) => {
     const written = writer && writer.end();
 
     if (reduced || written || bypassedWriter) {
-      bypassedWriter = true;
+      bypassedWriter = false;
 
       const resolve = props.state.dialog.resolve || props.state.text.resolve;
 
