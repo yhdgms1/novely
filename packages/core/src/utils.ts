@@ -32,6 +32,10 @@ const isFunction = (val: unknown): val is ((...parameters: any[]) => any) => {
   return typeof val === 'function';
 }
 
+const isEmpty = (val: unknown): val is {} => {
+  return typeof val === 'object' && !isNull(val) && Object.keys(val).length === 0;
+}
+
 const isCSSImage = (str: string) => {
   const startsWith = String.prototype.startsWith.bind(str);
 
@@ -114,4 +118,4 @@ const findLastIndex = <T>(array: T[], fn: (item: T) => boolean) => {
   return -1;
 }
 
-export { matchAction, isNumber, isNull, isString, isCSSImage, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction, vibrate, findLastIndex }
+export { matchAction, isNumber, isNull, isString, isEmpty, isCSSImage, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction, vibrate, findLastIndex }

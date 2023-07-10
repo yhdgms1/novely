@@ -4,7 +4,7 @@ import type { Storage } from './storage';
 import type { Save, State, Data, StorageData, DeepPartial, NovelyScreen, Migration } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction, vibrate, findLastIndex } from './utils';
+import { matchAction, isNumber, isNull, isString, isEmpty, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction, vibrate, findLastIndex } from './utils';
 import { store } from './store';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
@@ -82,13 +82,18 @@ const novely = <
   let times = new Set<number>();
 
   /**
+   * Prevent `undefined`
+   */
+  defaultData ||= {} as DataScheme;
+  defaultState ||= {} as StateScheme;
+
+  /**
    * Saves timestamps created in this session
    */
   const intime = (value: number) => {
     return times.add(value), value;
   }
 
-  // @todo: find bug here
   const withStory = (s: Story) => {
     /**
      * Transforms `(ValidAction | ValidAction[])[]` to `ValidAction[]`
@@ -165,7 +170,7 @@ const novely = <
    */
   const initialData: StorageData = {
     saves: [],
-    data: {},
+    data: klona(defaultData) as Data,
     meta: [getLanguage(languages), getTypewriterSpeed()],
   };
 
@@ -196,6 +201,14 @@ const novely = <
        */
       stored.meta[0] ||= getLanguage(languages);
       stored.meta[1] ||= getTypewriterSpeed();
+
+      /**
+       * When data is empty replace it with `defaultData`
+       * It also might be empty (default to empty)
+       */
+      if (isEmpty(stored.data)) {
+        stored.data = defaultData as Data;
+      }
 
       /**
        * Now the next store updates will entail saving via storage.set
@@ -315,7 +328,7 @@ const novely = <
      * When there is no game, then make a new game
      */
     if (!latest) {
-      $.update(() => ({ saves: [initial], data: {}, meta: [getLanguage(languages), getTypewriterSpeed()] }));
+      $.update(() => ({ saves: [initial], data: klona(defaultData) as Data, meta: [getLanguage(languages), getTypewriterSpeed()] }));
 
       latest = klona(initial);
     }
@@ -785,16 +798,47 @@ const novely = <
     return replaceT9N(str, obj);
   }
 
+  function data(value: DeepPartial<DataScheme> | ((prev: DataScheme) => DataScheme)): void;
+  function data(): DataScheme;
+  function data(value?: DeepPartial<DataScheme> | ((prev: DataScheme) => DataScheme)): DataScheme | void {
+    if (!value) return $.get().data as DataScheme | void;
+
+    const prev = $.get().data;
+    const val = isFunction(value) ? value(prev as DataScheme) : deepmerge([prev, value]);
+
+    $.update((prev) => {
+      prev.data = val;
+
+      return prev;
+    });
+  }
+
   return {
+    /**
+     * Function to set story
+     */
     withStory,
+    /**
+     * Function to get actions
+     */
     action,
+    /**
+     * State that belongs to games
+     */
     state,
+    /**
+     * Unlike `state`, stored at global scope instead and shared between games
+     */
+    data,
     /**
      * Unwraps translatable content to a string value
      */
     unwrap(content: Exclude<Unwrappable, Record<string, string>> | Record<Languages, string>) {
       return unwrap(content, true);
     },
+    /**
+     * Function that is used for translation
+     */
     t: t9n.t as Inter['t'],
   }
 }

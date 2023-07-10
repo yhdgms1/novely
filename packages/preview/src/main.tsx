@@ -77,12 +77,20 @@ const engine = novely({
     age: 0,
   },
 
+  data: {
+    achievements: {
+      money: false,
+      love: false,
+      cars: false
+    }
+  },
+
   autosaves: true,
 
   initialScreen: 'mainmenu'
 });
 
-const { action, state, t, unwrap } = engine;
+const { action, state, data, t, unwrap } = engine;
 
 registerScreen('achievements', () => {
   return {
@@ -152,6 +160,9 @@ engine.withStory({
             [
               t('YesHelpMe'),
               [
+                action.function(() => {
+                  data({ achievements: { money: true } });
+                }),
                 action.exit()
               ]
             ]
