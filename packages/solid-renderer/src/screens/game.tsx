@@ -24,15 +24,26 @@ interface GameProps {
   renderer: Renderer;
 }
 
+const PRM = matchMedia('(prefers-reduced-motion: reduce)');
+
 const Game: VoidComponent<GameProps> = (props) => {
   const data = useData();
 
   /**
-   * Могут быть деструктурированы
+   * Can be destructured because these are passed without getters
    */
   const { setState, characters, store, renderer } = props;
 
   let writer: ReturnType<typeof typewriter> | undefined;
+  /**
+   * In example PRM was enabled, text was set, then PRM was disabled.
+   * 
+   * Is writer done? No.
+   * Is PRM enabled? No.
+   * 
+   * This is used to overcome this situation.
+   */
+  let bypassedWriter = false;
 
   const background = () => {
     const is = isCSSImage(props.state.background)
@@ -69,6 +80,21 @@ const Game: VoidComponent<GameProps> = (props) => {
      */
     if (!text) return;
 
+    /**
+     * When prefers-reduced-motion is enabled, then set the content immediately and completely
+     */
+    if (PRM.matches) {
+      /**
+       * Spaces replaces here for consistency
+       */
+      element.innerHTML = text.replace(/ /gm, '&#8197;');
+      bypassedWriter = true;
+
+      return;
+    }
+
+    bypassedWriter = false;
+
     const speed = data.storeData().meta[1];
 
     /**
@@ -79,12 +105,19 @@ const Game: VoidComponent<GameProps> = (props) => {
       text,
       ended() {
         /**
-         * Ended without user interaction and `auto` mode is enabled
+         * Ended without user interaction
          */
         const next = untrack(auto);
 
-        if (next) {
-          untrack(clearTypewriterEffect);
+        /**
+         * When `auto` mode is disabled
+         */
+        if (!next) return;
+
+        if (PRM.matches) {
+          setAuto(false);
+        } else {
+          untrack(clearTypewriterEffect)
         }
       },
       speed: TEXT_SPEED_MAP[speed]
@@ -101,7 +134,12 @@ const Game: VoidComponent<GameProps> = (props) => {
   }
 
   const clearTypewriterEffect = () => {
-    if (writer && writer.end()) {
+    const reduced = PRM.matches;
+    const written = writer && writer.end();
+
+    if (reduced || written || bypassedWriter) {
+      bypassedWriter = true;
+
       const resolve = props.state.dialog.resolve || props.state.text.resolve;
 
       setState('dialog', { content: '', name: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
@@ -293,7 +331,7 @@ const Game: VoidComponent<GameProps> = (props) => {
         </button>
         <button
           type="button"
-          class="button control-panel__button"
+          class="button control-panel__button control-panel__button--auto-mode"
           title={data.t(auto() ? 'Stop' : 'Auto')}
           onClick={() => {
             setAuto(prev => !prev);

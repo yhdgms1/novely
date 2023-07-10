@@ -14,6 +14,10 @@
   display: none;
 }
 
+.control-panel__button--auto-mode {
+  display: none;
+}
+
 @media (orientation: portrait) {
   .control-panel__button__icon {
     display: block;
@@ -28,4 +32,10 @@
     white-space: nowrap;
     width: 1px;  
   }  
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .control-panel__button--auto-mode {
+    display: initial;
+  }
 }
