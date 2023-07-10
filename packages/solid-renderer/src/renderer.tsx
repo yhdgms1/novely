@@ -1,4 +1,4 @@
-import type { Renderer, RendererInit, RendererStore, Character, ValidAction, CustomHandler, CustomHandlerGetResult } from '@novely/core'
+import type { Renderer, RendererInit, RendererStore, Character, ValidAction, CustomHandler, CustomHandlerGetResult, NovelyScreen } from '@novely/core'
 import type { JSX } from 'solid-js';
 
 import { Switch, Match, createEffect } from 'solid-js';
@@ -13,6 +13,7 @@ import { MainMenu } from './screens/mainmenu';
 import { Saves } from './screens/saves';
 import { Settings } from './screens/settings';
 import { Loading } from './screens/loading';
+import { CustomScreen } from './screens/custom-screen';
 
 interface StateCharacter {
   /**
@@ -116,6 +117,15 @@ interface StateText {
 
 type StateLayers = Record<string, { value: CustomHandlerGetResult, fn: CustomHandler; clear: (() => void); dom: null | HTMLDivElement; } | undefined>;
 
+type StateScreen = () => ({
+  mount(): Element | JSX.Element;
+  unmount?(): void;
+});
+
+type StateScreens = Record<string, StateScreen>
+
+type StateMainmenuItems = ((goto: (name: NovelyScreen | (string & {})) => void) => JSX.ButtonHTMLAttributes<HTMLButtonElement>)[];
+
 interface State {
   background: string;
   characters: Record<string, StateCharacter>
@@ -123,8 +133,12 @@ interface State {
   choices: StateChoices
   input: StateInput
   layers: StateLayers;
+  screens: StateScreens;
+  mainmenu: {
+    items: StateMainmenuItems
+  }
   text: StateText;
-  screen: "mainmenu" | "game" | "saves" | "settings" | 'loading'
+  screen: NovelyScreen | (string & {})
 }
 
 interface SolidRendererStore extends RendererStore {
@@ -163,6 +177,10 @@ const createSolidRenderer = ({ fullscreen = false }: CreateSolidRendererOptions 
       content: '',
     },
     layers: {},
+    screens: {},
+    mainmenu: {
+      items: []
+    },
     screen: 'mainmenu'
   });
 
@@ -471,7 +489,7 @@ const createSolidRenderer = ({ fullscreen = false }: CreateSolidRendererOptions 
                 <Game state={state} setState={/* @once */ setState} store={/* @once */ store} characters={/* @once */ characters} renderer={/* @once */ renderer} />
               </Match>
               <Match when={state.screen === 'mainmenu'}>
-                <MainMenu setState={/* @once */ setState} />
+                <MainMenu state={state} setState={/* @once */ setState} />
               </Match>
               <Match when={state.screen === 'saves'}>
                 <Saves setState={/* @once */ setState} />
@@ -483,12 +501,20 @@ const createSolidRenderer = ({ fullscreen = false }: CreateSolidRendererOptions 
                 <Loading />
               </Match>
             </Switch>
+
+            <CustomScreen name={state.screen} state={state} setState={/* @once */ setState} />
           </Provider>
         </div>
       )
+    },
+    registerScreen(name: string, screen: StateScreen) {
+      setState('screens', name, () => screen);
+    },
+    registerMainmenuItem(fn: (goto: (name: NovelyScreen | (string & {})) => void) => JSX.ButtonHTMLAttributes<HTMLButtonElement>) {
+      setState('mainmenu', 'items', (prev) => [...prev, fn]);
     }
   }
 }
 
 export { createSolidRenderer }
-export type { State, SolidRendererStore }
+export type { State, StateScreen, StateScreens, SolidRendererStore }

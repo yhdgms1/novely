@@ -9,7 +9,7 @@ import { snow } from './particles'
 import outdoor from './assets/outdoor.png'
 import lily_ok from './assets/lily.png'
 
-const { createRenderer, Novely } = createSolidRenderer({
+const { createRenderer, Novely, registerScreen, registerMainmenuItem } = createSolidRenderer({
   fullscreen: true
 });
 
@@ -83,6 +83,31 @@ const engine = novely({
 });
 
 const { action, state, t } = engine;
+
+registerScreen('achievements', () => {
+  return {
+    mount() {
+      return (
+        <div>
+          Твои Достижения
+
+          <button data-novely-goto="mainmenu">
+            Выйти
+          </button>
+        </div>
+      );
+    }
+  }
+})
+
+registerMainmenuItem((goto) => ({
+  type: 'button',
+  class: 'button main-menu__button',
+  textContent: 'Достижения',
+  onClick: () => {
+    goto('achievements')
+  }
+}))
 
 engine.withStory({
   'start': [
