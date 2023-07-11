@@ -16,7 +16,7 @@ type ValidAction =
   | ['animateCharacter', [string, number, ...string[]]]
   | ['wait', [FunctionableValue<number>]]
   | ['function', [() => Thenable<void>]]
-  | ['input', [string, (meta: { input: HTMLInputElement, error: (error: string) => void, event: InputEvent & { currentTarget: HTMLInputElement } }) => void, ((input: HTMLInputElement) => void)?]]
+  | ['input', [string, (meta: ActionInputOnInputMeta) => void, ActionInputSetup?]]
   | ['custom', [CustomHandler]]
   | ['vibrate', [...number[]]]
   | ['next', []]
@@ -81,6 +81,8 @@ interface ActionInputOnInputMeta {
   value: string
 }
 
+type ActionInputSetup = (input: HTMLInputElement, cleanup: (cb: () => void) => void) => void;
+
 type ActionProxyProvider<Characters extends Record<string, Character>> = {
   choice: {
     (...choices: ([Unwrappable, ValidAction[]] | [Unwrappable, ValidAction[], () => boolean])[]): ValidAction;
@@ -114,7 +116,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
   wait: (time: FunctionableValue<number>) => ValidAction;
   function: (fn: (restoring: boolean, goingBack: boolean) => Thenable<void>) => ValidAction;
 
-  input: (question: Unwrappable, onInput: (meta: ActionInputOnInputMeta) => void, setup?: (input: HTMLInputElement) => void) => ValidAction;
+  input: (question: Unwrappable, onInput: (meta: ActionInputOnInputMeta) => void, setup?: ActionInputSetup) => ValidAction;
 
   custom: (handler: CustomHandler) => ValidAction;
 

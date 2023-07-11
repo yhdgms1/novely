@@ -24,6 +24,19 @@ interface GameProps {
   renderer: Renderer;
 }
 
+interface Writer {
+  instance: ReturnType<typeof typewriter> | undefined;
+  /**
+   * In example PRM was enabled, text was set, then PRM was disabled.
+   * 
+   * Is writer done? No.
+   * Is PRM enabled? No.
+   * 
+   * This is used to overcome this situation.
+   */
+  bypassed: boolean;
+}
+
 const PRM = matchMedia('(prefers-reduced-motion: reduce)');
 
 const Game: VoidComponent<GameProps> = (props) => {
@@ -34,16 +47,10 @@ const Game: VoidComponent<GameProps> = (props) => {
    */
   const { setState, characters, store, renderer } = props;
 
-  let writer: ReturnType<typeof typewriter> | undefined;
-  /**
-   * In example PRM was enabled, text was set, then PRM was disabled.
-   * 
-   * Is writer done? No.
-   * Is PRM enabled? No.
-   * 
-   * This is used to overcome this situation.
-   */
-  let bypassedWriter = false;
+  let writer: Writer = {
+    bypassed: false,
+    instance: undefined
+  }
 
   const background = () => {
     const is = isCSSImage(props.state.background)
@@ -69,7 +76,7 @@ const Game: VoidComponent<GameProps> = (props) => {
     /**
      * Stop animation
      */
-    writer?.destroy();
+    writer.instance?.destroy();
 
     /**
      * In case element is not present do not start the typewriter
@@ -88,19 +95,17 @@ const Game: VoidComponent<GameProps> = (props) => {
        * Spaces replaces here for consistency
        */
       element.innerHTML = text.replace(/ /gm, '&#8197;');
-      bypassedWriter = true;
+      writer.bypassed = true;
 
       return;
     }
-
-    bypassedWriter = false;
 
     const speed = data.storeData().meta[1];
 
     /**
      * Start new instance
      */
-    writer = typewriter({
+    writer.instance = typewriter({
       node: element,
       text,
       ended() {
@@ -122,6 +127,8 @@ const Game: VoidComponent<GameProps> = (props) => {
       },
       speed: TEXT_SPEED_MAP[speed]
     });
+
+    writer.bypassed = false;
   });
 
   const onChoicesButtonClick = ([disabled, i]: [boolean, number]) => {
@@ -135,14 +142,15 @@ const Game: VoidComponent<GameProps> = (props) => {
 
   const clearTypewriterEffect = () => {
     const reduced = PRM.matches;
-    const written = writer && writer.end();
+    const written = writer.instance && writer.instance.end();
 
-    if (reduced || written || bypassedWriter) {
+    if (reduced || written || writer.bypassed) {
       const resolve = props.state.dialog.resolve || props.state.text.resolve;
 
       setState('dialog', { content: '', name: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
       setState('text', { content: '', resolve: undefined });
-      bypassedWriter = false;
+      
+      writer.bypassed = false;
 
       resolve?.();
     }
@@ -152,9 +160,11 @@ const Game: VoidComponent<GameProps> = (props) => {
     if (props.state.input.error || !props.state.input.element?.validity.valid) return;
 
     const resolve = props.state.input.resolve;
+    const cleanup = props.state.input.cleanup;
 
-    setState('input', { element: undefined, question: '', visible: false });
+    setState('input', { element: undefined, question: '', visible: false, cleanup: undefined, resolve: undefined });
 
+    cleanup?.();
     resolve?.();
   }
 

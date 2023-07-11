@@ -99,6 +99,10 @@ interface StateInput {
    */
   resolve?: () => void
   /**
+   * Запускается для очистки результата setup
+   */
+  cleanup?: () => void
+  /**
    * Ошибка
    */
   error: string;
@@ -354,7 +358,9 @@ const createSolidRenderer = ({ fullscreen = false }: CreateSolidRendererOptions 
 
             const input = <input type="text" name="novely-input" required autocomplete="off" onInput={onInputHandler} /> as HTMLInputElement;
 
-            if (setup) setup(input);
+            if (setup) setup(input, (callback) => {
+              setState('input', { cleanup: callback })
+            });
 
             setState('input', { element: input, question, visible: true, resolve })
           }
