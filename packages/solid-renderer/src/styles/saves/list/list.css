@@ -58,6 +58,13 @@
   scrollbar-color: #ffc6d8;
 }
 
+.saves__list--empty {
+  display: flex;
+  align-items: center;
+
+  user-select: none;
+}
+
 .saves__list-item {
   display: flex;
 }

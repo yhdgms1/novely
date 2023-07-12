@@ -17,10 +17,6 @@ import { CustomScreen } from './screens/custom-screen';
 
 interface StateCharacter {
   /**
-   * `element.className`
-   */
-  className: string;
-  /**
    * `element.style`
    */
   style: string;
@@ -254,25 +250,28 @@ const createSolidRenderer = ({ fullscreen = false }: CreateSolidRendererOptions 
 
               return render(head, left, right);
             },
-            append(className, style, restoring) {
+            append(className, style) {
               clearTimeout(state.characters[character]?.timeoutId);
 
-              if (className === state.characters[character]?.className) {
-                /**
-                 * `createStore` does not allow to manage how comparison works
-                 */
-                setState('characters', character, { className: '' });
-              }
+              /**
+               * Set style and show
+               */
+              setState('characters', character, { style, visible: true });
 
-              const show = () => {
-                setState('characters', character, { className, style, visible: true });
-              }
+              const { canvas: element } = store.characters[character];
 
               /**
-               * During restoring do not apply effects because removing that way will run before delayed show
+               * Remove className directly
                */
-              if (restoring) return show();
-              setTimeout(show, 4);
+              element.className = '';
+              /**
+               * Trigger reflow
+               */
+              void element.offsetHeight;
+              /**
+               * Set className directly
+               */
+              element.className = className as string;
             },
             remove(className, style, duration) {
               return (resolve, restoring) => {
@@ -291,7 +290,12 @@ const createSolidRenderer = ({ fullscreen = false }: CreateSolidRendererOptions 
                   resolve();
                 }, duration);
 
-                setState('characters', character, { className, style, timeoutId })
+                /**
+                 * Set className directly
+                 */
+                store.characters[character].canvas.className = className as string;
+
+                setState('characters', character, { style, timeoutId })
               }
             }
           }
@@ -359,10 +363,15 @@ const createSolidRenderer = ({ fullscreen = false }: CreateSolidRendererOptions 
             const input = <input type="text" name="novely-input" required autocomplete="off" onInput={onInputHandler} /> as HTMLInputElement;
 
             if (setup) setup(input, (callback) => {
-              setState('input', { cleanup: callback })
+              setState('input', { cleanup: callback });
             });
 
-            setState('input', { element: input, question, visible: true, resolve })
+            setState('input', { element: input, question, visible: true, resolve });
+
+            /**
+             * Initially run the fake input event to handle errors & etc
+             */
+            input.dispatchEvent(new InputEvent('input', { bubbles: true }));
           }
         },
         music(source, method) {

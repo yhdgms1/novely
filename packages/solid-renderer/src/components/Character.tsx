@@ -13,10 +13,13 @@ interface CharacterProps {
 const Character: VoidComponent<CharacterProps> = (props) => {
   const canvas = () => props.characters[props.character].canvas;
 
-  effect(() => setAttribute(canvas(), 'class', props.data.className));
   effect(() => setAttribute(canvas(), 'style', props.data.style));
 
-  return canvas()
+  return (
+    <>
+      {canvas()}
+    </>
+  )
 }
 
 export { Character }

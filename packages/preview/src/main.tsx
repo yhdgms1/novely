@@ -10,7 +10,7 @@ import outdoor from './assets/outdoor.png'
 import lily_ok from './assets/lily.png'
 
 const { createRenderer, Novely, registerScreen, registerMainmenuItem } = createSolidRenderer({
-  fullscreen: true
+  fullscreen: false
 });
 
 const engine = novely({
@@ -42,7 +42,7 @@ const engine = novely({
       },
       strings: {
         'StartText': 'На улице прекрасный день, ты открываешь глаза и встречаешь...',
-        'HowOldAreYou': 'Привет! Сколько тебе лет?',
+        'HowOldAreYou': 'Сколько тебе лет?',
         'EnterYourName': 'Введи имя',
         'EnterYourAge': 'Введи возраст',
         'AreYouLost': 'Тебе {{age}} {{age@years}}? Малышь, ты потерялся?',
@@ -63,7 +63,7 @@ const engine = novely({
       },
       strings: {
         'StartText': "It's a beautiful day outside, you open your eyes and meet...",
-        'HowOldAreYou': 'Hi! How old are you?',
+        'HowOldAreYou': 'How old are you?',
         'EnterYourName': 'Enter your name',
         'EnterYourAge': 'Enter your age',
         'AreYouLost': 'You are {{age}} {{age@years}}? Are you lost?',
@@ -145,7 +145,7 @@ engine.withStory({
       },
       (input) => {
         input.setAttribute('type', 'number');
-        input.setAttribute('min', '0');
+        input.setAttribute('min', '1');
         input.setAttribute('max', '99');
       }
     ),

@@ -157,7 +157,7 @@ const Game: VoidComponent<GameProps> = (props) => {
   }
 
   const onInputButtonClick = () => {
-    if (props.state.input.error || !props.state.input.element?.validity.valid) return;
+    if (props.state.input.error) return;
 
     const resolve = props.state.input.resolve;
     const cleanup = props.state.input.cleanup;
@@ -293,9 +293,11 @@ const Game: VoidComponent<GameProps> = (props) => {
               </span>
             </label>
             <button
+              type="submit"
               class="button dialog-input__button"
+
               onClick={onInputButtonClick}
-              aria-disabled={Boolean(props.state.input.error || !props.state.input.element?.validity.valid)}
+              aria-disabled={Boolean(props.state.input.error)}
             >
               {data.t('Sumbit')}
             </button>
