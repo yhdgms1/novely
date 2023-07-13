@@ -51,12 +51,12 @@ const createT9N: FunctionalSetupT9N = (parameters) => {
         }
 
         // @ts-ignore
-        const str: string = typeof key === 'object' ? key[lang] : parameters[lang]['strings'][key];
+        const str: string | string[] = typeof key === 'object' ? key[lang] : parameters[lang]['strings'][key];
 
         if (!str) return '';
 
         // @ts-ignore `(string & {})` cannot be used to index type `LanguageKey`.
-        return replace(str, obj, parameters[lang]['pluralization'], parameters[lang]['actions'], pr);
+        return replace(Array.isArray(str) ? str.join('') : str, obj, parameters[lang]['pluralization'], parameters[lang]['actions'], pr);
       }
     },
     i(key, lang) {
