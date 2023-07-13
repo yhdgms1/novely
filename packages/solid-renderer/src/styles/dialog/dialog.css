@@ -37,14 +37,14 @@
 .dialog-panel-label {
   user-select: none;
   font-size: 1.2375rem;
+
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
 }
 
 .dialog-panel-label[data-used="true"] {
   background: var(--novely-dialog-panel-label-background, #ffe9f3);
   color: var(--novely-dialog-panel-label-color, #000);
-
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
 }
 
 @media (orientation: portrait) {
