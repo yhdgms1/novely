@@ -249,7 +249,7 @@ const Game: VoidComponent<GameProps> = (props) => {
               data-used={Boolean(props.state.choices.question)}
               aria-hidden={!props.state.choices.question}
             >
-              {props.state.choices.question || <>ᅠ</>}
+              {props.state.choices.question || <>&#8197;</>}
             </span>
             <For each={props.state.choices.choices}>
               {([text, _, active], i) => {

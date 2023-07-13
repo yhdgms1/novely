@@ -1,6 +1,5 @@
 .root {
   width: 100vw;
-
   height: 100vh;
   
   font-size: 1rem;
@@ -8,9 +7,9 @@
     "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
+  background-repeat: var(--novely-root-background-repeat, no-repeat);
+  background-position: var(--novely-root-background-position, center);
+  background-size: var(--novely-root-background-size, cover);
 }
 
 .root, .root * {
