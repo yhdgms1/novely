@@ -12,7 +12,9 @@ type T9N<LanguageKey extends string, StringKey extends string> = {
 
 const RGX = /{{(.*?)}}/g;
 
-const replace = (str: string, obj: Record<string, unknown>, pluralization?: Record<string, Record<string, PluralType>>, actions?: Partial<Record<string, (str: string) => string>>, pr?: Intl.PluralRules) => {
+const replace = (str: string | string[], obj: Record<string, unknown>, pluralization?: Record<string, Record<string, PluralType>>, actions?: Partial<Record<string, (str: string) => string>>, pr?: Intl.PluralRules) => {
+  if (Array.isArray(str)) str = str.join('');
+
   return str.replace(RGX, (x: any, key: string, y: any) => {
     x = 0;
     y = obj;
@@ -56,7 +58,7 @@ const createT9N: FunctionalSetupT9N = (parameters) => {
         if (!str) return '';
 
         // @ts-ignore `(string & {})` cannot be used to index type `LanguageKey`.
-        return replace(Array.isArray(str) ? str.join('') : str, obj, parameters[lang]['pluralization'], parameters[lang]['actions'], pr);
+        return replace(str, obj, parameters[lang]['pluralization'], parameters[lang]['actions'], pr);
       }
     },
     i(key, lang) {
