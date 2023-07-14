@@ -45,7 +45,7 @@ const CustomScreen: VoidComponent<CustomScreenProps> = (props) => {
 
   return (
     <Show when={dom()}>
-      <div class="root" onClick={onClick}>
+      <div class="root custom" onClick={onClick}>
         {dom()}
       </div>
     </Show>

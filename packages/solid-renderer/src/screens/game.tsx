@@ -171,7 +171,7 @@ const Game: VoidComponent<GameProps> = (props) => {
   const layers = () => Object.values(props.state.layers);
 
   return (
-    <div class="root" style={background()}>
+    <div class="root game" style={background()}>
       <div data-characters={true} class="characters">
         <For each={Object.entries(props.state.characters)}>
           {([character, data]) => (
