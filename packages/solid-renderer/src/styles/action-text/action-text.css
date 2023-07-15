@@ -3,12 +3,18 @@
   inset: 0;
   z-index: 2;
 
+  max-width: 100%;
+  max-width: 100vw;
+
   display: none;
 
   text-align: center;
   font-size: 1.5rem;
 
   user-select: none;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
 .action-text[data-shown="true"] {
@@ -29,4 +35,7 @@
   cursor: pointer;
   
   user-select: none;
+
+  word-wrap: break-word;
+  word-break: break-word;
 }
