@@ -33,4 +33,8 @@ type AstNode =
 
 type Ast = Extract<AstNode, { type: "Property" }>[];
 
-export type { AstNode, Ast }
+type TransformOptions = {
+  rewrites?: Record<string, string>
+}
+
+export type { AstNode, Ast, TransformOptions }

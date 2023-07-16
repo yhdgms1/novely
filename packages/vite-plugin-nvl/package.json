@@ -1,7 +1,7 @@
 {
   "name": "@novely/vite-plugin-nvl",
   "description": "Vite Plugin for Novely Story Language",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "type": "module",
   "sideEffects": false,
   "types": "./dist/index.d.ts",
@@ -47,6 +47,6 @@
     "types/*"
   ],
   "dependencies": {
-    "@novely/parser": "^0.2.2"
+    "@novely/parser": "^0.3.0"
   }
 }

@@ -1,6 +1,6 @@
-import type { Ast, AstNode } from './types';
+import type { Ast, AstNode, TransformOptions } from './types';
 
-const transform = (ast: Ast) => {
+const transform = (ast: Ast, { rewrites = {} }: TransformOptions = {}) => {
   let code = '($values1) => ({';
 
   const print_js_value = (value: Extract<AstNode, { type: "JSValue" }>) => {
@@ -37,8 +37,9 @@ const transform = (ast: Ast) => {
 
   const print_action = (value: Extract<AstNode, { type: "Action" }>): string => {
     const children = value.children.map(print_with_unknown_printer);
+    const name = value.name in rewrites ? rewrites[value.name] : value.name;
 
-    return `["${value.name}", ${children.join(',')}]`
+    return `["${name}", ${children.join(',')}]`
   }
 
   const print_with_unknown_printer = (child: AstNode) => {
