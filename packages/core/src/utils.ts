@@ -32,6 +32,10 @@ const isFunction = (val: unknown): val is ((...parameters: any[]) => any) => {
   return typeof val === 'function';
 }
 
+const isPromise = (val: unknown): val is Promise<any> => {
+  return Boolean(val) && (typeof val === 'object' || isFunction(val)) && isFunction((val as any).then)
+}
+
 const isEmpty = (val: unknown): val is {} => {
   return typeof val === 'object' && !isNull(val) && Object.keys(val).length === 0;
 }
@@ -118,4 +122,4 @@ const findLastIndex = <T>(array: T[], fn: (item: T) => boolean) => {
   return -1;
 }
 
-export { matchAction, isNumber, isNull, isString, isEmpty, isCSSImage, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction, vibrate, findLastIndex }
+export { matchAction, isNumber, isNull, isString, isPromise, isEmpty, isCSSImage, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction, vibrate, findLastIndex }

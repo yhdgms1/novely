@@ -4,7 +4,7 @@ import type { Storage } from './storage';
 import type { Save, State, Data, StorageData, DeepPartial, NovelyScreen, Migration } from './types'
 import type { Renderer, RendererInit } from './renderer'
 import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, isEmpty, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction, vibrate, findLastIndex } from './utils';
+import { matchAction, isNumber, isNull, isString, isPromise, isEmpty, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction, vibrate, findLastIndex } from './utils';
 import { store } from './store';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
@@ -165,7 +165,7 @@ const novely = <
   }
 
   /**
-   * 1) Novely rendered using the `initialData`, you can still start new game or `load` an empty one - this is scary, imagine losing your progress
+   * 1) Novely rendered using the `initialData`, but you can't start new game or `load` an empty one - this is scary, imagine losing your progress
    * 2) Actual stored data is loaded, language and etc is changed 
    */
   const initialData: StorageData = {
@@ -413,14 +413,19 @@ const novely = <
         }
 
         /**
-         * Action может возвращать Promise. Нужно подожать его `resolve`
+         * Action can return Promise. 
          */
         const result = match(action, meta);
 
         /**
-         * Дождёмся окончания
+         * Should wait until it resolved
          */
-        if (result && 'then' in result) await result;
+        if (isPromise(result)) {
+          /**
+           * Await it!
+           */
+          await result;
+        }
       } else if (action === 'showCharacter') {
         const next = indexedQueue.slice(i + 1);
         const skip = next.some(([_action, _meta]) => {
@@ -446,10 +451,10 @@ const novely = <
         if (skip) continue;
 
         match(action, meta);
-      } else if (action === 'showBackground') {
+      } else if (action === 'showBackground' || action === 'animateCharacter') {
         const next = indexedQueue.slice(i + 1);
         /**
-         * Такая же оптимизация применяется к фонам.
+         * Такая же оптимизация применяется к фонам и анимированию персонажей.
          * Если фон изменится, то нет смысла устанавливать текущий
          */
         const notLatest = next.some(([_action]) => action === _action);
@@ -535,9 +540,6 @@ const novely = <
 
   const match = matchAction({
     wait([time]) {
-      /**
-       * `restoring` может поменяться на `true` перед тем как запуститься `push` из `setTimeout`
-       */
       if (!restoring) setTimeout(push, isFunction(time) ? time() : time);
     },
     showBackground([background]) {
@@ -565,7 +567,7 @@ const novely = <
     },
     dialog([character, content, emotion]) {
       /**
-       * Имя персонажа, с учетом выбранного языка
+       * Person name
        */
       const name = (() => {
         const c = character, cs = characters;
@@ -605,9 +607,13 @@ const novely = <
         enmemory();
 
         /**
-         * Если был вопрос, то `index` смещается на единицу назад, поэтому нужно добавить единицу
+         * If there is a question, then `index` should be shifted by `1`
          */
-        stack.value[0].push(['choice', isWithoutQuestion ? selected : selected + 1], [null, 0]), render(), interactivity(true);
+        const offset = isWithoutQuestion ? 0 : 1;
+
+        stack.value[0].push(['choice', selected + offset], [null, 0]);
+        render();
+        interactivity(true);
       });
     },
     jump([scene]) {
@@ -698,9 +704,10 @@ const novely = <
         });
       }
 
-      handler.callOnlyLatest = true;
-
-      return renderer.custom(handler, goingBack, () => { }), push();
+      /**
+       * `callOnlyLatest` property will not have any effect, because `custom` is called directly
+       */
+      match('custom', [handler]);
     },
     text(text) {
       renderer.text(text.map((content) => unwrap(content)).join(' '), forward);
