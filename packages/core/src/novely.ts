@@ -395,7 +395,17 @@ const novely = <
       }
     }
 
-    const indexedQueue = queue.map((value, index) => value.concat(index) as [Exclude<ValidAction[0], ValidAction>, ValidAction[1], number]);
+    queue.forEach((value, index) => {
+      /**
+       * Mutate the queue item
+       */
+      value.push(index);
+    });
+
+    /**
+     * This is basically made for TypeScript.
+     */
+    const indexedQueue = queue as unknown as [Exclude<ValidAction[0], ValidAction>, ValidAction[1], number][];
 
     for await (const [action, meta, i] of indexedQueue) {
       if (action === 'function' || action === 'custom') {
