@@ -335,9 +335,6 @@ const novely = <
 
     restoring = true, stack.value = latest;
 
-    renderer.ui.showScreen('game');
-    match('clear', [goingBack]);
-
     /**
      * Текущий элемент в истории
      */
@@ -407,17 +404,26 @@ const novely = <
      */
     const indexedQueue = queue as unknown as [Exclude<ValidAction[0], ValidAction>, ValidAction[1], number][];
 
+    /**
+     * Run these exactly before the main loop.
+     */
+    renderer.ui.showScreen('game'), match('clear', [goingBack]);
+
+    /**
+     * Get the next actions array.
+     */
+    const next = (i: number) => indexedQueue.slice(i + 1);
+
     for await (const [action, meta, i] of indexedQueue) {
       if (action === 'function' || action === 'custom') {
         /**
-         * Если `callOnlyLatest` - `true`
+         * When `callOnlyLatest` is `true`
          */
         if (action === 'custom' && (meta as GetActionParameters<'Custom'>)[0].callOnlyLatest) {
           /**
-           * Вычислим `latest` или нет
+           * We'll calculate it is `latest` or not
            */
-          const next = indexedQueue.slice(i + 1);
-          const notLatest = next.some(([_action, _meta]) => _meta && meta && str(_meta[0]) === str(meta[0]));
+          const notLatest = next(i).some(([_action, _meta]) => _meta && meta && str(_meta[0]) === str(meta[0]));
 
           if (notLatest) continue;
         }
@@ -437,8 +443,7 @@ const novely = <
           await result;
         }
       } else if (action === 'showCharacter') {
-        const next = indexedQueue.slice(i + 1);
-        const skip = next.some(([_action, _meta]) => {
+        const skip = next(i).some(([_action, _meta]) => {
           /**
            * Проверка на возможный `undefined`
            */
@@ -462,12 +467,11 @@ const novely = <
 
         match(action, meta);
       } else if (action === 'showBackground' || action === 'animateCharacter') {
-        const next = indexedQueue.slice(i + 1);
         /**
          * Такая же оптимизация применяется к фонам и анимированию персонажей.
          * Если фон изменится, то нет смысла устанавливать текущий
          */
-        const notLatest = next.some(([_action]) => action === _action);
+        const notLatest = next(i).some(([_action]) => action === _action);
 
         if (notLatest) continue;
 
