@@ -6,6 +6,8 @@ import { loadSlim } from 'tsparticles-slim'
 
 let loaded = false;
 
+const ID = Symbol();
+
 type SingleParticlesOptions = RecursivePartial<IOptions>;
 type ParticlesOptions = SingleOrMultiple<SingleParticlesOptions>;
 
@@ -73,12 +75,13 @@ const particles = (options: ParticlesOptions): CustomHandler => {
   }
 
   handler.callOnlyLatest = handler.skipClearOnGoingBack = true;
+  handler.id = ID;
 
   return handler;
 }
 
-const hide = (): CustomHandler => {
-  return (get) => {
+const hide = () => {
+  const handler: CustomHandler = (get) => {
     const layer = get('particles');
 
     /**
@@ -96,6 +99,11 @@ const hide = (): CustomHandler => {
      */
     layer.delete();
   }
+
+  handler.callOnlyLatest = true;
+  handler.id = ID;
+
+  return handler
 }
 
 export { particles, hide }

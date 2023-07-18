@@ -59,6 +59,8 @@ type CustomHandler = CustomHandlerFunction & {
   callOnlyLatest?: boolean;
   requireUserAction?: boolean;
   skipClearOnGoingBack?: boolean;
+
+  id?: string | symbol;
 };
 
 interface ActionInputOnInputMeta {

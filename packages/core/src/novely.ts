@@ -436,7 +436,22 @@ const novely = <
           /**
            * We'll calculate it is `latest` or not
            */
-          const notLatest = next(i).some(([_action, _meta]) => _meta && meta && str(_meta[0]) === str(meta[0]));
+          const notLatest = next(i).some(([_action, _meta]) => {
+            if (!_meta || !meta) return false;
+
+            const c0 = _meta[0] as unknown as GetActionParameters<'Custom'>[0];
+            const c1 =  meta[0] as unknown as GetActionParameters<'Custom'>[0];
+
+            /**
+             * Also check for `undefined`
+             */
+            const isIdenticalID = c0.id && c1.id && c0.id === c1.id;
+            
+            /**
+             * Equal by id or equal by `toString()`
+             */
+            return isIdenticalID || (str(_meta[0]) === str(meta[0]));
+          });
 
           if (notLatest) continue;
         }
