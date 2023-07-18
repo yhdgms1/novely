@@ -132,7 +132,7 @@ engine.withStory({
       'Lily',
       t({
         en: 'Hello!',
-        ru: 'Привет!'
+        ru: () => ['Привет!']
       })
     ),
     action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),

@@ -6,16 +6,32 @@ type FunctionalSetupT9N = <LanguageKey extends string, PluralKey extends string,
 type SetupT9N<LanguageKey extends string> = <PluralKey extends string, StringKey extends string, Actions extends string>(parameters: { [Lang in LanguageKey]: { pluralization: { [Plural in PluralKey]: Partial<Record<PluralType, string>> }; internal: { [Key in BaseTranslationStrings]: string }; strings: { [Str in StringKey]: string }; actions?: { [Action in Actions]?: (value: string) => string; } } }) => T9N<LanguageKey, StringKey>
 
 type T9N<LanguageKey extends string, StringKey extends string> = {
-  t(key: StringKey | Record<LanguageKey, string>): (lang: LanguageKey | (string & {}), obj: Record<string, unknown>) => string;
+  t(key: StringKey | Record<LanguageKey, AllowedContent>): (lang: LanguageKey | (string & {}), obj: Record<string, unknown>) => string;
   i(key: StringKey, lang: LanguageKey | (string & {})): string;
 }
 
 const RGX = /{{(.*?)}}/g;
 
-const replace = (str: string | string[], obj: Record<string, unknown>, pluralization?: Record<string, Record<string, PluralType>>, actions?: Partial<Record<string, (str: string) => string>>, pr?: Intl.PluralRules) => {
-  if (Array.isArray(str)) str = str.join('');
+type AllowedContent = string | (() => string | string[]) | string[] | (string | (() => string | string[]))[];
 
-  return str.replace(RGX, (x: any, key: string, y: any) => {
+/**
+ * Unwraps any allowed content into string
+ * @param c Content
+ */
+const unwrap = (c: AllowedContent): string => {
+  if (Array.isArray(c)) {
+    return c.map(item => unwrap(item)).join('<br>');
+  }
+
+  if (typeof c === 'function') {
+    return unwrap(c())
+  }
+
+  return c;
+}
+
+const replace = (str: AllowedContent, obj: Record<string, unknown>, pluralization?: Record<string, Record<string, PluralType>>, actions?: Partial<Record<string, (str: string) => string>>, pr?: Intl.PluralRules) => {
+  return unwrap(str).replace(RGX, (x: any, key: string, y: any) => {
     x = 0;
     y = obj;
 
@@ -69,4 +85,4 @@ const createT9N: FunctionalSetupT9N = (parameters) => {
 }
 
 export { createT9N, replace }
-export type { SetupT9N, T9N, FunctionalSetupT9N } 
+export type { SetupT9N, T9N, AllowedContent, FunctionalSetupT9N } 

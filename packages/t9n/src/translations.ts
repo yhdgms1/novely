@@ -54,5 +54,65 @@ const EN: Record<BaseTranslationStrings, string> = {
   'TextSpeedAuto': 'Auto'
 };
 
-export { RU, EN }
+/**
+ * Translated automatically
+ */
+const KK: Record<BaseTranslationStrings, string> = {
+  "NewGame": "Жаңа ойын",
+  "HomeScreen": "Негізгі экран",
+  "ToTheGame": "Ойынға",
+  "Language": "Тіл",
+  "NoSaves": "Сақтау жоқ",
+  "LoadSave": "Жүктеу",
+  "Saves": "Сақтау",
+  "Settings": "Параметрлер",
+  "Sumbit": "Растау",
+  "GoBack": "Артқа",
+  "DoSave": "Сақтау",
+  "Auto": "Авто",
+  "Stop": "Тоқта",
+  "Exit": "Шығу",
+  "Automatic": "Автоматты",
+  "Manual": "Қолмен",
+  "Remove": "Жою",
+  "LoadASaveFrom": "Сақтауды жүктеу",
+  "DeleteASaveFrom": "Сақтауды жою",
+  "TextSpeed": "Мәтін Жылдамдығы",
+  "TextSpeedSlow": "Баяу",
+  "TextSpeedMedium": "Орташа",
+  "TextSpeedFast": "Жылдам",
+  "TextSpeedAuto": "Автоматты"
+}
+
+/**
+ * Translated automatically
+ */
+const JP: Record<BaseTranslationStrings, string> = {
+  "NewGame": "「新しいゲーム」",
+  "HomeScreen": "ホーム画面",
+  "ToTheGame": "「ゲームに戻る」",
+  "Language": "言語",
+  "NoSaves": "ノーセーブ",
+  "LoadSave": "ダウンロード",
+  "Saves": "保存",
+  "Settings": "設定",
+  "Sumbit": "確認",
+  "GoBack": "「戻る」",
+  "DoSave": "保存",
+  "Auto": "オート",
+  "Stop": "止まれ",
+  "Exit": "出口",
+  "Automatic": "自動",
+  "Manual": "マニュアル",
+  "Remove": "削除",
+  "LoadASaveFrom": "ロードセーブから",
+  "DeleteASaveFrom": "から保存を削除",
+  "TextSpeed": "テキストスピード",
+  "TextSpeedSlow": "「遅い」",
+  "TextSpeedMedium": "ミディアム",
+  "TextSpeedFast": "「速い」",
+  "TextSpeedAuto": "自動"
+}
+
+export { RU, EN, KK, JP }
 export type { BaseTranslationStrings }
