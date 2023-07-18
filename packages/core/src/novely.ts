@@ -846,6 +846,7 @@ const novely = <
    * @example ```
    * unwrap(t('Hello'));
    * unwrap({ en: 'Hello', ru: 'Привет' });
+   * unwrap({ en: () => data().ad_viewed ? 'Diamond Hat' : 'Diamond Hat (Watch Adv)' })
    * unwrap('Hello, {{name}}');
    * ```
    */
@@ -853,11 +854,13 @@ const novely = <
     const { data, meta: [lang] } = $.get();
 
     const obj = global ? data : state();
-    const str = isFunction(content)
+    const cnt = isFunction(content)
       ? content(lang, obj)
-      : typeof content === 'object'
-        ? content[lang]
-        : content;
+      : typeof content === 'string'
+        ? content
+        : content[lang];
+
+    const str = isFunction(cnt) ? cnt() : cnt;
     
     return replaceT9N(str, obj);
   }
