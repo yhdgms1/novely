@@ -310,20 +310,16 @@ const createSolidRenderer = ({ fullscreen = false }: CreateSolidRendererOptions 
             setState('choices', { choices, question, resolve, visible: true });
           }
         },
-        clear(goingBack) {
+        clear(goingBack, keep, keepCharacters) {
           return (resolve) => {
-            /**
-             * Background will be set anyway during `restore` call, but not clearing it will remove black flashing
-             */
-            if (!goingBack) setState('background', '#000');
-
-            setState('choices', { choices: [], visible: false, resolve: undefined, question: '' });
-            setState('input', { element: undefined, question: '', visible: false });
-            setState('dialog', { visible: false, content: '', name: '' });
-            setState('text', { content: '' });
+            if (!keep.has('showBackground')) setState('background', '#000');
+            if (!keep.has('choice')) setState('choices', { choices: [], visible: false, resolve: undefined, question: '' });
+            if (!keep.has('input')) setState('input', { element: undefined, question: '', visible: false, error: '' });
+            if (!keep.has('dialog')) setState('dialog', { visible: false, content: '', name: '' });
+            if (!keep.has('text')) setState('text', { content: '' });
 
             for (const character of Object.keys(state.characters)) {
-              setState('characters', character, { visible: false });
+              if (!keepCharacters.has(character)) setState('characters', character, { visible: false });
             }
 
             for (const [id, layer] of Object.entries(state.layers)) {

@@ -3,7 +3,7 @@ import type { Thenable } from './types'
 
 type ValidAction =
   | ['choice', [number]]
-  | ['clear', []]
+  | ['clear', [Set<keyof DefaultActionProxyProvider>?, Set<string>?]]
   | ['condition', [() => boolean, Record<string, ValidAction[]>]]
   | ['dialog', [string | undefined, Unwrappable, string | undefined]]
   | ['end', []]
@@ -88,7 +88,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
     (...choices: ([Unwrappable, ValidAction[]] | [Unwrappable, ValidAction[], () => boolean])[]): ValidAction;
     (question: Unwrappable, ...choices: ([Unwrappable, ValidAction[]] | [Unwrappable, ValidAction[], () => boolean])[]): ValidAction;
   }
-  clear: () => ValidAction;
+  clear: (keep?: Set<keyof DefaultActionProxyProvider>, keepCharacters?: Set<string>) => ValidAction;
   condition: <T extends string | true | false>(condition: () => T, variants: Record<T extends true ? 'true' : T extends false ? 'false' : T, ValidAction[]>) => ValidAction;
   exit: () => ValidAction;
   dialog: {

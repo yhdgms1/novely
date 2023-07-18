@@ -8,7 +8,7 @@ import { matchAction, isNumber, isNull, isString, isPromise, isEmpty, str, isUse
 import { store } from './store';
 import { all as deepmerge } from 'deepmerge'
 import { klona } from 'klona/json';
-import { SKIPPED_DURING_RESTORE } from './constants';
+import { SKIPPED_DURING_RESTORE, EMPTY_SET } from './constants';
 import { replace as replaceT9N } from '@novely/t9n';
 
 interface NovelyInit<Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>, StateScheme extends State, DataScheme extends Data> {
@@ -354,6 +354,8 @@ const novely = <
     }, 0);
 
     const queue = [] as [any, any][];
+    const keep = new Set();
+    const characters = new Set();
 
     for (const [type, val] of stack.value[0]) {
       if (type === null) {
@@ -364,9 +366,16 @@ const novely = <
 
           /**
            * Запустим все экшены которые идут в `[null, int]` от `0` до `int`
+           * Почему-то потребовалось изменить `<` на `<=`, чтобы последний action попадал сюда
            */
-          for (let i = 0; i < val; i++) {
+          for (let i = 0; i <= val; i++) {
             const [action, ...meta] = current[i];
+
+            /**
+             * Add actions and characters to keep. They will be changed, but not removed. So the flashing is gone
+             */
+            keep.add(action);
+            if (action === 'showCharacter') characters.add(meta[0]);
 
             /**
              * Экшены, для закрытия которых пользователь должен с ними взаимодействовать
@@ -407,7 +416,11 @@ const novely = <
     /**
      * Run these exactly before the main loop.
      */
-    renderer.ui.showScreen('game'), match('clear', [goingBack]);
+    renderer.ui.showScreen('game');
+    /**
+     * Provide the `keep` in there
+     */
+    match('clear', [keep, characters]);
 
     /**
      * Get the next actions array.
@@ -638,9 +651,15 @@ const novely = <
 
       match('clear', []);
     },
-    clear() {
+    clear([keep, characters]) {
+      /**
+       * Remove vibration
+       */
       vibrate(0);
-      renderer.clear(goingBack)(push);
+      /**
+       * Call the actual `clear`
+       */
+      renderer.clear(goingBack, keep || EMPTY_SET, characters || EMPTY_SET)(push);
     },
     condition([condition]) {
       const value = condition();

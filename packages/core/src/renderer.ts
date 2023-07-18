@@ -35,7 +35,7 @@ type Renderer = {
   choices: (question: string, choices: ([string, ValidAction[]] | [string, ValidAction[], () => boolean])[]) => (resolve: (selected: number) => void) => void;
   input: (question: string, onInput: Parameters<DefaultActionProxyProvider['input']>[1], setup?: Parameters<DefaultActionProxyProvider['input']>[2]) => (resolve: () => void) => void;
   music: (source: string, method: keyof RendererStore['audio']) => AudioHandle;
-  clear: (goingBack: boolean) => (resolve: () => void) => void;
+  clear: (goingBack: boolean, keep: Set<keyof DefaultActionProxyProvider>, keepCharacters: Set<string>) => (resolve: () => void) => void;
   custom: (fn: Parameters<DefaultActionProxyProvider['custom']>[0], goingBack: boolean, push: () => void) => Thenable<void>;
   text: (str: string, resolve: () => void) => void;
   store: RendererStore;

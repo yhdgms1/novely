@@ -6,4 +6,6 @@ const SKIPPED_DURING_RESTORE = new Set([
   'text'
 ] as const);
 
-export { SKIPPED_DURING_RESTORE }
+const EMPTY_SET = new Set<any>();
+
+export { SKIPPED_DURING_RESTORE, EMPTY_SET }
