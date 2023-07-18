@@ -117,7 +117,6 @@ const Game: VoidComponent<GameProps> = (props) => {
       <div
         class="action-dialog"
         style={{ display: props.state.dialog.visible ? 'flex' : 'none' }}
-        onClick={DialogWriter.clear}
       >
         <DialogName
           character={props.state.dialog.character}
@@ -127,6 +126,25 @@ const Game: VoidComponent<GameProps> = (props) => {
         <div 
           class="action-dialog-container"
           data-no-person={!(props.state.dialog.character && props.state.dialog.emotion)}
+
+          aria-disabled={!props.state.dialog.content}
+
+          role="button"
+          tabIndex={0}
+          
+          title={DialogWriter.state() === 'idle' ? undefined : data.t(DialogWriter.state() === 'processing' ? 'CompleteText' : 'GoForward')}
+  
+          onClick={DialogWriter.clear}
+          onKeyPress={event => {
+            if (event.key === 'Enter') {
+              DialogWriter.clear();
+            }
+          }}
+          onKeyDown={event => {
+            if (event.key === ' ') {
+              DialogWriter.clear();
+            }
+          }}
         >
           <div class="action-dialog-person">
             <Show when={props.state.dialog.emotion} keyed>
@@ -158,16 +176,16 @@ const Game: VoidComponent<GameProps> = (props) => {
               }}
             </Show>
           </div>
-          <DialogWriter.Typewriter
-            attributes={{
-              class: 'action-dialog-content'
-            }}
+          <div
+            class="action-dialog-content"
+          >
+            <DialogWriter.Typewriter
+              content={props.state.dialog.content}
+              speed={speed()}
 
-            content={props.state.dialog.content}
-            speed={speed()}
-
-            ended={onWriterEnd(DialogWriter.clear)}
-          />
+              ended={onWriterEnd(DialogWriter.clear)}
+            />
+          </div>
         </div>
       </div>
 
@@ -251,8 +269,14 @@ const Game: VoidComponent<GameProps> = (props) => {
 
       <div
         class="action-text"
-
         data-shown={Boolean(props.state.text.content)}
+
+        aria-disabled={!props.state.text.content}
+
+        role="button"
+        tabIndex={0}
+
+        title={TextWriter.state() === 'idle' ? undefined : data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward')}
 
         onClick={TextWriter.clear}
         onKeyPress={event => {
@@ -265,11 +289,6 @@ const Game: VoidComponent<GameProps> = (props) => {
             TextWriter.clear();
           }
         }}
-
-        title={TextWriter.state() === 'idle' ? undefined : data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward')}
-
-        role="button"
-        tabIndex={0}
       >
         <TextWriter.Typewriter
           content={props.state.text.content}
