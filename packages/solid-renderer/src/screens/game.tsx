@@ -4,16 +4,15 @@ import type { JSX } from 'solid-js';
 import type { SetStoreFunction } from 'solid-js/store'
 import type { State, SolidRendererStore } from '../renderer'
 
-import { createEffect, createSignal, untrack, For, Show } from 'solid-js'
+import { createSignal, untrack, For, Show } from 'solid-js'
 import { DialogName } from '../components/DialogName';
 import { Character } from '../components/Character';
 import { Modal } from '../components/Modal';
 import { Icon } from '../components/Icon';
+import { createTypewriter } from '../components/Typewriter';
 
-import { typewriter } from '@novely/typewriter'
 import { useData } from '../context'
 import { canvasDrawImages, url, isCSSImage } from '../utils'
-import { TEXT_SPEED_MAP } from '../constants'
 
 interface GameProps {
   state: State;
@@ -24,21 +23,6 @@ interface GameProps {
   renderer: Renderer;
 }
 
-interface Writer {
-  instance: ReturnType<typeof typewriter> | undefined;
-  /**
-   * In example PRM was enabled, text was set, then PRM was disabled.
-   * 
-   * Is writer done? No.
-   * Is PRM enabled? No.
-   * 
-   * This is used to overcome this situation.
-   */
-  bypassed: boolean;
-}
-
-const PRM = matchMedia('(prefers-reduced-motion: reduce)');
-
 const Game: VoidComponent<GameProps> = (props) => {
   const data = useData();
 
@@ -46,11 +30,6 @@ const Game: VoidComponent<GameProps> = (props) => {
    * Can be destructured because these are passed without getters
    */
   const { setState, characters, store, renderer } = props;
-
-  let writer: Writer = {
-    bypassed: false,
-    instance: undefined
-  }
 
   const background = () => {
     const is = isCSSImage(props.state.background)
@@ -60,77 +39,6 @@ const Game: VoidComponent<GameProps> = (props) => {
 
   const [auto, setAuto] = createSignal(false);
 
-  const getCurrentContent = (): readonly [element: HTMLElement | undefined, text: string] => {
-    const state = props.state;
-
-    if (state.dialog.content) {
-      return [store.dialogRef, state.dialog.content]
-    } else {
-      return [store.textRef, state.text.content]
-    }
-  }
-
-  createEffect(() => {
-    const [element, text] = getCurrentContent();
-
-    /**
-     * Stop animation
-     */
-    writer.instance?.destroy();
-
-    /**
-     * In case element is not present do not start the typewriter
-     */
-    if (!element) return;
-    /**
-     * When text is empty
-     */
-    if (!text) return;
-
-    /**
-     * When prefers-reduced-motion is enabled, then set the content immediately and completely
-     */
-    if (PRM.matches) {
-      /**
-       * Spaces replaces here for consistency
-       */
-      element.innerHTML = text.replace(/ /gm, '&#8197;');
-      writer.bypassed = true;
-
-      return;
-    }
-
-    const speed = data.storeData().meta[1];
-
-    /**
-     * Start new instance
-     */
-    writer.instance = typewriter({
-      node: element,
-      text,
-      ended() {
-        /**
-         * Ended without user interaction
-         */
-        const next = untrack(auto);
-
-        /**
-         * When `auto` mode is disabled
-         */
-        if (!next) return;
-
-        if (PRM.matches) {
-          setAuto(false);
-        } else {
-          untrack(clearTypewriterEffect)
-        }
-      },
-      speed: TEXT_SPEED_MAP[speed]
-    });
-
-    writer.bypassed = false;
-  });
-
   const onChoicesButtonClick = ([disabled, i]: [boolean, number]) => {
     if (disabled) return;
 
@@ -138,22 +46,6 @@ const Game: VoidComponent<GameProps> = (props) => {
 
     setState('choices', { choices: [], visible: false, resolve: undefined, question: '' });
     resolve?.(i);
-  }
-
-  const clearTypewriterEffect = () => {
-    const reduced = PRM.matches;
-    const written = writer.instance && writer.instance.end();
-
-    if (reduced || written || writer.bypassed) {
-      const resolve = props.state.dialog.resolve || props.state.text.resolve;
-
-      setState('dialog', { content: '', name: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
-      setState('text', { content: '', resolve: undefined });
-      
-      writer.bypassed = false;
-
-      resolve?.();
-    }
   }
 
   const onInputButtonClick = () => {
@@ -169,6 +61,43 @@ const Game: VoidComponent<GameProps> = (props) => {
   }
 
   const layers = () => Object.values(props.state.layers);
+
+  const speed = () => data.storeData().meta[1];
+
+  const onWriterEnd = (cb: () => void) => {
+    return (prm: boolean) => {
+      const next = untrack(auto);
+
+      /**
+       * When `auto` mode is disabled
+       */
+      if (!next) return;
+
+      if (prm) {
+        setAuto(false);
+      } else {
+        untrack(cb)
+      }
+    }
+  }
+
+  const TextWriter = createTypewriter({
+    resolve() {
+      const resolve = props.state.text.resolve!;
+
+      setState('text', { content: '', resolve: undefined });
+      resolve();
+    }
+  });
+
+  const DialogWriter = createTypewriter({
+    resolve() {
+      const resolve = props.state.dialog.resolve!;
+
+      setState('dialog', { content: '', name: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
+      resolve();
+    }
+  });
 
   return (
     <div class="root game" style={background()}>
@@ -188,7 +117,7 @@ const Game: VoidComponent<GameProps> = (props) => {
       <div
         class="action-dialog"
         style={{ display: props.state.dialog.visible ? 'flex' : 'none' }}
-        onClick={clearTypewriterEffect}
+        onClick={DialogWriter.clear}
       >
         <DialogName
           character={props.state.dialog.character}
@@ -229,7 +158,16 @@ const Game: VoidComponent<GameProps> = (props) => {
               }}
             </Show>
           </div>
-          <p class="action-dialog-content" ref={store.dialogRef} />
+          <DialogWriter.Typewriter
+            attributes={{
+              class: 'action-dialog-content'
+            }}
+
+            content={props.state.dialog.content}
+            speed={speed()}
+
+            ended={onWriterEnd(DialogWriter.clear)}
+          />
         </div>
       </div>
 
@@ -288,7 +226,7 @@ const Game: VoidComponent<GameProps> = (props) => {
                 {props.state.input.question}
               </span>
               {props.state.input.element}
-              <span aria-live="polite">
+              <span aria-live="polite" aria-atomic="true">
                 {props.state.input.error}
               </span>
             </label>
@@ -311,8 +249,34 @@ const Game: VoidComponent<GameProps> = (props) => {
         </For>
       </div>
 
-      <div class="action-text" data-shown={Boolean(props.state.text.content)} onClick={clearTypewriterEffect}>
-        <span ref={store.textRef} />
+      <div
+        class="action-text"
+
+        data-shown={Boolean(props.state.text.content)}
+
+        onClick={TextWriter.clear}
+        onKeyPress={event => {
+          if (event.key === 'Enter') {
+            TextWriter.clear();
+          }
+        }}
+        onKeyDown={event => {
+          if (event.key === ' ') {
+            TextWriter.clear();
+          }
+        }}
+
+        title={TextWriter.state() === 'idle' ? undefined : data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward')}
+
+        role="button"
+        tabIndex={0}
+      >
+        <TextWriter.Typewriter
+          content={props.state.text.content}
+          speed={speed()}
+
+          ended={onWriterEnd(TextWriter.clear)}
+        />
       </div>
 
       <div class="control-panel">

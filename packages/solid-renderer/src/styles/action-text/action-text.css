@@ -22,7 +22,7 @@
   align-items: center;
   justify-content: center;
 
-  background: var(--novely-fullscreen-backgroun-color, rgba(0, 0, 0, 0.3));
+  background: var(--novely-fullscreen-background-color, rgba(0, 0, 0, 0.3));
   
   text-shadow: var(
     --novely-fullscreen-text-shadow,
@@ -38,4 +38,8 @@
 
   word-wrap: break-word;
   word-break: break-word;
+}
+
+.action-text[data-shown="true"]:focus-visible > span {
+  text-decoration: underline;
 }

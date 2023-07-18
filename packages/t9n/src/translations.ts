@@ -22,7 +22,9 @@ const RU = {
   'TextSpeedSlow': 'Медленная',
   'TextSpeedMedium': 'Средняя',
   'TextSpeedFast': 'Быстрая',
-  'TextSpeedAuto': 'Автоматическая'
+  'TextSpeedAuto': 'Автоматическая',
+  'CompleteText': 'Завершить текст',
+  'GoForward': 'Перейти вперёд'
 };
 
 type BaseTranslationStrings = keyof typeof RU;
@@ -51,7 +53,9 @@ const EN: Record<BaseTranslationStrings, string> = {
   'TextSpeedSlow': 'Slow',
   'TextSpeedMedium': 'Medium',
   'TextSpeedFast': 'Fast',
-  'TextSpeedAuto': 'Auto'
+  'TextSpeedAuto': 'Auto',
+  'CompleteText': 'Complete text',
+  'GoForward': 'Go forward'
 };
 
 /**
@@ -81,7 +85,9 @@ const KK: Record<BaseTranslationStrings, string> = {
   "TextSpeedSlow": "Баяу",
   "TextSpeedMedium": "Орташа",
   "TextSpeedFast": "Жылдам",
-  "TextSpeedAuto": "Автоматты"
+  "TextSpeedAuto": "Автоматты",
+  'CompleteText': 'Мәтінді аяқтау',
+  'GoForward': 'Алға жылжу'
 }
 
 /**
@@ -111,7 +117,9 @@ const JP: Record<BaseTranslationStrings, string> = {
   "TextSpeedSlow": "「遅い」",
   "TextSpeedMedium": "ミディアム",
   "TextSpeedFast": "「速い」",
-  "TextSpeedAuto": "自動"
+  "TextSpeedAuto": "自動",
+  'CompleteText': 'テキストを完成させる',
+  'GoForward': '先に行く'
 }
 
 export { RU, EN, KK, JP }
