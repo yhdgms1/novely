@@ -372,9 +372,16 @@ const novely = <
             const [action, ...meta] = current[i];
 
             /**
-             * Add actions and characters to keep. They will be changed, but not removed. So the flashing is gone
+             * Add item to queue and action to keep
              */
-            keep.add(action);
+            const push = () => {
+              keep.add(action);
+              queue.push([action, meta]);
+            }
+
+            /**
+             * Do not remove characters that will be here anyways
+             */
             if (action === 'showCharacter') characters.add(meta[0]);
 
             /**
@@ -383,13 +390,13 @@ const novely = <
              */
             if (SKIPPED_DURING_RESTORE.has(action) || isUserRequiredAction(action, meta)) {
               if (index === max && i === val) {
-                queue.push([action, meta]);
+                push();
               } else {
                 continue;
               }
             }
 
-            queue.push([action, meta]);
+            push();
           }
 
           current = current[val];
@@ -450,7 +457,7 @@ const novely = <
             /**
              * Equal by id or equal by `toString()`
              */
-            return isIdenticalID || (str(_meta[0]) === str(meta[0]));
+            return isIdenticalID || (str(c0) === str(c1));
           });
 
           if (notLatest) continue;
