@@ -17,8 +17,16 @@
     "languages": [
       {
         "id": "nvly",
-        "aliases": ["Novely", "nvly", "nvl"],
-        "extensions": [".nvl", ".nvly", ".novely"],
+        "aliases": [
+          "Novely",
+          "nvly",
+          "nvl"
+        ],
+        "extensions": [
+          ".nvl",
+          ".nvly",
+          ".novely"
+        ],
         "configuration": "./language-configuration.json"
       }
     ],

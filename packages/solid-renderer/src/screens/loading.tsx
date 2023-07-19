@@ -1,6 +1,6 @@
-import type { VoidComponent } from 'solid-js'
+import type { VoidComponent } from "solid-js";
 
-interface LoadingProps { }
+interface LoadingProps {}
 
 const Loading: VoidComponent<LoadingProps> = () => {
   return (
@@ -12,7 +12,7 @@ const Loading: VoidComponent<LoadingProps> = () => {
         <div />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export { Loading }
+export { Loading };

@@ -1,5 +1,5 @@
-import type { Character } from '@novely/core'
-import type { VoidComponent } from 'solid-js';
+import type { Character } from "@novely/core";
+import type { VoidComponent } from "solid-js";
 
 interface DialogNameProps {
   character?: string;
@@ -12,8 +12,8 @@ const DialogName: VoidComponent<DialogNameProps> = (props) => {
     const c = props.character;
     const cs = props.characters;
 
-    return c ? c in cs ? cs[c].color : '#000' : '#000';
-  }
+    return c ? (c in cs ? cs[c].color : "#000") : "#000";
+  };
 
   return (
     <span
@@ -21,12 +21,12 @@ const DialogName: VoidComponent<DialogNameProps> = (props) => {
       style={{
         color: color(),
         opacity: props.character ? 1 : 0,
-        visibility: props.character ? 'visible' : 'hidden',
+        visibility: props.character ? "visible" : "hidden",
       }}
     >
       {props.name || <>&#8197;</>}
     </span>
-  )
-}
+  );
+};
 
-export { DialogName }
+export { DialogName };

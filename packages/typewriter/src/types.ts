@@ -2,11 +2,11 @@ interface TypewriterOptions {
   /**
    * The node where the typewriter effect will be ran
    */
-  node: HTMLElement,
+  node: HTMLElement;
   /**
    * Text to be written by typewriter effect
    */
-  text: string,
+  text: string;
   /**
    * Time for letter to be written
    */
@@ -17,4 +17,4 @@ interface TypewriterOptions {
   ended?: () => void;
 }
 
-export type { TypewriterOptions }
+export type { TypewriterOptions };

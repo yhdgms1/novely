@@ -1,5 +1,11 @@
-import type { Accessor, FlowComponent } from 'solid-js';
-import type { Renderer, RendererInit, StorageData, Stored, BaseTranslationStrings } from '@novely/core';
+import type { Accessor, FlowComponent } from "solid-js";
+import type {
+  Renderer,
+  RendererInit,
+  StorageData,
+  Stored,
+  BaseTranslationStrings,
+} from "@novely/core";
 
 import { from, createContext, useContext, Show } from "solid-js";
 
@@ -33,21 +39,22 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
     renderer: props.renderer,
 
     t(key: BaseTranslationStrings | (string & {})) {
-      return props.options.t(key as BaseTranslationStrings, this.storeData().meta[0])
-    }
-  }
+      return props.options.t(
+        key as BaseTranslationStrings,
+        this.storeData().meta[0],
+      );
+    },
+  };
 
   return (
     <Context.Provider value={value}>
-      <Show when={storeData()}>
-        {props.children}
-      </Show>
+      <Show when={storeData()}>{props.children}</Show>
     </Context.Provider>
-  )
-}
+  );
+};
 
 const useData = () => {
   return useContext(Context)!;
-}
+};
 
-export { Provider, useData }
+export { Provider, useData };

@@ -1,8 +1,13 @@
-import type { SingleOrMultiple, RecursivePartial, IOptions, Container } from 'tsparticles-engine';
-import type { CustomHandler } from '@novely/core';
+import type {
+  SingleOrMultiple,
+  RecursivePartial,
+  IOptions,
+  Container,
+} from "tsparticles-engine";
+import type { CustomHandler } from "@novely/core";
 
-import { tsParticles } from 'tsparticles-engine'
-import { loadSlim } from 'tsparticles-slim'
+import { tsParticles } from "tsparticles-engine";
+import { loadSlim } from "tsparticles-slim";
 
 let loaded = false;
 
@@ -16,7 +21,7 @@ const withDefault = (options: SingleParticlesOptions) => {
   options.fullScreen ||= { enable: true, zIndex: 2 };
 
   return options;
-}
+};
 
 const particles = (options: ParticlesOptions): CustomHandler => {
   const handler: CustomHandler = async (get, goingBack) => {
@@ -31,7 +36,7 @@ const particles = (options: ParticlesOptions): CustomHandler => {
       loaded = true;
     }
 
-    const layer = get('particles');
+    const layer = get("particles");
 
     /**
      * Remove previous instance
@@ -66,23 +71,26 @@ const particles = (options: ParticlesOptions): CustomHandler => {
     if (optionsEqual && Boolean(data.instance)) return;
     if (optionsEqual && goingBack) return;
 
-    const instance = await tsParticles.load('particles', Array.isArray(options) ? options.map(withDefault) : withDefault(options));
+    const instance = await tsParticles.load(
+      "particles",
+      Array.isArray(options) ? options.map(withDefault) : withDefault(options),
+    );
 
     /**
      * Set the instance
      */
     layer.data({ instance, options });
-  }
+  };
 
   handler.callOnlyLatest = handler.skipClearOnGoingBack = true;
   handler.id = ID;
 
   return handler;
-}
+};
 
 const hide = () => {
   const handler: CustomHandler = (get) => {
-    const layer = get('particles');
+    const layer = get("particles");
 
     /**
      * Get the instance
@@ -98,12 +106,12 @@ const hide = () => {
      * Delete the layer
      */
     layer.delete();
-  }
+  };
 
   handler.callOnlyLatest = true;
   handler.id = ID;
 
-  return handler
-}
+  return handler;
+};
 
-export { particles, hide }
+export { particles, hide };

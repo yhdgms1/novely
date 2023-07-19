@@ -30,8 +30,8 @@
     overflow: hidden;
     position: absolute;
     white-space: nowrap;
-    width: 1px;  
-  }  
+    width: 1px;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {

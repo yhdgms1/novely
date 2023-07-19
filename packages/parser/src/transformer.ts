@@ -1,86 +1,92 @@
-import type { Ast, AstNode, TransformOptions } from './types';
+import type { Ast, AstNode, TransformOptions } from "./types";
 
 const transform = (ast: Ast, { rewrites = {} }: TransformOptions = {}) => {
-  let code = '($values1) => ({';
+  let code = "($values1) => ({";
 
   const print_js_value = (value: Extract<AstNode, { type: "JSValue" }>) => {
-    if (['undefined', 'null', 'window', 'globalThis', '()'].some(reserved => value.content.startsWith(reserved))) {
+    if (
+      ["undefined", "null", "window", "globalThis", "()"].some((reserved) =>
+        value.content.startsWith(reserved),
+      )
+    ) {
       return value.content;
     }
 
-    return `$values1.${value.content}`
-  }
+    return `$values1.${value.content}`;
+  };
 
   const print_array = (value: Extract<AstNode, { type: "Array" }>): string => {
-    return `[${value.children.map(print_with_unknown_printer).join(',')}]`;
-  }
+    return `[${value.children.map(print_with_unknown_printer).join(",")}]`;
+  };
 
   const print_value = (value: Extract<AstNode, { type: "Value" }>) => {
     const numeralized = Number(value.content);
 
     if (isNaN(numeralized) || !isFinite(numeralized)) {
-      return JSON.stringify(value.content)
+      return JSON.stringify(value.content);
     } else {
       return value.content;
     }
-  }
+  };
 
   const print_map = (value: Extract<AstNode, { type: "Map" }>) => {
-    let result = '{';
+    let result = "{";
 
     for (const child of value.children) {
-      result += print_map_item(child) + ',';
+      result += print_map_item(child) + ",";
     }
 
-    return result + '}'
-  }
+    return result + "}";
+  };
 
-  const print_action = (value: Extract<AstNode, { type: "Action" }>): string => {
+  const print_action = (
+    value: Extract<AstNode, { type: "Action" }>,
+  ): string => {
     const children = value.children.map(print_with_unknown_printer);
     const name = value.name in rewrites ? rewrites[value.name] : value.name;
 
-    return `["${name}", ${children.join(',')}]`
-  }
+    return `["${name}", ${children.join(",")}]`;
+  };
 
   const print_with_unknown_printer = (child: AstNode) => {
-    if (child.type === 'Value') {
-      return print_value(child)
-    } else if (child.type === 'JSValue') {
-      return print_js_value(child)
-    } else if (child.type === 'Map') {
+    if (child.type === "Value") {
+      return print_value(child);
+    } else if (child.type === "JSValue") {
+      return print_js_value(child);
+    } else if (child.type === "Map") {
       return print_map(child);
-    } else if (child.type === 'Action') {
-      return print_action(child)
-    } else if (child.type === 'Array') {
+    } else if (child.type === "Action") {
+      return print_action(child);
+    } else if (child.type === "Array") {
       return print_array(child);
     } else {
-      return '';
+      return "";
     }
-  }
+  };
 
   const print_map_item = (value: Extract<AstNode, { type: "MapItem" }>) => {
-    let result = value.name + ':[';
+    let result = value.name + ":[";
 
     for (const child of value.children) {
-      result += print_with_unknown_printer(child) + ','
+      result += print_with_unknown_printer(child) + ",";
     }
 
-    return result + ']'
-  }
+    return result + "]";
+  };
 
   for (const top of ast) {
-    if (top.name === '') continue;
+    if (top.name === "") continue;
 
-    code += top.name + ':['
+    code += top.name + ":[";
 
     for (const child of top.children) {
-      code += print_with_unknown_printer(child) + ','
+      code += print_with_unknown_printer(child) + ",";
     }
 
-    code += '],'
+    code += "],";
   }
 
-  return code + '})';
-}
+  return code + "})";
+};
 
-export { transform }
+export { transform };

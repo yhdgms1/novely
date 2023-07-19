@@ -62,7 +62,7 @@ render(
       }}
     />
   ),
-  document.body
+  document.body,
 );
 ```
 

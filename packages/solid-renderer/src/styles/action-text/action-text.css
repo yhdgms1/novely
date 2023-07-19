@@ -12,7 +12,7 @@
   font-size: 1.5rem;
 
   user-select: none;
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
 }
@@ -23,7 +23,7 @@
   justify-content: center;
 
   background: var(--novely-fullscreen-background-color, rgba(0, 0, 0, 0.3));
-  
+
   text-shadow: var(
     --novely-fullscreen-text-shadow,
     2px 2px 4px rgba(0, 0, 0, 0.5)
@@ -33,7 +33,7 @@
 
 .action-text[data-shown="true"] > span {
   cursor: pointer;
-  
+
   user-select: none;
 
   word-wrap: break-word;

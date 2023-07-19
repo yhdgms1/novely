@@ -1,7 +1,7 @@
-import type { VoidComponent, JSX } from 'solid-js'
-import type { SetStoreFunction } from 'solid-js/store'
-import type { State } from '../renderer'
-import { createEffect, createSignal, Show } from 'solid-js'
+import type { VoidComponent, JSX } from "solid-js";
+import type { SetStoreFunction } from "solid-js/store";
+import type { State } from "../renderer";
+import { createEffect, createSignal, Show } from "solid-js";
 
 interface CustomScreenProps {
   name: string;
@@ -37,11 +37,13 @@ const CustomScreen: VoidComponent<CustomScreenProps> = (props) => {
     unmount = undefined;
   });
 
-  const onClick: JSX.EventHandlerUnion<HTMLDivElement, MouseEvent> = ({ target }) => {
+  const onClick: JSX.EventHandlerUnion<HTMLDivElement, MouseEvent> = ({
+    target,
+  }) => {
     if (target instanceof HTMLElement && target.dataset.novelyGoto) {
-      props.setState('screen', target.dataset.novelyGoto);
+      props.setState("screen", target.dataset.novelyGoto);
     }
-  }
+  };
 
   return (
     <Show when={dom()}>
@@ -50,6 +52,6 @@ const CustomScreen: VoidComponent<CustomScreenProps> = (props) => {
       </div>
     </Show>
   );
-}
+};
 
-export { CustomScreen }
+export { CustomScreen };

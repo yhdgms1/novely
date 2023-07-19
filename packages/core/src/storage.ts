@@ -1,7 +1,7 @@
-import type { StorageData } from './types'
+import type { StorageData } from "./types";
 
 interface LocalStorageStorageSettings {
-  key: string
+  key: string;
 }
 
 interface Storage {
@@ -18,9 +18,9 @@ const localStorageStorage = (options: LocalStorageStorageSettings): Storage => {
     },
     async set(data) {
       localStorage.setItem(options.key, JSON.stringify(data));
-    }
-  }
-}
+    },
+  };
+};
 
-export type { Storage }
-export { localStorageStorage }
+export type { Storage };
+export { localStorageStorage };

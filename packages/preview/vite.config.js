@@ -1,13 +1,13 @@
 import { defineConfig } from "vite";
 import { default as solidPlugin } from "vite-plugin-solid";
-import { plugin as pluginNvl } from '@novely/vite-plugin-nvl';
+import { plugin as pluginNvl } from "@novely/vite-plugin-nvl";
 
 export default defineConfig({
   plugins: [
     solidPlugin({
       hot: false,
     }),
-    pluginNvl
+    pluginNvl,
   ],
   build: {
     modulePreload: false,

@@ -1,24 +1,29 @@
-import type { TypewriterOptions } from './types';
-import { defaultSpeed, collectTextNodes } from './utils';
+import type { TypewriterOptions } from "./types";
+import { defaultSpeed, collectTextNodes } from "./utils";
 
 /**
  * Typewriter
  */
-const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOptions) => {
+const typewriter = ({
+  node,
+  text,
+  ended,
+  speed = defaultSpeed,
+}: TypewriterOptions) => {
   /**
    * Set content
    */
   node.innerHTML = text;
 
   const nodes = collectTextNodes(node).map((child) => {
-    const letters = [...child.textContent!].map(char => {
-      const text = document.createElement('span');
+    const letters = [...child.textContent!].map((char) => {
+      const text = document.createElement("span");
 
       /**
        * Space will have zero width, so we are replacing it with four-per-em space
        */
-      if (char === ' ') {
-        text.innerHTML = '&#8197;'
+      if (char === " ") {
+        text.innerHTML = "&#8197;";
       } else {
         text.textContent = char;
       }
@@ -26,7 +31,7 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
       /**
        * The content is the same, but letter is invisible
        */
-      text.style.opacity = '0';
+      text.style.opacity = "0";
 
       return text;
     });
@@ -47,8 +52,8 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
   let frame: number;
 
   const enqueue = () => {
-    frame = requestAnimationFrame(queue)
-  }
+    frame = requestAnimationFrame(queue);
+  };
 
   const dequeue = () => {
     cancelAnimationFrame(frame);
@@ -73,7 +78,7 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
     } else {
       dequeue();
     }
-  }
+  };
 
   const process = () => {
     const block = nodes[current];
@@ -83,10 +88,10 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
       const text = span.textContent!;
 
       if (pos++ === 0) {
-        span.replaceWith(container = document.createTextNode(text));
+        span.replaceWith((container = document.createTextNode(text)));
       } else {
         container.textContent += text;
-        span.remove()
+        span.remove();
       }
 
       enqueue();
@@ -98,7 +103,7 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
       dequeue();
       ended && ended();
     }
-  }
+  };
 
   process();
 
@@ -113,14 +118,14 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
        * Should we really end
        */
       if (end) {
-        node.innerHTML = '';
+        node.innerHTML = "";
         return end;
       }
 
       /**
        * Or just complete text immediately
        */
-      node.innerHTML = text.replace(/ /gm, '&#8197;');
+      node.innerHTML = text.replace(/ /gm, "&#8197;");
       end = true;
 
       return false;
@@ -130,9 +135,9 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed, }: TypewriterOpti
      */
     destroy() {
       dequeue();
-      node.innerHTML = '';
-    }
-  }
-}
+      node.innerHTML = "";
+    },
+  };
+};
 
-export { typewriter }
+export { typewriter };

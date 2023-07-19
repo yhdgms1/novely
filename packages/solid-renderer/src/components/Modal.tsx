@@ -1,5 +1,5 @@
-import type { FlowComponent, Accessor } from 'solid-js';
-import { untrack, createEffect, on, onCleanup, Show } from 'solid-js';
+import type { FlowComponent, Accessor } from "solid-js";
+import { untrack, createEffect, on, onCleanup, Show } from "solid-js";
 
 const clickOutside = (node: HTMLElement, handler: () => void) => {
   const handleClick = (event: MouseEvent) =>
@@ -7,11 +7,11 @@ const clickOutside = (node: HTMLElement, handler: () => void) => {
     !node.contains(event.target as HTMLElement) &&
     !event.defaultPrevented &&
     handler &&
-    handler()
+    handler();
 
-  document.addEventListener('click', handleClick, true);
-  onCleanup(() => document.removeEventListener('click', handleClick, true))
-}
+  document.addEventListener("click", handleClick, true);
+  onCleanup(() => document.removeEventListener("click", handleClick, true));
+};
 
 interface ModalProps {
   isOpen: Accessor<boolean>;
@@ -26,7 +26,9 @@ const Modal: FlowComponent<ModalProps> = (props) => {
   const handleKeydown = (event: KeyboardEvent) => {
     if (untrack(props.isOpen) && event.key === "Tab") {
       const nodes = modalWindow.querySelectorAll("*");
-      const tabbable = Array.from(nodes).filter(node => (node as HTMLElement).tabIndex >= 0);
+      const tabbable = Array.from(nodes).filter(
+        (node) => (node as HTMLElement).tabIndex >= 0,
+      );
 
       let index = tabbable.indexOf(document.activeElement!);
       if (index === -1 && event.shiftKey) index = 0;
@@ -37,21 +39,27 @@ const Modal: FlowComponent<ModalProps> = (props) => {
       (tabbable[index] as HTMLElement).focus();
       event.preventDefault();
     }
-  }
+  };
 
   const close = () => {
     props.setIsOpen && props.setIsOpen(false);
-    props.onClose && untrack(props.onClose)
-  }
+    props.onClose && untrack(props.onClose);
+  };
 
-  createEffect(on(props.isOpen, (isOpen) => isOpen && props.onClose && untrack(props.onClose), { defer: true }));
+  createEffect(
+    on(
+      props.isOpen,
+      (isOpen) => isOpen && props.onClose && untrack(props.onClose),
+      { defer: true },
+    ),
+  );
 
-  addEventListener('keydown', handleKeydown);
-  onCleanup(() => removeEventListener('keydown', handleKeydown));
+  addEventListener("keydown", handleKeydown);
+  onCleanup(() => removeEventListener("keydown", handleKeydown));
 
   return (
     <Show when={props.isOpen()}>
-      <div 
+      <div
         role="dialog"
         class="dialog"
         aria-modal={true}
@@ -63,7 +71,7 @@ const Modal: FlowComponent<ModalProps> = (props) => {
         {props.children}
       </div>
     </Show>
-  )
-}
+  );
+};
 
-export { Modal }
+export { Modal };

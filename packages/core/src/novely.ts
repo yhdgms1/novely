@@ -1,17 +1,53 @@
-import type { Character } from './character';
-import type { ActionProxyProvider, GetActionParameters, Story, ValidAction, Unwrappable, CustomHandler } from './action';
-import type { Storage } from './storage';
-import type { Save, State, Data, StorageData, DeepPartial, NovelyScreen, Migration } from './types'
-import type { Renderer, RendererInit } from './renderer'
-import type { SetupT9N } from '@novely/t9n'
-import { matchAction, isNumber, isNull, isString, isPromise, isEmpty, str, isUserRequiredAction, getTypewriterSpeed, getLanguage, throttle, isFunction, vibrate, findLastIndex } from './utils';
-import { store } from './store';
-import { all as deepmerge } from 'deepmerge'
-import { klona } from 'klona/json';
-import { SKIPPED_DURING_RESTORE, EMPTY_SET } from './constants';
-import { replace as replaceT9N } from '@novely/t9n';
+import type { Character } from "./character";
+import type {
+  ActionProxyProvider,
+  GetActionParameters,
+  Story,
+  ValidAction,
+  Unwrappable,
+  CustomHandler,
+} from "./action";
+import type { Storage } from "./storage";
+import type {
+  Save,
+  State,
+  Data,
+  StorageData,
+  DeepPartial,
+  NovelyScreen,
+  Migration,
+} from "./types";
+import type { Renderer, RendererInit } from "./renderer";
+import type { SetupT9N } from "@novely/t9n";
+import {
+  matchAction,
+  isNumber,
+  isNull,
+  isString,
+  isPromise,
+  isEmpty,
+  str,
+  isUserRequiredAction,
+  getTypewriterSpeed,
+  getLanguage,
+  throttle,
+  isFunction,
+  vibrate,
+  findLastIndex,
+} from "./utils";
+import { store } from "./store";
+import { all as deepmerge } from "deepmerge";
+import { klona } from "klona/json";
+import { SKIPPED_DURING_RESTORE, EMPTY_SET } from "./constants";
+import { replace as replaceT9N } from "@novely/t9n";
 
-interface NovelyInit<Languages extends string, Characters extends Record<string, Character<Languages>>, Inter extends ReturnType<SetupT9N<Languages>>, StateScheme extends State, DataScheme extends Data> {
+interface NovelyInit<
+  Languages extends string,
+  Characters extends Record<string, Character<Languages>>,
+  Inter extends ReturnType<SetupT9N<Languages>>,
+  StateScheme extends State,
+  DataScheme extends Data,
+> {
   /**
    * An array of languages supported by the game.
    */
@@ -56,7 +92,7 @@ interface NovelyInit<Languages extends string, Characters extends Record<string,
   /**
    * Migration from old saves to newer
    */
-  migrations?: Migration[]
+  migrations?: Migration[];
 }
 
 const novely = <
@@ -64,7 +100,7 @@ const novely = <
   Characters extends Record<string, Character<Languages>>,
   Inter extends ReturnType<SetupT9N<Languages>>,
   StateScheme extends State,
-  DataScheme extends Data
+  DataScheme extends Data,
 >({
   characters,
   storage,
@@ -76,7 +112,7 @@ const novely = <
   state: defaultState,
   data: defaultData,
   autosaves = true,
-  migrations = []
+  migrations = [],
 }: NovelyInit<Languages, Characters, Inter, StateScheme, DataScheme>) => {
   let story: Story;
   let times = new Set<number>();
@@ -92,57 +128,78 @@ const novely = <
    */
   const intime = (value: number) => {
     return times.add(value), value;
-  }
+  };
 
   const withStory = (s: Story) => {
     /**
      * Transforms `(ValidAction | ValidAction[])[]` to `ValidAction[]`
      */
-    story = Object.fromEntries(Object.entries(s).map(([name, items]) => {
-      const flat = (item: (ValidAction | ValidAction[])[]): ValidAction[] => {
-        return item.flatMap((data) => {
-          const type = data[0];
+    story = Object.fromEntries(
+      Object.entries(s).map(([name, items]) => {
+        const flat = (item: (ValidAction | ValidAction[])[]): ValidAction[] => {
+          return item.flatMap((data) => {
+            const type = data[0];
 
-          /**
-           * This is not just an action like `['name', ...arguments]`, but an array of actions
-           */
-          if (Array.isArray(type)) return flat(data as ValidAction[]);
+            /**
+             * This is not just an action like `['name', ...arguments]`, but an array of actions
+             */
+            if (Array.isArray(type)) return flat(data as ValidAction[]);
 
-          return [data as ValidAction];
-        });
-      };
+            return [data as ValidAction];
+          });
+        };
 
-      return [name, flat(items)];
-    }));
+        return [name, flat(items)];
+      }),
+    );
 
     /**
      * When `initialScreen` is not a game, we can safely show it
      */
-    if (initialScreen !== 'game') renderer.ui.showScreen(initialScreen);
-  }
+    if (initialScreen !== "game") renderer.ui.showScreen(initialScreen);
+  };
 
   const action = new Proxy({} as ActionProxyProvider<Characters>, {
     get(_, prop) {
-      return (...props: Parameters<ActionProxyProvider<Record<string, Character>>[keyof ActionProxyProvider<Record<string, Character>>]>) => {
+      return (
+        ...props: Parameters<
+          ActionProxyProvider<
+            Record<string, Character>
+          >[keyof ActionProxyProvider<Record<string, Character>>]
+        >
+      ) => {
         return [prop, ...props];
-      }
-    }
+      };
+    },
   });
 
-  function state(value: DeepPartial<StateScheme> | ((prev: StateScheme) => StateScheme)): void;
+  function state(
+    value: DeepPartial<StateScheme> | ((prev: StateScheme) => StateScheme),
+  ): void;
   function state(): StateScheme;
-  function state(value?: DeepPartial<StateScheme> | ((prev: StateScheme) => StateScheme)): StateScheme | void {
+  function state(
+    value?: DeepPartial<StateScheme> | ((prev: StateScheme) => StateScheme),
+  ): StateScheme | void {
     if (!value) return stack.value[1] as StateScheme | void;
 
     const prev = stack.value[1];
-    const val = isFunction(value) ? value(prev as StateScheme) : deepmerge([prev, value]);
+    const val = isFunction(value)
+      ? value(prev as StateScheme)
+      : deepmerge([prev, value]);
 
     stack.value[1] = val as StateScheme;
   }
 
   const getDefaultSave = (state = {}) => {
-    return [[[null, 'start'], [null, 0]], state, [intime(Date.now()), 'auto']] as Save;
-  }
+    return [
+      [
+        [null, "start"],
+        [null, 0],
+      ],
+      state,
+      [intime(Date.now()), "auto"],
+    ] as Save;
+  };
 
   const createStack = (current: Save, stack = [current]) => {
     return {
@@ -153,20 +210,20 @@ const novely = <
         stack[stack.length - 1] = value;
       },
       back() {
-        if (stack.length > 1) stack.pop(), goingBack = true;
+        if (stack.length > 1) stack.pop(), (goingBack = true);
       },
       push(value: Save) {
         stack.push(value);
       },
       clear() {
         stack = [getDefaultSave(klona(defaultState))];
-      }
-    }
-  }
+      },
+    };
+  };
 
   /**
    * 1) Novely rendered using the `initialData`, but you can't start new game or `load` an empty one - this is scary, imagine losing your progress
-   * 2) Actual stored data is loaded, language and etc is changed 
+   * 2) Actual stored data is loaded, language and etc is changed
    */
   const initialData: StorageData = {
     saves: [],
@@ -187,7 +244,7 @@ const novely = <
   $.subscribe(throttledOnStorageDataChange);
 
   const getStoredData = () => {
-    storage.get().then(stored => {
+    storage.get().then((stored) => {
       /**
        * Migration is done only once (when game loads it's data), and then it saves the updated format
        */
@@ -220,41 +277,46 @@ const novely = <
       /**
        * When initialScreen is game, then we will load it, but after the data is loaded
        */
-      if (initialScreen === 'game') restore();
+      if (initialScreen === "game") restore();
     });
-  }
+  };
 
   /**
    * By default this is resolved immediately, but also can be delayed.
    * I.e. storage has not loaded yet
    */
-  storageDelay.then(getStoredData)
+  storageDelay.then(getStoredData);
 
   const initial = getDefaultSave(klona(defaultState));
   const stack = createStack(initial);
 
-  const save = (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
+  const save = (
+    override = false,
+    type: Save[2][1] = override ? "auto" : "manual",
+  ) => {
     if (!initialDataLoaded) return;
 
     /**
      * When autosaves diabled just return
      */
-    if (!autosaves && type === 'auto') return;
+    if (!autosaves && type === "auto") return;
 
     const current = klona(stack.value);
 
-    $.update(prev => {
+    $.update((prev) => {
       /**
        * Find latest save that were created in current session, and check if it is latest in an array
-       * 
+       *
        * We check if save was created in current session and it is latest in array
        * When it is not then replacing it will break logical chain
-       * 
+       *
        * [auto save 1]
        * [manual save 1]
-       * [auto save 2] <- should not replace first auto save 
+       * [auto save 2] <- should not replace first auto save
        */
-      const isLatest = findLastIndex(prev.saves, value => times.has(value[2][0])) === prev.saves.length - 1;
+      const isLatest =
+        findLastIndex(prev.saves, (value) => times.has(value[2][0])) ===
+        prev.saves.length - 1;
 
       /**
        * Update type and time information
@@ -284,7 +346,7 @@ const novely = <
 
       return prev;
     });
-  }
+  };
 
   const newGame = () => {
     if (!initialDataLoaded) return;
@@ -295,13 +357,13 @@ const novely = <
      * Initial save is automatic, and should be ignored when autosaves is turned off
      */
     if (autosaves) {
-      $.update(prev => {
+      $.update((prev) => {
         return prev.saves.push(save), prev;
       });
     }
 
     restore(save);
-  }
+  };
 
   /**
    * Set's the save
@@ -310,7 +372,7 @@ const novely = <
     stack.value = save;
 
     return restore(save);
-  }
+  };
 
   let restoring = false;
   let goingBack = false;
@@ -328,12 +390,16 @@ const novely = <
      * When there is no game, then make a new game
      */
     if (!latest) {
-      $.update(() => ({ saves: [initial], data: klona(defaultData) as Data, meta: [getLanguage(languages), getTypewriterSpeed()] }));
+      $.update(() => ({
+        saves: [initial],
+        data: klona(defaultData) as Data,
+        meta: [getLanguage(languages), getTypewriterSpeed()],
+      }));
 
       latest = klona(initial);
     }
 
-    restoring = true, stack.value = latest;
+    (restoring = true), (stack.value = latest);
 
     /**
      * Текущий элемент в истории
@@ -377,18 +443,21 @@ const novely = <
             const push = () => {
               keep.add(action);
               queue.push([action, meta]);
-            }
+            };
 
             /**
              * Do not remove characters that will be here anyways
              */
-            if (action === 'showCharacter') characters.add(meta[0]);
+            if (action === "showCharacter") characters.add(meta[0]);
 
             /**
              * Экшены, для закрытия которых пользователь должен с ними взаимодействовать
              * Также в эту группу входят экшены, которые не должны быть вызваны при восстановлении
              */
-            if (SKIPPED_DURING_RESTORE.has(action) || isUserRequiredAction(action, meta)) {
+            if (
+              SKIPPED_DURING_RESTORE.has(action) ||
+              isUserRequiredAction(action, meta)
+            ) {
               if (index === max && i === val) {
                 push();
               } else {
@@ -401,9 +470,9 @@ const novely = <
 
           current = current[val];
         }
-      } else if (type === 'choice') {
-        current = current[val as number + 1][1];
-      } else if (type === 'condition') {
+      } else if (type === "choice") {
+        current = current[(val as number) + 1][1];
+      } else if (type === "condition") {
         current = current[2][val];
       }
     }
@@ -418,16 +487,20 @@ const novely = <
     /**
      * This is basically made for TypeScript.
      */
-    const indexedQueue = queue as unknown as [Exclude<ValidAction[0], ValidAction>, ValidAction[1], number][];
+    const indexedQueue = queue as unknown as [
+      Exclude<ValidAction[0], ValidAction>,
+      ValidAction[1],
+      number,
+    ][];
 
     /**
      * Run these exactly before the main loop.
      */
-    renderer.ui.showScreen('game');
+    renderer.ui.showScreen("game");
     /**
      * Provide the `keep` in there
      */
-    match('clear', [keep, characters]);
+    match("clear", [keep, characters]);
 
     /**
      * Get the next actions array.
@@ -435,36 +508,39 @@ const novely = <
     const next = (i: number) => indexedQueue.slice(i + 1);
 
     for await (const [action, meta, i] of indexedQueue) {
-      if (action === 'function' || action === 'custom') {
+      if (action === "function" || action === "custom") {
         /**
          * When `callOnlyLatest` is `true`
          */
-        if (action === 'custom' && (meta as GetActionParameters<'Custom'>)[0].callOnlyLatest) {
+        if (
+          action === "custom" &&
+          (meta as GetActionParameters<"Custom">)[0].callOnlyLatest
+        ) {
           /**
            * We'll calculate it is `latest` or not
            */
           const notLatest = next(i).some(([_action, _meta]) => {
             if (!_meta || !meta) return false;
 
-            const c0 = _meta[0] as unknown as GetActionParameters<'Custom'>[0];
-            const c1 =  meta[0] as unknown as GetActionParameters<'Custom'>[0];
+            const c0 = _meta[0] as unknown as GetActionParameters<"Custom">[0];
+            const c1 = meta[0] as unknown as GetActionParameters<"Custom">[0];
 
             /**
              * Also check for `undefined`
              */
             const isIdenticalID = c0.id && c1.id && c0.id === c1.id;
-            
+
             /**
              * Equal by id or equal by `toString()`
              */
-            return isIdenticalID || (str(c0) === str(c1));
+            return isIdenticalID || str(c0) === str(c1);
           });
 
           if (notLatest) continue;
         }
 
         /**
-         * Action can return Promise. 
+         * Action can return Promise.
          */
         const result = match(action, meta);
 
@@ -477,7 +553,7 @@ const novely = <
            */
           await result;
         }
-      } else if (action === 'showCharacter') {
+      } else if (action === "showCharacter") {
         const skip = next(i).some(([_action, _meta]) => {
           /**
            * Проверка на возможный `undefined`
@@ -488,7 +564,7 @@ const novely = <
            * Будет ли персонаж скрыт в будущем
            * Нет смысла при загрузке сохранения загружать и отрисовывать персонажа, который будет скрыт
            */
-          const hidden = _action === 'hideCharacter' && _meta[0] === meta[0];
+          const hidden = _action === "hideCharacter" && _meta[0] === meta[0];
           /**
            * Не нужно запускать рендер персонажа, если после этого будет ещё один рендер этого персонажа
            * Таким образом избегаем ситуации, когда при загрузке вследствие гонки при загрузки изображений отрисовывается не последняя эмоция
@@ -496,12 +572,12 @@ const novely = <
           const notLatest = _action === action && _meta[0] === meta[0];
 
           return hidden || notLatest;
-        })
+        });
 
         if (skip) continue;
 
         match(action, meta);
-      } else if (action === 'showBackground' || action === 'animateCharacter') {
+      } else if (action === "showBackground" || action === "animateCharacter") {
         /**
          * Такая же оптимизация применяется к фонам и анимированию персонажей.
          * Если фон изменится, то нет смысла устанавливать текущий
@@ -516,8 +592,8 @@ const novely = <
       }
     }
 
-    restoring = goingBack = false, render();
-  }
+    (restoring = goingBack = false), render();
+  };
 
   const refer = () => {
     let current: any = story;
@@ -525,37 +601,43 @@ const novely = <
     for (const [type, val] of stack.value[0]) {
       if (type === null) {
         current = current[val];
-      } else if (type === 'choice') {
-        current = current[val as number + 1][1];
-      } else if (type === 'condition') {
+      } else if (type === "choice") {
+        current = current[(val as number) + 1][1];
+      } else if (type === "condition") {
         current = current[2][val];
       }
     }
 
     return current;
-  }
+  };
 
   const exit = () => {
     const current = stack.value;
 
     stack.clear();
-    renderer.ui.showScreen('mainmenu');
+    renderer.ui.showScreen("mainmenu");
 
     /**
      * First two save elements and it's type
      */
     const [[first, second], , [time, type]] = current;
 
-    if (type === 'auto' && first && second) {
+    if (type === "auto" && first && second) {
       /**
        * Если сохранение похоже на начальное, и при этом игрок не взаимодействовал с игрой, и оно было создано в текущей сессии, то удаляем его
        */
-      if (first[0] === null && first[1] === 'start' && second[0] === null && !interacted && times.has(time)) {
+      if (
+        first[0] === null &&
+        first[1] === "start" &&
+        second[0] === null &&
+        !interacted &&
+        times.has(time)
+      ) {
         $.update((prev) => {
-          prev.saves = prev.saves.filter(save => save !== current);
+          prev.saves = prev.saves.filter((save) => save !== current);
 
           return prev;
-        })
+        });
       }
     }
 
@@ -567,11 +649,11 @@ const novely = <
      * Reset session times
      */
     times.clear();
-  }
+  };
 
   const back = () => {
     return stack.back(), restore(stack.value);
-  }
+  };
 
   const renderer = createRenderer({
     characters,
@@ -584,7 +666,7 @@ const novely = <
     stack,
     languages,
     t: t9n.i,
-    $
+    $,
   });
 
   const match = matchAction({
@@ -593,15 +675,15 @@ const novely = <
     },
     showBackground([background]) {
       renderer.background(background);
-      push()
+      push();
     },
     playMusic([source]) {
-      renderer.music(source, 'music').play();
-      push()
+      renderer.music(source, "music").play();
+      push();
     },
     stopMusic([source]) {
-      renderer.music(source, 'music').stop();
-      push()
+      renderer.music(source, "music").stop();
+      push();
     },
     showCharacter([character, emotion, className, style]) {
       const handle = renderer.character(character);
@@ -609,23 +691,38 @@ const novely = <
       handle.append(className, style, restoring);
       handle.withEmotion(emotion)();
 
-      push()
+      push();
     },
     hideCharacter([character, className, style, duration]) {
-      renderer.character(character).remove(className, style, duration)(push, restoring);
+      renderer.character(character).remove(className, style, duration)(
+        push,
+        restoring,
+      );
     },
     dialog([character, content, emotion]) {
       /**
        * Person name
        */
       const name = (() => {
-        const c = character, cs = characters;
+        const c = character,
+          cs = characters;
         const lang = $.get().meta[0];
 
-        return c ? c in cs ? typeof cs[c].name === 'string' ? cs[c].name as string : (cs[c].name as Record<string, string>)[lang] : c : '';
+        return c
+          ? c in cs
+            ? typeof cs[c].name === "string"
+              ? (cs[c].name as string)
+              : (cs[c].name as Record<string, string>)[lang]
+            : c
+          : "";
       })();
 
-      renderer.dialog(unwrap(content), unwrap(name), character, emotion)(forward);
+      renderer.dialog(
+        unwrap(content),
+        unwrap(name),
+        character,
+        emotion,
+      )(forward);
     },
     function([fn]) {
       const result = fn(restoring, goingBack);
@@ -641,18 +738,27 @@ const novely = <
         /**
          * Первый элемент может быть как строкой, так и элементов выбора
          */
-        choices.unshift(question as unknown as [Unwrappable, ValidAction[], () => boolean]);
+        choices.unshift(
+          question as unknown as [Unwrappable, ValidAction[], () => boolean],
+        );
         /**
          * Значит, текст не требуется
          */
-        question = '';
+        question = "";
       }
 
       const unwrapped = choices.map(([content, action, visible]) => {
-        return [unwrap(content), action, visible] as [string, ValidAction[], () => boolean];
+        return [unwrap(content), action, visible] as [
+          string,
+          ValidAction[],
+          () => boolean,
+        ];
       });
 
-      renderer.choices(unwrap(question), unwrapped)((selected) => {
+      renderer.choices(
+        unwrap(question),
+        unwrapped,
+      )((selected) => {
         enmemory();
 
         /**
@@ -660,7 +766,7 @@ const novely = <
          */
         const offset = isWithoutQuestion ? 0 : 1;
 
-        stack.value[0].push(['choice', selected + offset], [null, 0]);
+        stack.value[0].push(["choice", selected + offset], [null, 0]);
         render();
         interactivity(true);
       });
@@ -669,9 +775,12 @@ const novely = <
       /**
        * `-1` index is used here because `clear` will run `next` that will increase index to `0`
        */
-      stack.value[0] = [[null, scene], [null, -1]];
+      stack.value[0] = [
+        [null, scene],
+        [null, -1],
+      ];
 
-      match('clear', []);
+      match("clear", []);
     },
     clear([keep, characters]) {
       /**
@@ -681,22 +790,27 @@ const novely = <
       /**
        * Call the actual `clear`
        */
-      renderer.clear(goingBack, keep || EMPTY_SET, characters || EMPTY_SET)(push);
+      renderer.clear(
+        goingBack,
+        keep || EMPTY_SET,
+        characters || EMPTY_SET,
+      )(push);
     },
     condition([condition]) {
       const value = condition();
 
-      if (!restoring) stack.value[0].push(['condition', String(value)], [null, 0]), render();
+      if (!restoring)
+        stack.value[0].push(["condition", String(value)], [null, 0]), render();
     },
     end() {
       /**
        * Clear the Scene
        */
-      match('clear', []);
+      match("clear", []);
       /**
        * Go to the main menu
        */
-      renderer.ui.showScreen('mainmenu');
+      renderer.ui.showScreen("mainmenu");
       /**
        * Reset interactive value
        */
@@ -711,7 +825,8 @@ const novely = <
     },
     custom([handler]) {
       const result = renderer.custom(handler, goingBack, () => {
-        if (!restoring && handler.requireUserAction) enmemory(), interactivity(true);
+        if (!restoring && handler.requireUserAction)
+          enmemory(), interactivity(true);
         if (!restoring) push();
       });
 
@@ -719,14 +834,14 @@ const novely = <
     },
     vibrate(pattern) {
       vibrate(pattern);
-      push()
+      push();
     },
     next() {
       push();
     },
     animateCharacter([character, timeout, ...classes]) {
       const handler: CustomHandler = (get) => {
-        const { clear } = get('@@internal-animate-character', false);
+        const { clear } = get("@@internal-animate-character", false);
         const char = renderer.store.characters[character];
 
         /**
@@ -741,7 +856,9 @@ const novely = <
          */
         if (!target) return;
 
-        const classNames = classes.filter(className => !target.classList.contains(className));
+        const classNames = classes.filter(
+          (className) => !target.classList.contains(className),
+        );
 
         target.classList.add(...classNames);
 
@@ -751,27 +868,27 @@ const novely = <
 
         clear(() => {
           target.classList.remove(...classNames);
-          
+
           /**
            * Clear timeout, because when you will game re-runs some callback might remove classes from character
            */
           clearTimeout(timeoutId);
         });
-      }
+      };
 
       /**
        * `callOnlyLatest` property will not have any effect, because `custom` is called directly
        */
-      match('custom', [handler]);
+      match("custom", [handler]);
     },
     text(text) {
-      renderer.text(text.map((content) => unwrap(content)).join(' '), forward);
+      renderer.text(text.map((content) => unwrap(content)).join(" "), forward);
     },
     exit() {
       const path = stack.value[0];
 
       for (let i = path.length - 1; i > 0; i--) {
-        if (path[i][0] !== 'choice' && path[i][0] !== 'condition') continue;
+        if (path[i][0] !== "choice" && path[i][0] !== "condition") continue;
 
         stack.value[0] = path.slice(0, i);
         next();
@@ -780,7 +897,7 @@ const novely = <
       }
 
       render();
-    }
+    },
   });
 
   const enmemory = () => {
@@ -788,12 +905,12 @@ const novely = <
 
     const current = klona(stack.value);
 
-    current[2][1] = 'auto';
+    current[2][1] = "auto";
 
     stack.push(current);
 
-    save(true, 'auto');
-  }
+    save(true, "auto");
+  };
 
   const next = () => {
     const path = stack.value[0];
@@ -814,7 +931,7 @@ const novely = <
      * Иначе добавляет новое `[null int]`
      */
     path.push([null, 0]);
-  }
+  };
 
   const render = () => {
     const referred = refer();
@@ -824,25 +941,25 @@ const novely = <
     const [action, ...props] = referred;
 
     match(action, props);
-  }
+  };
 
   const push = () => {
     if (!restoring) next(), render();
-  }
+  };
 
   const forward = () => {
     enmemory();
     push();
-    interactivity(true)
-  }
+    interactivity(true);
+  };
 
   const interactivity = (value = false) => {
     interacted = value;
-  }
+  };
 
   /**
    * Unwraps translatable content to string
-   * 
+   *
    * @example ```
    * unwrap(t('Hello'));
    * unwrap({ en: 'Hello', ru: 'Привет' });
@@ -851,27 +968,36 @@ const novely = <
    * ```
    */
   const unwrap = (content: Unwrappable, global = false) => {
-    const { data, meta: [lang] } = $.get();
+    const {
+      data,
+      meta: [lang],
+    } = $.get();
 
     const obj = global ? data : state();
     const cnt = isFunction(content)
       ? content(lang, obj)
-      : typeof content === 'string'
-        ? content
-        : content[lang];
+      : typeof content === "string"
+      ? content
+      : content[lang];
 
     const str = isFunction(cnt) ? cnt() : cnt;
-    
-    return replaceT9N(str, obj);
-  }
 
-  function data(value: DeepPartial<DataScheme> | ((prev: DataScheme) => DataScheme)): void;
+    return replaceT9N(str, obj);
+  };
+
+  function data(
+    value: DeepPartial<DataScheme> | ((prev: DataScheme) => DataScheme),
+  ): void;
   function data(): DataScheme;
-  function data(value?: DeepPartial<DataScheme> | ((prev: DataScheme) => DataScheme)): DataScheme | void {
+  function data(
+    value?: DeepPartial<DataScheme> | ((prev: DataScheme) => DataScheme),
+  ): DataScheme | void {
     if (!value) return $.get().data as DataScheme | void;
 
     const prev = $.get().data;
-    const val = isFunction(value) ? value(prev as DataScheme) : deepmerge([prev, value]);
+    const val = isFunction(value)
+      ? value(prev as DataScheme)
+      : deepmerge([prev, value]);
 
     $.update((prev) => {
       prev.data = val;
@@ -900,14 +1026,18 @@ const novely = <
     /**
      * Unwraps translatable content to a string value
      */
-    unwrap(content: Exclude<Unwrappable, Record<string, string>> | Record<Languages, string>) {
+    unwrap(
+      content:
+        | Exclude<Unwrappable, Record<string, string>>
+        | Record<Languages, string>,
+    ) {
       return unwrap(content, true);
     },
     /**
      * Function that is used for translation
      */
-    t: t9n.t as Inter['t'],
-  }
-}
+    t: t9n.t as Inter["t"],
+  };
+};
 
-export { novely }
+export { novely };

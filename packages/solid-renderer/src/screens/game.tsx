@@ -158,7 +158,7 @@ const Game: VoidComponent<GameProps> = (props) => {
               : data.t(
                   DialogWriter.state() === "processing"
                     ? "CompleteText"
-                    : "GoForward"
+                    : "GoForward",
                 )
           }
           onClick={DialogWriter.clear}
@@ -196,7 +196,7 @@ const Game: VoidComponent<GameProps> = (props) => {
                 const [canvas] = canvasDrawImages(
                   undefined,
                   undefined,
-                  Object.values(image)
+                  Object.values(image),
                 );
 
                 return canvas;
@@ -288,7 +288,7 @@ const Game: VoidComponent<GameProps> = (props) => {
             : data.t(
                 TextWriter.state() === "processing"
                   ? "CompleteText"
-                  : "GoForward"
+                  : "GoForward",
               )
         }
         onClick={TextWriter.clear}

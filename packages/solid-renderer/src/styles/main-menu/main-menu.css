@@ -9,7 +9,7 @@
 }
 
 @media (orientation: landscape) {
-  .main-menu { 
+  .main-menu {
     justify-content: start;
   }
 }

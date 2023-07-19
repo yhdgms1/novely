@@ -1,1 +1,1 @@
-export { plugin, novelyPlugin } from './plugin';
+export { plugin, novelyPlugin } from "./plugin";

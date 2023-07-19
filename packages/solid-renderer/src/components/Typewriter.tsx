@@ -1,8 +1,8 @@
-import type { VoidComponent, JSX } from 'solid-js'
-import type { TypewriterSpeed } from '@novely/core'
-import { untrack, createEffect, onCleanup, createSignal } from 'solid-js'
-import { typewriter as initiateTypewriter } from '@novely/typewriter'
-import { TEXT_SPEED_MAP } from '../constants'
+import type { VoidComponent, JSX } from "solid-js";
+import type { TypewriterSpeed } from "@novely/core";
+import { untrack, createEffect, onCleanup, createSignal } from "solid-js";
+import { typewriter as initiateTypewriter } from "@novely/typewriter";
+import { TEXT_SPEED_MAP } from "../constants";
 
 interface TypewriterProps {
   content: string | undefined;
@@ -16,31 +16,33 @@ interface CreateTypewriterOptions {
   resolve: () => void;
 }
 
-const PRM = matchMedia('(prefers-reduced-motion: reduce)');
+const PRM = matchMedia("(prefers-reduced-motion: reduce)");
 
 const createTypewriter = ({ resolve }: CreateTypewriterOptions) => {
   /**
    * In example PRM was enabled, text was set, then PRM was disabled.
-   * 
+   *
    * Is writer done? No.
    * Is PRM enabled? No.
-   * 
+   *
    * This is used to overcome this situation.
    */
   let bypassed = false;
   let typewriter: ReturnType<typeof initiateTypewriter> | undefined;
 
-  const [state, setState] = createSignal<"processing" | "done" | "idle">("idle");
-  
+  const [state, setState] = createSignal<"processing" | "done" | "idle">(
+    "idle",
+  );
+
   const Typewriter: VoidComponent<TypewriterProps> = (props) => {
     let node!: HTMLSpanElement;
-    
+
     createEffect(() => {
       const text = props.content;
 
       typewriter?.destroy();
 
-      setState('idle');
+      setState("idle");
 
       if (!text) return;
       if (!node) return;
@@ -49,38 +51,38 @@ const createTypewriter = ({ resolve }: CreateTypewriterOptions) => {
         /**
          * Spaces replaces here for consistency
          */
-        node.innerHTML = text.replace(/ /gm, '&#8197;');
+        node.innerHTML = text.replace(/ /gm, "&#8197;");
         bypassed = true;
 
-        setState('done');
-  
+        setState("done");
+
         return;
       }
 
-      setState('processing');
+      setState("processing");
 
       typewriter = initiateTypewriter({
         node,
         text,
         ended() {
-          setState('done');
+          setState("done");
           untrack(() => props.ended(PRM.matches));
         },
-        speed: TEXT_SPEED_MAP[untrack(() => props.speed)]
+        speed: TEXT_SPEED_MAP[untrack(() => props.speed)],
       });
-  
+
       bypassed = false;
     });
 
     onCleanup(() => {
-      setState('idle');
+      setState("idle");
 
       typewriter?.destroy();
       bypassed = false;
-    })
+    });
 
     return <span ref={node} {...props.attributes} />;
-  }
+  };
 
   const clear = () => {
     const reduced = PRM.matches;
@@ -88,18 +90,18 @@ const createTypewriter = ({ resolve }: CreateTypewriterOptions) => {
 
     if (reduced || written || bypassed) {
       bypassed = false;
-      setState('idle');
+      setState("idle");
       resolve();
     } else {
-      setState('done');
+      setState("done");
     }
-  }
+  };
 
   return {
     Typewriter,
     clear,
-    state
-  }
-}
+    state,
+  };
+};
 
-export { createTypewriter }
+export { createTypewriter };
