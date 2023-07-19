@@ -52,4 +52,12 @@ const escape = (str: string) => {
 	return String(str).replace(/["'&<>]/g, match => escaped[match]);
 }
 
-export { isCSSImage, canvasDrawImages, url, createImage, capitalize, escape }
+const onKey = (cb: (event: KeyboardEvent) => void, ...keys: string[]) => {
+  return (e: KeyboardEvent) => {
+    if (keys.some(key => key === e.key)) {
+      cb(e);
+    }
+  }
+}
+
+export { isCSSImage, canvasDrawImages, url, createImage, capitalize, escape, onKey }
