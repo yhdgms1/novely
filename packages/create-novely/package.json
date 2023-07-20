@@ -1,42 +1,42 @@
 {
-  "name": "create-novely",
-  "version": "0.1.2",
-  "type": "commonjs",
-  "publishConfig": {
-    "access": "public"
-  },
-  "main": "./index.cjs",
-  "bin": {
-    "create-novely": "index.cjs"
-  },
-  "scripts": {
-    "build": "tsup --dts"
-  },
-  "devDependencies": {
-    "@types/prompts": "^2.4.4",
-    "tsup": "^7.1.0",
-    "typescript": "^5.1.6"
-  },
-  "dependencies": {
-    "kolorist": "^1.8.0",
-    "prompts": "^2.4.2"
-  },
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/yhdgms1/novely/issues"
-  },
-  "homepage": "https://github.com/yhdgms1/novely/tree/main/packages/create-novely",
-  "keywords": [
-    "novely",
-    "novel"
-  ],
-  "author": {
-    "name": "Artemiy Schukin",
-    "url": "https://github.com/yhdgms1"
-  },
-  "contributors": [],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/yhdgms1/novely.git"
-  }
+	"name": "create-novely",
+	"version": "0.1.2",
+	"type": "commonjs",
+	"publishConfig": {
+		"access": "public"
+	},
+	"main": "./index.cjs",
+	"bin": {
+		"create-novely": "index.cjs"
+	},
+	"scripts": {
+		"build": "tsup --dts"
+	},
+	"devDependencies": {
+		"@types/prompts": "^2.4.4",
+		"tsup": "^7.1.0",
+		"typescript": "^5.1.6"
+	},
+	"dependencies": {
+		"kolorist": "^1.8.0",
+		"prompts": "^2.4.2"
+	},
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/yhdgms1/novely/issues"
+	},
+	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/create-novely",
+	"keywords": [
+		"novely",
+		"novel"
+	],
+	"author": {
+		"name": "Artemiy Schukin",
+		"url": "https://github.com/yhdgms1"
+	},
+	"contributors": [],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/yhdgms1/novely.git"
+	}
 }

@@ -2,11 +2,11 @@
  * @see https://loading.io/css/ 
  */
 .loading {
-  overflow: hidden;
+	overflow: hidden;
 
-  background: black;
+	background: black;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }

@@ -1,26 +1,26 @@
 .saves__button {
-  min-width: 30vw;
+	min-width: 30vw;
 }
 
 .saves__button-load {
-  width: 100%;
-  touch-action: auto !important;
+	width: 100%;
+	touch-action: auto !important;
 }
 
 .saves__button-load__type {
-  margin-left: 1rem;
+	margin-left: 1rem;
 }
 
 @media (orientation: portrait) {
-  .saves__button {
-    min-width: 80%;
-  }
+	.saves__button {
+		min-width: 80%;
+	}
 
-  .saves__button-load {
-    margin-bottom: 0;
-  }
+	.saves__button-load {
+		margin-bottom: 0;
+	}
 
-  .saves__button-reset {
-    margin-top: 4px;
-  }
+	.saves__button-reset {
+		margin-top: 4px;
+	}
 }

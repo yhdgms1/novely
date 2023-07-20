@@ -1,88 +1,88 @@
 .action-dialog {
-  min-height: 26vh;
-  width: 75%;
+	min-height: 26vh;
+	width: 75%;
 
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 0.4rem;
-  z-index: 22;
+	position: fixed;
+	left: 50%;
+	transform: translateX(-50%);
+	bottom: 0.4rem;
+	z-index: 22;
 
-  text-align: left;
+	text-align: left;
 
-  flex-direction: column;
-  justify-content: flex-end;
+	flex-direction: column;
+	justify-content: flex-end;
 
-  cursor: default;
-  user-select: none;
+	cursor: default;
+	user-select: none;
 }
 
 .action-dialog--visible {
-  display: flex;
+	display: flex;
 }
 
 .action-dialog--hidden {
-  display: none;
+	display: none;
 }
 
 .action-dialog-container {
-  height: 100%;
-  min-height: 18vh;
+	height: 100%;
+	min-height: 18vh;
 
-  flex-grow: 1;
+	flex-grow: 1;
 
-  color: var(--novely-dialog-color, #ffffff);
+	color: var(--novely-dialog-color, #ffffff);
 
-  border: 3px solid var(--novely-dialog-border-color, #ffffff);
-  border-radius: var(--novely-dialog-border-radius, 14px);
-  box-shadow: 1px 1px 4px var(--novely-dialog-box-shadow-color, #00000072);
+	border: 3px solid var(--novely-dialog-border-color, #ffffff);
+	border-radius: var(--novely-dialog-border-radius, 14px);
+	box-shadow: 1px 1px 4px var(--novely-dialog-box-shadow-color, #00000072);
 
-  /* prettier-ignore */
-  background-image: var(--novely-dialog-background-image, radial-gradient(#d6608998 20%, transparent 20%), radial-gradient(#d6608998 20%, transparent 20%));
-  background-color: var(--novely-dialog-background-color, #f092b4d8);
-  background-position: var(--novely-dialog-background-position, 0 0, 50px 50px);
-  background-size: var(--novely-dialog-background-size, 100px 100px);
+	/* prettier-ignore */
+	background-image: var(--novely-dialog-background-image, radial-gradient(#d6608998 20%, transparent 20%), radial-gradient(#d6608998 20%, transparent 20%));
+	background-color: var(--novely-dialog-background-color, #f092b4d8);
+	background-position: var(--novely-dialog-background-position, 0 0, 50px 50px);
+	background-size: var(--novely-dialog-background-size, 100px 100px);
 
-  display: flex;
-  flex-wrap: nowrap;
+	display: flex;
+	flex-wrap: nowrap;
 
-  padding-bottom: 2.8rem;
+	padding-bottom: 2.8rem;
 }
 
 .action-dialog-person {
-  max-height: 25vh;
-  max-width: 25vw;
+	max-height: 25vh;
+	max-width: 25vw;
 }
 
 .action-dialog-name,
 .action-dialog-content {
-  display: block;
-  padding: 1vmin;
-  margin: 0;
+	display: block;
+	padding: 1vmin;
+	margin: 0;
 }
 
 .action-dialog-name {
-  font-size: 1.4375rem;
-  line-height: 1.2;
+	font-size: 1.4375rem;
+	line-height: 1.2;
 
-  background: #ffffff;
-  border-radius: 7px 7px 0 0;
+	background: #ffffff;
+	border-radius: 7px 7px 0 0;
 
-  width: -moz-fit-content;
-  width: fit-content;
-  margin-left: 5vmin;
+	width: -moz-fit-content;
+	width: fit-content;
+	margin-left: 5vmin;
 
-  box-shadow: 1px 1px 3px #00000042;
+	box-shadow: 1px 1px 3px #00000042;
 }
 
 .action-dialog-content {
-  width: 100%;
+	width: 100%;
 
-  font-size: 2.2375rem;
-  line-height: 1.2;
+	font-size: 2.2375rem;
+	line-height: 1.2;
 
-  /* prettier-ignore */
-  text-shadow: 1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
+	/* prettier-ignore */
+	text-shadow: 1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
 }
 
 /**
@@ -90,44 +90,44 @@
  */
 .action-dialog-person > canvas,
 .action-dialog-person > img {
-  max-height: 100%;
-  max-width: 100%;
+	max-height: 100%;
+	max-width: 100%;
 
-  object-fit: contain;
+	object-fit: contain;
 }
 
 @media (orientation: portrait) {
-  .action-dialog {
-    width: 100%;
-    bottom: 0;
-    left: unset;
-    transform: unset;
-  }
+	.action-dialog {
+		width: 100%;
+		bottom: 0;
+		left: unset;
+		transform: unset;
+	}
 
-  .action-dialog-name {
-    font-size: 1.02rem;
-  }
+	.action-dialog-name {
+		font-size: 1.02rem;
+	}
 
-  .action-dialog-content {
-    font-size: 1.32rem;
-  }
+	.action-dialog-content {
+		font-size: 1.32rem;
+	}
 
-  .action-dialog-container {
-    border-radius: 14px 14px 0 0;
-  }
+	.action-dialog-container {
+		border-radius: 14px 14px 0 0;
+	}
 
-  .action-dialog-content {
-    text-shadow: none;
-  }
+	.action-dialog-content {
+		text-shadow: none;
+	}
 }
 
 @media only screen and (orientation: landscape) and (pointer: coarse) {
-  .action-dialog-content {
-    font-size: 1.32rem;
-    line-height: 1.15;
-  }
+	.action-dialog-content {
+		font-size: 1.32rem;
+		line-height: 1.15;
+	}
 
-  .action-dialog-content {
-    text-shadow: none;
-  }
+	.action-dialog-content {
+		text-shadow: none;
+	}
 }

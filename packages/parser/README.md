@@ -5,7 +5,7 @@
 ## Использование
 
 ```ts
-import { parse, transform } from "!novely/parser";
+import { parse, transform } from '!novely/parser';
 
 const ast = parse(source);
 const js = transform(ast);
@@ -32,15 +32,15 @@ dojo
 
 ```js
 engine.withStory({
-  start: [],
-  dojo: [],
+	start: [],
+	dojo: [],
 });
 
 loaded.then(() => {
-  engine.withStory({
-    start: [],
-    dojo: [],
-  });
+	engine.withStory({
+		start: [],
+		dojo: [],
+	});
 });
 ```
 
@@ -60,15 +60,15 @@ start
 
 ```js
 engine.withStory({
-  start: [
-    a.dialog("Name", "Тут можно написать текст\n Добавить перенос"),
-    a.dialog(
-      "Name",
-      `
+	start: [
+		a.dialog('Name', 'Тут можно написать текст\n Добавить перенос'),
+		a.dialog(
+			'Name',
+			`
 А можно написать текст таким образом
 Без кавычек`,
-    ),
-  ],
+		),
+	],
 });
 ```
 
@@ -83,7 +83,7 @@ start
 
 ```js
 engine.withStory({
-  start: [a.dialog(Person, Text)],
+	start: [a.dialog(Person, Text)],
 });
 ```
 
@@ -104,14 +104,12 @@ start
 
 ```js
 engine.withStory({
-  start: [
-    a.condition(jsCondition, {
-      jail: [a.dialog("Мент", "От судьбы не убежишь")],
-      freedom: [
-        a.dialog("Кент", "Ты убежал, но в этот раз тебе просто повезло"),
-      ],
-    }),
-  ],
+	start: [
+		a.condition(jsCondition, {
+			jail: [a.dialog('Мент', 'От судьбы не убежишь')],
+			freedom: [a.dialog('Кент', 'Ты убежал, но в этот раз тебе просто повезло')],
+		}),
+	],
 });
 ```
 

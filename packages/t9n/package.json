@@ -1,44 +1,44 @@
 {
-  "name": "@novely/t9n",
-  "description": "Перевод Novely",
-  "version": "0.7.0",
-  "type": "module",
-  "sideEffects": false,
-  "types": "./dist/index.d.ts",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "publishConfig": {
-    "access": "public"
-  },
-  "scripts": {
-    "dev": "tsup --watch",
-    "build": "tsup --dts"
-  },
-  "devDependencies": {
-    "tsup": "^7.1.0",
-    "typescript": "^5.1.6"
-  },
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/yhdgms1/novely/issues"
-  },
-  "homepage": "https://github.com/yhdgms1/novely/tree/main/packages/t9n",
-  "keywords": [
-    "novely",
-    "internationalization",
-    "translation",
-    "t9n"
-  ],
-  "author": {
-    "name": "Artemiy Schukin",
-    "url": "https://github.com/yhdgms1"
-  },
-  "contributors": [],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/yhdgms1/novely.git"
-  },
-  "files": [
-    "dist/*"
-  ]
+	"name": "@novely/t9n",
+	"description": "Перевод Novely",
+	"version": "0.7.0",
+	"type": "module",
+	"sideEffects": false,
+	"types": "./dist/index.d.ts",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"dev": "tsup --watch",
+		"build": "tsup --dts"
+	},
+	"devDependencies": {
+		"tsup": "^7.1.0",
+		"typescript": "^5.1.6"
+	},
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/yhdgms1/novely/issues"
+	},
+	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/t9n",
+	"keywords": [
+		"novely",
+		"internationalization",
+		"translation",
+		"t9n"
+	],
+	"author": {
+		"name": "Artemiy Schukin",
+		"url": "https://github.com/yhdgms1"
+	},
+	"contributors": [],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/yhdgms1/novely.git"
+	},
+	"files": [
+		"dist/*"
+	]
 }

@@ -1,97 +1,97 @@
 {
-  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "Novely",
-  "patterns": [
-    {
-      "include": "#numbers"
-    },
-    {
-      "include": "#script"
-    },
-    {
-      "name": "novely.story-key",
-      "match": "^\\w+(?=\\n)",
-      "captures": {
-        "0": {
-          "name": "string.quoted.triple"
-        }
-      }
-    },
-    {
-      "name": "novely.js-values-inline",
-      "match": " (%)([^\\n\\s]+)",
-      "captures": {
-        "1": { "name": "entity.name.type" },
-        "2": { "name": "constant.character" }
-      }
-    },
-    {
-      "name": "novely.map",
-      "match": "\\*",
-      "captures": {
-        "0": { "name": "entity.name.type" }
-      }
-    },
-    {
-      "name": "novely.array",
-      "match": "=",
-      "captures": {
-        "0": { "name": "entity.name.type" }
-      }
-    },
-    {
-      "name": "novely.character-escape",
-      "match": "\\\\.",
-      "captures": {
-        "0": { "name": "constant.character.escape" }
-      }
-    },
-    {
-      "name": "novely.string-start",
-      "match": "  (\\\\)",
-      "captures": {
-        "0": { "name": "entity.name.type" }
-      }
-    },
-    {
-      "name": "novely.action",
-      "match": "(!\\b\\w*)",
-      "captures": {
-        "0": { "name": "keyword.control" }
-      }
-    }
-  ],
-  "repository": {
-    "script": {
-      "begin": "^( *?)(%)",
-      "beginCaptures": {
-        "2": {
-          "name": "entity.name.type"
-        }
-      },
-      "end": "(\\n)",
-      "endCaptures": {},
-      "patterns": [
-        {
-          "include": "#destiny"
-        },
-        {
-          "include": "source.js"
-        }
-      ]
-    },
-    "numbers": {
-      "patterns": [
-        {
-          "name": "constant.numeric.float.nvly",
-          "match": "\\b[0-9][0-9_]*(\\.[0-9][0-9_]*)?([eE][+-]?[0-9_]+)?\\b"
-        },
-        {
-          "name": "constant.numeric.decimal.nvly",
-          "match": "\\b[0-9][0-9_]*\\b"
-        }
-      ]
-    }
-  },
-  "scopeName": "novely"
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Novely",
+	"patterns": [
+		{
+			"include": "#numbers"
+		},
+		{
+			"include": "#script"
+		},
+		{
+			"name": "novely.story-key",
+			"match": "^\\w+(?=\\n)",
+			"captures": {
+				"0": {
+					"name": "string.quoted.triple"
+				}
+			}
+		},
+		{
+			"name": "novely.js-values-inline",
+			"match": " (%)([^\\n\\s]+)",
+			"captures": {
+				"1": { "name": "entity.name.type" },
+				"2": { "name": "constant.character" }
+			}
+		},
+		{
+			"name": "novely.map",
+			"match": "\\*",
+			"captures": {
+				"0": { "name": "entity.name.type" }
+			}
+		},
+		{
+			"name": "novely.array",
+			"match": "=",
+			"captures": {
+				"0": { "name": "entity.name.type" }
+			}
+		},
+		{
+			"name": "novely.character-escape",
+			"match": "\\\\.",
+			"captures": {
+				"0": { "name": "constant.character.escape" }
+			}
+		},
+		{
+			"name": "novely.string-start",
+			"match": "  (\\\\)",
+			"captures": {
+				"0": { "name": "entity.name.type" }
+			}
+		},
+		{
+			"name": "novely.action",
+			"match": "(!\\b\\w*)",
+			"captures": {
+				"0": { "name": "keyword.control" }
+			}
+		}
+	],
+	"repository": {
+		"script": {
+			"begin": "^( *?)(%)",
+			"beginCaptures": {
+				"2": {
+					"name": "entity.name.type"
+				}
+			},
+			"end": "(\\n)",
+			"endCaptures": {},
+			"patterns": [
+				{
+					"include": "#destiny"
+				},
+				{
+					"include": "source.js"
+				}
+			]
+		},
+		"numbers": {
+			"patterns": [
+				{
+					"name": "constant.numeric.float.nvly",
+					"match": "\\b[0-9][0-9_]*(\\.[0-9][0-9_]*)?([eE][+-]?[0-9_]+)?\\b"
+				},
+				{
+					"name": "constant.numeric.decimal.nvly",
+					"match": "\\b[0-9][0-9_]*\\b"
+				}
+			]
+		}
+	},
+	"scopeName": "novely"
 }
