@@ -17,6 +17,14 @@
   user-select: none;
 }
 
+.action-dialog--visible {
+  display: flex;
+}
+
+.action-dialog--hidden {
+  display: none;
+}
+
 .action-dialog-container {
   height: 100%;
   min-height: 18vh;

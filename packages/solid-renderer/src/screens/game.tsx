@@ -137,7 +137,10 @@ const Game: VoidComponent<GameProps> = (props) => {
       </div>
       <div
         class="action-dialog"
-        style={{ display: props.state.dialog.visible ? "flex" : "none" }}
+        classList={{
+          "action-dialog--visible": props.state.dialog.visible,
+          "action-dialog--hidden": !props.state.dialog.visible
+        }}
       >
         <DialogName
           character={props.state.dialog.character}
