@@ -1,19 +1,19 @@
 .characters {
-  width: 100vw;
-  height: 100vh;
+	width: 100vw;
+	height: 100vh;
 
-  overflow: hidden;
+	overflow: hidden;
 
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
 }
 
 .characters > canvas {
-  position: relative;
+	position: relative;
 
-  min-width: unset;
+	min-width: unset;
 
-  max-height: 85vh;
-  max-width: 50vw;
+	max-height: 85vh;
+	max-width: 50vw;
 }

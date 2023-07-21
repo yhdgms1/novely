@@ -1,383 +1,343 @@
-import type { Renderer, Character as CharacterType } from '@novely/core'
+import type { Renderer, Character as CharacterType } from '@novely/core';
 import type { VoidComponent } from 'solid-js';
 import type { JSX } from 'solid-js';
-import type { SetStoreFunction } from 'solid-js/store'
-import type { State, SolidRendererStore } from '../renderer'
+import type { SetStoreFunction } from 'solid-js/store';
+import type { State, SolidRendererStore } from '../renderer';
 
-import { createEffect, createSignal, untrack, For, Show } from 'solid-js'
+import { createSignal, untrack, For, Show } from 'solid-js';
 import { DialogName } from '../components/DialogName';
 import { Character } from '../components/Character';
 import { Modal } from '../components/Modal';
 import { Icon } from '../components/Icon';
+import { createTypewriter } from '../components/Typewriter';
 
-import { typewriter } from '@novely/typewriter'
-import { useData } from '../context'
-import { canvasDrawImages, url, isCSSImage } from '../utils'
-import { TEXT_SPEED_MAP } from '../constants'
+import { useData } from '../context';
+import { canvasDrawImages, url, isCSSImage, onKey } from '../utils';
 
 interface GameProps {
-  state: State;
-  setState: SetStoreFunction<State>;
+	state: State;
+	setState: SetStoreFunction<State>;
 
-  store: SolidRendererStore;
-  characters: Record<string, CharacterType>;
-  renderer: Renderer;
+	store: SolidRendererStore;
+	characters: Record<string, CharacterType>;
+	renderer: Renderer;
 }
-
-interface Writer {
-  instance: ReturnType<typeof typewriter> | undefined;
-  /**
-   * In example PRM was enabled, text was set, then PRM was disabled.
-   * 
-   * Is writer done? No.
-   * Is PRM enabled? No.
-   * 
-   * This is used to overcome this situation.
-   */
-  bypassed: boolean;
-}
-
-const PRM = matchMedia('(prefers-reduced-motion: reduce)');
 
 const Game: VoidComponent<GameProps> = (props) => {
-  const data = useData();
+	const data = useData();
 
-  /**
-   * Can be destructured because these are passed without getters
-   */
-  const { setState, characters, store, renderer } = props;
+	/**
+	 * Can be destructured because these are passed without getters
+	 */
+	const { setState, characters, store, renderer } = props;
 
-  let writer: Writer = {
-    bypassed: false,
-    instance: undefined
-  }
+	const background = () => {
+		const is = isCSSImage(props.state.background);
 
-  const background = () => {
-    const is = isCSSImage(props.state.background)
+		return {
+			'background-image': is ? url(props.state.background) : '',
+			'background-color': is ? undefined : props.state.background,
+		} as Partial<JSX.CSSProperties>;
+	};
 
-    return { "background-image": is ? url(props.state.background) : '', "background-color": is ? undefined : props.state.background } as Partial<JSX.CSSProperties>
-  };
+	const [auto, setAuto] = createSignal(false);
 
-  const [auto, setAuto] = createSignal(false);
+	const onChoicesButtonClick = ([disabled, i]: [boolean, number]) => {
+		if (disabled) return;
 
-  const getCurrentContent = (): readonly [element: HTMLElement | undefined, text: string] => {
-    const state = props.state;
+		const resolve = props.state.choices.resolve;
 
-    if (state.dialog.content) {
-      return [store.dialogRef, state.dialog.content]
-    } else {
-      return [store.textRef, state.text.content]
-    }
-  }
+		setState('choices', {
+			choices: [],
+			visible: false,
+			resolve: undefined,
+			question: '',
+		});
+		resolve?.(i);
+	};
 
-  createEffect(() => {
-    const [element, text] = getCurrentContent();
+	const onInputButtonClick = () => {
+		if (props.state.input.error) return;
 
-    /**
-     * Stop animation
-     */
-    writer.instance?.destroy();
+		const resolve = props.state.input.resolve;
+		const cleanup = props.state.input.cleanup;
 
-    /**
-     * In case element is not present do not start the typewriter
-     */
-    if (!element) return;
-    /**
-     * When text is empty
-     */
-    if (!text) return;
+		setState('input', {
+			element: undefined,
+			question: '',
+			visible: false,
+			cleanup: undefined,
+			resolve: undefined,
+		});
 
-    /**
-     * When prefers-reduced-motion is enabled, then set the content immediately and completely
-     */
-    if (PRM.matches) {
-      /**
-       * Spaces replaces here for consistency
-       */
-      element.innerHTML = text.replace(/ /gm, '&#8197;');
-      writer.bypassed = true;
+		cleanup?.();
+		resolve?.();
+	};
 
-      return;
-    }
+	const layers = () => Object.values(props.state.layers);
 
-    const speed = data.storeData().meta[1];
+	const speed = () => data.storeData().meta[1];
 
-    /**
-     * Start new instance
-     */
-    writer.instance = typewriter({
-      node: element,
-      text,
-      ended() {
-        /**
-         * Ended without user interaction
-         */
-        const next = untrack(auto);
+	const onWriterEnd = (cb: () => void) => {
+		return (prm: boolean) => {
+			const next = untrack(auto);
 
-        /**
-         * When `auto` mode is disabled
-         */
-        if (!next) return;
+			/**
+			 * When `auto` mode is disabled
+			 */
+			if (!next) return;
 
-        if (PRM.matches) {
-          setAuto(false);
-        } else {
-          untrack(clearTypewriterEffect)
-        }
-      },
-      speed: TEXT_SPEED_MAP[speed]
-    });
+			if (prm) {
+				setAuto(false);
+			} else {
+				untrack(cb);
+			}
+		};
+	};
 
-    writer.bypassed = false;
-  });
+	const TextWriter = createTypewriter({
+		resolve() {
+			const resolve = props.state.text.resolve!;
 
-  const onChoicesButtonClick = ([disabled, i]: [boolean, number]) => {
-    if (disabled) return;
+			setState('text', { content: '', resolve: undefined });
+			resolve();
+		},
+	});
 
-    const resolve = props.state.choices.resolve;
+	const DialogWriter = createTypewriter({
+		resolve() {
+			const resolve = props.state.dialog.resolve!;
 
-    setState('choices', { choices: [], visible: false, resolve: undefined, question: '' });
-    resolve?.(i);
-  }
+			setState('dialog', {
+				content: '',
+				name: '',
+				character: undefined,
+				emotion: undefined,
+				visible: false,
+				resolve: undefined,
+			});
+			resolve();
+		},
+	});
 
-  const clearTypewriterEffect = () => {
-    const reduced = PRM.matches;
-    const written = writer.instance && writer.instance.end();
+	return (
+		<div class="root game" style={background()}>
+			<div data-characters={true} class="characters">
+				<For each={Object.entries(props.state.characters)}>
+					{([character, data]) => (
+						<Show when={data.visible}>
+							<Character character={character} data={data} characters={store.characters} />
+						</Show>
+					)}
+				</For>
+			</div>
+			<div
+				class="action-dialog"
+				classList={{
+					'action-dialog--visible': props.state.dialog.visible,
+					'action-dialog--hidden': !props.state.dialog.visible,
+				}}
+			>
+				<DialogName
+					character={props.state.dialog.character}
+					name={props.state.dialog.name}
+					characters={characters}
+				/>
+				<div
+					class="action-dialog-container"
+					data-no-person={!(props.state.dialog.character && props.state.dialog.emotion)}
+					aria-disabled={!props.state.dialog.content}
+					role="button"
+					tabIndex={0}
+					title={
+						DialogWriter.state() === 'idle'
+							? undefined
+							: data.t(DialogWriter.state() === 'processing' ? 'CompleteText' : 'GoForward')
+					}
+					onClick={DialogWriter.clear}
+					onKeyPress={onKey(DialogWriter.clear, 'Enter')}
+					onKeyDown={onKey(DialogWriter.clear, ' ')}
+				>
+					<div class="action-dialog-person">
+						<Show when={props.state.dialog.emotion} keyed>
+							{(emotion) => {
+								const character = props.state.dialog.character;
 
-    if (reduced || written || writer.bypassed) {
-      const resolve = props.state.dialog.resolve || props.state.text.resolve;
+								/**
+								 * Если персонажа нет
+								 */
+								if (!character) return null;
 
-      setState('dialog', { content: '', name: '', character: undefined, emotion: undefined, visible: false, resolve: undefined });
-      setState('text', { content: '', resolve: undefined });
-      
-      writer.bypassed = false;
+								/**
+								 * Если эмоция ещё не загружена - загрузим её
+								 */
+								if (!store['characters'][character] || !store['characters'][character]['emotions'][emotion]) {
+									renderer.character(character).withEmotion(emotion);
+								}
 
-      resolve?.();
-    }
-  }
+								const image = store['characters'][character]['emotions'][emotion];
 
-  const onInputButtonClick = () => {
-    if (props.state.input.error) return;
+								/**
+								 * Если элемент - картинка, не будем выполнять лишнюю отрисовку на `canvas`
+								 */
+								if ('src' in image) return image;
 
-    const resolve = props.state.input.resolve;
-    const cleanup = props.state.input.cleanup;
+								const [canvas] = canvasDrawImages(undefined, undefined, Object.values(image));
 
-    setState('input', { element: undefined, question: '', visible: false, cleanup: undefined, resolve: undefined });
+								return canvas;
+							}}
+						</Show>
+					</div>
+					<div class="action-dialog-content">
+						<DialogWriter.Typewriter
+							content={props.state.dialog.content}
+							speed={speed()}
+							ended={onWriterEnd(DialogWriter.clear)}
+						/>
+					</div>
+				</div>
+			</div>
 
-    cleanup?.();
-    resolve?.();
-  }
+			<Modal isOpen={() => props.state.choices.visible}>
+				<div class="dialog-container">
+					<span class="dialog-fix" aria-hidden="true">
+						&#8203;
+					</span>
+					<div class="dialog-panel">
+						<span
+							class="dialog-panel-label"
+							data-used={Boolean(props.state.choices.question)}
+							aria-hidden={!props.state.choices.question}
+						>
+							{props.state.choices.question || <>&#8197;</>}
+						</span>
+						<For each={props.state.choices.choices}>
+							{([text, _, active], i) => {
+								const disabled = active ? !active() : false;
+								const index = i();
 
-  const layers = () => Object.values(props.state.layers);
+								return (
+									<button
+										type="button"
+										class="button"
+										aria-disabled={disabled}
+										onClick={[onChoicesButtonClick, [disabled, index]]}
+									>
+										{text}
+									</button>
+								);
+							}}
+						</For>
+					</div>
+				</div>
+			</Modal>
 
-  return (
-    <div class="root game" style={background()}>
-      <div data-characters={true} class="characters">
-        <For each={Object.entries(props.state.characters)}>
-          {([character, data]) => (
-            <Show when={data.visible}>
-              <Character
-                character={character}
-                data={data}
-                characters={store.characters}
-              />
-            </Show>
-          )}
-        </For>
-      </div>
-      <div
-        class="action-dialog"
-        style={{ display: props.state.dialog.visible ? 'flex' : 'none' }}
-        onClick={clearTypewriterEffect}
-      >
-        <DialogName
-          character={props.state.dialog.character}
-          name={props.state.dialog.name}
-          characters={characters}
-        />
-        <div 
-          class="action-dialog-container"
-          data-no-person={!(props.state.dialog.character && props.state.dialog.emotion)}
-        >
-          <div class="action-dialog-person">
-            <Show when={props.state.dialog.emotion} keyed>
-              {(emotion) => {
-                const character = props.state.dialog.character;
+			<Modal isOpen={() => props.state.input.visible}>
+				<div class="dialog-container">
+					<span class="dialog-fix" aria-hidden="true">
+						&#8203;
+					</span>
+					<div class="dialog-panel input-dialog-panel">
+						<label for="novely-input" class="input-dialog-label">
+							<span>{props.state.input.question}</span>
+							{props.state.input.element}
+							<span aria-live="polite" aria-atomic="true">
+								{props.state.input.error}
+							</span>
+						</label>
+						<button
+							type="submit"
+							class="button dialog-input__button"
+							onClick={onInputButtonClick}
+							aria-disabled={Boolean(props.state.input.error)}
+						>
+							{data.t('Sumbit')}
+						</button>
+					</div>
+				</div>
+			</Modal>
 
-                /**
-                 * Если персонажа нет
-                 */
-                if (!character) return null;
+			<div data-custom={true}>
+				<For each={layers()}>{(value) => value!.dom}</For>
+			</div>
 
-                /**
-                 * Если эмоция ещё не загружена - загрузим её
-                 */
-                if (!store['characters'][character] || !store['characters'][character]['emotions'][emotion]) {
-                  renderer.character(character).withEmotion(emotion)
-                };
+			<div
+				class="action-text"
+				data-shown={Boolean(props.state.text.content)}
+				aria-disabled={!props.state.text.content}
+				role="button"
+				tabIndex={0}
+				title={
+					TextWriter.state() === 'idle'
+						? undefined
+						: data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward')
+				}
+				onClick={TextWriter.clear}
+				onKeyPress={onKey(TextWriter.clear, 'Enter')}
+				onKeyDown={onKey(TextWriter.clear, ' ')}
+			>
+				<TextWriter.Typewriter
+					content={props.state.text.content}
+					speed={speed()}
+					ended={onWriterEnd(TextWriter.clear)}
+				/>
+			</div>
 
-                const image = store['characters'][character]['emotions'][emotion];
+			<div class="control-panel">
+				<button
+					type="button"
+					class="button control-panel__button"
+					title={data.t('GoBack')}
+					onClick={data.options.back}
+				>
+					<span class="control-panel__button__content">{data.t('GoBack')}</span>
+					<Icon class="control-panel__button__icon" children={Icon.Back()} />
+				</button>
+				<button
+					type="button"
+					class="button control-panel__button"
+					title={data.t('DoSave')}
+					onClick={() => {
+						data.options.save(false, 'manual');
+					}}
+				>
+					<span class="control-panel__button__content">{data.t('DoSave')}</span>
+					<Icon class="control-panel__button__icon" children={Icon.Save()} />
+				</button>
+				<button
+					type="button"
+					class="button control-panel__button control-panel__button--auto-mode"
+					title={data.t(auto() ? 'Stop' : 'Auto')}
+					onClick={() => {
+						setAuto((prev) => !prev);
+					}}
+				>
+					{data.t(auto() ? 'Stop' : 'Auto')}
+				</button>
+				<button
+					type="button"
+					class="button control-panel__button"
+					title={data.t('Settings')}
+					onClick={() => {
+						data.options.save(false, 'auto');
+						props.setState('screen', 'settings');
+					}}
+				>
+					<span class="control-panel__button__content">{data.t('Settings')}</span>
+					<Icon class="control-panel__button__icon" children={Icon.Settings()} />
+				</button>
+				<button
+					type="button"
+					class="button control-panel__button"
+					title={data.t('Exit')}
+					onClick={data.options.exit}
+				>
+					<span class="control-panel__button__content">{data.t('Exit')}</span>
+					<Icon class="control-panel__button__icon" children={Icon.Exit()} />
+				</button>
+			</div>
+		</div>
+	);
+};
 
-                /**
-                 * Если элемент - картинка, не будем выполнять лишнюю отрисовку на `canvas`
-                 */
-                if ('src' in image) return image;
-
-                const [canvas] = canvasDrawImages(undefined, undefined, Object.values(image));
-
-                return canvas;
-              }}
-            </Show>
-          </div>
-          <p class="action-dialog-content" ref={store.dialogRef} />
-        </div>
-      </div>
-
-      <Modal
-        isOpen={() => props.state.choices.visible}
-      >
-        <div class="dialog-container">
-          <span
-            class="dialog-fix"
-            aria-hidden="true"
-          >
-            &#8203;
-          </span>
-          <div class="dialog-panel">
-            <span
-              class="dialog-panel-label"
-              data-used={Boolean(props.state.choices.question)}
-              aria-hidden={!props.state.choices.question}
-            >
-              {props.state.choices.question || <>&#8197;</>}
-            </span>
-            <For each={props.state.choices.choices}>
-              {([text, _, active], i) => {
-                const disabled = active ? !active() : false;
-                const index = i();
-
-                return (
-                  <button
-                    type="button"
-                    class="button"
-                    aria-disabled={disabled}
-                    onClick={[onChoicesButtonClick, [disabled, index]]}
-                  >
-                    {text}
-                  </button>
-                )
-              }}
-            </For>
-          </div>
-        </div>
-      </Modal>
-
-      <Modal
-        isOpen={() => props.state.input.visible}
-      >
-        <div class="dialog-container">
-          <span
-            class="dialog-fix"
-            aria-hidden="true"
-          >
-            &#8203;
-          </span>
-          <div class="dialog-panel input-dialog-panel">
-            <label for="novely-input" class="input-dialog-label">
-              <span>
-                {props.state.input.question}
-              </span>
-              {props.state.input.element}
-              <span aria-live="polite">
-                {props.state.input.error}
-              </span>
-            </label>
-            <button
-              type="submit"
-              class="button dialog-input__button"
-
-              onClick={onInputButtonClick}
-              aria-disabled={Boolean(props.state.input.error)}
-            >
-              {data.t('Sumbit')}
-            </button>
-          </div>
-        </div>
-      </Modal>
-
-      <div data-custom={true}>
-        <For each={layers()}>
-          {(value) => value!.dom}
-        </For>
-      </div>
-
-      <div class="action-text" data-shown={Boolean(props.state.text.content)} onClick={clearTypewriterEffect}>
-        <span ref={store.textRef} />
-      </div>
-
-      <div class="control-panel">
-        <button
-          type="button"
-          class="button control-panel__button"
-          title={data.t('GoBack')}
-          onClick={data.options.back}
-        >
-          <span class="control-panel__button__content">
-            {data.t('GoBack')}
-          </span>
-          <Icon class="control-panel__button__icon" children={Icon.Back()} />
-        </button>
-        <button
-          type="button"
-          class="button control-panel__button"
-          title={data.t('DoSave')}
-          onClick={() => {
-            data.options.save(false, 'manual');
-          }}
-        >
-          <span class="control-panel__button__content">
-            {data.t('DoSave')}
-          </span>
-          <Icon class="control-panel__button__icon" children={Icon.Save()} />
-        </button>
-        <button
-          type="button"
-          class="button control-panel__button control-panel__button--auto-mode"
-          title={data.t(auto() ? 'Stop' : 'Auto')}
-          onClick={() => {
-            setAuto(prev => !prev);
-          }}
-        >
-          {data.t(auto() ? 'Stop' : 'Auto')}
-        </button>
-        <button
-          type="button"
-          class="button control-panel__button"
-          title={data.t('Settings')}
-          onClick={() => {
-            data.options.save(false, 'auto');
-            props.setState('screen', 'settings');
-          }}
-        >
-          <span class="control-panel__button__content">
-            {data.t('Settings')}
-          </span>
-          <Icon class="control-panel__button__icon" children={Icon.Settings()} />
-        </button>
-        <button
-          type="button"
-          class="button control-panel__button"
-          title={data.t('Exit')}
-          onClick={data.options.exit}
-        >
-          <span class="control-panel__button__content">
-            {data.t('Exit')}
-          </span>
-          <Icon class="control-panel__button__icon" children={Icon.Exit()} />
-        </button>
-      </div>
-    </div>
-  )
-}
-
-export { Game }
+export { Game };

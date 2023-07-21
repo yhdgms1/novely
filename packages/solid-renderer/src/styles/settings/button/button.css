@@ -1,9 +1,9 @@
 .settings__button {
-  min-width: 30vw;
+	min-width: 30vw;
 }
 
 @media (orientation: portrait) {
-  .settings__button {
-    min-width: 80%;
-  }
+	.settings__button {
+		min-width: 80%;
+	}
 }

@@ -1,29 +1,29 @@
 .button {
-  background-color: var(--novely-button-background-color, #ffe9f3);
-  border: 4px solid var(--novely-button-border-color, #ffc7df);
-  color: var(--novely-button-color, #000);
+	background-color: var(--novely-button-background-color, #ffe9f3);
+	border: 4px solid var(--novely-button-border-color, #ffc7df);
+	color: var(--novely-button-color, #000);
 
-  margin: 0.4rem 0;
-  padding: 0.4rem;
+	margin: 0.4rem 0;
+	padding: 0.4rem;
 
-  font-size: 1.02rem;
-  line-height: 1.2;
+	font-size: 1.02rem;
+	line-height: 1.2;
 
-  cursor: pointer;
+	cursor: pointer;
 
-  user-select: none;
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
+	user-select: none;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
 }
 
 .button:hover {
-  background-color: var(--novely-button-hover-background-color, #ffffff);
-  border-color: var(--novely-button-hover-border-color, #ffc6d8);
-  color: var(--novely-button-hover-color, #ffb7a2);
+	background-color: var(--novely-button-hover-background-color, #ffffff);
+	border-color: var(--novely-button-hover-border-color, #ffc6d8);
+	color: var(--novely-button-hover-color, #ffb7a2);
 }
 
-.button[aria-disabled="true"] {
-  cursor: not-allowed;
-  opacity: 0.9;
+.button[aria-disabled='true'] {
+	cursor: not-allowed;
+	opacity: 0.9;
 }

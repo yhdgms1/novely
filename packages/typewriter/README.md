@@ -5,28 +5,28 @@
 ## Использование
 
 ```ts title="main.ts"
-import { typewriter } from "@novely/typewriter";
+import { typewriter } from '@novely/typewriter';
 
 const writer = typewriter({
-  node: document.body,
-  text: "<em>Жить вечно не означает жить полной жизнью.</em> — <bold>Ольгерд Фон Эверик<bold/>",
-  timeout: () => {
-    /**
-     * Скорость набора текста. В данном случае текст набирается каждые 90 миллисекунд
-     */
-    return 90
-  },
-  ended: () => {
-    console.log("Воспроизведение закончилось без использования метода `end`");
-  }
+	node: document.body,
+	text: '<em>Жить вечно не означает жить полной жизнью.</em> — <bold>Ольгерд Фон Эверик<bold/>',
+	timeout: () => {
+		/**
+		 * Скорость набора текста. В данном случае текст набирается каждые 90 миллисекунд
+		 */
+		return 90;
+	},
+	ended: () => {
+		console.log('Воспроизведение закончилось без использования метода `end`');
+	},
 });
 
 buttonStop.onclick = () => {
-  writer.end();
+	writer.end();
 };
 
 buttonFinish.onclick = () => {
-  writer.destroy();
+	writer.destroy();
 };
 ```
 

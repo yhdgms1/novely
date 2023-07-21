@@ -12,7 +12,7 @@ const js = transform(ast);
 
 const fn = eval(js);
 
-const story = fn({  })
+const story = fn({});
 ```
 
 ## Для чего
@@ -32,16 +32,16 @@ dojo
 
 ```js
 engine.withStory({
-  start: [],
-  dojo: []
-})
+	start: [],
+	dojo: [],
+});
 
 loaded.then(() => {
-  engine.withStory({
-    start: [],
-    dojo: []
-  })
-})
+	engine.withStory({
+		start: [],
+		dojo: [],
+	});
+});
 ```
 
 Экшены описываются через ! и название экшена. После чего или на текущей строки или на следующих находятся параметры.
@@ -60,13 +60,16 @@ start
 
 ```js
 engine.withStory({
-  start: [
-    a.dialog("Name", "Тут можно написать текст\n Добавить перенос"),
-    a.dialog("Name", `
+	start: [
+		a.dialog('Name', 'Тут можно написать текст\n Добавить перенос'),
+		a.dialog(
+			'Name',
+			`
 А можно написать текст таким образом
-Без кавычек`)
-  ]
-})
+Без кавычек`,
+		),
+	],
+});
 ```
 
 Значения из js передаются через спец-символ %.
@@ -80,10 +83,8 @@ start
 
 ```js
 engine.withStory({
-  start: [
-    a.dialog(Person, Text)
-  ]
-})
+	start: [a.dialog(Person, Text)],
+});
 ```
 
 Запись экшена условия, для которого требуется объект, также отличается
@@ -103,20 +104,13 @@ start
 
 ```js
 engine.withStory({
-  start: [
-    a.condition(
-      jsCondition,
-      {
-        jail: [
-          a.dialog('Мент', "От судьбы не убежишь")
-        ],
-        freedom: [
-          a.dialog('Кент', "Ты убежал, но в этот раз тебе просто повезло")
-        ]
-      }
-    )
-  ]
-})
+	start: [
+		a.condition(jsCondition, {
+			jail: [a.dialog('Мент', 'От судьбы не убежишь')],
+			freedom: [a.dialog('Кент', 'Ты убежал, но в этот раз тебе просто повезло')],
+		}),
+	],
+});
 ```
 
 Отличия не настолько большие, чтобы реализовывать отдельный язык, тем не менее я думаю мне может быть более удобна разметка с использованием языка историй Novely.

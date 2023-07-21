@@ -1,8 +1,8 @@
-import { createDeferredPromise } from './utilities';
+import { createDeferredPromise } from './utilities'
 
 /**
  * Resolve when game is fully initialized
  */
-const initialized = createDeferredPromise();
+const initialized = createDeferredPromise()
 
 export { initialized }

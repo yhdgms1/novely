@@ -1,15 +1,15 @@
 .settings {
-  padding: 0 1rem;
-  gap: 1rem;
+	padding: 0 1rem;
+	gap: 1rem;
 
-  overflow: hidden;
-  background-image: var(--novely-settings-background-image);
+	overflow: hidden;
+	background-image: var(--novely-settings-background-image);
 
-  display: flex;
+	display: flex;
 }
 
 @media (orientation: portrait) {
-  .settings {
-    flex-direction: column-reverse;
-  }
+	.settings {
+		flex-direction: column-reverse;
+	}
 }

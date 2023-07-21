@@ -1,10 +1,6 @@
 {
-  "comments": {},
-  "brackets": [],
-  "autoClosingPairs": [
-    ["\"", "\""],
-  ],
-  "surroundingPairs": [
-    ["\"", "\""],
-  ]
+	"comments": {},
+	"brackets": [],
+	"autoClosingPairs": [["\"", "\""]],
+	"surroundingPairs": [["\"", "\""]]
 }

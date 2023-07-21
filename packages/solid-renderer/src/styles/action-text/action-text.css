@@ -1,41 +1,42 @@
 .action-text {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
+	position: absolute;
+	inset: 0;
+	z-index: 2;
 
-  max-width: 100%;
-  max-width: 100vw;
+	max-width: 100%;
+	max-width: 100vw;
 
-  display: none;
+	display: none;
 
-  text-align: center;
-  font-size: 1.5rem;
+	text-align: center;
+	font-size: 1.5rem;
 
-  user-select: none;
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
+	user-select: none;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
 }
 
-.action-text[data-shown="true"] {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.action-text[data-shown='true'] {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 
-  background: var(--novely-fullscreen-backgroun-color, rgba(0, 0, 0, 0.3));
-  
-  text-shadow: var(
-    --novely-fullscreen-text-shadow,
-    2px 2px 4px rgba(0, 0, 0, 0.5)
-  );
-  color: var(--novely-fullscreen-text-color, white);
+	background: var(--novely-fullscreen-background-color, rgba(0, 0, 0, 0.3));
+
+	text-shadow: var(--novely-fullscreen-text-shadow, 2px 2px 4px rgba(0, 0, 0, 0.5));
+	color: var(--novely-fullscreen-text-color, white);
 }
 
-.action-text[data-shown="true"] > span {
-  cursor: pointer;
-  
-  user-select: none;
+.action-text[data-shown='true'] > span {
+	cursor: pointer;
 
-  word-wrap: break-word;
-  word-break: break-word;
+	user-select: none;
+
+	word-wrap: break-word;
+	word-break: break-word;
+}
+
+.action-text[data-shown='true']:focus-visible > span {
+	text-decoration: underline;
 }

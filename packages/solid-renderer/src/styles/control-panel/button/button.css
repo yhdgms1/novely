@@ -1,41 +1,41 @@
 .control-panel__button {
-  border: 2px solid var(--novely-button-border-color, #ffc7df);
+	border: 2px solid var(--novely-button-border-color, #ffc7df);
 
-  margin: 0;
-  padding: 0.2rem 0.4rem;
+	margin: 0;
+	padding: 0.2rem 0.4rem;
 
-  font-size: 1rem;
-  line-height: 1;
+	font-size: 1rem;
+	line-height: 1;
 
-  height: 2rem;
+	height: 2rem;
 }
 
 .control-panel__button__icon {
-  display: none;
+	display: none;
 }
 
 .control-panel__button--auto-mode {
-  display: none;
+	display: none;
 }
 
 @media (orientation: portrait) {
-  .control-panel__button__icon {
-    display: block;
-  }
+	.control-panel__button__icon {
+		display: block;
+	}
 
-  .control-panel__button__content {
-    clip: rect(0 0 0 0);
-    clip-path: inset(50%);
-    height: 1px;
-    overflow: hidden;
-    position: absolute;
-    white-space: nowrap;
-    width: 1px;  
-  }  
+	.control-panel__button__content {
+		clip: rect(0 0 0 0);
+		clip-path: inset(50%);
+		height: 1px;
+		overflow: hidden;
+		position: absolute;
+		white-space: nowrap;
+		width: 1px;
+	}
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .control-panel__button--auto-mode {
-    display: initial;
-  }
+	.control-panel__button--auto-mode {
+		display: initial;
+	}
 }

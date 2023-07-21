@@ -1,1 +1,1 @@
-export { particles, hide } from './particles'
+export { particles, hide } from './particles';
