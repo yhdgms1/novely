@@ -21,7 +21,7 @@ import {
 	str,
 	isUserRequiredAction,
 	getTypewriterSpeed,
-	getLanguage,
+	getLanguage as defaultGetLanguage,
 	throttle,
 	isFunction,
 	vibrate,
@@ -90,6 +90,18 @@ interface NovelyInit<
 	 * @default 799
 	 */
 	throttleTimeout?: number;
+	/**
+	 * Custom language detector
+	 * @param languages Supported languages aka `languages: []` in the config
+	 * @example ```ts
+	 * novely({
+	 * 		getLanguage(languages) {
+	 * 				return sdk.environment.i18n.lang // i.e. custom language from some sdk
+	 * 		}
+	 * })
+	 * ```
+	 */
+	getLanguage?: (languages: string[]) => string;
 }
 
 const novely = <
@@ -110,7 +122,8 @@ const novely = <
 	data: defaultData,
 	autosaves = true,
 	migrations = [],
-	throttleTimeout = 799
+	throttleTimeout = 799,
+	getLanguage = defaultGetLanguage
 }: NovelyInit<Languages, Characters, Inter, StateScheme, DataScheme>) => {
 	let story: Story;
 	let times = new Set<number>();
