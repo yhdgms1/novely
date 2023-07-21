@@ -85,6 +85,11 @@ interface NovelyInit<
 	 * Migration from old saves to newer
 	 */
 	migrations?: Migration[];
+	/**
+	 * For saves Novely uses `throttle` function. This might be needed if you want to control frequency of saves to the storage
+	 * @default 799
+	 */
+	throttleTimeout?: number;
 }
 
 const novely = <
@@ -105,6 +110,7 @@ const novely = <
 	data: defaultData,
 	autosaves = true,
 	migrations = [],
+	throttleTimeout = 799
 }: NovelyInit<Languages, Characters, Inter, StateScheme, DataScheme>) => {
 	let story: Story;
 	let times = new Set<number>();
@@ -223,7 +229,7 @@ const novely = <
 		if (initialDataLoaded) storage.set(value);
 	};
 
-	const throttledOnStorageDataChange = throttle(onStorageDataChange, 120);
+	const throttledOnStorageDataChange = throttle(onStorageDataChange, throttleTimeout);
 
 	$.subscribe(throttledOnStorageDataChange);
 
