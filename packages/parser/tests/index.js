@@ -24,4 +24,13 @@ test('transforms', () => {
 
 console.log(transform(parse(input)));
 
+test('with works', async () => {
+	const code = transform(parse(await readFile('./tests/with.nvl', 'utf8')), {
+		useWith: true
+	});
+
+	// Code is valid
+	assert.throws(() => eval(code), { message: "Strict mode code may not include a with statement" })
+})
+
 test.run();

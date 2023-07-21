@@ -11,6 +11,11 @@ interface PluginOptions {
 	 * Rewrite action names
 	 */
 	rewrites?: Record<string, string>;
+	/**
+	 * Use with statement to get $values1 values
+	 * @default false
+	 */
+	useWith?: boolean
 }
 
 const defaults = {
@@ -20,9 +25,10 @@ const defaults = {
 		ввод: 'input',
 		выбор: 'choice',
 	},
+	useWith: false
 };
 
-const novelyPlugin = ({ extensions = defaults.extensions, rewrites = defaults.rewrites }: PluginOptions = {}) => {
+const novelyPlugin = ({ extensions = defaults.extensions, rewrites = defaults.rewrites, useWith = defaults.useWith }: PluginOptions = {}) => {
 	const plugin: Plugin = {
 		name: 'vite-plugin-nvl',
 		async load(id) {
@@ -31,6 +37,7 @@ const novelyPlugin = ({ extensions = defaults.extensions, rewrites = defaults.re
 				const ast = parse(contents);
 				const func = transform(ast, {
 					rewrites,
+					useWith
 				});
 
 				return `export default ${func}`;

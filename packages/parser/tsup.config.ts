@@ -9,7 +9,7 @@ export default defineConfig((options) => {
 		format: ['esm'],
 		minify: false,
 		bundle: true,
-		dts: options.dts,
+		dts: true,
 		watch: options.watch,
 	};
 });

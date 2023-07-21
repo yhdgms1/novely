@@ -1,2 +1,2 @@
 tasks:
-  - init: pnpm build:t9n && pnpm build:typewriter && pnpm build:parser && pnpm build:vite-plugin-nvl && pnpm build:core
+  - init: pnpm i

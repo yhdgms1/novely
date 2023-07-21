@@ -1,11 +1,14 @@
 import type { Ast, AstNode, TransformOptions } from './types';
 
-const transform = (ast: Ast, { rewrites = {} }: TransformOptions = {}) => {
-	let code = '($values1) => ({';
+const RESERVED = ['undefined', 'null', 'window', 'globalThis', '()'];
+
+const transform = (ast: Ast, { rewrites = {}, useWith = false }: TransformOptions = {}) => {
+	let code = useWith ? '($values1) => { with($values1) { return {' : '($values1) => ({';
 
 	const print_js_value = (value: Extract<AstNode, { type: 'JSValue' }>) => {
 		if (
-			['undefined', 'null', 'window', 'globalThis', '()'].some((reserved) => value.content.startsWith(reserved))
+			useWith ||
+			RESERVED.some((reserved) => value.content.startsWith(reserved))
 		) {
 			return value.content;
 		}
@@ -82,7 +85,7 @@ const transform = (ast: Ast, { rewrites = {} }: TransformOptions = {}) => {
 		code += '],';
 	}
 
-	return code + '})';
+	return code + (useWith ? '} } }' : '})');
 };
 
 export { transform };

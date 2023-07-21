@@ -4,6 +4,7 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
+		"postinstall": "pnpm build:t9n && pnpm build:typewriter && pnpm build:parser && pnpm build:vite-plugin-nvl && pnpm build:core",
 		"dev:core": "pnpm --filter=@novely/core... --parallel dev",
 		"build:core": "pnpm --filter=@novely/core... --parallel build",
 		"dev:t9n": "pnpm --filter=@novely/t9n... --parallel dev",

@@ -1,0 +1,3 @@
+test
+  !function
+    %function() { console.log(state()) }
