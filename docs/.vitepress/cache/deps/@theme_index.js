@@ -12,27 +12,27 @@ import {
 } from "./chunk-67UUJLDS.js";
 
 // node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/index.js
-import "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/fonts.css";
+import "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/fonts.css";
 
 // node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/without-fonts.js
-import "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/vars.css";
-import "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/base.css";
-import "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/utils.css";
-import "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/components/custom-block.css";
-import "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/components/vp-code.css";
-import "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/components/vp-code-group.css";
-import "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/components/vp-doc.css";
-import "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/components/vp-sponsor.css";
-import VPBadge from "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPBadge.vue";
-import Layout from "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/Layout.vue";
-import { default as default2 } from "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPHomeHero.vue";
-import { default as default3 } from "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPHomeFeatures.vue";
-import { default as default4 } from "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPHomeSponsors.vue";
-import { default as default5 } from "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPDocAsideSponsors.vue";
-import { default as default6 } from "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPTeamPage.vue";
-import { default as default7 } from "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPTeamPageTitle.vue";
-import { default as default8 } from "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPTeamPageSection.vue";
-import { default as default9 } from "/Users/artem/Documents/novely-docs/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPTeamMembers.vue";
+import "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/vars.css";
+import "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/base.css";
+import "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/utils.css";
+import "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/components/custom-block.css";
+import "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/components/vp-code.css";
+import "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/components/vp-code-group.css";
+import "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/components/vp-doc.css";
+import "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/styles/components/vp-sponsor.css";
+import VPBadge from "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPBadge.vue";
+import Layout from "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/Layout.vue";
+import { default as default2 } from "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPHomeHero.vue";
+import { default as default3 } from "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPHomeFeatures.vue";
+import { default as default4 } from "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPHomeSponsors.vue";
+import { default as default5 } from "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPDocAsideSponsors.vue";
+import { default as default6 } from "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPTeamPage.vue";
+import { default as default7 } from "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPTeamPageTitle.vue";
+import { default as default8 } from "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPTeamPageSection.vue";
+import { default as default9 } from "/workspace/novely/node_modules/.pnpm/vitepress@1.0.0-beta.5_@types+node@20.4.2_search-insights@2.7.0/node_modules/vitepress/dist/client/theme-default/components/VPTeamMembers.vue";
 
 // node_modules/.pnpm/@vueuse+shared@10.2.1_vue@3.3.4/node_modules/@vueuse/shared/index.mjs
 function tryOnScopeDispose(fn) {

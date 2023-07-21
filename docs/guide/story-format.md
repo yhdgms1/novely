@@ -14,37 +14,25 @@ engine.withStory({
     a.dialog("Sister", "Mum, he's still asleep!"),
     a.choice(
       "What would you do?",
-      [
-        "Wake up",
-        [
-          a.dialog("You", "Oh no!"),
-          a.exit()
-        ]
-      ],
+      ["Wake up", [a.dialog("You", "Oh no!"), a.exit()]],
       [
         "Continue sleeping",
-        [
-          a.dialog("You", "Let me get some sleep"),
-          a.exit()
-        ]
+        [a.dialog("You", "Let me get some sleep"), a.exit()],
       ]
     ),
-    a.condition(
-      () => state().sister.angry,
-      {
-        'true': [
-          a.dialog("Sister", "Are you out of your mind? We're going to be late because of you!"),
-          a.exit()
-        ],
-        'false': [
-          a.dialog("Sister", "Wake up!"),
-          a.exit()
-        ]
-      }
-    ),
-    a.end()
-  ]
-})
+    a.condition(() => state().sister.angry, {
+      true: [
+        a.dialog(
+          "Sister",
+          "Are you out of your mind? We're going to be late because of you!"
+        ),
+        a.exit(),
+      ],
+      false: [a.dialog("Sister", "Wake up!"), a.exit()],
+    }),
+    a.end(),
+  ],
+});
 ```
 
 Novely
@@ -95,9 +83,9 @@ See it? No more parentheses, not so much quotes! Now let's look at it in more de
 1. It is based on identation
 2. Story keys does not need array literals
 3. Actions start with `!`
-4. Strings are wrapped in `""` or takes a new like and starts with `\`
+4. Strings are wrapped in `""` or takes a new line and starts with `\`
 5. JS Values are starts with `%`
-6. Values from JS need to start with `$values1`, we'll see why later
+6. Values from JS need to start with `$values1`, we'll see why later (however, it can be avoided)
 7. Object is replaced with `*` and nested keys
 8. Arrays replaced with `=`
 
@@ -109,10 +97,8 @@ Like
 
 ```js
 export default {
-  start: [
-    a.showCharacter("Ciri", "smiley"),
-  ]
-}
+  start: [a.showCharacter("Ciri", "smiley")],
+};
 ```
 
 And
@@ -134,11 +120,10 @@ This custom format cannot be purely changed to `['some', prop]`, because `prop` 
 
 ```js
 export default ($values1) => ({
-  start: [
-    ['some', $values1.prop]
-  ]
-})
+  start: [["some", $values1.prop]],
+});
 ```
+
 That way variables can be passed to the story. But not everything should be passed from some object. There are set of things that prevent use of `$values1`: When values starts from `undefined`, `null`, `window`, `globalThis`, or `()`, the raw value is used.
 
 So,
@@ -158,22 +143,22 @@ Will be transformed into
 ```js
 export default ($values1) => ({
   start: [
-    ['function', () => $values1.state({ some: 'value' })],
-    ['function', $values1.someFunction],
-    ['function', $values1.setRelationshipPreference('None')]
-  ]
-})
+    ["function", () => $values1.state({ some: "value" })],
+    ["function", $values1.someFunction],
+    ["function", $values1.setRelationshipPreference("None")],
+  ],
+});
 ```
 
 And when you will run that, you will need to pass `state` and `someFunction`:
 
 ```js
-import setupStory from './story.novely';
+import setupStory from "./story.novely";
 
 const story = setupStory({
   state: engine.state,
   someFunction: () => {
-    console.log('Do something here');
+    console.log("Do something here");
   },
   setRelationshipPreference: (target) => {
     /**
@@ -183,10 +168,32 @@ const story = setupStory({
       /**
        * Update relationships
        */
-      state({ relationships: { target } })
-    }
-  }
+      state({ relationships: { target } });
+    };
+  },
 });
 
 engine.withStory(story);
 ```
+
+## How to Avoid using `$values1`
+
+You may consider `useWith` option. Find `novelyPlugin` in your configuration file and add `useWith: true` into that config.
+
+Now code will be transformed into something like
+
+```js{2,10}
+export default ($values1) => {
+  with ($values1) {
+    return {
+      start: [
+        ['function', () => state({ some: 'value' })],
+        ['function', someFunction],
+        ['function', setRelationshipPreference('None')]
+      ]
+    }
+  }
+}
+```
+
+The [with](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/with) statement is used here. This feature is not recommended to use, so it is disabled by default.
