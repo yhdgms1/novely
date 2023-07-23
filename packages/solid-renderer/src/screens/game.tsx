@@ -21,6 +21,8 @@ interface GameProps {
 	store: SolidRendererStore;
 	characters: Record<string, CharacterType>;
 	renderer: Renderer;
+
+	controls: "inside" | "outside"
 }
 
 const Game: VoidComponent<GameProps> = (props) => {
@@ -283,7 +285,12 @@ const Game: VoidComponent<GameProps> = (props) => {
 				/>
 			</div>
 
-			<div class="control-panel">
+			<div
+				class="control-panel"
+				classList={{
+					"control-panel--center": props.controls === 'inside'
+				}}
+			>
 				<button
 					type="button"
 					class="button control-panel__button"

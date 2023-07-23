@@ -172,9 +172,14 @@ interface CreateSolidRendererOptions {
 	 * @default false
 	 */
 	fullscreen?: boolean;
+	/**
+	 * Controls position
+	 * @default "outside"
+	 */
+	controls?: "inside" | "outside"
 }
 
-const createSolidRenderer = ({ fullscreen = false }: CreateSolidRendererOptions = {}) => {
+const createSolidRenderer = ({ fullscreen = false, controls = "outside" }: CreateSolidRendererOptions = {}) => {
 	const [state, setState] = createStore<State>({
 		background: '',
 		characters: {},
@@ -550,6 +555,8 @@ const createSolidRenderer = ({ fullscreen = false }: CreateSolidRendererOptions 
 									store={/* @once */ store}
 									characters={/* @once */ characters}
 									renderer={/* @once */ renderer}
+
+									controls={/* @once */ controls}
 								/>
 							</Match>
 							<Match when={state.screen === 'mainmenu'}>

@@ -33,7 +33,7 @@
 
 	color: var(--novely-dialog-color, #ffffff);
 
-	border: 3px solid var(--novely-dialog-border-color, #ffffff);
+	border: var(--novely-dialog-border-width, 3px) solid var(--novely-dialog-border-color, #ffffff);
 	border-radius: var(--novely-dialog-border-radius, 14px);
 	box-shadow: 1px 1px 4px var(--novely-dialog-box-shadow-color, #00000072);
 

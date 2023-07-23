@@ -8,3 +8,22 @@
 	right: 0.4rem;
 	bottom: 0.4rem;
 }
+
+.control-panel--center {
+	width: 75%;
+
+	bottom: calc(var(--novely-dialog-border-width, 3px) + 0.4rem);
+
+	left: 50%;
+	right: 50%;
+
+	transform: translateX(-50%);
+
+	justify-content: center;
+}
+
+@media (orientation: portrait) {
+	.control-panel--center {
+		width: 75%;
+	}
+}
