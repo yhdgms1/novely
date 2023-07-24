@@ -847,16 +847,22 @@ const novely = <
 		exit() {
 			const path = stack.value[0];
 
+			let exited = false;
+
 			for (let i = path.length - 1; i > 0; i--) {
 				if (path[i][0] !== 'choice' && path[i][0] !== 'condition') continue;
 
+				exited = true;
 				stack.value[0] = path.slice(0, i);
 				next();
 
 				break;
 			}
 
-			render();
+			/**
+			 * Run render only when exit was performed. This prevents infinite loop of `render` -> `undefined` -> `exit` -> `render`.
+			 */
+			if (exited) render();
 		},
 	});
 
@@ -896,11 +902,13 @@ const novely = <
 	const render = () => {
 		const referred = refer();
 
-		if (!Array.isArray(referred)) return;
+		if (Array.isArray(referred)) {
+			const [action, ...props] = referred;
 
-		const [action, ...props] = referred;
-
-		match(action, props);
+			match(action, props);
+		} else {
+			match('exit', []);
+		}
 	};
 
 	const push = () => {

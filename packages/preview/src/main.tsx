@@ -198,10 +198,15 @@ engine.withStory({
 				ru: "Ох, {{age}} {{age@years}}? Это прекрасный возраст",
 			})
 		),
-		action.text(t({
-			en: 'The End',
-			ru: 'Конец'
-		})),
+		action.condition(() => true, {
+			true: [
+				action.text(t({
+					en: 'The End',
+					ru: 'Конец'
+				})),
+				// Проверка автоматического exit
+			]
+		}),
 		action.end(),
 	],
 });
