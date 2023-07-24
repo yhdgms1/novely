@@ -22,6 +22,11 @@
 	background-repeat: var(--novely-root-background-repeat, no-repeat);
 	background-position: var(--novely-root-background-position, center);
 	background-size: var(--novely-root-background-size, cover);
+
+	user-select: none;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
 }
 
 .root,

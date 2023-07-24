@@ -151,11 +151,6 @@ const Game: VoidComponent<GameProps> = (props) => {
 					aria-disabled={!props.state.dialog.content}
 					role="button"
 					tabIndex={0}
-					title={
-						DialogWriter.state() === 'idle'
-							? undefined
-							: data.t(DialogWriter.state() === 'processing' ? 'CompleteText' : 'GoForward')
-					}
 					onClick={DialogWriter.clear}
 					onKeyPress={onKey(DialogWriter.clear, 'Enter')}
 					onKeyDown={onKey(DialogWriter.clear, ' ')}
@@ -192,6 +187,13 @@ const Game: VoidComponent<GameProps> = (props) => {
 					</div>
 					<div class="action-dialog-content">
 						<DialogWriter.Typewriter
+							attributes={{
+								title:
+									DialogWriter.state() === 'idle'
+										? undefined
+										: data.t(DialogWriter.state() === 'processing' ? 'CompleteText' : 'GoForward')
+							}}
+
 							content={props.state.dialog.content}
 							speed={speed()}
 							ended={onWriterEnd(DialogWriter.clear)}
@@ -260,7 +262,9 @@ const Game: VoidComponent<GameProps> = (props) => {
 			</Modal>
 
 			<div data-custom={true}>
-				<For each={layers()}>{(value) => value!.dom}</For>
+				<For each={layers()}>
+					{(value) => value!.dom}
+				</For>
 			</div>
 
 			<div
@@ -269,16 +273,18 @@ const Game: VoidComponent<GameProps> = (props) => {
 				aria-disabled={!props.state.text.content}
 				role="button"
 				tabIndex={0}
-				title={
-					TextWriter.state() === 'idle'
-						? undefined
-						: data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward')
-				}
 				onClick={TextWriter.clear}
 				onKeyPress={onKey(TextWriter.clear, 'Enter')}
 				onKeyDown={onKey(TextWriter.clear, ' ')}
 			>
 				<TextWriter.Typewriter
+					attributes={{
+						title:
+								TextWriter.state() === 'idle'
+									? undefined
+									: data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward')
+					}}
+
 					content={props.state.text.content}
 					speed={speed()}
 					ended={onWriterEnd(TextWriter.clear)}

@@ -62,8 +62,6 @@
 	display: flex;
 	align-items: center;
 
-	user-select: none;
-
 	color: var(--novely-saves-list-empty-color, black);
 }
 
