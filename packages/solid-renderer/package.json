@@ -1,6 +1,6 @@
 {
 	"name": "@novely/solid-renderer",
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"type": "module",
 	"publishConfig": {
 		"access": "public"
@@ -14,7 +14,8 @@
 		"build": "node ./build.js && tsc"
 	},
 	"devDependencies": {
-		"esbuild": "^0.16.17",
+		"esbuild": "^0.18.16",
+		"lightningcss": "^1.21.5",
 		"typescript": "^5.1.6"
 	},
 	"dependencies": {

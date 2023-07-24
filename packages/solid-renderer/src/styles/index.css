@@ -1,3 +1,5 @@
+@import './global/index.css';
+
 @import './root/index.css';
 
 @import './button/index.css';
