@@ -46,10 +46,7 @@ const createTypewriter = ({ resolve }: CreateTypewriterOptions) => {
 			if (!node) return;
 
 			if (PRM.matches) {
-				/**
-				 * Spaces replaces here for consistency
-				 */
-				node.innerHTML = text.replace(/ /gm, '&#8197;');
+				node.innerHTML = text;
 				bypassed = true;
 
 				setState('done');

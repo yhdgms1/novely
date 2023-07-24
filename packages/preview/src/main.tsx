@@ -140,7 +140,7 @@ engine.withStory({
 		action.dialog(
 			'Lily',
 			t({
-				en: 'Novely has many features: multi-language support, TypeScript support, open source, multi-platform and lightweight.',
+				en: 'Novely has many features: multi-language support, TypeScript support, and it is open source, multi-platform and lightweight.',
 				ru: 'У Novely есть много преимуществ: поддержка нескольких языков, типизация на TypeScript, открытый исходный код, мультплатформенность и легковесность.',
 			}),
 		),

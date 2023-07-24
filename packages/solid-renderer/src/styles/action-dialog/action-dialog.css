@@ -81,6 +81,9 @@
 	font-size: 2.2375rem;
 	line-height: 1.2;
 
+	word-wrap: break-word;
+	word-break: break-word;
+
 	/* prettier-ignore */
 	text-shadow: 1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
 }

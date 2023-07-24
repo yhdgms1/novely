@@ -1,6 +1,20 @@
 import type { TypewriterOptions } from './types';
 import { defaultSpeed, collectTextNodes } from './utils';
 
+const map = (it: string, cb: (value: string, prev: HTMLSpanElement | undefined) => HTMLSpanElement | void | undefined) => {
+	const result: HTMLSpanElement[] = [];
+
+	for (const value of [...it]) {
+		const val = cb(value, result[result.length - 1]);
+
+		if (val) {
+			result.push(val);
+		}
+	}
+
+	return result;
+}
+
 /**
  * Typewriter
  */
@@ -11,24 +25,25 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed }: TypewriterOptio
 	node.innerHTML = text;
 
 	const nodes = collectTextNodes(node).map((child) => {
-		const letters = [...child.textContent!].map((char) => {
-			const text = document.createElement('span');
-
+		const letters = map(child.textContent!, (char, prev) => {
 			/**
-			 * Space will have zero width, so we are replacing it with four-per-em space
+			 * First space will also be included, but will not rendered, because browser cuts spaces at the start and end
 			 */
-			if (char === ' ') {
-				text.innerHTML = '&#8197;';
+			if (char === ' ' && prev) {
+				prev.textContent += ' ';
+				return void 0;
 			} else {
+				const text = document.createElement('span');
+
 				text.textContent = char;
+
+				/**
+				 * The content is the same, but letter is invisible
+				 */
+				text.style.opacity = '0';
+
+				return text;
 			}
-
-			/**
-			 * The content is the same, but letter is invisible
-			 */
-			text.style.opacity = '0';
-
-			return text;
 		});
 
 		/**
@@ -120,7 +135,7 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed }: TypewriterOptio
 			/**
 			 * Or just complete text immediately
 			 */
-			node.innerHTML = text.replace(/ /gm, '&#8197;');
+			node.innerHTML = text;
 			end = true;
 
 			return false;

@@ -26,8 +26,6 @@
 .action-text[data-shown='true'] > span {
 	cursor: pointer;
 
-	user-select: none;
-
 	word-wrap: break-word;
 	word-break: break-word;
 }
