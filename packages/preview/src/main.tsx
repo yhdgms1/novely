@@ -40,15 +40,7 @@ const engine = novely({
 					many: 'лет',
 				},
 			},
-			strings: {
-				StartText: 'На улице прекрасный день, ты открываешь глаза и встречаешь...',
-				HowOldAreYou: 'Сколько тебе лет?',
-				EnterYourName: 'Введи имя',
-				EnterYourAge: 'Введи возраст',
-				AreYouLost: 'Тебе {{age}} {{age@years}}? Малышь, ты потерялся?',
-				ChoiceAreYouLost: 'Ты потерялся?',
-				YesHelpMe: 'Да, помоги мне',
-			},
+			strings: {},
 		},
 		en: {
 			internal: EN,
@@ -61,20 +53,12 @@ const engine = novely({
 					other: 'years',
 				},
 			},
-			strings: {
-				StartText: "It's a beautiful day outside, you open your eyes and meet...",
-				HowOldAreYou: 'How old are you?',
-				EnterYourName: 'Enter your name',
-				EnterYourAge: 'Enter your age',
-				AreYouLost: 'You are {{age}} {{age@years}}? Are you lost?',
-				ChoiceAreYouLost: 'Are you lost?',
-				YesHelpMe: 'Yes, help me',
-			},
+			strings: {},
 		},
 	}),
 
 	state: {
-		age: 0,
+		age: 15,
 	},
 
 	data: {
@@ -92,37 +76,40 @@ const engine = novely({
 
 const { action, state, data, t, unwrap } = engine;
 
-registerScreen('achievements', () => {
-	return {
-		mount() {
-			return (
-				<div>
-					Твои Достижения
-					<button type="button" class="button" data-novely-goto="mainmenu">
-						Выйти
-					</button>
-				</div>
-			);
-		},
-	};
-});
+// registerScreen('achievements', () => {
+// 	return {
+// 		mount() {
+// 			return (
+// 				<div>
+// 					Твои Достижения
+// 					<button type="button" class="button" data-novely-goto="mainmenu">
+// 						Выйти
+// 					</button>
+// 				</div>
+// 			);
+// 		},
+// 	};
+// });
 
-registerMainmenuItem((goto) => ({
-	type: 'button',
-	class: 'button main-menu__button',
-	textContent: unwrap({
-		en: 'Achievements',
-		ru: 'Достижения',
-	}),
-	onClick: () => {
-		goto('achievements');
-	},
-}));
+// registerMainmenuItem((goto) => ({
+// 	type: 'button',
+// 	class: 'button main-menu__button',
+// 	textContent: unwrap({
+// 		en: 'Achievements',
+// 		ru: 'Достижения',
+// 	}),
+// 	onClick: () => {
+// 		goto('achievements');
+// 	},
+// }));
 
 engine.withStory({
 	start: [
 		action.custom(hide()),
-		action.text(t('StartText')),
+		action.text(t({
+			en: 'You wake up, but do not see your keyboard anymore, instead...',
+			ru: 'Вы просыпаетесь, но больше не видите своей клавиатуры, вместо неё...'
+		})),
 		action.custom(particles(snow)),
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok'),
@@ -130,14 +117,69 @@ engine.withStory({
 		action.dialog(
 			'Lily',
 			t({
-				en: 'Hello!',
-				ru: () => ['Привет!'],
+				en: 'Hii~',
+				ru: 'Привет',
 			}),
 		),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog('Lily', t('HowOldAreYou')),
+		action.dialog(
+			'Lily',
+			t({
+				en: 'I\'m going to tell you about the Novely engine',
+				ru: 'Я расскажу тебе про движок Novely',
+			}),
+		),
+		action.dialog(
+			'You',
+			t({
+				en: 'Great, something new. What kind of features does it offer?',
+				ru: 'Отлично, что-то новое. Какие возможности он дает?',
+			}),
+		),
+		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		action.dialog(
+			'Lily',
+			t({
+				en: 'Novely has many features: multi-language support, TypeScript support, open source, multi-platform and lightweight.',
+				ru: 'У Novely есть много преимуществ: поддержка нескольких языков, типизация на TypeScript, открытый исходный код, мультплатформенность и легковесность.',
+			}),
+		),
+		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		action.dialog(
+			'Lily',
+			t({
+				en: 'As a result, it can be used to create interactive stories and short stories with a minimum of effort.',
+				ru: 'В итоге с его помощью можно создавать интерактивные истории и новеллы с минимумом усилий.',
+			}),
+		),
+		action.dialog(
+			'You',
+			t({
+				en: 'Sounds promising. How easy is it to use?',
+				ru: 'Звучит многообещающе. Насколько просто им пользоваться?',
+			}),
+		),
+		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		action.dialog(
+			'Lily',
+			t({
+				en: 'The Novely API is very simple and intuitive, so even a little programming experience is enough to start creating visual novels. And once you\'ve studied the documentation, you\'ll get the hang of it!',
+				ru: 'API Novely очень простой и интуитивный, так что даже небольшой опыт в программировании подойдёт чтобы начать создавать визуальные новеллы. А уж после изучения документации всё получится!',
+			}),
+		),
+		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		action.dialog(
+			'Lily',
+			t({
+				en: 'By the way, how old are you?',
+				ru: 'Кстати, сколько тебе лет?'
+			}),
+		),
 		action.input(
-			t('EnterYourAge'),
+			t({
+				en: 'Enter you\'r age',
+				ru: 'Введите ваш возраст'
+			}),
 			({ input, error }) => {
 				error(input.validationMessage);
 				state({ age: input.valueAsNumber });
@@ -149,22 +191,17 @@ engine.withStory({
 			},
 		),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.condition(() => state().age <= 6, {
-			true: [
-				action.dialog('Lily', t('AreYouLost')),
-				action.choice(t('AreYouLost'), [
-					t('YesHelpMe'),
-					[
-						action.function(() => {
-							data({ achievements: { money: true } });
-						}),
-						action.exit(),
-					],
-				]),
-				action.exit(),
-			],
-			false: [action.exit()],
-		}),
+		action.dialog(
+			'Lily',
+			t({
+				en: "Ah, {{age}} {{age@years}} old? It's a wonderful age",
+				ru: "Ох, {{age}} {{age@years}}? Это прекрасный возраст",
+			})
+		),
+		action.text(t({
+			en: 'The End',
+			ru: 'Конец'
+		})),
 		action.end(),
 	],
 });
