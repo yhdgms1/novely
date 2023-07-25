@@ -261,6 +261,31 @@ const Game: VoidComponent<GameProps> = (props) => {
 				</div>
 			</Modal>
 
+			<Modal isOpen={() => props.state.exitPromptShown}>
+				{/*
+					todo: полноэкранный элемент с затемнением, с pointer events none. А фокус трап уже есть в модале.
+				*/}
+				<div class="dialog-container">
+					<span class="dialog-fix" aria-hidden="true">
+						&#8203;
+					</span>
+					<div class="dialog-panel input-dialog-panel">
+						{/*
+							todo: А вы точно хотите выйти? Игра будет сохранена.
+						*/}
+						<button
+							type="button"
+							class="button"
+							onClick={() => {
+								data.options.exit(true);
+							}}
+						>
+							{data.t('Sumbit')}
+						</button>
+					</div>
+				</div>
+			</Modal>
+
 			<div data-custom={true}>
 				<For each={layers()}>
 					{(value) => value!.dom}
@@ -343,7 +368,9 @@ const Game: VoidComponent<GameProps> = (props) => {
 					type="button"
 					class="button control-panel__button"
 					title={data.t('Exit')}
-					onClick={data.options.exit}
+					onClick={() => {
+						data.options.exit();
+					}}
 				>
 					<span class="control-panel__button__content">{data.t('Exit')}</span>
 					<Icon class="control-panel__button__icon" children={Icon.Exit()} />

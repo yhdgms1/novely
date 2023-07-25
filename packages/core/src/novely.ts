@@ -102,6 +102,16 @@ interface NovelyInit<
 	 * ```
 	 */
 	getLanguage?: (languages: string[]) => string;
+	/**
+	 * Ignores saved language, and uses `getLanguage` to get it on every engine start
+	 * @default false
+	 */
+	overrideLanguage?: boolean;
+	/**
+	 * Show a prompt before exiting a game
+	 * @default true
+	 */
+	askBeforeExit?: boolean;
 }
 
 const novely = <
@@ -123,7 +133,9 @@ const novely = <
 	autosaves = true,
 	migrations = [],
 	throttleTimeout = 799,
-	getLanguage = defaultGetLanguage
+	getLanguage = defaultGetLanguage,
+	overrideLanguage = false,
+	askBeforeExit = true
 }: NovelyInit<Languages, Characters, Inter, StateScheme, DataScheme>) => {
 	let story: Story;
 	let times = new Set<number>();
@@ -257,10 +269,18 @@ const novely = <
 			}
 
 			/**
-			 * Default `localStorageStorage` cannot determine preferred language, and returns empty array
+			 * Default `localStorageStorage` returns empty array and engine set this up itself
 			 */
-			stored.meta[0] ||= getLanguage(languages);
 			stored.meta[1] ||= getTypewriterSpeed();
+
+			/**
+			 * When we need to override it we do that, when not – only when language was not defined already
+			 */
+			if (overrideLanguage) {
+				stored.meta[0] = getLanguage(languages);
+			} else {
+				stored.meta[0] ||= getLanguage(languages);
+			}
 
 			/**
 			 * When data is empty replace it with `defaultData`
@@ -599,7 +619,18 @@ const novely = <
 		return current;
 	};
 
-	const exit = () => {
+	/**
+	 *
+	 * @param force Force exit
+	 */
+	const exit = (force = false) => {
+		if (interacted && !force && askBeforeExit) {
+			renderer.ui.showExitPrompt();
+			return;
+		}
+
+		console.log(interacted, !force, askBeforeExit)
+
 		const current = stack.value;
 
 		stack.clear();
@@ -614,7 +645,7 @@ const novely = <
 			/**
 			 * Если сохранение похоже на начальное, и при этом игрок не взаимодействовал с игрой, и оно было создано в текущей сессии, то удаляем его
 			 */
-			if (first[0] === null && first[1] === 'start' && second[0] === null && !interacted && times.has(time)) {
+			if (first[0] === null && first[1] === 'start' && second[0] === null && !interacted && times.has(time)) { // todo: нужно ли проверять на похожесть на начальное сохранение
 				$.update((prev) => {
 					prev.saves = prev.saves.filter((save) => save !== current);
 

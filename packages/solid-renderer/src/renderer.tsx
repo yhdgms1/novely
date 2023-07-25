@@ -159,6 +159,8 @@ interface State {
 	};
 	text: StateText;
 	screen: NovelyScreen | (string & {});
+
+	exitPromptShown: boolean
 }
 
 interface SolidRendererStore extends RendererStore {
@@ -207,6 +209,7 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside" }: Creat
 			items: [],
 		},
 		screen: 'mainmenu',
+		exitPromptShown: false
 	});
 
 	const store: SolidRendererStore = {
@@ -344,6 +347,8 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside" }: Creat
 				},
 				clear(goingBack, keep, keepCharacters) {
 					return (resolve) => {
+						setState('exitPromptShown', false);
+
 						if (!keep.has('showBackground')) setState('background', '#000');
 						if (!keep.has('choice'))
 							setState('choices', {
@@ -518,6 +523,9 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside" }: Creat
 					showScreen(name) {
 						setState('screen', name);
 					},
+					showExitPrompt() {
+						setState('exitPromptShown', true);
+					}
 				},
 			});
 		},

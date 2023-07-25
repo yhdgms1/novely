@@ -64,6 +64,10 @@ type Renderer = {
 		 * Показывает экран, скрывает другие
 		 */
 		showScreen(name: 'mainmenu' | 'game' | 'saves' | 'settings' | 'loading'): void;
+		/**
+		 * Shows prompt to exit
+		 */
+		showExitPrompt(): void;
 	};
 };
 
