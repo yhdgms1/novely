@@ -261,6 +261,42 @@ const Game: VoidComponent<GameProps> = (props) => {
 				</div>
 			</Modal>
 
+			<Modal isOpen={() => props.state.exitPromptShown}>
+				<div class="dialog-container">
+					<span class="dialog-fix" aria-hidden="true">
+						&#8203;
+					</span>
+					<div class="dialog-backdrop" />
+					<div class="dialog-panel exit-dialog-panel">
+						<span
+							class="dialog-panel-label"
+						>
+							{data.t('ExitDialogWarning')}
+						</span>
+						<div class="exit-dialog-panel-buttons">
+							<button
+								type="button"
+								class="button"
+								onClick={() => {
+									setState('exitPromptShown', false);
+								}}
+							>
+								{data.t('ExitDialogBack')}
+							</button>
+							<button
+								type="button"
+								class="button"
+								onClick={() => {
+									data.options.exit(true);
+								}}
+							>
+								{data.t('ExitDialogExit')}
+							</button>
+						</div>
+					</div>
+				</div>
+			</Modal>
+
 			<div data-custom={true}>
 				<For each={layers()}>
 					{(value) => value!.dom}
@@ -343,7 +379,9 @@ const Game: VoidComponent<GameProps> = (props) => {
 					type="button"
 					class="button control-panel__button"
 					title={data.t('Exit')}
-					onClick={data.options.exit}
+					onClick={() => {
+						data.options.exit();
+					}}
 				>
 					<span class="control-panel__button__content">{data.t('Exit')}</span>
 					<Icon class="control-panel__button__icon" children={Icon.Exit()} />

@@ -25,6 +25,9 @@ const RU = {
 	TextSpeedAuto: 'Автоматическая',
 	CompleteText: 'Завершить текст',
 	GoForward: 'Перейти вперёд',
+	ExitDialogWarning: 'Вы уверены, что хотите выйти? Прогресс будет сохранён.',
+	ExitDialogExit: 'Выйти',
+	ExitDialogBack: 'Вернуться в игру',
 };
 
 type BaseTranslationStrings = keyof typeof RU;
@@ -56,6 +59,9 @@ const EN: Record<BaseTranslationStrings, string> = {
 	TextSpeedAuto: 'Auto',
 	CompleteText: 'Complete text',
 	GoForward: 'Go forward',
+	ExitDialogWarning: 'Are you sure you want to exit? Progress will be saved.',
+	ExitDialogExit: 'Exit',
+	ExitDialogBack: 'Return to game',
 };
 
 /**
@@ -88,6 +94,9 @@ const KK: Record<BaseTranslationStrings, string> = {
 	TextSpeedAuto: 'Автоматты',
 	CompleteText: 'Мәтінді аяқтау',
 	GoForward: 'Алға жылжу',
+	ExitDialogWarning: 'Сіз шыққыңыз келетініне сенімдісіз бе? Прогресс сақталады',
+	ExitDialogExit: 'Шығу',
+	ExitDialogBack: 'Ойынға оралу'
 };
 
 /**
@@ -120,6 +129,9 @@ const JP: Record<BaseTranslationStrings, string> = {
 	TextSpeedAuto: '自動',
 	CompleteText: 'テキストを完成させる',
 	GoForward: '先に行く',
+	ExitDialogWarning: '本当に終了しますか？進行状況は保存されます',
+	ExitDialogExit: '終了',
+	ExitDialogBack: 'ゲームに戻る',
 };
 
 export { RU, EN, KK, JP };

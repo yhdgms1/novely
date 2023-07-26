@@ -8,6 +8,7 @@
 @import './action-dialog/index.css';
 @import './dialog/index.css';
 @import './input-dialog/index.css';
+@import './exit-dialog/index.css';
 
 @import './main-menu/index.css';
 @import './loading/index.css';
