@@ -1,7 +1,17 @@
 .dialog {
 	position: absolute;
 	inset: 0;
-	z-index: 20;
+	z-index: 25;
+}
+
+.dialog-backdrop {
+	position: fixed;
+	inset: 0;
+
+	z-index: 23;
+	pointer-events: none;
+
+	background-color: var(--novely-dialog-backdrop-background-color, #1616166c);
 }
 
 .dialog-container {
@@ -19,7 +29,7 @@
 
 .dialog-panel {
 	text-align: left;
-	z-index: 21;
+	z-index: 24;
 
 	min-height: 40vh;
 	min-width: 50vw;

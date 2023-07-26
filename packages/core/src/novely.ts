@@ -629,8 +629,6 @@ const novely = <
 			return;
 		}
 
-		console.log(interacted, !force, askBeforeExit)
-
 		const current = stack.value;
 
 		stack.clear();
@@ -643,9 +641,9 @@ const novely = <
 
 		if (type === 'auto' && first && second) {
 			/**
-			 * Если сохранение похоже на начальное, и при этом игрок не взаимодействовал с игрой, и оно было создано в текущей сессии, то удаляем его
+			 * Player has not interacted with game and it belongs to the current session
 			 */
-			if (first[0] === null && first[1] === 'start' && second[0] === null && !interacted && times.has(time)) { // todo: нужно ли проверять на похожесть на начальное сохранение
+			if (!interacted && times.has(time)) {
 				$.update((prev) => {
 					prev.saves = prev.saves.filter((save) => save !== current);
 
