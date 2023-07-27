@@ -95,13 +95,14 @@ interface NovelyInit<
 	 * @param languages Supported languages aka `languages: []` in the config
 	 * @example ```ts
 	 * novely({
-	 * 		getLanguage(languages) {
+	 * 		getLanguage(languages, original) {
+	 * 				if (!sdk) return original(languages);
 	 * 				return sdk.environment.i18n.lang // i.e. custom language from some sdk
 	 * 		}
 	 * })
 	 * ```
 	 */
-	getLanguage?: (languages: string[]) => string;
+	getLanguage?: (languages: string[], original: typeof defaultGetLanguage) => string;
 	/**
 	 * Ignores saved language, and uses `getLanguage` to get it on every engine start
 	 * @default false
@@ -236,6 +237,10 @@ const novely = <
 		};
 	};
 
+	const getLanguageWithoutParameters = () => {
+		return getLanguage(languages, defaultGetLanguage);
+	}
+
 	/**
 	 * 1) Novely rendered using the `initialData`, but you can't start new game or `load` an empty one - this is scary, imagine losing your progress
 	 * 2) Actual stored data is loaded, language and etc is changed
@@ -243,7 +248,7 @@ const novely = <
 	const initialData: StorageData = {
 		saves: [],
 		data: klona(defaultData) as Data,
-		meta: [getLanguage(languages), getTypewriterSpeed()],
+		meta: [getLanguageWithoutParameters(), getTypewriterSpeed()],
 	};
 
 	const $ = store(initialData);
@@ -277,9 +282,9 @@ const novely = <
 			 * When we need to override it we do that, when not – only when language was not defined already
 			 */
 			if (overrideLanguage) {
-				stored.meta[0] = getLanguage(languages);
+				stored.meta[0] = getLanguageWithoutParameters();
 			} else {
-				stored.meta[0] ||= getLanguage(languages);
+				stored.meta[0] ||= getLanguageWithoutParameters();
 			}
 
 			/**
@@ -411,7 +416,7 @@ const novely = <
 			$.update(() => ({
 				saves: [initial],
 				data: klona(defaultData) as Data,
-				meta: [getLanguage(languages), getTypewriterSpeed()],
+				meta: [getLanguageWithoutParameters(), getTypewriterSpeed()],
 			}));
 
 			latest = klona(initial);

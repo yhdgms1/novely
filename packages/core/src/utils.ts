@@ -63,7 +63,9 @@ const getTypewriterSpeed = (): TypewriterSpeed => {
 	return 'Medium';
 };
 
-const getLanguage = (languages: string[], language = navigator.language) => {
+const getLanguage = (languages: string[], _: any) => {
+	let { language } = navigator;
+
 	if (languages.includes(language)) {
 		return language;
 	} else if (languages.includes((language = language.substring(0, 2)))) {
