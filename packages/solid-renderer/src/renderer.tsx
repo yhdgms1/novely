@@ -292,14 +292,17 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside" }: Creat
 							 * Remove className directly
 							 */
 							element.className = '';
-							/**
-							 * Trigger reflow
-							 */
-							void element.offsetHeight;
-							/**
-							 * Set className directly
-							 */
-							element.className = className as string;
+
+							if (className) {
+								/**
+								 * Trigger reflow
+								 */
+								void element.offsetHeight;
+								/**
+								 * Set className directly
+								 */
+								element.className = className;
+							}
 						},
 						remove(className, style, duration) {
 							return (resolve, restoring) => {
@@ -321,7 +324,9 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside" }: Creat
 								/**
 								 * Set className directly
 								 */
-								store.characters[character].canvas.className = className as string;
+								if (className) {
+									store.characters[character].canvas.className = className as string;
+								}
 
 								setState('characters', character, { style, timeoutId });
 							};
