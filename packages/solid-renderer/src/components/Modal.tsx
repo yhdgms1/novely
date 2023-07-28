@@ -14,6 +14,8 @@ interface ModalProps {
 	setIsOpen?: (value: boolean) => void;
 
 	onClose?: () => void;
+
+	trapFocus: Accessor<boolean>;
 }
 
 const Modal: FlowComponent<ModalProps> = (props) => {
@@ -21,6 +23,20 @@ const Modal: FlowComponent<ModalProps> = (props) => {
 
 	const handleKeydown = (event: KeyboardEvent) => {
 		if (untrack(props.isOpen) && event.key === 'Tab') {
+			if (!untrack(props.trapFocus)) {
+				/**
+				 * When multiple Modals are opened we can prevent one from breaking another
+				 */
+				return;
+			}
+
+			if (!modalWindow) {
+				/**
+				 * In case modalWindow in undefined
+				 */
+				return;
+			}
+
 			const nodes = modalWindow.querySelectorAll('*');
 			const tabbable = Array.from(nodes).filter((node) => (node as HTMLElement).tabIndex >= 0);
 

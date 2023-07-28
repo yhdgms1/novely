@@ -191,9 +191,8 @@ const Game: VoidComponent<GameProps> = (props) => {
 								title:
 									DialogWriter.state() === 'idle'
 										? undefined
-										: data.t(DialogWriter.state() === 'processing' ? 'CompleteText' : 'GoForward')
+										: data.t(DialogWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
 							}}
-
 							content={props.state.dialog.content}
 							speed={speed()}
 							ended={onWriterEnd(DialogWriter.clear)}
@@ -202,7 +201,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				</div>
 			</div>
 
-			<Modal isOpen={() => props.state.choices.visible}>
+			<Modal isOpen={() => props.state.choices.visible} trapFocus={() => !props.state.exitPromptShown}>
 				<div class="dialog-container">
 					<span class="dialog-fix" aria-hidden="true">
 						&#8203;
@@ -236,7 +235,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				</div>
 			</Modal>
 
-			<Modal isOpen={() => props.state.input.visible}>
+			<Modal isOpen={() => props.state.input.visible} trapFocus={() => !props.state.exitPromptShown}>
 				<div class="dialog-container">
 					<span class="dialog-fix" aria-hidden="true">
 						&#8203;
@@ -261,18 +260,14 @@ const Game: VoidComponent<GameProps> = (props) => {
 				</div>
 			</Modal>
 
-			<Modal isOpen={() => props.state.exitPromptShown}>
+			<Modal isOpen={() => props.state.exitPromptShown} trapFocus={() => props.state.exitPromptShown}>
 				<div class="dialog-container">
 					<span class="dialog-fix" aria-hidden="true">
 						&#8203;
 					</span>
 					<div class="dialog-backdrop" />
 					<div class="dialog-panel exit-dialog-panel">
-						<span
-							class="dialog-panel-label"
-						>
-							{data.t('ExitDialogWarning')}
-						</span>
+						<span class="dialog-panel-label">{data.t('ExitDialogWarning')}</span>
 						<div class="exit-dialog-panel-buttons">
 							<button
 								type="button"
@@ -298,9 +293,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 			</Modal>
 
 			<div data-custom={true}>
-				<For each={layers()}>
-					{(value) => value!.dom}
-				</For>
+				<For each={layers()}>{(value) => value!.dom}</For>
 			</div>
 
 			<div
@@ -316,11 +309,10 @@ const Game: VoidComponent<GameProps> = (props) => {
 				<TextWriter.Typewriter
 					attributes={{
 						title:
-								TextWriter.state() === 'idle'
-									? undefined
-									: data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward')
+							TextWriter.state() === 'idle'
+								? undefined
+								: data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
 					}}
-
 					content={props.state.text.content}
 					speed={speed()}
 					ended={onWriterEnd(TextWriter.clear)}
@@ -330,7 +322,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 			<div
 				class="control-panel"
 				classList={{
-					"control-panel--center": props.controls === 'inside'
+					'control-panel--center': props.controls === 'inside',
 				}}
 			>
 				<button

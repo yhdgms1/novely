@@ -47,6 +47,6 @@
 		"types/*"
 	],
 	"dependencies": {
-		"@novely/parser": "^0.3.0"
+		"@novely/parser": "latest"
 	}
 }

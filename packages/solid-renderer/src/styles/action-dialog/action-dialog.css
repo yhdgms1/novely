@@ -115,7 +115,7 @@
 	}
 
 	.action-dialog-container {
-		border-radius: 14px 14px 0 0;
+		border-radius: var(--novely-dialog-border-radius, 14px 14px 0 0);
 	}
 
 	.action-dialog-content {

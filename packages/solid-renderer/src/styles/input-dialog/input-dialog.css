@@ -28,15 +28,15 @@
 	justify-content: center;
 	align-items: center;
 
-	color: rgb(255, 255, 255);
+	color: var(--novely-input-dialog-color, #ffffff);
 
-	border: 3px solid #ffffff;
-	border-radius: 14px;
-	box-shadow: 1px 1px 4px #00000072;
+	border: var(--novely-input-dialog-border-width, 3px) solid var(--novely-input-dialog-border-color, #ffffff);
+	border-radius: var(--novely-input-dialog-border-radius, 14px);
+	box-shadow: 1px 1px 4px var(--novely-input-dialog-box-shadow-color, #00000072);
 
 	/* prettier-ignore */
-	background-image: var(--novely-dialog-background-image, radial-gradient(#d6608998 20%, transparent 20%), radial-gradient(#d6608998 20%, transparent 20%));
-	background-color: var(--novely-dialog-background-color, #f092b4d8);
-	background-position: var(--novely-dialog-background-position, 0 0, 50px 50px);
-	background-size: var(--novely-dialog-background-size, 100px 100px);
+	background-image: var(--novely-input-dialog-background-image, radial-gradient(#d6608998 20%, transparent 20%), radial-gradient(#d6608998 20%, transparent 20%));
+	background-color: var(--novely-input-dialog-background-color, #f092b4d8);
+	background-position: var(--novely-input-dialog-background-position, 0 0, 50px 50px);
+	background-size: var(--novely-input-dialog-background-size, 100px 100px);
 }
