@@ -1,0 +1,24 @@
+@import 'modern-normalize';
+@import '@novely/solid-renderer/dist/styles/index.css';
+
+/**
+ * Скрывает кнопку автоматического режима
+ */
+ .control-panel__button--auto-mode {
+  display: none;
+}
+
+/**
+* Делает так, чтобы кнопки управления не наезжали на диалог
+*/
+.action-dialog-container {
+  padding-bottom: 0;
+  margin-bottom: 2.4rem;
+}
+
+/**
+*  Скрывает кнопку настроек на панели управления
+*/
+.button.control-panel__button:nth-child(4) {
+  display: none;
+}
