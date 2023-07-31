@@ -24,8 +24,8 @@ async function main() {
 						value: 'solid-js',
 					},
 					{
-						title: `${blue('SolidJS')}${reset(' + ')}${yellow('YandexGames')}`,
-						value: 'solid-js-yamaes',
+						title: `${blue('SolidJS')} + ${yellow('YandexGames')}`,
+						value: 'solid-js-yagames',
 					},
 				],
 				initial: 0,
@@ -38,6 +38,8 @@ async function main() {
 			},
 		},
 	);
+
+	if (cancelled) return;
 
 	const root = path.resolve(__dirname, '../');
 	const directory = formatTargetDir(projectName || '');
