@@ -131,6 +131,37 @@ const findLastIndex = <T>(array: T[], fn: (item: T) => boolean) => {
 	return -1;
 };
 
+const preloadImagesBlocking = (images: Set<string>) => {
+	return Promise.allSettled(Array.from(images).map(src => {
+		const img = document.createElement('img');
+
+		img.src = src;
+
+		return new Promise<unknown>((resolve, reject) => {
+			/**
+			 * Image is already loaded
+			 */
+			if (img.complete && img.naturalHeight !== 0) {
+				resolve(void 0);
+			}
+
+			img.addEventListener('load', resolve);
+			img.addEventListener('abort', reject);
+			img.addEventListener('error', reject);
+		});
+	}));
+}
+
+const createDeferredPromise = <T extends unknown = void>() => {
+	let resolve!: (value: T | PromiseLike<T>) => void, reject!: (reason?: any) => void;
+
+	const promise = new Promise<T>((res, rej) => {
+		resolve = res; reject = rej;
+	});
+
+	return { resolve, reject, promise }
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -147,4 +178,6 @@ export {
 	isFunction,
 	vibrate,
 	findLastIndex,
+	preloadImagesBlocking,
+	createDeferredPromise
 };

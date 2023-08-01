@@ -22,6 +22,7 @@ type ValidAction =
 	| ['next', []]
 	| ['text', [...string[]]]
 	| ['exit']
+	| ['preload', [string]]
 	| ValidAction[];
 
 type Story = Record<string, ValidAction[]>;
@@ -153,6 +154,8 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 	next: () => ValidAction;
 
 	text: (...text: Unwrappable[]) => ValidAction;
+
+	preload: (source: string) => ValidAction;
 };
 
 type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>>;

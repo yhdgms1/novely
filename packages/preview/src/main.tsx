@@ -72,6 +72,8 @@ const engine = novely({
 	autosaves: true,
 
 	initialScreen: 'mainmenu',
+
+	preloadAssets: 'lazy'
 });
 
 const { action, state, data, t, unwrap } = engine;
@@ -106,6 +108,7 @@ const { action, state, data, t, unwrap } = engine;
 engine.withStory({
 	start: [
 		action.custom(hide()),
+		action.preload(outdoor),
 		action.text(t({
 			en: 'You wake up, but do not see your keyboard anymore, instead...',
 			ru: 'Вы просыпаетесь, но больше не видите своей клавиатуры, вместо неё...'

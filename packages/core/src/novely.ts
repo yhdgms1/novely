@@ -18,6 +18,7 @@ import {
 	isString,
 	isPromise,
 	isEmpty,
+	isCSSImage,
 	str,
 	isUserRequiredAction,
 	getTypewriterSpeed,
@@ -26,7 +27,10 @@ import {
 	isFunction,
 	vibrate,
 	findLastIndex,
+	preloadImagesBlocking,
+	createDeferredPromise
 } from './utils';
+import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
 import { all as deepmerge } from 'deepmerge';
 import { klona } from 'klona/json';
@@ -113,6 +117,10 @@ interface NovelyInit<
 	 * @default true
 	 */
 	askBeforeExit?: boolean;
+	/**
+	 * @default "lazy"
+	 */
+	preloadAssets?: "lazy" | "blocking"
 }
 
 const novely = <
@@ -136,10 +144,14 @@ const novely = <
 	throttleTimeout = 799,
 	getLanguage = defaultGetLanguage,
 	overrideLanguage = false,
-	askBeforeExit = true
+	askBeforeExit = true,
+	preloadAssets = "lazy"
 }: NovelyInit<Languages, Characters, Inter, StateScheme, DataScheme>) => {
 	let story: Story;
 	let times = new Set<number>();
+
+	const ASSETS_TO_PRELOAD = new Set<string>();
+	const assetsLoaded = createDeferredPromise();
 
 	/**
 	 * Prevent `undefined`
@@ -154,7 +166,7 @@ const novely = <
 		return times.add(value), value;
 	};
 
-	const withStory = (s: Story) => {
+	const withStory = async (s: Story) => {
 		/**
 		 * Transforms `(ValidAction | ValidAction[])[]` to `ValidAction[]`
 		 */
@@ -177,6 +189,15 @@ const novely = <
 			}),
 		);
 
+		if (preloadAssets === 'blocking' && ASSETS_TO_PRELOAD.size > 0) {
+			renderer.ui.showScreen('loading');
+
+			await preloadImagesBlocking(ASSETS_TO_PRELOAD);
+
+			ASSETS_TO_PRELOAD.clear();
+			assetsLoaded.resolve();
+		}
+
 		/**
 		 * When `initialScreen` is not a game, we can safely show it
 		 */
@@ -185,11 +206,34 @@ const novely = <
 
 	const action = new Proxy({} as ActionProxyProvider<Characters>, {
 		get(_, prop) {
-			return (
-				...props: Parameters<
-					ActionProxyProvider<Record<string, Character>>[keyof ActionProxyProvider<Record<string, Character>>]
-				>
-			) => {
+			type FN = ActionProxyProvider<Record<string, Character>>[keyof ActionProxyProvider<Record<string, Character>>];
+			type Props = Parameters<FN>;
+
+			return (...props: Props) => {
+				if (preloadAssets === 'blocking') {
+					/**
+					 * Load backgrounds
+					 */
+					if (prop === 'showBackground' && typeof props[0] === 'string' && isCSSImage(props[0])) {
+						ASSETS_TO_PRELOAD.add(props[0]);
+					}
+
+					/**
+					 * Load characters
+					 */
+					if (prop === 'showCharacter' && typeof props[0] === 'string' && typeof props[1] === 'string') {
+						const images = characters[props[0]].emotions[props[1]];
+
+						if (typeof images === 'string') {
+							ASSETS_TO_PRELOAD.add(images);
+						} else {
+							for (const asset of [images.head, images.body.left, images.body.right]) {
+								ASSETS_TO_PRELOAD.add(asset);
+							}
+						}
+					}
+				}
+
 				return [prop, ...props];
 			};
 		},
@@ -303,9 +347,13 @@ const novely = <
 			$.update(() => stored);
 
 			/**
-			 * When initialScreen is game, then we will load it, but after the data is loaded
+			 * When initialScreen is game, then we will load it, but after the data is loaded and when assets are loaded if that is needed
 			 */
-			if (initialScreen === 'game') restore();
+			if (initialScreen === 'game') {
+				assetsLoaded.promise.then(() => {
+					restore();
+				});
+			}
 		});
 	};
 
@@ -898,6 +946,16 @@ const novely = <
 			 */
 			if (exited) render();
 		},
+		preload([source]) {
+			if (!PRELOADED_ASSETS.has(source) && !goingBack && !restoring) {
+				/**
+				 * Make image load
+				 */
+				PRELOADED_ASSETS.add(document.createElement('img').src = source);
+			}
+
+			push();
+		}
 	});
 
 	const enmemory = () => {
