@@ -442,7 +442,7 @@ const novely = <
 
 	let restoring = false;
 	let goingBack = false;
-	let interacted = false;
+	let interacted = 0;
 
 	/**
 	 * Restore
@@ -668,11 +668,10 @@ const novely = <
 	};
 
 	/**
-	 *
 	 * @param force Force exit
 	 */
 	const exit = (force = false) => {
-		if (interacted && !force && askBeforeExit) {
+		if (interacted > 1 && !force && askBeforeExit) {
 			renderer.ui.showExitPrompt();
 			return;
 		}
@@ -685,13 +684,14 @@ const novely = <
 		/**
 		 * First two save elements and it's type
 		 */
-		const [[first, second], , [time, type]] = current;
+		const [time, type] = current[2];
 
-		if (type === 'auto' && first && second) {
+		if (type === 'auto') {
 			/**
-			 * Player has not interacted with game and it belongs to the current session
+			 * Save belongs to the current session
+			 * And player did not interacted or did it once, so this is probably not-needed save
 			 */
-			if (!interacted && times.has(time)) {
+			if (interacted <= 1 && times.has(time)) {
 				$.update((prev) => {
 					prev.saves = prev.saves.filter((save) => save !== current);
 
@@ -981,7 +981,7 @@ const novely = <
 		}
 
 		/**
-		 * Иначе добавляет новое `[null int]`
+		 * Иначе добавляет новое `[null, int]`
 		 */
 		path.push([null, 0]);
 	};
@@ -1009,7 +1009,7 @@ const novely = <
 	};
 
 	const interactivity = (value = false) => {
-		interacted = value;
+		interacted = value ? (interacted + 1) : 0;
 	};
 
 	/**
