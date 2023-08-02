@@ -4,9 +4,9 @@
 
 Basically, you write story inside javascript or typescript files, you get smart completions, typechecking, etc... But also you have to write a lot of boilerplate code. Let's compare the short story written in JS and in our language:
 
-JavaScript
+::: code-group
 
-```js
+```js [story.js]
 engine.withStory({
   start: [
     a.showBackground(room),
@@ -35,9 +35,7 @@ engine.withStory({
 });
 ```
 
-Novely
-
-```novely
+```novely [story.novely]
 start
   !showBackground %room
   !showCharacter Sister "curious"
@@ -77,6 +75,8 @@ start
         !exit
   !end
 ```
+
+:::
 
 See it? No more parentheses, not so much quotes! Now let's look at it in more detail:
 

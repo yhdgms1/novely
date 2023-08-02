@@ -104,3 +104,22 @@ const engine = novely({
 ```
 
 You can control when Novely will get initial data. In example, you get your save from some platform's sdk, but it requires you to wait until it loaded.
+
+### PreloadAssets
+
+```ts
+const engine = novely({
+  ...
+  preloadAssets: 'blocking' // or 'lazy'
+})
+```
+
+You can control how Novely will load game assets. 
+
+#### Blocking
+
+Before game starts Novely will download all the backgrounds and user expressions used in game. Loading screen will be shown.
+
+#### Lazy
+
+Default mode. Nothing will be loaded before. Backgrounds and etc will be loaded when used. You still can preload some assets by using [preload](/guide/actions/preload) action

@@ -2,6 +2,12 @@
 
 Exit's branches inside of [Choice](/guide/actions/choice.md) and [Condition](/guide/actions/condition.md)
 
+::: warning
+Novely does this automatically, so there's no need to use them.
+
+However, you can still make the usage explicit
+:::
+
 ## Example
 
 Look at examples below to understand how `Exit` can be used
