@@ -1,3 +1,6 @@
+import type { ActionProxyProvider } from './action';
+import type { Character } from './character';
+
 type Thenable<T> = T | Promise<T>;
 
 type PathItem =
@@ -53,6 +56,8 @@ type DeepPartial<T> = unknown extends T
 	  }
 	: T;
 
+type ActionFN = ActionProxyProvider<Record<string, Character>>[keyof ActionProxyProvider<Record<string, Character>>];
+
 export type {
 	Thenable,
 	Path,
@@ -67,4 +72,5 @@ export type {
 	NovelyScreen,
 	Migration,
 	Data,
+	ActionFN
 };

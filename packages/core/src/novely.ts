@@ -8,7 +8,7 @@ import type {
 	CustomHandler,
 } from './action';
 import type { Storage } from './storage';
-import type { Save, State, Data, StorageData, DeepPartial, NovelyScreen, Migration } from './types';
+import type { Save, State, Data, StorageData, DeepPartial, NovelyScreen, Migration, ActionFN } from './types';
 import type { Renderer, RendererInit } from './renderer';
 import type { SetupT9N } from '@novely/t9n';
 import {
@@ -193,10 +193,10 @@ const novely = <
 			renderer.ui.showScreen('loading');
 
 			await preloadImagesBlocking(ASSETS_TO_PRELOAD);
-
-			ASSETS_TO_PRELOAD.clear();
-			assetsLoaded.resolve();
 		}
+
+		ASSETS_TO_PRELOAD.clear();
+		assetsLoaded.resolve();
 
 		/**
 		 * When `initialScreen` is not a game, we can safely show it
@@ -206,10 +206,7 @@ const novely = <
 
 	const action = new Proxy({} as ActionProxyProvider<Characters>, {
 		get(_, prop) {
-			type FN = ActionProxyProvider<Record<string, Character>>[keyof ActionProxyProvider<Record<string, Character>>];
-			type Props = Parameters<FN>;
-
-			return (...props: Props) => {
+			return (...props: Parameters<ActionFN>) => {
 				if (preloadAssets === 'blocking') {
 					/**
 					 * Load backgrounds
@@ -349,11 +346,9 @@ const novely = <
 			/**
 			 * When initialScreen is game, then we will load it, but after the data is loaded and when assets are loaded if that is needed
 			 */
-			if (initialScreen === 'game') {
-				assetsLoaded.promise.then(() => {
-					restore();
-				});
-			}
+			if (initialScreen === 'game') assetsLoaded.promise.then(() => {
+				restore();
+			});
 		});
 	};
 
