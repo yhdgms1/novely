@@ -21,7 +21,6 @@ import {
 	isCSSImage,
 	str,
 	isUserRequiredAction,
-	getTypewriterSpeed,
 	getLanguage as defaultGetLanguage,
 	throttle,
 	isFunction,
@@ -34,7 +33,7 @@ import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
 import { all as deepmerge } from 'deepmerge';
 import { klona } from 'klona/json';
-import { SKIPPED_DURING_RESTORE, EMPTY_SET } from './constants';
+import { SKIPPED_DURING_RESTORE, EMPTY_SET, DEFAULT_TYPEWRITER_SPEED } from './constants';
 import { replace as replaceT9N } from '@novely/t9n';
 
 interface NovelyInit<
@@ -289,7 +288,7 @@ const novely = <
 	const initialData: StorageData = {
 		saves: [],
 		data: klona(defaultData) as Data,
-		meta: [getLanguageWithoutParameters(), getTypewriterSpeed()],
+		meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED],
 	};
 
 	const $ = store(initialData);
@@ -317,7 +316,7 @@ const novely = <
 			/**
 			 * Default `localStorageStorage` returns empty array and engine set this up itself
 			 */
-			stored.meta[1] ||= getTypewriterSpeed();
+			stored.meta[1] ||= DEFAULT_TYPEWRITER_SPEED;
 
 			/**
 			 * When we need to override it we do that, when not – only when language was not defined already
@@ -459,7 +458,7 @@ const novely = <
 			$.update(() => ({
 				saves: [initial],
 				data: klona(defaultData) as Data,
-				meta: [getLanguageWithoutParameters(), getTypewriterSpeed()],
+				meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED],
 			}));
 
 			latest = klona(initial);

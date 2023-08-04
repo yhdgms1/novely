@@ -59,10 +59,6 @@ const isUserRequiredAction = (
 	return action === 'custom' && meta[0] && (meta[0] as unknown as CustomHandler).requireUserAction;
 };
 
-const getTypewriterSpeed = (): TypewriterSpeed => {
-	return 'Medium';
-};
-
 const getLanguage = (languages: string[], _: any) => {
 	let { language } = navigator;
 
@@ -172,7 +168,6 @@ export {
 	isCSSImage,
 	str,
 	isUserRequiredAction,
-	getTypewriterSpeed,
 	getLanguage,
 	throttle,
 	isFunction,
