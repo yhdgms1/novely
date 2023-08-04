@@ -35,7 +35,7 @@ interface RendererStore {
 type Renderer = {
 	character: (character: string) => CharacterHandle;
 	background: (background: string) => void;
-	dialog: (content: string, name: string, character?: string, emotion?: string) => (resolve: () => void) => void;
+	dialog: (content: string, name: string, character?: string, emotion?: string) => (resolve: () => void, goingBack: boolean) => void;
 	choices: (
 		question: string,
 		choices: ([string, ValidAction[]] | [string, ValidAction[], () => boolean])[],
@@ -56,7 +56,7 @@ type Renderer = {
 		goingBack: boolean,
 		push: () => void,
 	) => Thenable<void>;
-	text: (str: string, resolve: () => void) => void;
+	text: (str: string, resolve: () => void, goingBack: boolean) => void;
 	store: RendererStore;
 
 	ui: {

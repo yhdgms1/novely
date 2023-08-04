@@ -23,6 +23,7 @@ interface GameProps {
 	renderer: Renderer;
 
 	controls: "inside" | "outside"
+	skipTypewriterWhenGoingBack: boolean;
 }
 
 const Game: VoidComponent<GameProps> = (props) => {
@@ -31,7 +32,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 	/**
 	 * Can be destructured because these are passed without getters
 	 */
-	const { setState, characters, store, renderer } = props;
+	const { setState, characters, store, renderer, controls, skipTypewriterWhenGoingBack } = props;
 
 	const background = () => {
 		const is = isCSSImage(props.state.background);
@@ -194,6 +195,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 										: data.t(DialogWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
 							}}
 							content={props.state.dialog.content}
+							ignore={skipTypewriterWhenGoingBack && props.state.dialog.goingBack}
 							speed={speed()}
 							ended={onWriterEnd(DialogWriter.clear)}
 						/>
@@ -314,6 +316,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 								: data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
 					}}
 					content={props.state.text.content}
+					ignore={skipTypewriterWhenGoingBack && props.state.text.goingBack}
 					speed={speed()}
 					ended={onWriterEnd(TextWriter.clear)}
 				/>
@@ -322,7 +325,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 			<div
 				class="control-panel"
 				classList={{
-					'control-panel--center': props.controls === 'inside',
+					'control-panel--center': controls === 'inside',
 				}}
 			>
 				<button

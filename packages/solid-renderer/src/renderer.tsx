@@ -61,6 +61,10 @@ interface StateDialog {
 	 */
 	name: string;
 	/**
+	 * Is goingBack
+	 */
+	goingBack: boolean;
+	/**
 	 * Функция `resolve`
 	 */
 	resolve?: () => void;
@@ -118,6 +122,10 @@ interface StateText {
 	 * Текст
 	 */
 	content: string;
+	/**
+	 * Is goingBack
+	 */
+	goingBack: boolean;
 	/**
 	 * Функция `resolve`
 	 */
@@ -179,9 +187,14 @@ interface CreateSolidRendererOptions {
 	 * @default "outside"
 	 */
 	controls?: "inside" | "outside"
+	/**
+	 * When `goingBack` typewriter effect won't be applied
+	 * @default true
+	 */
+	skipTypewriterWhenGoingBack?: boolean;
 }
 
-const createSolidRenderer = ({ fullscreen = false, controls = "outside" }: CreateSolidRendererOptions = {}) => {
+const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTypewriterWhenGoingBack = true }: CreateSolidRendererOptions = {}) => {
 	const [state, setState] = createStore<State>({
 		background: '',
 		characters: {},
@@ -189,6 +202,7 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside" }: Creat
 			content: '',
 			name: '',
 			visible: false,
+			goingBack: false
 		},
 		choices: {
 			question: '',
@@ -202,6 +216,7 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside" }: Creat
 		},
 		text: {
 			content: '',
+			goingBack: false
 		},
 		layers: {},
 		screens: {},
@@ -334,7 +349,7 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside" }: Creat
 					});
 				},
 				dialog(content, name, character, emotion) {
-					return (resolve) => {
+					return (resolve, goingBack) => {
 						setState('dialog', () => ({
 							content,
 							name,
@@ -342,6 +357,7 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside" }: Creat
 							emotion,
 							visible: true,
 							resolve,
+							goingBack
 						}));
 					};
 				},
@@ -520,8 +536,8 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside" }: Creat
 
 					return result;
 				},
-				text(content, resolve) {
-					setState('text', { content, resolve });
+				text(content, resolve, goingBack) {
+					setState('text', { content, resolve, goingBack });
 				},
 				store,
 				ui: {
@@ -570,6 +586,7 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside" }: Creat
 									renderer={/* @once */ renderer}
 
 									controls={/* @once */ controls}
+									skipTypewriterWhenGoingBack={/* @once */ skipTypewriterWhenGoingBack}
 								/>
 							</Match>
 							<Match when={state.screen === 'mainmenu'}>

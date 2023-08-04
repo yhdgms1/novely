@@ -7,6 +7,7 @@ import { TEXT_SPEED_MAP } from '../constants';
 interface TypewriterProps {
 	content: string | undefined;
 	speed: TypewriterSpeed;
+	ignore: boolean;
 	ended: (prefersReducedMotion: boolean) => void;
 
 	attributes?: JSX.HTMLAttributes<HTMLSpanElement>;
@@ -45,7 +46,7 @@ const createTypewriter = ({ resolve }: CreateTypewriterOptions) => {
 			if (!text) return;
 			if (!node) return;
 
-			if (PRM.matches) {
+			if (PRM.matches || untrack(() => props.ignore)) {
 				node.innerHTML = text;
 				bypassed = true;
 

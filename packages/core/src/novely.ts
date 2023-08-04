@@ -773,7 +773,7 @@ const novely = <
 					: '';
 			})();
 
-			renderer.dialog(unwrap(content), unwrap(name), character, emotion)(forward);
+			renderer.dialog(unwrap(content), unwrap(name), character, emotion)(forward, goingBack);
 		},
 		function([fn]) {
 			const result = fn(restoring, goingBack);
@@ -919,7 +919,7 @@ const novely = <
 			match('custom', [handler]);
 		},
 		text(text) {
-			renderer.text(text.map((content) => unwrap(content)).join(' '), forward);
+			renderer.text(text.map((content) => unwrap(content)).join(' '), forward, goingBack);
 		},
 		exit() {
 			const path = stack.value[0];
