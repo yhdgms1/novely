@@ -220,6 +220,34 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
 
+  packages/standalone:
+    dependencies:
+      '@novely/core':
+        specifier: latest
+        version: link:../core
+      '@novely/solid-renderer':
+        specifier: latest
+        version: link:../solid-renderer
+      '@novely/t9n':
+        specifier: latest
+        version: link:../t9n
+      solid-js:
+        specifier: 1.7.9
+        version: 1.7.9
+    devDependencies:
+      esbuild:
+        specifier: ^0.18.16
+        version: 0.18.16
+      esbuild-plugin-solid:
+        specifier: ^0.5.0
+        version: 0.5.0(esbuild@0.18.16)(solid-js@1.7.9)
+      lightningcss:
+        specifier: ^1.21.5
+        version: 1.21.5
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+
   packages/t9n:
     devDependencies:
       tsup:
@@ -1763,6 +1791,21 @@ packages:
     resolution: {integrity: sha512-r6dCgNpRhPwiWlxbHzZQ/d9swfPaEJGi8ekqRBwQYaR3WmA5VkqQfBWSDDjuJU1ntO+W9tHx8OHV/96Q8e0dVw==}
     dev: true
 
+  /esbuild-plugin-solid@0.5.0(esbuild@0.18.16)(solid-js@1.7.9):
+    resolution: {integrity: sha512-ITK6n+0ayGFeDVUZWNMxX+vLsasEN1ILrg4pISsNOQ+mq4ljlJJiuXotInd+HE0MzwTcA9wExT1yzDE2hsqPsg==}
+    peerDependencies:
+      esbuild: '>=0.12'
+      solid-js: '>= 1.0'
+    dependencies:
+      '@babel/core': 7.22.5
+      '@babel/preset-typescript': 7.22.5(@babel/core@7.22.5)
+      babel-preset-solid: 1.7.4(@babel/core@7.22.5)
+      esbuild: 0.18.16
+      solid-js: 1.7.9
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
   /esbuild@0.17.19:
     resolution: {integrity: sha512-XQ0jAPFkK/u3LcVRcvVHQcTIqD6E2H1fvZMA5dQPSOWb3suUbWbfbRf94pjc0bNzRYLfIrDRQXr7X+LHIm5oHw==}
     engines: {node: '>=12'}
@@ -2506,6 +2549,12 @@ packages:
 
   /solid-js@1.7.7:
     resolution: {integrity: sha512-SPdYVke/Z6Za24PBTbULyQYPrhGO1ZbPany76atO2zF2dmYn2pCotbsw1JtlgWnr9dK2JbwPGnA3ODTGPLhZNw==}
+    dependencies:
+      csstype: 3.1.2
+      seroval: 0.5.1
+
+  /solid-js@1.7.9:
+    resolution: {integrity: sha512-p1orXnauMQmwYULZtuPAXyKNRGEN2qh60kLX4YURa3jvulxAqjlh2kWEljXCtAVR6UZPC16NXdj9ASHcH383Fg==}
     dependencies:
       csstype: 3.1.2
       seroval: 0.5.1
