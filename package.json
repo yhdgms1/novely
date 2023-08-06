@@ -25,6 +25,8 @@
 		"build:parser": "pnpm --filter=@novely/parser... --parallel build",
 		"dev:vite-plugin-nvl": "pnpm --filter=@novely/vite-plugin-nvl... --parallel dev",
 		"build:vite-plugin-nvl": "pnpm --filter=@novely/vite-plugin-nvl... --parallel build",
+		"dev:standalone": "pnpm --filter=@novely/standalone... --parallel dev",
+		"build:standalone": "pnpm --filter=@novely/standalone... --parallel build",
 		"format": "prettier --write ."
 	},
 	"devDependencies": {

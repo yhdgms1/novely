@@ -231,6 +231,9 @@ importers:
       '@novely/t9n':
         specifier: latest
         version: link:../t9n
+      modern-normalize:
+        specifier: ~2.0.0
+        version: 2.0.0
       solid-js:
         specifier: 1.7.9
         version: 1.7.9

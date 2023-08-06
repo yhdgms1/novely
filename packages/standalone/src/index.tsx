@@ -4,14 +4,9 @@ import { render } from 'solid-js/web';
 import { novely as createNovely, localStorageStorage } from '@novely/core'
 import { createT9N, EN, RU, KK, JP } from '@novely/t9n'
 import { createSolidRenderer } from '@novely/solid-renderer'
+import { style } from './styles'
 
-import css from '@novely/solid-renderer/dist/styles/index.css';
-
-const style = document.createElement('style');
-
-document.head.appendChild(style);
-
-style.innerHTML = css;
+style();
 
 type NoUndefined<T> = T extends undefined ? never : T;
 type CreateSolidRendererOptions = NoUndefined<Parameters<typeof createSolidRenderer>[0]>;
@@ -31,6 +26,7 @@ declare global {
 
     options: NovelyParameters
 
+    solidRenderer: SolidRenderer;
     novely: ReturnType<typeof createNovely>;
 
     target: HTMLElement;
@@ -45,14 +41,13 @@ window.JP = JP;
 window.target ||= document.body;
 
 let rendererOptions: CreateSolidRendererOptions | undefined;
-let solidRenderer: SolidRenderer | undefined;
 
 Object.defineProperty(window, 'rendererOptions', {
   get() {
     return rendererOptions;
   },
   set(value: CreateSolidRendererOptions) {
-    solidRenderer = createSolidRenderer(rendererOptions = value);
+    window.solidRenderer = createSolidRenderer(rendererOptions = value);
   }
 });
 
@@ -87,7 +82,7 @@ Object.defineProperty(window, 'options', {
       throw new Error(message);
     }
 
-    if (!solidRenderer) {
+    if (!window.solidRenderer) {
       const message = ru
         ? `'solidRenderer' не определен. Скорее всего, вы удалили присвоение 'rendererOption'. Верните его обратно.`
         : `'solidRenderer' is not defined. Most likely, you have deleted the 'rendererOption' assignment. Put it back.`;
@@ -100,7 +95,7 @@ Object.defineProperty(window, 'options', {
     window.novely = createNovely({
       ...options,
       t9n: translation,
-      renderer: solidRenderer.createRenderer
+      renderer: window.solidRenderer.createRenderer
     });
 
     const original = window.novely.withStory;
@@ -109,7 +104,7 @@ Object.defineProperty(window, 'options', {
       const promise = original(story);
 
       promise.then(() => {
-        if (!solidRenderer) {
+        if (!window.solidRenderer) {
           const message = ru
             ? `'solidRenderer' не определен. Невозможно запустить игру.`
             : `'solidRenderer' is not defined. Unable to start the game.`;
@@ -119,7 +114,7 @@ Object.defineProperty(window, 'options', {
 
         if (dispose) dispose();
 
-        const { Novely } = solidRenderer;
+        const { Novely } = window.solidRenderer;
 
         dispose = render(() => <Novely />, window.target);
       });
