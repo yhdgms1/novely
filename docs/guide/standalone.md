@@ -16,20 +16,29 @@ You'll get CSS Reset and Novely's styles out of the box. Now, you should configu
 
 ::: danger
 You should not delete the assignments in the script. They are all used to start the engine.
+
+Also, you should not change the sequence
 :::
 
 ```html
 <body>
   <script src="novely.js"></script>
   <script>
+    // You can define a target where game will be mounted
+    // By default this is `document.body` and you can ignore setting it
+    // window.target = document.body;
+
     // Standalone package uses @novely/solid-renderer under the hood
     // These options are it's options
     window.rendererOptions = {};
 
+    // Now you can access instance of @novely/solid-renderer
+    window.solidRenderer;
+
     // Window contains all of available novely UI's translations. At the moment this is 'RU', 'EN', 'KK', and 'JP'
     // You can also declare your own translation string's for each language
 
-    // Here translation module is created using options below:
+    // Define options for the translation module:
     window.translation = {
       ru: {
         internal: window.RU,
@@ -39,11 +48,10 @@ You should not delete the assignments in the script. They are all used to start 
     };
 
     // This is novely core options. You must omit renderer and translation here.
+    // Also, you can ignore setting 'storage'
     window.options = {
       languages: ['ru'],
-      characters: {
-
-      }
+      characters: {}
     };
 
     // Now you can access `window.novely`
