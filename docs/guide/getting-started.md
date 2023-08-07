@@ -1,7 +1,5 @@
 # Getting Started
 
-To use Novely, you will need a build tool. It is recommended to use [Vite](https://vitejs.dev/), although you can consider other options
-
 ## Scaffolding Your First Novely Project
 
 With NPM:
@@ -24,11 +22,17 @@ pnpm create novely
 
 Then follow the prompts!
 
-## `index.html` and Project Root
+## Project Root
 
-As Novely's templates uses Vite, you can get all related information on [their website](https://vitejs.dev/guide/#index-html-and-project-root)
+Some of Novely's templates uses Vite, you can get all related information on [their website](https://vitejs.dev/guide/#index-html-and-project-root).
 
 ## Alternatives
+
+### Standalone Package
+
+You might not want to use bundler. Here you go! We have a [@novely/standalone](https://www.npmjs.com/package/@novely/standalone) package. Basically, you just need to add it to your project using CDN or placing script alongside your `index.html`. You can read more about standalone package [here](/guide/standalone)
+
+### All By Yourself
 
 Alternatively, you can install all needed packages by yourself
 
