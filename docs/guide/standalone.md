@@ -4,11 +4,11 @@ Unlike of others, was built not for modules.
 
 ## Start
 
-First of all, you should add the script to your `index.html`
+First of all, you should add the script to your `index.html`. It's recommended to pin the version or save file to the local folder so updates won't have a chance to hurt your game.
 
 ```html{2}
 <body>
-  <script src="novely.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@novely/standalone@latest"></script>
 </body>
 ```
 
@@ -22,7 +22,7 @@ Also, you should not change the sequence
 
 ```html
 <body>
-  <script src="novely.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@novely/standalone@latest"></script>
   <script>
     // You can define a target where game will be mounted
     // By default this is `document.body` and you can ignore setting it
