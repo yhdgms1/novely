@@ -7,7 +7,7 @@ type AstNode =
 	| {
 			type: 'Action';
 			name: string;
-			children: Extract<AstNode, { type: 'JSValue' | 'Value' | 'Map' }>[];
+			children: Extract<AstNode, { type: 'JSValue' | 'Value' | 'Map' | 'Array' }>[];
 	  }
 	| {
 			type: 'JSValue';
