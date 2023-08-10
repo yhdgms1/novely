@@ -45,7 +45,9 @@ const print = (ast: Ast, {}: PrintOptions = {}) => {
 				throw new Error('Cannot be both `multiline` and `short`');
 			}
 
-			return `${start}\\${start + DOUBLE_SPACE}${value.content.split(NEW_LINE).map(s => start + DOUBLE_SPACE + s).join(NEW_LINE)}`
+			const offset = start + DOUBLE_SPACE;
+
+			return `${start}\\${value.content.split(NEW_LINE).map((s, i) => i === 0 ? '' : offset + s).join(NEW_LINE)}`
 		}
 
 		if (short) {
@@ -105,7 +107,7 @@ const print = (ast: Ast, {}: PrintOptions = {}) => {
 	};
 
 	for (const top of ast) {
-		code += `${top.name}${NEW_LINE}`
+		code += `${top.name}${top.name ? NEW_LINE : ''}`
 
 		for (const child of top.children) {
 			code += print_with_unknown_printer(child, 1) + NEW_LINE;

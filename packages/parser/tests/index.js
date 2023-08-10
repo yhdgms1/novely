@@ -35,6 +35,12 @@ test('with works', async () => {
 
 test('print', () => {
 	assert.not.throws(() => print(parse(input)));
+
+	let temp = print(parse(input));
+
+	for (let i = 0; i < 10; i++) {
+		assert.equal(temp, print(parse(temp)));
+	}
 })
 
 console.log(print(parse(input)))
