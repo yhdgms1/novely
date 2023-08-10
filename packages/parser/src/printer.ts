@@ -1,6 +1,5 @@
-import type { Ast, AstNode, TransformOptions } from './types';
+import type { Ast, AstNode, PrintOptions } from './types';
 
-const RESERVED = ['undefined', 'null', 'window', 'globalThis', '()'];
 const NEW_LINE = '\n';
 const DOUBLE_SPACE = '  ';
 
@@ -10,8 +9,6 @@ const to_number = (value: string) => {
 
 	return isString ? '' : numeralized;
 }
-
-type PrintOptions = {}
 
 const print = (ast: Ast, {}: PrintOptions = {}) => {
 	let code = '';

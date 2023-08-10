@@ -2,7 +2,7 @@ import { readFile } from 'fs/promises';
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 
-import { parse, print, transform } from '../dist/index.js';
+import { parse, print, transform, traverse } from '../dist/index.js';
 
 const input = await readFile('./tests/input.nvl', 'utf8');
 
@@ -43,6 +43,43 @@ test('print', () => {
 	}
 })
 
-console.log(print(parse(input)))
+test('traverse', async () => {
+	const ast = parse(await readFile('./tests/ru.nvl', 'utf8'));
+
+	traverse(ast, (node) => {
+		if (node.type === 'Action' && node.name === 'dialog') {
+			if (node.children.length >= 2) {
+				const text = node.children[1];
+
+				if (text.type === 'Value') {
+					node.children[1] = {
+						type: 'Map',
+						children: [
+							{
+								type: 'MapItem',
+								name: 'ru',
+								children: [
+									text
+								]
+							},
+							{
+								type: 'MapItem',
+								name: 'en',
+								children: [
+									{
+										type: 'Value',
+										content: 'En'
+									}
+								]
+							},
+						]
+					}
+				}
+			}
+		}
+	});
+
+	assert.not.throws(() => print(ast));
+})
 
 test.run();

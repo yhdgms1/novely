@@ -38,4 +38,6 @@ type TransformOptions = {
 	useWith?: boolean
 };
 
-export type { AstNode, Ast, TransformOptions };
+type PrintOptions = {}
+
+export type { AstNode, Ast, TransformOptions, PrintOptions };
