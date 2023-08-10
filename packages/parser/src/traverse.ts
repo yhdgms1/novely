@@ -6,7 +6,7 @@ const traverse = (ast: Ast | AstNode, cb: (item: AstNode) => void) => {
       cb(ast);
 
       for (const child of ast.children) {
-        cb(child);
+        traverse(child, cb);
       }
     } else if (ast.type === 'JSValue' || ast.type === 'Value') {
       cb(ast)
