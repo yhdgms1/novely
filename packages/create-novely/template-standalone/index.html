@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;,;" />
+		<meta
+			name="description"
+			content="Experience a thrilling adventure like never before with this game developed using Novely"
+		/>
+		<title>Game Name</title>
+	</head>
+	<body>
+		<noscript>You need to enable JavaScript to run this game.</noscript>
+    <script src="https://cdn.jsdelivr.net/npm/@novely/standalone@latest"></script>
+    <script>
+      var asset = (path, isCssUrl) => {
+        const url = new URL(path, location.href).toString();
+
+        return isCssUrl ? `url(${JSON.stringify(url)})` : url;
+      }
+
+      document.body.style.setProperty('--novely-main-menu-background-image', asset('./assets/outdoor.png', true))
+      document.body.style.setProperty('--novely-settings-background-image', asset('./assets/outdoor.png', true))
+      document.body.style.setProperty('--novely-saves-background-image', asset('./assets/outdoor.png', true))
+
+      var backgroundOutdoor = asset('./assets/outdoor.png');
+    </script>
+    <script>
+      // You can define a target where game will be mounted
+      // By default this is `document.body` and you can ignore setting it
+      // window.target = document.body;
+
+      // Standalone package uses @novely/solid-renderer under the hood
+      // These options are it's options
+      window.rendererOptions = {};
+
+      // Now you can access instance of @novely/solid-renderer
+      window.solidRenderer;
+
+      // Window contains all of available novely UI's translations. At the moment this is 'RU', 'EN', 'KK', and 'JP'
+      // You can also declare your own translation string's for each language
+
+      // Define options for the translation module:
+      window.translation = {
+        en: {
+          internal: window.EN,
+          strings: {},
+          pluralization: {}
+        }
+      };
+
+      // This is novely core options. You must omit renderer and translation here.
+      // Also, you can ignore setting 'storage'
+      window.options = {
+        languages: ['en'],
+        characters: {
+          Lily: {
+            name: {
+              en: 'Lily',
+            },
+            color: '#ed5c87',
+            emotions: {
+              normal: asset('./assets/lily.png'),
+            },
+          },
+          You: {
+            name: {
+              en: 'You',
+            },
+            color: '#000000',
+            emotions: {},
+          },
+        },
+        state: {
+          name: ''
+        }
+      };
+
+      // Now you can access `window.novely`
+      const { action: a, state, withStory } = window.novely;
+
+      // Write you'r story here
+      // Game will start only after this function will be ran
+      withStory({
+        start: [
+          a.showBackground('#000000'),
+          a.text(
+            'You open your eyes in a beautiful place and see a girl next to you.',
+          ),
+          a.showBackground(backgroundOutdoor),
+          a.showCharacter('Lily', 'normal'),
+          a.dialog('You', 'Uh, hi'),
+          a.dialog('Lily', 'Hey, who are you? You fell out of the sky!'),
+          a.dialog('You', 'I... I dont know...'),
+          a.dialog('Lily', 'My name is Lily. And you are...?'),
+          a.input(
+            'What is your name?',
+            ({ input, error, value }) => {
+              /**
+               * Set the error, or remove it when string is empty.
+               * You can use your own validation here.
+               */
+              error(input.validationMessage)
+
+              if (!input.validationMessage) {
+                state({ name: value })
+              }
+            },
+            input => {
+              input.setAttribute('type', 'string')
+              input.setAttribute('min', '2')
+              input.setAttribute('max', '46')
+            },
+          ),
+          a.dialog('Lily', 'Well, {{name}}, there our novel starts!'),
+          a.end(),
+        ]
+      })
+    </script>
+	</body>
+</html>

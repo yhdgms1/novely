@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import prompts from 'prompts';
-import { red, blue, yellow, reset } from 'kolorist';
+import { red, blue, yellow, lightGray, reset } from 'kolorist';
 
 async function main() {
 	let cancelled = false;
@@ -27,6 +27,10 @@ async function main() {
 						title: `${blue('SolidJS')} + ${yellow('YandexGames')}`,
 						value: 'solid-js-yagames',
 					},
+					{
+						title: lightGray('standalone'),
+						value: 'standalone'
+					}
 				],
 				initial: 0,
 			},

@@ -19,14 +19,14 @@ withStory({
 		a.dialog('Lily', 'My name is Lily. And you are...?'),
 		a.input(
 			'What is your name?',
-			({ input, error }) => {
+			({ input, error, value }) => {
 				/**
 				 * Set the error, or remove it when string is empty
 				 */
 				error(input.validationMessage)
 
 				if (!input.validationMessage) {
-					state({ name: input.value })
+					state({ name: value })
 				}
 			},
 			input => {
