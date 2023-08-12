@@ -9,7 +9,7 @@
     "fetch-highlight": "node ./fetch-highlight.mjs"
   },
   "devDependencies": {
-    "@types/node": "^20.4.8",
+    "@types/node": "^20.4.10",
     "vitepress": "1.0.0-beta.5"
   },
   "pnpm": {
