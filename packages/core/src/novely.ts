@@ -147,7 +147,8 @@ const novely = <
 	preloadAssets = "lazy"
 }: NovelyInit<Languages, Characters, Inter, StateScheme, DataScheme>) => {
 	let story: Story;
-	let times = new Set<number>();
+
+	const times = new Set<number>();
 
 	const ASSETS_TO_PRELOAD = new Set<string>();
 	const assetsLoaded = createDeferredPromise();
@@ -449,7 +450,7 @@ const novely = <
 	const restore = async (save?: Save) => {
 		if (!initialDataLoaded) return;
 
-		let latest = save ? save : $.get().saves.at(-1);
+		let latest = save || $.get().saves.at(-1);
 
 		/**
 		 * When there is no game, then make a new game
@@ -539,18 +540,6 @@ const novely = <
 			}
 		}
 
-		queue.forEach((value, index) => {
-			/**
-			 * Mutate the queue item
-			 */
-			value.push(index);
-		});
-
-		/**
-		 * This is basically made for TypeScript.
-		 */
-		const indexedQueue = queue as unknown as [Exclude<ValidAction[0], ValidAction>, ValidAction[1], number][];
-
 		/**
 		 * Run these exactly before the main loop.
 		 */
@@ -563,9 +552,9 @@ const novely = <
 		/**
 		 * Get the next actions array.
 		 */
-		const next = (i: number) => indexedQueue.slice(i + 1);
+		const next = (i: number) => queue.slice(i + 1);
 
-		for await (const [action, meta, i] of indexedQueue) {
+		for await (const [i, [action, meta]] of queue.entries()) {
 			if (action === 'function' || action === 'custom') {
 				/**
 				 * When `callOnlyLatest` is `true`
@@ -574,7 +563,7 @@ const novely = <
 					/**
 					 * We'll calculate it is `latest` or not
 					 */
-					const notLatest = next(i).some(([_action, _meta]) => {
+					const notLatest = next(i).some(([, _meta]) => {
 						if (!_meta || !meta) return false;
 
 						const c0 = _meta[0] as unknown as GetActionParameters<'Custom'>[0];
@@ -685,18 +674,16 @@ const novely = <
 		 */
 		const [time, type] = current[2];
 
-		if (type === 'auto') {
-			/**
-			 * Save belongs to the current session
-			 * And player did not interacted or did it once, so this is probably not-needed save
-			 */
-			if (interacted <= 1 && times.has(time)) {
-				$.update((prev) => {
-					prev.saves = prev.saves.filter((save) => save !== current);
+		/**
+		 * This is auto save and belongs to the current session
+		 * Player did not interacted or did it once, so this is probably not-needed save
+		 */
+		if (type === 'auto' && interacted <= 1 && times.has(time)) {
+			$.update((prev) => {
+				prev.saves = prev.saves.filter((save) => save !== current);
 
-					return prev;
-				});
-			}
+				return prev;
+			});
 		}
 
 		/**
@@ -759,17 +746,23 @@ const novely = <
 			 * Person name
 			 */
 			const name = (() => {
-				const c = character,
-					cs = characters;
+				const c = character;
+				const cs = characters;
 				const lang = $.get().meta[0];
 
-				return c
-					? c in cs
-						? typeof cs[c].name === 'string'
-							? (cs[c].name as string)
-							: (cs[c].name as Record<string, string>)[lang]
-						: c
-					: '';
+				if (c && c in cs) {
+					const block = cs[c].name;
+
+					if (typeof block === 'string') {
+						return block;
+					}
+
+					if (lang in block) {
+						return block[lang as Languages]
+					}
+				}
+
+				return c || '';
 			})();
 
 			renderer.dialog(unwrap(content), unwrap(name), character, emotion)(forward, goingBack);
@@ -966,13 +959,19 @@ const novely = <
 
 	const next = () => {
 		const path = stack.value[0];
-		/**
-		 * Последний элемент пути
-		 */
-		const last = path[path.length - 1]!;
 
 		/**
-		 * Если он вида `[null, int]` - увеличивает `int`
+		 * Last path element
+		 */
+		const last = path.at(-1);
+
+		/**
+		 * Almost impossible case
+		 */
+		if (!last) return;
+
+		/**
+		 * When matches `[null, int]` - increase `int`
 		 */
 		if (isNull(last[0]) && isNumber(last[1])) {
 			last[1] = last[1] + 1;
@@ -980,7 +979,7 @@ const novely = <
 		}
 
 		/**
-		 * Иначе добавляет новое `[null, int]`
+		 * Else add new `[null, int]`
 		 */
 		path.push([null, 0]);
 	};

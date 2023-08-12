@@ -14,7 +14,7 @@ const store = <T>(current: T, subscribers = new Set<(value: T) => void>()): Stor
 	};
 
 	const push = (value: T) => {
-		subscribers.forEach((cb) => cb(value));
+		for (const cb of subscribers) cb(value);
 	};
 
 	const update = (fn: (prev: T) => T) => {

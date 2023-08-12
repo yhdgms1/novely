@@ -4,7 +4,7 @@ import normalize from 'modern-normalize';
 
 const style = () => {
   for (const [element, style] of [[document.createElement('style'), normalize], [document.createElement('style'), novely]] as const) {
-    document.head.appendChild(element);
+    document.head.append(element);
     element.innerHTML = style;
   }
 }

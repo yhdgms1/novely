@@ -4,8 +4,8 @@ import { defaultSpeed, collectTextNodes } from './utils';
 const map = (it: string, cb: (value: string, prev: HTMLSpanElement | undefined) => HTMLSpanElement | void | undefined) => {
 	const result: HTMLSpanElement[] = [];
 
-	for (const value of [...it]) {
-		const val = cb(value, result[result.length - 1]);
+	for (const value of it) {
+		const val = cb(value, result.at(-1));
 
 		if (val) {
 			result.push(val);
@@ -83,10 +83,10 @@ const typewriter = ({ node, text, ended, speed = defaultSpeed }: TypewriterOptio
 			timeout = speed();
 
 			process();
-		} else if (!end) {
-			enqueue();
-		} else {
+		} else if (end) {
 			dequeue();
+		} else {
+			enqueue();
 		}
 	};
 

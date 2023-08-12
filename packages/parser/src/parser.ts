@@ -45,8 +45,8 @@ const parse = (source: string) => {
 
 			const content = items.join(' ');
 
-			const matches = Array.from(content.matchAll(/(?:"([^"]*)")|([^"\s]+)/gm))
-				.map(([_, one, two]) => one || two)
+			const matches = [...content.matchAll(/(?:"([^"]*)")|([^\s"]+)/gm)]
+				.map(([, one, two]) => one || two)
 				.map((match) => {
 					if (match.startsWith('%')) {
 						return {

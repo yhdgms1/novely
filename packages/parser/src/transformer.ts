@@ -6,10 +6,9 @@ const transform = (ast: Ast, { rewrites = {}, useWith = false }: TransformOption
 	let code = useWith ? '($values1) => { with($values1) { return {' : '($values1) => ({';
 
 	const print_js_value = (value: Extract<AstNode, { type: 'JSValue' }>) => {
-		if (
-			useWith ||
-			RESERVED.some((reserved) => value.content.startsWith(reserved))
-		) {
+		const isReserved = RESERVED.some((reserved) => value.content.startsWith(reserved));
+
+		if (useWith || isReserved) {
 			return value.content;
 		}
 
@@ -17,7 +16,7 @@ const transform = (ast: Ast, { rewrites = {}, useWith = false }: TransformOption
 	};
 
 	const print_array = (value: Extract<AstNode, { type: 'Array' }>): string => {
-		return `[${value.children.map(print_with_unknown_printer).join(',')}]`;
+		return `[${value.children.map((child) => print_with_unknown_printer(child)).join(',')}]`;
 	};
 
 	const print_value = (value: Extract<AstNode, { type: 'Value' }>) => {
@@ -41,7 +40,7 @@ const transform = (ast: Ast, { rewrites = {}, useWith = false }: TransformOption
 	};
 
 	const print_action = (value: Extract<AstNode, { type: 'Action' }>): string => {
-		const children = value.children.map(print_with_unknown_printer);
+		const children = value.children.map((child) => print_with_unknown_printer(child));
 		const name = value.name in rewrites ? rewrites[value.name] : value.name;
 
 		return `["${name}", ${children.join(',')}]`;

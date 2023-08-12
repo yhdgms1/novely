@@ -115,4 +115,4 @@ const print = (ast: Ast, {}: PrintOptions = {}) => {
 }
 
 export { print }
-export type { PrintOptions }
+export type { PrintOptions } from './types'

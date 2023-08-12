@@ -1,6 +1,6 @@
 import type { ActionProxyProvider, CustomHandler } from './action';
 import type { Character } from './character';
-import type { TypewriterSpeed, Thenable } from './types';
+import type { Thenable } from './types';
 
 type MatchActionMap = {
 	[Key in keyof ActionProxyProvider<Record<string, Character>>]: (
@@ -38,7 +38,7 @@ const isPromise = (val: unknown): val is Promise<any> => {
 	return Boolean(val) && (typeof val === 'object' || isFunction(val)) && isFunction((val as any).then);
 };
 
-const isEmpty = (val: unknown): val is {} => {
+const isEmpty = (val: unknown): val is Record<PropertyKey, never> => {
 	return typeof val === 'object' && !isNull(val) && Object.keys(val).length === 0;
 };
 
@@ -48,9 +48,7 @@ const isCSSImage = (str: string) => {
 	return startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data');
 };
 
-const str = (value: unknown) => {
-	return String(value);
-};
+const str = String;
 
 const isUserRequiredAction = (
 	action: keyof MatchActionMapComplete,
@@ -59,12 +57,12 @@ const isUserRequiredAction = (
 	return action === 'custom' && meta[0] && (meta[0] as unknown as CustomHandler).requireUserAction;
 };
 
-const getLanguage = (languages: string[], _: any) => {
+const getLanguage = (languages: string[]) => {
 	let { language } = navigator;
 
 	if (languages.includes(language)) {
 		return language;
-	} else if (languages.includes((language = language.substring(0, 2)))) {
+	} else if (languages.includes((language = language.slice(0, 2)))) {
 		return language;
 	} else if ((language = languages.find((value) => navigator.languages.includes(value))!)) {
 		return language;
@@ -85,14 +83,15 @@ const throttle = <Fn extends (...args: any[]) => any>(fn: Fn, ms: number) => {
 		savedArgs: any,
 		savedThis: any;
 
-	function wrapper(this: any) {
+	function wrapper(this: any, ...args: any[]) {
 		if (throttled) {
-			savedArgs = arguments;
+			savedArgs = args;
+			/* eslint-disable unicorn/no-this-assignment, @typescript-eslint/no-this-alias */
 			savedThis = this;
 			return;
 		}
 
-		fn.apply(this, arguments as unknown as any[]);
+		fn.apply(this, args as unknown as any[]);
 
 		throttled = true;
 
@@ -128,7 +127,7 @@ const findLastIndex = <T>(array: T[], fn: (item: T) => boolean) => {
 };
 
 const preloadImagesBlocking = (images: Set<string>) => {
-	return Promise.allSettled(Array.from(images).map(src => {
+	return Promise.allSettled([...images].map(src => {
 		const img = document.createElement('img');
 
 		img.src = src;
@@ -148,7 +147,7 @@ const preloadImagesBlocking = (images: Set<string>) => {
 	}));
 }
 
-const createDeferredPromise = <T extends unknown = void>() => {
+const createDeferredPromise = <T = void>() => {
 	let resolve!: (value: T | PromiseLike<T>) => void, reject!: (reason?: any) => void;
 
 	const promise = new Promise<T>((res, rej) => {
