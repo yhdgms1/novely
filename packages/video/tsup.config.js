@@ -11,5 +11,8 @@ export default defineConfig((options) => {
 		bundle: true,
 		dts: options.dts,
 		watch: options.watch,
+		loader: {
+			'.css': 'text'
+		},
 	};
 });

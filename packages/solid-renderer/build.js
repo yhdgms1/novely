@@ -1,6 +1,5 @@
 import * as esbuild from 'esbuild';
-import * as lightning from 'lightningcss';
-import * as fs from 'fs/promises';
+import { cssPlugin } from '../../env/index.js';
 
 const dev = process.argv.at(2) === '--watch';
 
@@ -17,30 +16,10 @@ const context = await esbuild.context({
 	},
 	bundle: true,
 	plugins: [
-		{
-			name: 'css',
-			setup(build) {
-				build.onLoad({ filter: /\.css$/ }, async (args) => {
-					const contents = await fs.readFile(args.path, 'utf-8');
-
-					const { code } = lightning.transform({
-						code: Buffer.from(contents),
-						minify: false,
-						sourceMap: false,
-						targets: {
-							safari: (12 << 16) | (0 << 8),
-						},
-					});
-
-					const css = code.toString('utf-8');
-
-					return {
-						contents: css,
-						loader: 'css',
-					}
-				})
-			}
-		}
+		cssPlugin({
+			loader: 'css',
+			minify: false
+		})
 	]
 });
 

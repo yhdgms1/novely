@@ -765,7 +765,9 @@ const novely = <
 				return c || '';
 			})();
 
-			renderer.dialog(unwrap(content), unwrap(name), character, emotion)(forward, goingBack);
+			const run = renderer.dialog(unwrap(content), unwrap(name), character, emotion);
+
+			run(forward, goingBack);
 		},
 		function([fn]) {
 			const result = fn(restoring, goingBack);
@@ -792,10 +794,12 @@ const novely = <
 				return [unwrap(content), action, visible] as [string, ValidAction[], () => boolean];
 			});
 
-			renderer.choices(
+			const run = renderer.choices(
 				unwrap(question),
 				unwrapped,
-			)((selected) => {
+			);
+
+			run((selected) => {
 				enmemory();
 
 				/**

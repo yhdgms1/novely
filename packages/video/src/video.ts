@@ -1,6 +1,5 @@
 import type { CustomHandler } from '@novely/core';
-
-import * as styles from './styles';
+import style from './style.css';
 
 interface VideoParameters {
 	/**
@@ -28,25 +27,29 @@ const createElement = <K extends keyof HTMLElementTagNameMap>(
 	return Object.assign(document.createElement(name), properties);
 };
 
+document.head.append(createElement('style', {
+	innerHTML: style
+}));
+
 const video = ({ controls, close, loop, url }: VideoParameters): CustomHandler => {
 	const handler: CustomHandler = (get, _, resolve) => {
 		const { element, delete: remove } = get('n-video');
 
-		element!.classList.add(styles.container);
+		element!.classList.add('novely-video--container');
 
 		const video = createElement('video', {
 			src: url,
 			autoplay: 'autoplay',
 			controls: controls ? 'controls' : undefined,
 			loop: close ? undefined : loop ? 'loop' : undefined,
-			className: styles.video,
+			className: 'novely-video--video',
 		});
 
 		const button = createElement('button', {
 			type: 'button',
 			innerHTML: `<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.75 6.75L19.25 12L13.75 17.25"></path><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 12H4.75"></path></svg>`,
 			ariaLabel: 'Next',
-			className: styles.button,
+			className: 'novely-video--button',
 		});
 
 		const closeHandler = () => {

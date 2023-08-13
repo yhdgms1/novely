@@ -1,7 +1,7 @@
 {
 	"name": "@novely/video",
 	"description": "Video Action",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"type": "module",
 	"sideEffects": false,
 	"types": "./dist/index.d.ts",
@@ -13,10 +13,6 @@
 	"scripts": {
 		"dev": "tsup --watch",
 		"build": "tsup --dts"
-	},
-	"dependencies": {
-		"@novely/core": "workspace:*",
-		"@novely/css": "workspace:*"
 	},
 	"devDependencies": {
 		"tsup": "^7.1.0",
