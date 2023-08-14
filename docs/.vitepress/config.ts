@@ -7,6 +7,10 @@ export default defineConfig({
   title: "Novely",
   description: "Create Interactive Stories with Ease",
   themeConfig: {
+    logo: {
+      src: "/logo.svg",
+    },
+
     search: {
       provider: "local",
     },
@@ -102,4 +106,11 @@ export default defineConfig({
       },
     ],
   },
+
+  head: [
+    ["link", { rel: "icon", href: "/logo.svg" }],
+    ["meta", { name: "theme-color", content: "#10b981" }],
+    ["meta", { name: "og:type", content: "website" }],
+    ["meta", { name: "og:site_name", content: "Novely" }],
+  ],
 });
