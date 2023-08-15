@@ -78,32 +78,90 @@ const engine = novely({
 
 const { action, state, data, t, unwrap } = engine;
 
-// registerScreen('achievements', () => {
-// 	return {
-// 		mount() {
-// 			return (
-// 				<div>
-// 					Твои Достижения
-// 					<button type="button" class="button" data-novely-goto="mainmenu">
-// 						Выйти
-// 					</button>
-// 				</div>
-// 			);
-// 		},
-// 	};
-// });
+registerScreen('achievements', () => {
+	return {
+		mount() {
+			return (
+				<div class="root saves">
+					<div class="saves__column">
+						<button type="button" class="button saves__button" data-novely-goto="mainmenu">
+							{unwrap({
+								en: 'Exit',
+								ru: 'Выйти'
+							})}
+						</button>
+					</div>
+					<div class="saves__list-container">
+						<table>
+							<caption>
+								{unwrap({
+									en: "You'r achievements",
+									ru: 'Твои достижения'
+								})}
+							</caption>
+							<thead>
+								<tr>
+									<th scope="col">
+										{unwrap({
+											en: 'Money',
+											ru: 'Деньги'
+										})}
+									</th>
+									<th scope="col">
+										{unwrap({
+											en: 'Love',
+											ru: 'Любовь'
+										})}
+									</th>
+									<th scope="col">
+										{unwrap({
+											en: 'Cars',
+											ru: 'Тачки'
+										})}
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										{unwrap({
+											en: data().achievements.money ? 'Yes' : 'No',
+											ru: data().achievements.money ? 'Да' : 'Нет',
+										})}
+									</td>
+									<td>
+										{unwrap({
+											en: data().achievements.love ? 'Yes' : 'No',
+											ru: data().achievements.love ? 'Да' : 'Нет',
+										})}
+									</td>
+									<td>
+										{unwrap({
+											en: data().achievements.cars ? 'Yes' : 'No',
+											ru: data().achievements.cars ? 'Да' : 'Нет',
+										})}
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			);
+		},
+	};
+});
 
-// registerMainmenuItem((goto) => ({
-// 	type: 'button',
-// 	class: 'button main-menu__button',
-// 	textContent: unwrap({
-// 		en: 'Achievements',
-// 		ru: 'Достижения',
-// 	}),
-// 	onClick: () => {
-// 		goto('achievements');
-// 	},
-// }));
+registerMainmenuItem((goto) => ({
+	type: 'button',
+	class: 'button main-menu__button',
+	textContent: unwrap({
+		en: 'Achievements',
+		ru: 'Достижения',
+	}),
+	onClick: () => {
+		goto('achievements');
+	},
+}));
 
 engine.withStory({
 	start: [
