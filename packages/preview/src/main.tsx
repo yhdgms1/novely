@@ -95,7 +95,7 @@ registerScreen('achievements', () => {
 						<table>
 							<caption>
 								{unwrap({
-									en: "You'r achievements",
+									en: 'Youʼr achievements',
 									ru: 'Твои достижения'
 								})}
 							</caption>
@@ -186,7 +186,7 @@ engine.withStory({
 		action.dialog(
 			'Lily',
 			t({
-				en: 'I\'m going to tell you about the Novely engine',
+				en: 'Iʼm going to tell you about the Novely engine',
 				ru: 'Я расскажу тебе про движок Novely',
 			}),
 		),

@@ -24,3 +24,10 @@
 		margin-top: 4px;
 	}
 }
+
+@media (max-aspect-ratio: 0.26) {
+	.saves__button-load {
+		display: flex;
+		flex-direction: column;
+	}
+}

@@ -18,11 +18,11 @@
 	display: grid;
 	align-content: flex-start;
 	justify-content: center;
-	justify-items: stretch;
 
 	list-style: none;
 
 	overflow-y: scroll;
+	overflow-x: hidden;
 
 	padding-inline-start: 0;
 	padding-inline-end: 0;
@@ -80,5 +80,27 @@
 
 	.saves__list-item {
 		flex-direction: column;
+	}
+}
+
+@media (max-aspect-ratio: 0.26) {
+	.saves {
+		padding: 0 0.1rem;
+	}
+
+	.saves__list {
+		border-radius: var(--novely-saves-list-border-radius, 7px);
+	}
+
+	.saves__list::-webkit-scrollbar {
+		width: 7px;
+	}
+
+	.saves__list::-webkit-scrollbar-track {
+		border-radius: var(--novely-scrollbar-track-border-radius, 3.5px);
+	}
+
+	.saves__list::-webkit-scrollbar-thumb {
+		border-radius: var(--novely-scrollbar-thumb-border-radius, 3.5px);
 	}
 }

@@ -12,22 +12,15 @@ interface SavesProps {
 
 const Saves: VoidComponent<SavesProps> = (props) => {
 	const data = useData();
+
 	const saves = () => data.storeData().saves;
 	const language = () => data.storeData().meta[0];
 
 	const removeSave = (date: number) => {
-		const _saves = saves();
-
-		for (let i = 0; i < _saves.length; i++) {
-			const current = _saves[i];
-
-			if (current[2][0] === date) {
-				_saves.splice(i, 1);
-			}
-		}
-
 		data.storeDataUpdate((prev) => {
-			return (prev.saves = _saves), prev;
+			prev.saves = saves().filter((save) => save[2][0] !== date);
+
+			return prev;
 		});
 	};
 
@@ -59,6 +52,7 @@ const Saves: VoidComponent<SavesProps> = (props) => {
 										second: 'numeric',
 									}),
 								);
+
 								const stringType = data.t(type === 'auto' ? 'Automatic' : 'Manual');
 
 								return (
@@ -69,7 +63,7 @@ const Saves: VoidComponent<SavesProps> = (props) => {
 											aria-label={data.t('LoadASaveFrom') + ' ' + stringDate}
 											onClick={() => data.options.set(save)}
 										>
-											{stringDate}
+											<span>{stringDate}</span>
 											<span class="saves__button-load__type">{stringType}</span>
 										</button>
 										<button

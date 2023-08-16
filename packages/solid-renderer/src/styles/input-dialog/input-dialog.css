@@ -20,7 +20,7 @@
 }
 
 .input-dialog-label > input {
-	min-width: 10rem;
+	min-width: min(10rem, 100%);
 	max-width: 100%;
 }
 

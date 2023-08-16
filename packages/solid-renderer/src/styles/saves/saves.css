@@ -13,3 +13,9 @@
 		flex-direction: column-reverse;
 	}
 }
+
+@media (max-aspect-ratio: 0.26) {
+	.saves {
+		padding: 0 0.1rem;
+	}
+}
