@@ -40,6 +40,7 @@ module.exports = {
         "unicorn/no-array-for-each": "off",
         "unicorn/prefer-number-properties": "off",
         "unicorn/consistent-destructuring": "off",
+        "unicorn/prefer-spread": "off",
         "@typescript-eslint/no-explicit-any": "off",
     }
 }

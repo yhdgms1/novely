@@ -28,6 +28,8 @@ const RU = {
 	ExitDialogWarning: 'Вы уверены, что хотите выйти? Прогресс будет сохранён.',
 	ExitDialogExit: 'Выйти',
 	ExitDialogBack: 'Вернуться в игру',
+	OpenMenu: 'Открыть меню',
+	CloseMenu: 'Закрыть меню'
 };
 
 type BaseTranslationStrings = keyof typeof RU;
@@ -62,6 +64,8 @@ const EN: Record<BaseTranslationStrings, string> = {
 	ExitDialogWarning: 'Are you sure you want to exit? Progress will be saved.',
 	ExitDialogExit: 'Exit',
 	ExitDialogBack: 'Return to game',
+	OpenMenu: 'Open menu',
+	CloseMenu: 'Close menu'
 };
 
 /**
@@ -96,7 +100,9 @@ const KK: Record<BaseTranslationStrings, string> = {
 	GoForward: 'Алға жылжу',
 	ExitDialogWarning: 'Сіз шыққыңыз келетініне сенімдісіз бе? Прогресс сақталады',
 	ExitDialogExit: 'Шығу',
-	ExitDialogBack: 'Ойынға оралу'
+	ExitDialogBack: 'Ойынға оралу',
+	OpenMenu: 'Мәзірді ашыңыз',
+	CloseMenu: 'Мәзірді жабу'
 };
 
 /**
@@ -132,6 +138,8 @@ const JP: Record<BaseTranslationStrings, string> = {
 	ExitDialogWarning: '本当に終了しますか？進行状況は保存されます',
 	ExitDialogExit: '終了',
 	ExitDialogBack: 'ゲームに戻る',
+	OpenMenu: 'メニューを開く',
+	CloseMenu: 'メニューを閉じる'
 };
 
 export { RU, EN, KK, JP };

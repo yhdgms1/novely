@@ -56,4 +56,16 @@ Icon.Exit = () => {
 	);
 };
 
+Icon.Menu = () => {
+	return (
+		<path d="M4.75 5.75h14.5M4.75 18.25h14.5M4.75 12h14.5"/>
+	)
+}
+
+Icon.Close = () => {
+	return (
+		<path d="m17.25 6.75-10.5 10.5M6.75 6.75l10.5 10.5"/>
+	)
+}
+
 export { Icon };

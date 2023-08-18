@@ -1,13 +1,6 @@
 import type { FlowComponent, Accessor } from 'solid-js';
 import { untrack, createEffect, on, onCleanup, Show } from 'solid-js';
-
-const clickOutside = (node: HTMLElement, handler: () => void) => {
-	const handleClick = (event: MouseEvent) =>
-		node && !node.contains(event.target as HTMLElement) && !event.defaultPrevented && handler && handler();
-
-	document.addEventListener('click', handleClick, true);
-	onCleanup(() => document.removeEventListener('click', handleClick, true));
-};
+import { clickOutside } from '../actions';
 
 interface ModalProps {
 	isOpen: Accessor<boolean>;

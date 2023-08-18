@@ -19,3 +19,9 @@
 	display: flex;
 	gap: 0.5rem;
 }
+
+@media (max-aspect-ratio: 0.26) {
+	.exit-dialog-panel-buttons {
+		flex-direction: column;
+	}
+}

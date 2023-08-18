@@ -18,7 +18,7 @@
 	display: none;
 }
 
-@media (orientation: portrait) {
+@media (orientation: portrait) and (min-aspect-ratio: 0.26) {
 	.control-panel__button__icon {
 		display: block;
 	}
@@ -36,6 +36,6 @@
 
 @media (prefers-reduced-motion: no-preference) {
 	.control-panel__button--auto-mode {
-		display: initial;
+		display: inline-block;
 	}
 }

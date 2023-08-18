@@ -4,12 +4,14 @@ import type { JSX } from 'solid-js';
 import type { SetStoreFunction } from 'solid-js/store';
 import type { State, SolidRendererStore } from '../renderer';
 
-import { createSignal, untrack, For, Show } from 'solid-js';
+import { createSignal, untrack, For, Show, createUniqueId, createEffect } from 'solid-js';
 import { DialogName } from '../components/DialogName';
 import { Character } from '../components/Character';
 import { Modal } from '../components/Modal';
 import { Icon } from '../components/Icon';
 import { createTypewriter } from '../components/Typewriter';
+import { ControlPanelButtons } from '../components/ControlPanelButtons';
+import { clickOutside } from '../actions';
 
 import { useData } from '../context';
 import { canvasDrawImages, url, isCSSImage, onKey } from '../utils';
@@ -121,6 +123,18 @@ const Game: VoidComponent<GameProps> = (props) => {
 			});
 			resolve();
 		},
+	});
+
+	const controlPanelMenuID = createUniqueId();
+	const [controlPanelMenuExpanded, setControlPanelMenuExpanded] = createSignal(false);
+
+	/**
+	 * Close if open when switching
+	 */
+	createEffect(() => {
+		if (!data.media.hyperWide()) {
+			setControlPanelMenuExpanded(false);
+		}
 	});
 
 	return (
@@ -324,63 +338,70 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 			<div
 				class="control-panel"
-				classList={{
-					'control-panel--center': controls === 'inside',
-				}}
 			>
-				<button
-					type="button"
-					class="button control-panel__button"
-					title={data.t('GoBack')}
-					onClick={data.options.back}
+				<Show
+					when={data.media.hyperWide()}
 				>
-					<span class="control-panel__button__content">{data.t('GoBack')}</span>
-					<Icon class="control-panel__button__icon" children={Icon.Back()} />
-				</button>
-				<button
-					type="button"
-					class="button control-panel__button"
-					title={data.t('DoSave')}
-					onClick={() => {
-						data.options.save(false, 'manual');
+					<Show
+						when={!controlPanelMenuExpanded()}
+					>
+						<button
+							type="button"
+							class="button control-panel__button"
+
+							title={data.t('OpenMenu')}
+
+							aria-controls={controlPanelMenuID}
+							aria-expanded={controlPanelMenuExpanded()}
+
+							onClick={() => {
+								setControlPanelMenuExpanded(prev => !prev);
+							}}
+						>
+							<Icon children={Icon.Menu()} />
+						</button>
+					</Show>
+				</Show>
+
+				<Show when={data.media.hyperWide() && controlPanelMenuExpanded() && !props.state.exitPromptShown}>
+					<span class="control-panel-container-fix" aria-hidden="true">
+						&#8203;
+					</span>
+					<div class="control-panel-container-backdrop" />
+				</Show>
+
+				<div
+					role="menubar"
+					id={controlPanelMenuID}
+
+					class="control-panel-container"
+					classList={{
+						'control-panel-container--center': controls === 'inside',
+						'control-panel-container--wide-closed': data.media.hyperWide() && !controlPanelMenuExpanded(),
+						'control-panel-container--wide-open': data.media.hyperWide() && controlPanelMenuExpanded()
+					}}
+
+					ref={(element) => {
+						clickOutside(element, () => {
+							if (untrack(data.media.hyperWide) && untrack(controlPanelMenuExpanded)) {
+								setControlPanelMenuExpanded(false);
+							}
+						})
 					}}
 				>
-					<span class="control-panel__button__content">{data.t('DoSave')}</span>
-					<Icon class="control-panel__button__icon" children={Icon.Save()} />
-				</button>
-				<button
-					type="button"
-					class="button control-panel__button control-panel__button--auto-mode"
-					title={data.t(auto() ? 'Stop' : 'Auto')}
-					onClick={() => {
-						setAuto((prev) => !prev);
-					}}
-				>
-					{data.t(auto() ? 'Stop' : 'Auto')}
-				</button>
-				<button
-					type="button"
-					class="button control-panel__button"
-					title={data.t('Settings')}
-					onClick={() => {
-						data.options.save(false, 'auto');
-						props.setState('screen', 'settings');
-					}}
-				>
-					<span class="control-panel__button__content">{data.t('Settings')}</span>
-					<Icon class="control-panel__button__icon" children={Icon.Settings()} />
-				</button>
-				<button
-					type="button"
-					class="button control-panel__button"
-					title={data.t('Exit')}
-					onClick={() => {
-						data.options.exit();
-					}}
-				>
-					<span class="control-panel__button__content">{data.t('Exit')}</span>
-					<Icon class="control-panel__button__icon" children={Icon.Exit()} />
-				</button>
+					<ControlPanelButtons
+						openSettings={() => {
+							props.setState('screen', 'settings');
+						}}
+
+						closeDropdown={() => {
+							setControlPanelMenuExpanded(false);
+						}}
+
+						auto={auto}
+						setAuto={setAuto}
+					/>
+				</div>
 			</div>
 		</div>
 	);
