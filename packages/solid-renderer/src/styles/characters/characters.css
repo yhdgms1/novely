@@ -14,6 +14,12 @@
 
 	min-width: unset;
 
-	max-height: 85vh;
-	max-width: 50vw;
+	max-height: 85%;
+	max-width: 50%;
+}
+
+@media (max-aspect-ratio: 0.26) {
+	.characters {
+		padding-bottom: 50vh;
+	}
 }

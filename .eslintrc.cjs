@@ -39,6 +39,7 @@ module.exports = {
         "unicorn/filename-case": "off",
         "unicorn/no-array-for-each": "off",
         "unicorn/prefer-number-properties": "off",
+        "unicorn/consistent-destructuring": "off",
         "@typescript-eslint/no-explicit-any": "off",
     }
 }

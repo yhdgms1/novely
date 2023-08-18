@@ -17,7 +17,14 @@
 		"emitDeclarationOnly": true,
 		"outDir": "./dist",
 		"jsx": "preserve",
-		"jsxImportSource": "solid-js"
+		"jsxImportSource": "solid-js",
+
+		"baseUrl": ".",
+		"paths": {
+			"$hooks": [
+				"src/hooks"
+			],
+		},
 	},
 	"include": ["src"]
 }

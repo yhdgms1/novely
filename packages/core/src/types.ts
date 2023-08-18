@@ -21,7 +21,7 @@ type SaveMeta = [SaveDate, SaveType];
 type Save = [Path, State, SaveMeta];
 
 type Lang = string;
-type TypewriterSpeed = 'Slow' | 'Medium' | 'Fast' | 'Auto' | (string & {});
+type TypewriterSpeed = 'Slow' | 'Medium' | 'Fast' | 'Auto' | (string & Record<never, never>);
 type StorageMeta = [Lang, TypewriterSpeed];
 
 type Migration = (save: unknown) => unknown;

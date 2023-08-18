@@ -2,6 +2,7 @@ import type { Accessor, FlowComponent } from 'solid-js';
 import type { Renderer, RendererInit, StorageData, Stored, BaseTranslationStrings } from '@novely/core';
 
 import { from, createContext, useContext, Show } from 'solid-js';
+import { useMedia } from '$hooks';
 
 interface DataContext {
 	storeData: Accessor<StorageData>;
@@ -10,7 +11,11 @@ interface DataContext {
 	options: RendererInit;
 	renderer: Renderer;
 
-	t: (key: BaseTranslationStrings | (string & {})) => string;
+	t: (key: BaseTranslationStrings | (string & Record<never, never>)) => string;
+
+	media: {
+		hyperWide: Accessor<boolean>
+	}
 }
 
 const Context = createContext<DataContext>();
@@ -32,9 +37,13 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
 		options: props.options,
 		renderer: props.renderer,
 
-		t(key: BaseTranslationStrings | (string & {})) {
+		t(key: BaseTranslationStrings | (string & Record<never, never>)) {
 			return props.options.t(key as BaseTranslationStrings, this.storeData().meta[0]);
 		},
+
+		media: {
+			hyperWide: useMedia('(max-aspect-ratio: 0.26)')
+		}
 	};
 
 	return (

@@ -14,7 +14,7 @@ const MainMenu: VoidComponent<MainMenuProps> = (props) => {
 	const data = useData();
 	const language = () => data.storeData().meta[0];
 
-	const goto = (screen: NovelyScreen | (string & {})) => {
+	const goto = (screen: NovelyScreen | (string & Record<never, never>)) => {
 		props.setState('screen', screen);
 	};
 

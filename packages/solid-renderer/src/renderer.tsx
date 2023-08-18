@@ -151,7 +151,7 @@ type StateScreen = () => {
 type StateScreens = Record<string, StateScreen>;
 
 type StateMainmenuItems = ((
-	goto: (name: NovelyScreen | (string & {})) => void,
+	goto: (name: NovelyScreen | (string & Record<never, never>)) => void,
 ) => JSX.ButtonHTMLAttributes<HTMLButtonElement>)[];
 
 interface State {
@@ -166,7 +166,7 @@ interface State {
 		items: StateMainmenuItems;
 	};
 	text: StateText;
-	screen: NovelyScreen | (string & {});
+	screen: NovelyScreen | (string & Record<never, never>);
 
 	exitPromptShown: boolean
 }
@@ -612,7 +612,7 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 			setState('screens', name, () => screen);
 		},
 		registerMainmenuItem(
-			fn: (goto: (name: NovelyScreen | (string & {})) => void) => JSX.ButtonHTMLAttributes<HTMLButtonElement>,
+			fn: (goto: (name: NovelyScreen | (string & Record<never, never>)) => void) => JSX.ButtonHTMLAttributes<HTMLButtonElement>,
 		) {
 			setState('mainmenu', 'items', (prev) => [...prev, fn]);
 		},

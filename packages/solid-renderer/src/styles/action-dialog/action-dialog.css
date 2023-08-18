@@ -123,6 +123,22 @@
 	}
 }
 
+/**
+ * Because characters are get small in super-duper-wide screens we lock height of the dialog to 50vh and move characters higher
+ *
+ * This is much simplier than computing clientHeight of `.action-dialog-container`, and looks better
+ * because nothing "jumps". But there 100% will be problems if text will be too long.
+ */
+@media (max-aspect-ratio: 0.26) {
+	.action-dialog {
+		height: unset;
+	}
+
+	.action-dialog-container {
+		height: 50vh !important;
+	}
+}
+
 @media only screen and (orientation: landscape) and (pointer: coarse) {
 	.action-dialog-content {
 		font-size: 1.32rem;
