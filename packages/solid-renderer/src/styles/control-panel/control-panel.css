@@ -13,10 +13,10 @@
 	justify-content: end;
 }
 
-.control-panel-container--center {
-	width: 75%;
-
+.control-panel-container--center:not(.control-panel-container--wide-open) {
 	bottom: calc(var(--novely-dialog-border-width, 3px) + 0.4rem);
+
+	position: fixed;
 
 	left: 50%;
 	right: 50%;
@@ -56,10 +56,4 @@
 	display: inline-block;
 	height: 100vh;
 	vertical-align: middle;
-}
-
-@media (orientation: portrait) {
-	.control-panel-container--center {
-		width: 75%;
-	}
 }
