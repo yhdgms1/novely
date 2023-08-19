@@ -1,4 +1,4 @@
-import type { DefaultActionProxyProvider, ValidAction } from './action';
+import type { BackgroundImage, DefaultActionProxyProvider, ValidAction } from './action';
 import type { Character } from './character';
 import type { Save, Stack, StorageData, Thenable } from './types';
 import type { BaseTranslationStrings } from '@novely/t9n';
@@ -34,7 +34,7 @@ interface RendererStore {
 
 type Renderer = {
 	character: (character: string) => CharacterHandle;
-	background: (background: string) => void;
+	background: (background: string | BackgroundImage) => void;
 	dialog: (content: string, name: string, character?: string, emotion?: string) => (resolve: () => void, goingBack: boolean) => void;
 	choices: (
 		question: string,

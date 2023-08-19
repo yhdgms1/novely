@@ -1,5 +1,5 @@
 import type { Character } from './character';
-import type { Thenable } from './types';
+import type { Thenable, NonEmptyRecord } from './types';
 
 type ValidAction =
 	| ['choice', [number]]
@@ -7,7 +7,7 @@ type ValidAction =
 	| ['condition', [() => boolean, Record<string, ValidAction[]>]]
 	| ['dialog', [string | undefined, Unwrappable, string | undefined]]
 	| ['end', []]
-	| ['showBackground', [string]]
+	| ['showBackground', [string | NonEmptyRecord<BackgroundImage>]]
 	| ['playMusic', [string]]
 	| ['stopMusic', [string]]
 	| ['jump', [string]]
@@ -93,6 +93,13 @@ interface ActionInputOnInputMeta {
 
 type ActionInputSetup = (input: HTMLInputElement, cleanup: (cb: () => void) => void) => void;
 
+type BackgroundImage = Partial<
+	Record<
+		"portrait" | "landscape",
+		string
+	>
+> & Record<(string), string>;
+
 type ActionProxyProvider<Characters extends Record<string, Character>> = {
 	choice: {
 		(...choices: ([Unwrappable, ValidAction[]] | [Unwrappable, ValidAction[], () => boolean])[]): ValidAction;
@@ -117,7 +124,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 		(person: string, content: Unwrappable, emotion?: undefined): ValidAction;
 	};
 	end: () => ValidAction;
-	showBackground: (background: string) => ValidAction;
+	showBackground: <T extends string | BackgroundImage>(background: T extends string ? T : T extends Record<PropertyKey, unknown> ? NonEmptyRecord<T> : never) => ValidAction;
 
 	playMusic: (audio: string) => ValidAction;
 	stopMusic: (audio: string) => ValidAction;
@@ -175,4 +182,5 @@ export type {
 	CustomHandlerGetResultDataFunction,
 	FunctionableValue,
 	ActionInputOnInputMeta,
+	BackgroundImage
 };

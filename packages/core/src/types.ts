@@ -58,6 +58,8 @@ type DeepPartial<T> = unknown extends T
 
 type ActionFN = ActionProxyProvider<Record<string, Character>>[keyof ActionProxyProvider<Record<string, Character>>];
 
+type NonEmptyRecord<T extends Record<PropertyKey, unknown>> = keyof T extends never ? never : T;
+
 export type {
 	Thenable,
 	Path,
@@ -72,5 +74,6 @@ export type {
 	NovelyScreen,
 	Migration,
 	Data,
-	ActionFN
+	ActionFN,
+	NonEmptyRecord
 };
