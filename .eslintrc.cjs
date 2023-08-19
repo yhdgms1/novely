@@ -4,7 +4,6 @@ module.exports = {
         "es2021": true
     },
     "extends": [
-        "plugin:unicorn/recommended",
         "plugin:@typescript-eslint/recommended"
     ],
     "overrides": [
