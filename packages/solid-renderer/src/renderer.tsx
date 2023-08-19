@@ -233,13 +233,56 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 
 	let root!: HTMLElement;
 
+	let currentBackground: string | Record<string, string>;
+
 	return {
 		createRenderer(init: RendererInit): Renderer {
 			(options = init), (characters = init.characters);
 
 			return (renderer = {
 				background(background) {
-					setState('background', background);
+					currentBackground = background;
+
+					if (typeof background === 'string') {
+						setState('background', background);
+
+						return;
+					}
+
+					/**
+					 * @todo: Rewrite
+					 */
+					Object.entries(background).forEach(([media, bg]) => {
+						const set = () => {
+							setState('background', bg);
+						};
+
+						if (media === 'portrait') media = '(orientation: portrait)';
+						if (media === 'landscape') media = '(orientation: landscape)';
+
+						const mq = matchMedia(media);
+
+						/**
+						 * @todo: Should we check for which media query was declared later in object and set only that one?
+						 */
+						if (mq.matches) {
+							set();
+						}
+
+						const handler = (ev: MediaQueryListEvent) => {
+							if (currentBackground !== background) {
+								mq.onchange = null;
+
+								return;
+							}
+
+							if (ev.matches) {
+								set();
+							}
+						}
+
+						mq.onchange = handler;
+					});
 				},
 				character(character) {
 					if (store.characters[character]) return store.characters[character];
