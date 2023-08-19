@@ -3,8 +3,8 @@ import type { SetStoreFunction } from 'solid-js/store';
 import type { State } from '../renderer';
 
 import { For, createUniqueId, createMemo } from 'solid-js';
-import { capitalize } from '../utils';
-import { useData } from '../context';
+import { capitalize } from '$utils';
+import { useData } from '$context';
 
 interface SettingsProps {
 	setState: SetStoreFunction<State>;

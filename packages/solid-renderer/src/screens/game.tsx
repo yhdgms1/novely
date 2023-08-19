@@ -5,16 +5,10 @@ import type { SetStoreFunction } from 'solid-js/store';
 import type { State, SolidRendererStore } from '../renderer';
 
 import { createSignal, untrack, For, Show, createUniqueId, createEffect } from 'solid-js';
-import { DialogName } from '../components/DialogName';
-import { Character } from '../components/Character';
-import { Modal } from '../components/Modal';
-import { Icon } from '../components/Icon';
-import { createTypewriter } from '../components/Typewriter';
-import { ControlPanelButtons } from '../components/ControlPanelButtons';
-import { clickOutside } from '../actions';
-
-import { useData } from '../context';
-import { canvasDrawImages, url, isCSSImage, onKey } from '../utils';
+import { Character, DialogName, Modal, Icon, ControlPanelButtons, createTypewriter } from '$components';
+import { clickOutside } from '$actions';
+import { useData } from '$context';
+import { canvasDrawImages, url, isCSSImage, onKey } from '$utils';
 
 interface GameProps {
 	state: State;

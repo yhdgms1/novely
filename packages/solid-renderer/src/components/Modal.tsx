@@ -1,6 +1,6 @@
 import type { FlowComponent, Accessor } from 'solid-js';
 import { untrack, createEffect, on, onCleanup, Show } from 'solid-js';
-import { clickOutside } from '../actions';
+import { clickOutside } from '$actions';
 
 interface ModalProps {
 	isOpen: Accessor<boolean>;

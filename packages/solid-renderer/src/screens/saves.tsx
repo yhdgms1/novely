@@ -3,8 +3,8 @@ import type { SetStoreFunction } from 'solid-js/store';
 import type { State } from '../renderer';
 
 import { Show, For } from 'solid-js';
-import { capitalize } from '../utils';
-import { useData } from '../context';
+import { capitalize } from '$utils';
+import { useData } from '$context';
 
 interface SavesProps {
 	setState: SetStoreFunction<State>;

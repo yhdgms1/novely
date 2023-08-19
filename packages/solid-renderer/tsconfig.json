@@ -24,6 +24,21 @@
 			"$hooks": [
 				"src/hooks"
 			],
+			"$components": [
+				"src/components"
+			],
+			"$screens": [
+				"src/screens"
+			],
+			"$context": [
+				"src/context"
+			],
+			"$utils": [
+				"src/utils"
+			],
+			"$actions": [
+				"src/actions"
+			]
 		},
 	},
 	"include": ["src"]

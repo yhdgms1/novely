@@ -3,7 +3,7 @@ import type { SetStoreFunction } from 'solid-js/store';
 import type { State } from '../renderer';
 import type { NovelyScreen } from '@novely/core';
 import { For, Show } from 'solid-js';
-import { useData } from '../context';
+import { useData } from '$context';
 
 interface MainMenuProps {
 	state: State;

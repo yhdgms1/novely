@@ -13,16 +13,9 @@ import type { JSX } from 'solid-js';
 import { Switch, Match, createEffect } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
-import { canvasDrawImages, createImage, escape } from './utils';
-
-import { Provider } from './context';
-
-import { Game } from './screens/game';
-import { MainMenu } from './screens/mainmenu';
-import { Saves } from './screens/saves';
-import { Settings } from './screens/settings';
-import { Loading } from './screens/loading';
-import { CustomScreen } from './screens/custom-screen';
+import { canvasDrawImages, createImage, escape } from '$utils';
+import { Provider } from '$context';
+import { Game, MainMenu, Saves, Settings, Loading, CustomScreen } from '$screens';
 
 interface StateCharacter {
 	/**
@@ -430,10 +423,11 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 							<input type="text" name="novely-input" required autocomplete="off" onInput={onInputHandler} />
 						) as HTMLInputElement;
 
-						if (setup)
+						if (setup) {
 							setup(input, (callback) => {
 								setState('input', { cleanup: callback });
 							});
+						}
 
 						setState('input', {
 							element: input,
