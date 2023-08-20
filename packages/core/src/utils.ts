@@ -1,6 +1,6 @@
 import type { ActionProxyProvider, CustomHandler } from './action';
 import type { Character } from './character';
-import type { Thenable } from './types';
+import type { Thenable, Path } from './types';
 
 type MatchActionMap = {
 	[Key in keyof ActionProxyProvider<Record<string, Character>>]: (
@@ -116,9 +116,9 @@ const vibrate = (pattern: VibratePattern) => {
 	} catch {}
 };
 
-const findLastIndex = <T>(array: T[], fn: (item: T) => boolean) => {
-	for (let i = array.length - 1; i > 0; i--) {
-		if (fn(array[i])) {
+const findLastIndex = <T>(array: T[], fn: (item: T, next?: T) => boolean) => {
+	for (let i = array.length - 1; i >= 0; i--) {
+		if (fn(array[i], array[i + 1])) {
 			return i;
 		}
 	}
@@ -157,6 +157,10 @@ const createDeferredPromise = <T = void>() => {
 	return { resolve, reject, promise }
 }
 
+const findLastPathItemBeforeBlockItemIndex = (path: Path) => {
+	return findLastIndex(path, ([name, value], next) => isNull(name) && isNumber(value) && next != null && next[0] === 'block');
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -173,5 +177,6 @@ export {
 	vibrate,
 	findLastIndex,
 	preloadImagesBlocking,
-	createDeferredPromise
+	createDeferredPromise,
+	findLastPathItemBeforeBlockItemIndex
 };

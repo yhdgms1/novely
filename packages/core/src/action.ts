@@ -21,8 +21,9 @@ type ValidAction =
 	| ['vibrate', [...number[]]]
 	| ['next', []]
 	| ['text', [...string[]]]
-	| ['exit']
+	| ['exit', ["block" | undefined]]
 	| ['preload', [string]]
+	| ['block', [string]]
 	| ValidAction[];
 
 type Story = Record<string, ValidAction[]>;
@@ -108,12 +109,16 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 			...choices: ([Unwrappable, ValidAction[]] | [Unwrappable, ValidAction[], () => boolean])[]
 		): ValidAction;
 	};
+
 	clear: (keep?: Set<keyof DefaultActionProxyProvider>, keepCharacters?: Set<string>) => ValidAction;
+
 	condition: <T extends string | true | false>(
 		condition: () => T,
 		variants: Record<T extends true ? 'true' : T extends false ? 'false' : T, ValidAction[]>,
 	) => ValidAction;
-	exit: () => ValidAction;
+
+	exit: (type: "block" | undefined) => ValidAction;
+
 	dialog: {
 		<C extends keyof Characters>(
 			person: C,
@@ -123,10 +128,13 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 		(person: undefined, content: Unwrappable, emotion?: undefined): ValidAction;
 		(person: string, content: Unwrappable, emotion?: undefined): ValidAction;
 	};
+
 	end: () => ValidAction;
+
 	showBackground: <T extends string | BackgroundImage>(background: T extends string ? T : T extends Record<PropertyKey, unknown> ? NonEmptyRecord<T> : never) => ValidAction;
 
 	playMusic: (audio: string) => ValidAction;
+
 	stopMusic: (audio: string) => ValidAction;
 
 	jump: (scene: string) => ValidAction;
@@ -139,13 +147,13 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 			style?: string,
 		): ValidAction;
 	};
-	hideCharacter: {
-		<C extends keyof Characters>(character: C, className?: string, style?: string, duration?: number): ValidAction;
-	};
-	animateCharacter: {
-		<C extends keyof Characters>(character: C, timeout: number, ...classes: string[]): ValidAction;
-	};
+
+	hideCharacter: (character: keyof Characters, className?: string, style?: string, duration?: number) => ValidAction;
+
+	animateCharacter: (character: keyof Characters, timeout: number, ...classes: string[]) => ValidAction;
+
 	wait: (time: FunctionableValue<number>) => ValidAction;
+
 	function: (fn: (restoring: boolean, goingBack: boolean) => Thenable<void>) => ValidAction;
 
 	input: (
@@ -163,6 +171,8 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 	text: (...text: Unwrappable[]) => ValidAction;
 
 	preload: (source: string) => ValidAction;
+
+	block: (scene: string) => ValidAction;
 };
 
 type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>>;

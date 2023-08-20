@@ -7,7 +7,10 @@ type PathItem =
 	| [null, number | string]
 	| ['choice' & Record<never, never>, number]
 	| ['condition' & Record<never, never>, string]
-	| ['exit' & Record<never, never>];
+	| ['exit' & Record<never, never>]
+	| ['block', string]
+	| ['block:exit'];
+
 type Path = PathItem[];
 
 type State = Record<string, any>;

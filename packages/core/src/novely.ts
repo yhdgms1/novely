@@ -15,7 +15,6 @@ import {
 	matchAction,
 	isNumber,
 	isNull,
-	isString,
 	isPromise,
 	isEmpty,
 	isCSSImage,
@@ -27,7 +26,8 @@ import {
 	vibrate,
 	findLastIndex,
 	preloadImagesBlocking,
-	createDeferredPromise
+	createDeferredPromise,
+	findLastPathItemBeforeBlockItemIndex
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
@@ -260,6 +260,9 @@ const novely = <
 
 	const createStack = (current: Save, stack = [current]) => {
 		return {
+			get all() {
+				return stack;
+			},
 			get value() {
 				return stack.at(-1)!;
 			},
@@ -467,20 +470,33 @@ const novely = <
 
 		(restoring = true), (stack.value = latest);
 
+		const path = stack.value[0];
+
 		/**
-		 * Текущий элемент в истории
+		 * Current item in the story
 		 */
 		let current: any = story;
 		/**
-		 * Текущий элемент `[null, int]`
+		 * Previous `current` value
+		 */
+		let precurrent: any;
+		/**
+		 * Should we ignore `[null, int]` actions from `0` to `int`
+		 */
+		let ignoreNested = false;
+
+		/**
+		 * Current item of type `[null, int]`
 		 */
 		let index = 0;
 
 		/**
-		 * Число элементов `[null, int]`
+		 * Cound of items of type `[null, int]`
 		 */
 		const max = stack.value[0].reduce((acc, [type, val]) => {
-			if (isNull(type) && isNumber(val)) return acc + 1;
+			if (isNull(type) && isNumber(val)) {
+				return acc + 1;
+			}
 
 			return acc;
 		}, 0);
@@ -488,19 +504,32 @@ const novely = <
 		const queue = [] as [any, any][];
 		const keep = new Set();
 		const characters = new Set();
+		const blocks = [];
 
-		for (const [type, val] of stack.value[0]) {
+		for (const [type, val] of path) {
 			if (type === null) {
-				if (isString(val)) {
-					current = current[val];
-				} else if (isNumber(val)) {
+				precurrent = current;
+
+				if (isNumber(val)) {
 					index++;
+
+					let startIndex = 0;
+
+					if (ignoreNested) {
+						const prev = path[findLastPathItemBeforeBlockItemIndex(path)] as [
+							null,
+							number
+						];
+
+						startIndex = prev[1];
+						ignoreNested = false;
+					}
 
 					/**
 					 * Запустим все экшены которые идут в `[null, int]` от `0` до `int`
 					 * Почему-то потребовалось изменить `<` на `<=`, чтобы последний action попадал сюда
 					 */
-					for (let i = 0; i <= val; i++) {
+					for (let i = startIndex; i <= val; i++) {
 						const [action, ...meta] = current[i];
 
 						/**
@@ -530,13 +559,20 @@ const novely = <
 
 						push();
 					}
-
-					current = current[val];
 				}
+
+				current = current[val];
 			} else if (type === 'choice') {
-				current = current[(val as number) + 1][1];
+				current = current[val + 1][1];
 			} else if (type === 'condition') {
 				current = current[2][val];
+			} else if (type === 'block') {
+				blocks.push(precurrent);
+
+				current = story[val]
+			} else if (type === 'block:exit') {
+				current = blocks.pop();
+				ignoreNested = true;
 			}
 		}
 
@@ -573,11 +609,9 @@ const novely = <
 						 * Also check for `undefined`
 						 */
 						const isIdenticalID = c0.id && c1.id && c0.id === c1.id;
+						const isIdenticalByReference = c0 === c1;
 
-						/**
-						 * Equal by id or equal by `toString()`
-						 */
-						return isIdenticalID || str(c0) === str(c1);
+						return isIdenticalID || isIdenticalByReference || (str(c0) === str(c1));
 					});
 
 					if (notLatest) continue;
@@ -623,6 +657,10 @@ const novely = <
 				match(action, meta);
 			} else if (action === 'showBackground' || action === 'animateCharacter') {
 				/**
+				 * @todo: Также сравнивать персонажей в animateCharacter. Чтобы не просто последний запускался, а последний для персонажа.
+				 */
+
+				/**
 				 * Такая же оптимизация применяется к фонам и анимированию персонажей.
 				 * Если фон изменится, то нет смысла устанавливать текущий
 				 */
@@ -640,15 +678,26 @@ const novely = <
 	};
 
 	const refer = () => {
-		let current: any = story;
+		const path = stack.value[0];
 
-		for (const [type, val] of stack.value[0]) {
+		let current: any = story;
+		let precurrent: any = story;
+
+		const blocks: any[] = [];
+
+		for (const [type, val] of path) {
 			if (type === null) {
+				precurrent = current;
 				current = current[val];
 			} else if (type === 'choice') {
-				current = current[(val as number) + 1][1];
+				current = current[val as number + 1][1];
 			} else if (type === 'condition') {
 				current = current[2][val];
+			} else if (type === 'block') {
+				blocks.push(precurrent);
+				current = story[val];
+			} else if (type === 'block:exit') {
+				current = blocks.pop()
 			}
 		}
 
@@ -834,9 +883,14 @@ const novely = <
 			renderer.clear(goingBack, keep || EMPTY_SET, characters || EMPTY_SET)(push);
 		},
 		condition([condition]) {
-			const value = condition();
+			if (!restoring) {
+				stack.value[0].push(
+					['condition', String(condition())],
+					[null, 0]
+				);
 
-			if (!restoring) stack.value[0].push(['condition', String(value)], [null, 0]), render();
+				render();
+			}
 		},
 		end() {
 			/**
@@ -917,13 +971,49 @@ const novely = <
 		text(text) {
 			renderer.text(text.map((content) => unwrap(content)).join(' '), forward, goingBack);
 		},
-		exit() {
+		exit([type]) {
 			const path = stack.value[0];
+
+			if (type === 'block') {
+				/**
+				 * Original `exit` removes nested condition and choice paths, so during restore it never re-runs
+				 * But `block` must be also called during restore. So, we must not add redundant `block:exit`
+				 */
+				if (restoring) return;
+
+				/**
+				 * [null, 4], <-- find that
+				 *
+				 * ['block', 'blockname'],
+				 * [null, 3],
+				 */
+				const prev = path[findLastPathItemBeforeBlockItemIndex(path)] as [
+					null,
+					number
+				];
+
+				/**
+				 * [null, 4],
+				 * ['block', 'blockname'],
+				 * [null, 3],
+				 *
+				 * ['block:exit'],
+				 * [null, 5] <-- increase index to load next action
+				 */
+				path.push(
+					['block:exit'],
+					[null, prev[1] + 1]
+				);
+
+				return render();
+			}
 
 			let exited = false;
 
 			for (let i = path.length - 1; i > 0; i--) {
-				if (path[i][0] !== 'choice' && path[i][0] !== 'condition') continue;
+				const name = path[i][0];
+
+				if (name !== 'choice' && name !== 'condition') continue;
 
 				exited = true;
 				stack.value[0] = path.slice(0, i);
@@ -946,7 +1036,17 @@ const novely = <
 			}
 
 			push();
-		}
+		},
+		block([scene]) {
+			if (!restoring) {
+				stack.value[0].push(
+					['block', scene],
+					[null, 0]
+				);
+
+				render();
+			}
+		},
 	});
 
 	const enmemory = () => {
@@ -979,6 +1079,7 @@ const novely = <
 		 */
 		if (isNull(last[0]) && isNumber(last[1])) {
 			last[1] = last[1] + 1;
+
 			return;
 		}
 

@@ -164,6 +164,17 @@ registerMainmenuItem((goto) => ({
 }));
 
 engine.withStory({
+	'block:adv': [
+		action.condition(() => true, {
+			true: [
+				action.text(t({
+					en: 'You will be shown a full-screen ad',
+					ru: 'Вам будет показана полноэкранная реклама',
+				})),
+				action.exit('block')
+			]
+		})
+	],
 	start: [
 		action.custom(hide()),
 		action.preload(outdoor),
@@ -173,12 +184,7 @@ engine.withStory({
 		})),
 		action.custom(particles(snow)),
 		action.showBackground(outdoor),
-		action.showBackground({
-			'all': 'red',
-			'(max-width: 2000px)': 'blue',
-			'(max-width: 1000px)': '#f67288',
-			'(max-width: 800px)': 'yellow',
-		}),
+		action.block('block:adv'),
 		action.showCharacter('Lily', 'ok'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.dialog(
