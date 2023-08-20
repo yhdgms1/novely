@@ -86,7 +86,7 @@ const throttle = <Fn extends (...args: any[]) => any>(fn: Fn, ms: number) => {
 	function wrapper(this: any, ...args: any[]) {
 		if (throttled) {
 			savedArgs = args;
-			/* eslint-disable unicorn/no-this-assignment, @typescript-eslint/no-this-alias */
+			/* eslint-disable @typescript-eslint/no-this-alias */
 			savedThis = this;
 			return;
 		}

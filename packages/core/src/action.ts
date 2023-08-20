@@ -95,7 +95,7 @@ type ActionInputSetup = (input: HTMLInputElement, cleanup: (cb: () => void) => v
 
 type BackgroundImage = Partial<
 	Record<
-		"portrait" | "landscape",
+		"portrait" | "landscape" | "all",
 		string
 	>
 > & Record<(string), string>;

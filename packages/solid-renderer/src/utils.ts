@@ -64,4 +64,22 @@ const onKey = (cb: (event: KeyboardEvent) => void, ...keys: string[]) => {
 	};
 };
 
-export { isCSSImage, canvasDrawImages, url, createImage, capitalize, escape, onKey };
+const toMedia = (media: 'portrait' | 'landscape' | (string & Record<never, never>)) => {
+	if (media === 'portrait' || media === 'landscape') {
+		return `(orientation: ${media})`;
+	}
+
+	return media;
+}
+
+const findLast = <T>(array: T[], fn: (item: T) => boolean) => {
+	for (let i = array.length - 1; i >= 0; i--) {
+		if (fn(array[i])) {
+			return array[i];
+		}
+	}
+
+	return;
+};
+
+export { isCSSImage, canvasDrawImages, url, createImage, capitalize, escape, onKey, toMedia, findLast };

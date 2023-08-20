@@ -173,6 +173,12 @@ engine.withStory({
 		})),
 		action.custom(particles(snow)),
 		action.showBackground(outdoor),
+		action.showBackground({
+			'all': 'red',
+			'(max-width: 2000px)': 'blue',
+			'(max-width: 1000px)': '#f67288',
+			'(max-width: 800px)': 'yellow',
+		}),
 		action.showCharacter('Lily', 'ok'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.dialog(

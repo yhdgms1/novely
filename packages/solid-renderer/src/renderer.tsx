@@ -13,7 +13,7 @@ import type { JSX } from 'solid-js';
 import { Switch, Match, createEffect } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
-import { canvasDrawImages, createImage, escape } from '$utils';
+import { canvasDrawImages, createImage, escape, toMedia, findLast } from '$utils';
 import { Provider } from '$context';
 import { Game, MainMenu, Saves, Settings, Loading, CustomScreen } from '$screens';
 
@@ -250,39 +250,44 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 					}
 
 					/**
-					 * @todo: Rewrite
+					 * Change `portrait` to (orientation: portrait)
+					 * Same for `landscape`
 					 */
-					Object.entries(background).forEach(([media, bg]) => {
-						const set = () => {
-							setState('background', bg);
-						};
+					for (const [key, value] of Object.entries(background)) {
+						delete background[key];
 
-						if (media === 'portrait') media = '(orientation: portrait)';
-						if (media === 'landscape') media = '(orientation: landscape)';
+						background[toMedia(key)] = value;
+					}
 
-						const mq = matchMedia(media);
+					const mediaQueries = Object.keys(background).map((media) => matchMedia(media));
+
+					/**
+					 * @todo: We can throttle that function, but should we?
+					 */
+					const handle = () => {
+						if (currentBackground !== background) {
+							for (const mq of mediaQueries) {
+								mq.onchange = null;
+							}
+
+							return;
+						}
 
 						/**
-						 * @todo: Should we check for which media query was declared later in object and set only that one?
+						 * Using ponyfill here because `Array.prototype.findLast` has not enough support
+						 * @see https://caniuse.com/?search=findLast
 						 */
-						if (mq.matches) {
-							set();
-						}
+						const last = findLast(mediaQueries, ({ matches }) => matches);
+						const bg = last ? background[last.media] : '';
 
-						const handler = (ev: MediaQueryListEvent) => {
-							if (currentBackground !== background) {
-								mq.onchange = null;
+						setState('background', bg);
+					}
 
-								return;
-							}
+					for (const mq of mediaQueries) {
+						mq.onchange = handle;
+					}
 
-							if (ev.matches) {
-								set();
-							}
-						}
-
-						mq.onchange = handler;
-					});
+					handle();
 				},
 				character(character) {
 					if (store.characters[character]) return store.characters[character];
