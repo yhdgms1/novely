@@ -1,6 +1,6 @@
 import type { ActionProxyProvider, CustomHandler } from './action';
 import type { Character } from './character';
-import type { Thenable, Path } from './types';
+import type { Thenable, Path, PathItem } from './types';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS } from './constants';
 
 type MatchActionMap = {
@@ -158,8 +158,15 @@ const createDeferredPromise = <T = void>() => {
 	return { resolve, reject, promise }
 }
 
-const findLastPathItemBeforeBlockItemIndex = (path: Path) => {
-	return findLastIndex(path, ([name, value], next) => isNull(name) && isNumber(value) && next != null && next[0] === 'block');
+const findLastPathItemBeforeItemOfType = (path: Path, name: PathItem[0]) => {
+	const index = findLastIndex(path, ([_name, _value], next) => {
+		return isNull(_name) && isNumber(_value) && next != null && next[0] === name;
+	});
+
+	return path[index] as undefined | [
+		null,
+		number
+	];
 }
 
 const isBlockStatement = (statement: unknown): statement is 'choice' | 'condition' | 'block' => {
@@ -187,7 +194,7 @@ export {
 	findLastIndex,
 	preloadImagesBlocking,
 	createDeferredPromise,
-	findLastPathItemBeforeBlockItemIndex,
+	findLastPathItemBeforeItemOfType,
 	isBlockStatement,
 	isBlockExitStatement
 };

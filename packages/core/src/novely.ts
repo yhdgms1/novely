@@ -27,7 +27,7 @@ import {
 	findLastIndex,
 	preloadImagesBlocking,
 	createDeferredPromise,
-	findLastPathItemBeforeBlockItemIndex,
+	findLastPathItemBeforeItemOfType,
 	isBlockStatement,
 	isBlockExitStatement
 } from './utils';
@@ -518,13 +518,12 @@ const novely = <
 					let startIndex = 0;
 
 					if (ignoreNested) {
-						const prev = path[findLastPathItemBeforeBlockItemIndex(path)] as [
-							null,
-							number
-						];
+						const prev = findLastPathItemBeforeItemOfType(path.slice(0, index), 'block');
 
-						startIndex = prev[1];
-						ignoreNested = false;
+						if (prev) {
+							startIndex = prev[1];
+							ignoreNested = false;
+						}
 					}
 
 					/**
@@ -1008,16 +1007,9 @@ const novely = <
 				/**
 				 * Exit from the path
 				 */
-				path.push([`${name}:exit`] as unknown as PathItem);
+				path.push([`${name}:exit`]);
 
-				const index = findLastIndex(path.slice(0, i + 1), ([_name, value], next) => isNull(_name) && isNumber(value) && next != null && next[0] === name);
-				/**
-				 * Actual check is made in the line above
-				 */
-				const prev = path[index] as [
-					null,
-					number
-				];
+				const prev = findLastPathItemBeforeItemOfType(path.slice(0, i + 1), name);
 
 				/**
 				 * When possible also go to the next action (or exit from one layer above)
