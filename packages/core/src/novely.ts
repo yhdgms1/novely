@@ -481,7 +481,7 @@ const novely = <
 		 */
 		let precurrent: any;
 		/**
-		 * Should we ignore `[null, int]` actions from `0` to `int`
+		 * Should we ignore some actions
 		 */
 		let ignoreNested = false;
 
@@ -974,11 +974,10 @@ const novely = <
 		exit([type]) {
 			const path = stack.value[0];
 
+			/**
+			 * @todo: This is nice way to preserve everything, maybe use it everywhere?
+			 */
 			if (type === 'block') {
-				/**
-				 * Original `exit` removes nested condition and choice paths, so during restore it never re-runs
-				 * But `block` must be also called during restore. So, we must not add redundant `block:exit`
-				 */
 				if (restoring) return;
 
 				/**
@@ -1013,7 +1012,11 @@ const novely = <
 			for (let i = path.length - 1; i > 0; i--) {
 				const name = path[i][0];
 
-				if (name !== 'choice' && name !== 'condition') continue;
+				if (name !== 'choice' && name !== 'condition' && name !== 'block') continue;
+
+				if (name === 'block') {
+					console.warn('You should use `action.exit("block")` at the end of the block')
+				}
 
 				exited = true;
 				stack.value[0] = path.slice(0, i);

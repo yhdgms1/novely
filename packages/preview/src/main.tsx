@@ -58,7 +58,7 @@ const engine = novely({
 	}),
 
 	state: {
-		age: 15,
+		age: 0,
 	},
 
 	data: {
@@ -73,7 +73,9 @@ const engine = novely({
 
 	initialScreen: 'mainmenu',
 
-	preloadAssets: 'lazy'
+	preloadAssets: 'lazy',
+
+	askBeforeExit: false
 });
 
 const { action, state, data, t, unwrap } = engine;
@@ -171,9 +173,10 @@ engine.withStory({
 					en: 'You will be shown a full-screen ad',
 					ru: 'Вам будет показана полноэкранная реклама',
 				})),
+				action.showBackground('green'),
 				action.exit('block')
 			]
-		})
+		}),
 	],
 	start: [
 		action.custom(hide()),
