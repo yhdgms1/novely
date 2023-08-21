@@ -563,14 +563,15 @@ const novely = <
 
 				current = current[val];
 			} else if (type === 'choice') {
+				blocks.push(precurrent = current);
 				current = current[val + 1][1];
 			} else if (type === 'condition') {
+				blocks.push(precurrent = current);
 				current = current[2][val];
 			} else if (type === 'block') {
 				blocks.push(precurrent);
-
 				current = story[val]
-			} else if (type === 'block:exit') {
+			} else if (type === 'block:exit' || type === 'choice:exit' || type === 'condition:exit') {
 				current = blocks.pop();
 				ignoreNested = true;
 			}
@@ -690,13 +691,15 @@ const novely = <
 				precurrent = current;
 				current = current[val];
 			} else if (type === 'choice') {
+				blocks.push(precurrent = current);
 				current = current[val as number + 1][1];
 			} else if (type === 'condition') {
+				blocks.push(precurrent = current);
 				current = current[2][val];
 			} else if (type === 'block') {
 				blocks.push(precurrent);
 				current = story[val];
-			} else if (type === 'block:exit') {
+			} else if (type === 'block:exit' || type === 'choice:exit' || type === 'condition:exit') {
 				current = blocks.pop()
 			}
 		}
@@ -971,64 +974,59 @@ const novely = <
 		text(text) {
 			renderer.text(text.map((content) => unwrap(content)).join(' '), forward, goingBack);
 		},
-		exit([type]) {
-			const path = stack.value[0];
+		exit() {
+			if (restoring) return;
 
-			/**
-			 * @todo: This is nice way to preserve everything, maybe use it everywhere?
-			 */
-			if (type === 'block') {
-				if (restoring) return;
+			const path = stack.value[0];
+			const ignore = [];
+
+			for (let i = path.length - 1; i > 0; i--) {
+				const name = path[i][0];
 
 				/**
-				 * [null, 4], <-- find that
-				 *
-				 * ['block', 'blockname'],
-				 * [null, 3],
+				 * Remember already exited paths
 				 */
-				const prev = path[findLastPathItemBeforeBlockItemIndex(path)] as [
+				if (["choice:exit", "condition:exit", "block:exit"].includes(name as any)) {
+					ignore.push(name);
+				}
+
+				/**
+				 * Ignore everything that we do not need there
+				 */
+				if (name !== 'choice' && name !== 'condition' && name !== 'block') continue;
+
+				/**
+				 * When we found an already exited path we remove it from the list
+				 */
+				if (ignore.at(-1)?.startsWith(name)) {
+					ignore.pop();
+					continue;
+				}
+
+				/**
+				 * @todo: need to be reworked because i guess it will work only with 1-tier nesting of one type
+				 *
+				 * .slice(0, i) is not working and i have to willness to complete it now
+				 */
+				const index = findLastIndex(path, ([_name, value], next) => isNull(_name) && isNumber(value) && next != null && next[0] === name);
+				const prev = path[index] as [
 					null,
 					number
 				];
 
 				/**
-				 * [null, 4],
-				 * ['block', 'blockname'],
-				 * [null, 3],
-				 *
-				 * ['block:exit'],
-				 * [null, 5] <-- increase index to load next action
+				 * Exit from the path
 				 */
-				path.push(
-					['block:exit'],
-					[null, prev[1] + 1]
-				);
+				path.push([`${name}:exit` as any],);
 
-				return render();
-			}
+				/**
+				 * When possible also go to the next action (or exit from one layer above)
+				 */
+				if (prev) path.push([null, prev[1] + 1]);
 
-			let exited = false;
-
-			for (let i = path.length - 1; i > 0; i--) {
-				const name = path[i][0];
-
-				if (name !== 'choice' && name !== 'condition' && name !== 'block') continue;
-
-				if (name === 'block') {
-					console.warn('You should use `action.exit("block")` at the end of the block')
-				}
-
-				exited = true;
-				stack.value[0] = path.slice(0, i);
-				next();
-
+				render();
 				break;
 			}
-
-			/**
-			 * Run render only when exit was performed. This prevents infinite loop of `render` -> `undefined` -> `exit` -> `render`.
-			 */
-			if (exited) render();
 		},
 		preload([source]) {
 			if (!PRELOADED_ASSETS.has(source) && !goingBack && !restoring) {

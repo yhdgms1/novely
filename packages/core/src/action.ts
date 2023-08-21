@@ -21,7 +21,7 @@ type ValidAction =
 	| ['vibrate', [...number[]]]
 	| ['next', []]
 	| ['text', [...string[]]]
-	| ['exit', ["block" | undefined]]
+	| ['exit', []]
 	| ['preload', [string]]
 	| ['block', [string]]
 	| ValidAction[];
@@ -117,7 +117,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 		variants: Record<T extends true ? 'true' : T extends false ? 'false' : T, ValidAction[]>,
 	) => ValidAction;
 
-	exit: (type: "block" | undefined) => ValidAction;
+	exit: () => ValidAction;
 
 	dialog: {
 		<C extends keyof Characters>(

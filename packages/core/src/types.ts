@@ -6,7 +6,9 @@ type Thenable<T> = T | Promise<T>;
 type PathItem =
 	| [null, number | string]
 	| ['choice' & Record<never, never>, number]
+	| ['choice:exit']
 	| ['condition' & Record<never, never>, string]
+	| ['condition:exit']
 	| ['exit' & Record<never, never>]
 	| ['block', string]
 	| ['block:exit'];
