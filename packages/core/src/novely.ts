@@ -8,7 +8,7 @@ import type {
 	CustomHandler,
 } from './action';
 import type { Storage } from './storage';
-import type { Save, State, Data, StorageData, DeepPartial, NovelyScreen, Migration, ActionFN, PathItem } from './types';
+import type { Save, State, Data, StorageData, DeepPartial, NovelyScreen, Migration, ActionFN } from './types';
 import type { Renderer, RendererInit } from './renderer';
 import type { SetupT9N } from '@novely/t9n';
 import {
@@ -29,13 +29,15 @@ import {
 	createDeferredPromise,
 	findLastPathItemBeforeItemOfType,
 	isBlockStatement,
-	isBlockExitStatement
+	isBlockExitStatement,
+	isSkippedDurigRestore,
+	isAction
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
 import { all as deepmerge } from 'deepmerge';
 import { klona } from 'klona/json';
-import { SKIPPED_DURING_RESTORE, EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, BLOCK_EXIT_STATEMENTS, BLOCK_STATEMENTS } from './constants';
+import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED } from './constants';
 import { replace as replaceT9N } from '@novely/t9n';
 
 interface NovelyInit<
@@ -262,9 +264,6 @@ const novely = <
 
 	const createStack = (current: Save, stack = [current]) => {
 		return {
-			get all() {
-				return stack;
-			},
 			get value() {
 				return stack.at(-1)!;
 			},
@@ -531,7 +530,15 @@ const novely = <
 					 * Почему-то потребовалось изменить `<` на `<=`, чтобы последний action попадал сюда
 					 */
 					for (let i = startIndex; i <= val; i++) {
-						const [action, ...meta] = current[i];
+						const item = current[i];
+
+						/**
+						 * In case of broken save at least not throw
+						 * But is should not happen
+						 */
+						if (!isAction(item)) continue;
+
+						const [action, ...meta] = item;
 
 						/**
 						 * Add item to queue and action to keep
@@ -550,7 +557,7 @@ const novely = <
 						 * Экшены, для закрытия которых пользователь должен с ними взаимодействовать
 						 * Также в эту группу входят экшены, которые не должны быть вызваны при восстановлении
 						 */
-						if (SKIPPED_DURING_RESTORE.has(action) || isUserRequiredAction(action, meta)) {
+						if (isSkippedDurigRestore(action) || isUserRequiredAction(action, meta)) {
 							if (index === max && i === val) {
 								push();
 							} else {
@@ -679,9 +686,7 @@ const novely = <
 		(restoring = goingBack = false), render();
 	};
 
-	const refer = () => {
-		const path = stack.value[0];
-
+	const refer = (path = stack.value[0]) => {
 		let current: any = story;
 		let precurrent: any = story;
 
@@ -979,7 +984,20 @@ const novely = <
 			if (restoring) return;
 
 			const path = stack.value[0];
+			const last = path.at(-1);
 			const ignore: ("choice:exit" | "condition:exit" | "block:exit")[] = [];
+
+			/**
+			 * - should be an array
+			 * - first element is action name
+			 */
+			if (!isAction(refer(path))) {
+				if (last && isNull(last[0]) && isNumber(last[1])) {
+					last[1]--;
+				} else {
+					path.pop();
+				}
+			}
 
 			for (let i = path.length - 1; i > 0; i--) {
 				const [name] = path[i];
@@ -1015,6 +1033,17 @@ const novely = <
 				 * When possible also go to the next action (or exit from one layer above)
 				 */
 				if (prev) path.push([null, prev[1] + 1]);
+
+				/**
+				 * If we added an `[null, int]` but it points not to action, then
+				 *
+				 * - remove that item
+				 * - close another block
+				 */
+				if (!isAction(refer(path))) {
+					path.pop();
+					continue;
+				}
 
 				break;
 			}
@@ -1063,24 +1092,11 @@ const novely = <
 		 */
 		const last = path.at(-1);
 
-		/**
-		 * Almost impossible case
-		 */
-		if (!last) return;
-
-		/**
-		 * When matches `[null, int]` - increase `int`
-		 */
-		if (isNull(last[0]) && isNumber(last[1])) {
-			last[1] = last[1] + 1;
-
-			return;
+		if (last && isNull(last[0]) && isNumber(last[1])) {
+			last[1]++;
+		} else {
+			path.push([null, 0])
 		}
-
-		/**
-		 * Else add new `[null, int]`
-		 */
-		path.push([null, 0]);
 	};
 
 	const render = () => {

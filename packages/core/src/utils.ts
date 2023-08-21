@@ -1,7 +1,7 @@
-import type { ActionProxyProvider, CustomHandler } from './action';
+import type { ActionProxyProvider, CustomHandler, ValidAction } from './action';
 import type { Character } from './character';
 import type { Thenable, Path, PathItem } from './types';
-import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS } from './constants';
+import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE } from './constants';
 
 type MatchActionMap = {
 	[Key in keyof ActionProxyProvider<Record<string, Character>>]: (
@@ -177,6 +177,16 @@ const isBlockExitStatement = (statement: unknown): statement is "choice:exit" | 
 	return BLOCK_EXIT_STATEMENTS.has(statement as any);
 }
 
+const isSkippedDurigRestore = (item: unknown): item is "vibrate" | "dialog" | "input" | "choice" | "text" => {
+	return SKIPPED_DURING_RESTORE.has(item as any);
+}
+
+const noop = () => {}
+
+const isAction = (element: unknown): element is [keyof MatchActionMapComplete, ...Parameters<MatchActionMapComplete[keyof MatchActionMapComplete]>] => {
+	return Array.isArray(element) && isString(element[0]);
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -196,5 +206,8 @@ export {
 	createDeferredPromise,
 	findLastPathItemBeforeItemOfType,
 	isBlockStatement,
-	isBlockExitStatement
+	isBlockExitStatement,
+	isSkippedDurigRestore,
+	noop,
+	isAction
 };

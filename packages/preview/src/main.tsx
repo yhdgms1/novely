@@ -173,8 +173,6 @@ engine.withStory({
 					en: 'You will be shown a full-screen ad',
 					ru: 'Вам будет показана полноэкранная реклама',
 				})),
-				action.showBackground('green'),
-				action.exit('block')
 			]
 		}),
 	],
