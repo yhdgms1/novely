@@ -8,7 +8,7 @@ import type {
 	CustomHandler,
 } from './action';
 import type { Storage } from './storage';
-import type { Save, State, Data, StorageData, DeepPartial, NovelyScreen, Migration, ActionFN } from './types';
+import type { Save, State, Data, StorageData, DeepPartial, NovelyScreen, Migration, ActionFN, PathItem } from './types';
 import type { Renderer, RendererInit } from './renderer';
 import type { SetupT9N } from '@novely/t9n';
 import {
@@ -27,13 +27,15 @@ import {
 	findLastIndex,
 	preloadImagesBlocking,
 	createDeferredPromise,
-	findLastPathItemBeforeBlockItemIndex
+	findLastPathItemBeforeBlockItemIndex,
+	isBlockStatement,
+	isBlockExitStatement
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
 import { all as deepmerge } from 'deepmerge';
 import { klona } from 'klona/json';
-import { SKIPPED_DURING_RESTORE, EMPTY_SET, DEFAULT_TYPEWRITER_SPEED } from './constants';
+import { SKIPPED_DURING_RESTORE, EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, BLOCK_EXIT_STATEMENTS, BLOCK_STATEMENTS } from './constants';
 import { replace as replaceT9N } from '@novely/t9n';
 
 interface NovelyInit<
@@ -978,22 +980,22 @@ const novely = <
 			if (restoring) return;
 
 			const path = stack.value[0];
-			const ignore = [];
+			const ignore: ("choice:exit" | "condition:exit" | "block:exit")[] = [];
 
 			for (let i = path.length - 1; i > 0; i--) {
-				const name = path[i][0];
+				const [name] = path[i];
 
 				/**
 				 * Remember already exited paths
 				 */
-				if (["choice:exit", "condition:exit", "block:exit"].includes(name as any)) {
+				if (isBlockExitStatement(name)) {
 					ignore.push(name);
 				}
 
 				/**
 				 * Ignore everything that we do not need there
 				 */
-				if (name !== 'choice' && name !== 'condition' && name !== 'block') continue;
+				if (!isBlockStatement(name)) continue;
 
 				/**
 				 * When we found an already exited path we remove it from the list
@@ -1004,29 +1006,28 @@ const novely = <
 				}
 
 				/**
-				 * @todo: need to be reworked because i guess it will work only with 1-tier nesting of one type
-				 *
-				 * .slice(0, i) is not working and i have to willness to complete it now
+				 * Exit from the path
 				 */
-				const index = findLastIndex(path, ([_name, value], next) => isNull(_name) && isNumber(value) && next != null && next[0] === name);
+				path.push([`${name}:exit`] as unknown as PathItem);
+
+				const index = findLastIndex(path.slice(0, i + 1), ([_name, value], next) => isNull(_name) && isNumber(value) && next != null && next[0] === name);
+				/**
+				 * Actual check is made in the line above
+				 */
 				const prev = path[index] as [
 					null,
 					number
 				];
 
 				/**
-				 * Exit from the path
-				 */
-				path.push([`${name}:exit` as any],);
-
-				/**
 				 * When possible also go to the next action (or exit from one layer above)
 				 */
 				if (prev) path.push([null, prev[1] + 1]);
 
-				render();
 				break;
 			}
+
+			render();
 		},
 		preload([source]) {
 			if (!PRELOADED_ASSETS.has(source) && !goingBack && !restoring) {

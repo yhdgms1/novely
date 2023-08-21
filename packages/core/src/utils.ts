@@ -1,6 +1,7 @@
 import type { ActionProxyProvider, CustomHandler } from './action';
 import type { Character } from './character';
 import type { Thenable, Path } from './types';
+import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS } from './constants';
 
 type MatchActionMap = {
 	[Key in keyof ActionProxyProvider<Record<string, Character>>]: (
@@ -161,6 +162,14 @@ const findLastPathItemBeforeBlockItemIndex = (path: Path) => {
 	return findLastIndex(path, ([name, value], next) => isNull(name) && isNumber(value) && next != null && next[0] === 'block');
 }
 
+const isBlockStatement = (statement: unknown): statement is 'choice' | 'condition' | 'block' => {
+	return BLOCK_STATEMENTS.has(statement as any);
+}
+
+const isBlockExitStatement = (statement: unknown): statement is "choice:exit" | "condition:exit" | "block:exit" => {
+	return BLOCK_EXIT_STATEMENTS.has(statement as any);
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -178,5 +187,7 @@ export {
 	findLastIndex,
 	preloadImagesBlocking,
 	createDeferredPromise,
-	findLastPathItemBeforeBlockItemIndex
+	findLastPathItemBeforeBlockItemIndex,
+	isBlockStatement,
+	isBlockExitStatement
 };

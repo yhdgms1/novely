@@ -67,6 +67,7 @@ type NonEmptyRecord<T extends Record<PropertyKey, unknown>> = keyof T extends ne
 
 export type {
 	Thenable,
+	PathItem,
 	Path,
 	Save,
 	State,
