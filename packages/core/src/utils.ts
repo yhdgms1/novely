@@ -1,6 +1,7 @@
-import type { ActionProxyProvider, CustomHandler } from './action';
+import type { ActionProxyProvider, CustomHandler, ValidAction } from './action';
 import type { Character } from './character';
-import type { Thenable } from './types';
+import type { Thenable, Path, PathItem } from './types';
+import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE } from './constants';
 
 type MatchActionMap = {
 	[Key in keyof ActionProxyProvider<Record<string, Character>>]: (
@@ -116,9 +117,9 @@ const vibrate = (pattern: VibratePattern) => {
 	} catch {}
 };
 
-const findLastIndex = <T>(array: T[], fn: (item: T) => boolean) => {
-	for (let i = array.length - 1; i > 0; i--) {
-		if (fn(array[i])) {
+const findLastIndex = <T>(array: T[], fn: (item: T, next?: T) => boolean) => {
+	for (let i = array.length - 1; i >= 0; i--) {
+		if (fn(array[i], array[i + 1])) {
 			return i;
 		}
 	}
@@ -157,6 +158,35 @@ const createDeferredPromise = <T = void>() => {
 	return { resolve, reject, promise }
 }
 
+const findLastPathItemBeforeItemOfType = (path: Path, name: PathItem[0]) => {
+	const index = findLastIndex(path, ([_name, _value], next) => {
+		return isNull(_name) && isNumber(_value) && next != null && next[0] === name;
+	});
+
+	return path[index] as undefined | [
+		null,
+		number
+	];
+}
+
+const isBlockStatement = (statement: unknown): statement is 'choice' | 'condition' | 'block' => {
+	return BLOCK_STATEMENTS.has(statement as any);
+}
+
+const isBlockExitStatement = (statement: unknown): statement is "choice:exit" | "condition:exit" | "block:exit" => {
+	return BLOCK_EXIT_STATEMENTS.has(statement as any);
+}
+
+const isSkippedDurigRestore = (item: unknown): item is "vibrate" | "dialog" | "input" | "choice" | "text" => {
+	return SKIPPED_DURING_RESTORE.has(item as any);
+}
+
+const noop = () => {}
+
+const isAction = (element: unknown): element is [keyof MatchActionMapComplete, ...Parameters<MatchActionMapComplete[keyof MatchActionMapComplete]>] => {
+	return Array.isArray(element) && isString(element[0]);
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -173,5 +203,11 @@ export {
 	vibrate,
 	findLastIndex,
 	preloadImagesBlocking,
-	createDeferredPromise
+	createDeferredPromise,
+	findLastPathItemBeforeItemOfType,
+	isBlockStatement,
+	isBlockExitStatement,
+	isSkippedDurigRestore,
+	noop,
+	isAction
 };

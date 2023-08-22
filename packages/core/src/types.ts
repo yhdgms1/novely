@@ -5,9 +5,14 @@ type Thenable<T> = T | Promise<T>;
 
 type PathItem =
 	| [null, number | string]
-	| ['choice' & Record<never, never>, number]
-	| ['condition' & Record<never, never>, string]
-	| ['exit' & Record<never, never>];
+	| ['choice', number]
+	| ['choice:exit']
+	| ['condition', string]
+	| ['condition:exit']
+	| ['exit']
+	| ['block', string]
+	| ['block:exit'];
+
 type Path = PathItem[];
 
 type State = Record<string, any>;
@@ -62,6 +67,7 @@ type NonEmptyRecord<T extends Record<PropertyKey, unknown>> = keyof T extends ne
 
 export type {
 	Thenable,
+	PathItem,
 	Path,
 	Save,
 	State,

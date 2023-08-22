@@ -15,7 +15,6 @@ import {
 	matchAction,
 	isNumber,
 	isNull,
-	isString,
 	isPromise,
 	isEmpty,
 	isCSSImage,
@@ -27,13 +26,18 @@ import {
 	vibrate,
 	findLastIndex,
 	preloadImagesBlocking,
-	createDeferredPromise
+	createDeferredPromise,
+	findLastPathItemBeforeItemOfType,
+	isBlockStatement,
+	isBlockExitStatement,
+	isSkippedDurigRestore,
+	isAction
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
 import { all as deepmerge } from 'deepmerge';
 import { klona } from 'klona/json';
-import { SKIPPED_DURING_RESTORE, EMPTY_SET, DEFAULT_TYPEWRITER_SPEED } from './constants';
+import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED } from './constants';
 import { replace as replaceT9N } from '@novely/t9n';
 
 interface NovelyInit<
@@ -467,20 +471,33 @@ const novely = <
 
 		(restoring = true), (stack.value = latest);
 
+		const path = stack.value[0];
+
 		/**
-		 * Текущий элемент в истории
+		 * Current item in the story
 		 */
 		let current: any = story;
 		/**
-		 * Текущий элемент `[null, int]`
+		 * Previous `current` value
+		 */
+		let precurrent: any;
+		/**
+		 * Should we ignore some actions
+		 */
+		let ignoreNested = false;
+
+		/**
+		 * Current item of type `[null, int]`
 		 */
 		let index = 0;
 
 		/**
-		 * Число элементов `[null, int]`
+		 * Cound of items of type `[null, int]`
 		 */
 		const max = stack.value[0].reduce((acc, [type, val]) => {
-			if (isNull(type) && isNumber(val)) return acc + 1;
+			if (isNull(type) && isNumber(val)) {
+				return acc + 1;
+			}
 
 			return acc;
 		}, 0);
@@ -488,20 +505,40 @@ const novely = <
 		const queue = [] as [any, any][];
 		const keep = new Set();
 		const characters = new Set();
+		const blocks = [];
 
-		for (const [type, val] of stack.value[0]) {
+		for (const [type, val] of path) {
 			if (type === null) {
-				if (isString(val)) {
-					current = current[val];
-				} else if (isNumber(val)) {
+				precurrent = current;
+
+				if (isNumber(val)) {
 					index++;
+
+					let startIndex = 0;
+
+					if (ignoreNested) {
+						const prev = findLastPathItemBeforeItemOfType(path.slice(0, index), 'block');
+
+						if (prev) {
+							startIndex = prev[1];
+							ignoreNested = false;
+						}
+					}
 
 					/**
 					 * Запустим все экшены которые идут в `[null, int]` от `0` до `int`
 					 * Почему-то потребовалось изменить `<` на `<=`, чтобы последний action попадал сюда
 					 */
-					for (let i = 0; i <= val; i++) {
-						const [action, ...meta] = current[i];
+					for (let i = startIndex; i <= val; i++) {
+						const item = current[i];
+
+						/**
+						 * In case of broken save at least not throw
+						 * But is should not happen
+						 */
+						if (!isAction(item)) continue;
+
+						const [action, ...meta] = item;
 
 						/**
 						 * Add item to queue and action to keep
@@ -520,7 +557,7 @@ const novely = <
 						 * Экшены, для закрытия которых пользователь должен с ними взаимодействовать
 						 * Также в эту группу входят экшены, которые не должны быть вызваны при восстановлении
 						 */
-						if (SKIPPED_DURING_RESTORE.has(action) || isUserRequiredAction(action, meta)) {
+						if (isSkippedDurigRestore(action) || isUserRequiredAction(action, meta)) {
 							if (index === max && i === val) {
 								push();
 							} else {
@@ -530,13 +567,21 @@ const novely = <
 
 						push();
 					}
-
-					current = current[val];
 				}
+
+				current = current[val];
 			} else if (type === 'choice') {
-				current = current[(val as number) + 1][1];
+				blocks.push(precurrent = current);
+				current = current[val + 1][1];
 			} else if (type === 'condition') {
+				blocks.push(precurrent = current);
 				current = current[2][val];
+			} else if (type === 'block') {
+				blocks.push(precurrent);
+				current = story[val]
+			} else if (type === 'block:exit' || type === 'choice:exit' || type === 'condition:exit') {
+				current = blocks.pop();
+				ignoreNested = true;
 			}
 		}
 
@@ -573,11 +618,9 @@ const novely = <
 						 * Also check for `undefined`
 						 */
 						const isIdenticalID = c0.id && c1.id && c0.id === c1.id;
+						const isIdenticalByReference = c0 === c1;
 
-						/**
-						 * Equal by id or equal by `toString()`
-						 */
-						return isIdenticalID || str(c0) === str(c1);
+						return isIdenticalID || isIdenticalByReference || (str(c0) === str(c1));
 					});
 
 					if (notLatest) continue;
@@ -623,6 +666,10 @@ const novely = <
 				match(action, meta);
 			} else if (action === 'showBackground' || action === 'animateCharacter') {
 				/**
+				 * @todo: Также сравнивать персонажей в animateCharacter. Чтобы не просто последний запускался, а последний для персонажа.
+				 */
+
+				/**
 				 * Такая же оптимизация применяется к фонам и анимированию персонажей.
 				 * Если фон изменится, то нет смысла устанавливать текущий
 				 */
@@ -639,16 +686,27 @@ const novely = <
 		(restoring = goingBack = false), render();
 	};
 
-	const refer = () => {
+	const refer = (path = stack.value[0]) => {
 		let current: any = story;
+		let precurrent: any = story;
 
-		for (const [type, val] of stack.value[0]) {
+		const blocks: any[] = [];
+
+		for (const [type, val] of path) {
 			if (type === null) {
+				precurrent = current;
 				current = current[val];
 			} else if (type === 'choice') {
-				current = current[(val as number) + 1][1];
+				blocks.push(precurrent = current);
+				current = current[val as number + 1][1];
 			} else if (type === 'condition') {
+				blocks.push(precurrent = current);
 				current = current[2][val];
+			} else if (type === 'block') {
+				blocks.push(precurrent);
+				current = story[val];
+			} else if (type === 'block:exit' || type === 'choice:exit' || type === 'condition:exit') {
+				current = blocks.pop()
 			}
 		}
 
@@ -834,9 +892,14 @@ const novely = <
 			renderer.clear(goingBack, keep || EMPTY_SET, characters || EMPTY_SET)(push);
 		},
 		condition([condition]) {
-			const value = condition();
+			if (!restoring) {
+				stack.value[0].push(
+					['condition', String(condition())],
+					[null, 0]
+				);
 
-			if (!restoring) stack.value[0].push(['condition', String(value)], [null, 0]), render();
+				render();
+			}
 		},
 		end() {
 			/**
@@ -918,24 +981,74 @@ const novely = <
 			renderer.text(text.map((content) => unwrap(content)).join(' '), forward, goingBack);
 		},
 		exit() {
-			const path = stack.value[0];
+			if (restoring) return;
 
-			let exited = false;
+			const path = stack.value[0];
+			const last = path.at(-1);
+			const ignore: ("choice:exit" | "condition:exit" | "block:exit")[] = [];
+
+			/**
+			 * - should be an array
+			 * - first element is action name
+			 */
+			if (!isAction(refer(path))) {
+				if (last && isNull(last[0]) && isNumber(last[1])) {
+					last[1]--;
+				} else {
+					path.pop();
+				}
+			}
 
 			for (let i = path.length - 1; i > 0; i--) {
-				if (path[i][0] !== 'choice' && path[i][0] !== 'condition') continue;
+				const [name] = path[i];
 
-				exited = true;
-				stack.value[0] = path.slice(0, i);
-				next();
+				/**
+				 * Remember already exited paths
+				 */
+				if (isBlockExitStatement(name)) {
+					ignore.push(name);
+				}
+
+				/**
+				 * Ignore everything that we do not need there
+				 */
+				if (!isBlockStatement(name)) continue;
+
+				/**
+				 * When we found an already exited path we remove it from the list
+				 */
+				if (ignore.at(-1)?.startsWith(name)) {
+					ignore.pop();
+					continue;
+				}
+
+				/**
+				 * Exit from the path
+				 */
+				path.push([`${name}:exit`]);
+
+				const prev = findLastPathItemBeforeItemOfType(path.slice(0, i + 1), name);
+
+				/**
+				 * When possible also go to the next action (or exit from one layer above)
+				 */
+				if (prev) path.push([null, prev[1] + 1]);
+
+				/**
+				 * If we added an `[null, int]` but it points not to action, then
+				 *
+				 * - remove that item
+				 * - close another block
+				 */
+				if (!isAction(refer(path))) {
+					path.pop();
+					continue;
+				}
 
 				break;
 			}
 
-			/**
-			 * Run render only when exit was performed. This prevents infinite loop of `render` -> `undefined` -> `exit` -> `render`.
-			 */
-			if (exited) render();
+			render();
 		},
 		preload([source]) {
 			if (!PRELOADED_ASSETS.has(source) && !goingBack && !restoring) {
@@ -946,7 +1059,17 @@ const novely = <
 			}
 
 			push();
-		}
+		},
+		block([scene]) {
+			if (!restoring) {
+				stack.value[0].push(
+					['block', scene],
+					[null, 0]
+				);
+
+				render();
+			}
+		},
 	});
 
 	const enmemory = () => {
@@ -969,23 +1092,11 @@ const novely = <
 		 */
 		const last = path.at(-1);
 
-		/**
-		 * Almost impossible case
-		 */
-		if (!last) return;
-
-		/**
-		 * When matches `[null, int]` - increase `int`
-		 */
-		if (isNull(last[0]) && isNumber(last[1])) {
-			last[1] = last[1] + 1;
-			return;
+		if (last && isNull(last[0]) && isNumber(last[1])) {
+			last[1]++;
+		} else {
+			path.push([null, 0])
 		}
-
-		/**
-		 * Else add new `[null, int]`
-		 */
-		path.push([null, 0]);
 	};
 
 	const render = () => {
