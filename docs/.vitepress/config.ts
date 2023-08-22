@@ -35,8 +35,9 @@ export default defineConfig({
             items: [
               { text: "About Actions", link: "/guide/actions/about" },
               { text: "Choice", link: "/guide/actions/choice" },
-              { text: "Clear", link: "/guide/actions/clear" },
               { text: "Condition", link: "/guide/actions/condition" },
+              { text: "Block", link: "/guide/actions/block" },
+              { text: "Clear", link: "/guide/actions/clear" },
               { text: "Dialog", link: "/guide/actions/dialog" },
               { text: "End", link: "/guide/actions/end" },
               { text: "Function", link: "/guide/actions/function" },

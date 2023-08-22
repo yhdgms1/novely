@@ -1,11 +1,9 @@
 # Exit
 
-Exit's branches inside of [Choice](/guide/actions/choice.md) and [Condition](/guide/actions/condition.md)
+Exit's branches inside of [Choice](/guide/actions/choice.md), [Condition](/guide/actions/condition.md), and [Block](/guide/actions/block.md).
 
 ::: warning
-Novely does this automatically, so there's no need to use them.
-
-However, you can still make the usage explicit
+Novely does this automatically, so there's no need to exit action.
 :::
 
 ## Example
