@@ -6,7 +6,7 @@ Sets the background image or color
 
 |    Name    |   Type   | Optional | Description |
 | :--------: | :------: | :------: | :---------: |
-| background | `string` |    ❌    | Background  |
+| background | `string | Record<string, string>` |    ❌    | Background  |
 
 ## Usage
 
@@ -15,6 +15,12 @@ engine.withStory({
   start: [
     engine.action.showBackground("#f67288"),
     engine.action.showBackground("<url>"),
+    // latest matching is preferred
+    engine.action.showBackground({
+      'all': '<url>',
+      'portrait': '<url>',
+      '(prefers-color-scheme: dark)': '#363636'
+    })
   ],
 });
 ```
