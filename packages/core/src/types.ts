@@ -21,13 +21,13 @@ type Data = Record<string, any>;
 type SaveDate = number;
 type SaveType = 'manual' | 'auto';
 
-type SaveMeta = [SaveDate, SaveType];
+type SaveMeta = [date: SaveDate, type: SaveType];
 
-type Save = [Path, State, SaveMeta];
+type Save = [path: Path, state: State, meta: SaveMeta];
 
 type Lang = string;
 type TypewriterSpeed = 'Slow' | 'Medium' | 'Fast' | 'Auto' | (string & Record<never, never>);
-type StorageMeta = [Lang, TypewriterSpeed];
+type StorageMeta = [lang: Lang, typewriter_speed: TypewriterSpeed];
 
 type Migration = (save: unknown) => unknown;
 
