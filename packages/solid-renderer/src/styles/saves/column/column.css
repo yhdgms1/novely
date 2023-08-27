@@ -1,4 +1,4 @@
-@media (orientation: portrait) {
+@media (max-aspect-ratio: 0.8) {
 	.saves__column {
 		display: flex;
 		align-items: center;

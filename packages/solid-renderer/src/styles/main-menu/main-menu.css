@@ -8,7 +8,7 @@
 	align-content: center;
 }
 
-@media (orientation: landscape) {
+@media (min-aspect-ratio: 0.8) {
 	.main-menu {
 		justify-content: start;
 	}

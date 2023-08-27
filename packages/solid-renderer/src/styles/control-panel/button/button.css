@@ -21,7 +21,7 @@
 	display: none;
 }
 
-@media (orientation: portrait) and ((min-aspect-ratio: 0.26) or (max-aspect-ratio: 0.10)) {
+@media (min-aspect-ratio: 0.26) or (max-aspect-ratio: 0.10) {
 	.control-panel__button__icon {
 		display: block;
 	}

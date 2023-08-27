@@ -2,7 +2,7 @@
 	min-width: 30vw;
 }
 
-@media (orientation: portrait) {
+@media (max-aspect-ratio: 0.8) {
 	.settings__button {
 		min-width: 80%;
 	}
