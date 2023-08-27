@@ -1,5 +1,4 @@
 import { engine } from './engine'
-import { initialized } from './global'
 
 import outdoor from './assets/outdoor.png'
 
@@ -40,8 +39,4 @@ withStory({
 	],
 })
 
-const setup = () => {
-	initialized.resolve()
-}
-
-export { setup }
+export {}

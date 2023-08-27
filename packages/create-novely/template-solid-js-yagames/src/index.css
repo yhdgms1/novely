@@ -9,16 +9,22 @@
 }
 
 /**
-* Делает так, чтобы кнопки управления не наезжали на диалог
-*/
+ * Делает так, чтобы кнопки управления не наезжали на диалог
+ */
 .action-dialog-container {
   padding-bottom: 0;
   margin-bottom: 2.4rem;
 }
 
 /**
-*  Скрывает кнопку настроек на панели управления
-*/
+ *  Скрывает кнопку настроек на панели управления
+ */
 .button.control-panel__button:nth-child(4) {
   display: none;
+}
+
+:root {
+  --novely-settings-background-image: url('./assets/outdoor.png');
+ 	--novely-main-menu-background-image: url('./assets/outdoor.png');
+ 	--novely-saves-background-image: url('./assets/outdoor.png');
 }

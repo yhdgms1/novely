@@ -44,11 +44,3 @@ const story = {
  */
 withStory(story);
 
-/**
- * This is needed to `story` module to be ran and not ommited by bundler
- */
-const setup = () => {
-	console.log(story);
-}
-
-export { setup }

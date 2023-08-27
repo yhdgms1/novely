@@ -1,11 +1,10 @@
 import { novely, localStorageStorage } from '@novely/core'
 import { createT9N, EN } from '@novely/t9n'
 import { createSolidRenderer } from '@novely/solid-renderer'
-import { initialized } from './global'
 
 import lily from './assets/lily.png'
 
-const { createRenderer, Novely } = createSolidRenderer()
+const { createRenderer } = createSolidRenderer()
 
 const translation = createT9N({
 	en: {
@@ -20,7 +19,6 @@ const engine = novely({
 	renderer: createRenderer,
 	storage: localStorageStorage({ key: 'my-game' }),
 	t9n: translation,
-	storageDelay: initialized.promise,
 	characters: {
 		Lily: {
 			name: {
@@ -41,4 +39,4 @@ const engine = novely({
 	},
 })
 
-export { engine, Novely }
+export { engine }

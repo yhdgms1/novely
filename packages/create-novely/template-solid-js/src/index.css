@@ -1,2 +1,8 @@
 @import 'modern-normalize';
 @import '@novely/solid-renderer/dist/styles/index.css';
+
+:root {
+  --novely-settings-background-image: url('./assets/outdoor.png');
+ 	--novely-main-menu-background-image: url('./assets/outdoor.png');
+ 	--novely-saves-background-image: url('./assets/outdoor.png');
+}

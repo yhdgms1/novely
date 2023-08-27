@@ -5,7 +5,12 @@ import { games } from './utilities'
 
 import lily from './assets/lily.png'
 
-const { createRenderer, Novely } = createSolidRenderer()
+const { createRenderer } = createSolidRenderer({
+	/**
+	 * Чтобы избежать отклонения по пункту 1.10.3 требований платформы переносим элементы управления внутрь диалогового окна
+	 */
+	controls: 'inside',
+})
 
 const translation = createT9N({
 	en: {
@@ -58,10 +63,10 @@ const engine = novely({
 			return document.documentElement.lang = languages[0];
 		}
 
-		return document.documentElement.lang = original(languages, original);
+		return document.documentElement.lang = original(languages);
 	},
 	autosaves: false,
 	askBeforeExit: false,
 })
 
-export { engine, Novely }
+export { engine }
