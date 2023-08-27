@@ -1,28 +1,22 @@
 import { defineConfig } from 'vite'
-import { default as solidPlugin } from 'vite-plugin-solid'
-import { plugin as pluginNvl } from '@novely/vite-plugin-nvl'
+import { novelyPlugin } from '@novely/vite-plugin-nvl'
 
 export default defineConfig(() => {
 	return {
 		plugins: [
 			/**
-			 * Plugin that powers SolidJS
-			 */
-			solidPlugin({
-				babel: {
-					babelrc: false,
-					browserslistConfigFile: false,
-					configFile: false,
-					highlightCode: false,
-					plugins: [],
-				},
-				hot: false,
-				ssr: false,
-			}),
-			/**
 			 * Plugin for special story file format
 			 */
-			pluginNvl,
+			novelyPlugin({
+				/**
+				 * Plugin will use `with` statement for values
+				 */
+				useWith: false,
+				/**
+				 * Can be used to map one action to another one, can be used for writing in cyrillic
+				 */
+				rewrites: {}
+			}),
 		],
 		build: {
 			cssCodeSplit: false,

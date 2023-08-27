@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite'
-import { default as solidPlugin } from 'vite-plugin-solid'
 import { novelyPlugin } from '@novely/vite-plugin-nvl'
 import pluginSSL from '@vitejs/plugin-basic-ssl';
 
@@ -8,23 +7,6 @@ export default defineConfig(({ mode }) => {
 
 	return {
 		plugins: [
-			/**
-			 * Plugin that powers SolidJS
-			 */
-			solidPlugin({
-				babel: {
-					/**
-					 * Faster babel options, you can remove that
-					 */
-					babelrc: false,
-					browserslistConfigFile: false,
-					configFile: false,
-					highlightCode: false,
-					plugins: [],
-				},
-				hot: false,
-				ssr: false,
-			}),
 			/**
 			 * Plugin for special story file format
 			 */
