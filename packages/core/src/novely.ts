@@ -8,7 +8,7 @@ import type {
 	CustomHandler,
 } from './action';
 import type { Storage } from './storage';
-import type { Save, State, Data, StorageData, DeepPartial, NovelyScreen, Migration, ActionFN } from './types';
+import type { Save, State, Data, StorageData, DeepPartial, NovelyScreen, Migration, ActionFN, CoreData } from './types';
 import type { Renderer, RendererInit } from './renderer';
 import type { SetupT9N } from '@novely/t9n';
 import {
@@ -296,12 +296,15 @@ const novely = <
 		meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED],
 	};
 
-	const $ = store(initialData);
+	const coreData: CoreData = {
+		dataLoaded: false
+	}
 
-	let initialDataLoaded = false;
+	const $ = store(initialData);
+	const $$ = store(coreData);
 
 	const onStorageDataChange = (value: StorageData) => {
-		if (initialDataLoaded) storage.set(value);
+		if ($$.get().dataLoaded) storage.set(value);
 	};
 
 	const throttledOnStorageDataChange = throttle(onStorageDataChange, throttleTimeout);
@@ -343,8 +346,11 @@ const novely = <
 			/**
 			 * Now the next store updates will entail saving via storage.set
 			 */
-			initialDataLoaded = true;
+			$$.update(prev => (prev.dataLoaded = true, prev));
 
+			/**
+			 * Yay
+			 */
 			$.update(() => stored);
 
 			/**
@@ -366,7 +372,7 @@ const novely = <
 	const stack = createStack(initial);
 
 	const save = (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
-		if (!initialDataLoaded) return;
+		if (!$$.get().dataLoaded) return;
 
 		/**
 		 * When autosaves diabled just return
@@ -419,7 +425,7 @@ const novely = <
 	};
 
 	const newGame = () => {
-		if (!initialDataLoaded) return;
+		if (!$$.get().dataLoaded) return;
 
 		const save = getDefaultSave(klona(defaultState));
 
@@ -452,7 +458,7 @@ const novely = <
 	 * Restore
 	 */
 	const restore = async (save?: Save) => {
-		if (!initialDataLoaded) return;
+		if (!$$.get().dataLoaded) return;
 
 		let latest = save || $.get().saves.at(-1);
 
@@ -770,7 +776,10 @@ const novely = <
 		languages,
 		t: t9n.i,
 		$,
+		$$
 	});
+
+	renderer.ui.start();
 
 	const match = matchAction({
 		wait([time]) {

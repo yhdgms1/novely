@@ -1,6 +1,6 @@
 import type { BackgroundImage, DefaultActionProxyProvider, ValidAction } from './action';
 import type { Character } from './character';
-import type { Save, Stack, StorageData, Thenable } from './types';
+import type { CoreData, Save, Stack, StorageData, Thenable } from './types';
 import type { BaseTranslationStrings } from '@novely/t9n';
 import type { Stored } from './store';
 
@@ -61,13 +61,22 @@ type Renderer = {
 
 	ui: {
 		/**
-		 * Показывает экран, скрывает другие
+		 * Shows the screen
 		 */
 		showScreen(name: 'mainmenu' | 'game' | 'saves' | 'settings' | 'loading'): void;
 		/**
 		 * Shows prompt to exit
 		 */
 		showExitPrompt(): void;
+		/**
+		 * Render the game
+		 */
+		start(): {
+			/**
+			 * Unmount
+			 */
+			unmount(): void;
+		};
 	};
 };
 
@@ -90,6 +99,10 @@ type RendererInit = {
 	 * Store that tracks data updates
 	 */
 	$: Stored<StorageData>;
+	/**
+	 * Store that used to communicate between renderer and core
+	 */
+	$$: Stored<CoreData>;
 };
 
 export type { CharacterHandle, AudioHandle, RendererStore, Renderer, RendererInit };

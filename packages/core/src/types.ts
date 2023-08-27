@@ -65,6 +65,10 @@ type ActionFN = ActionProxyProvider<Record<string, Character>>[keyof ActionProxy
 
 type NonEmptyRecord<T extends Record<PropertyKey, unknown>> = keyof T extends never ? never : T;
 
+type CoreData = {
+	dataLoaded: boolean;
+};
+
 export type {
 	Thenable,
 	PathItem,
@@ -81,5 +85,6 @@ export type {
 	Migration,
 	Data,
 	ActionFN,
-	NonEmptyRecord
+	NonEmptyRecord,
+	CoreData
 };

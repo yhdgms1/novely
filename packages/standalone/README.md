@@ -1,10 +1,10 @@
 # @novely/standalone
 
-## Использование
+## Usage
 
 ```html
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,18 +15,16 @@
   <script>
     window.rendererOptions = {};
     window.translation = {
-      ru: {
-        internal: window.RU,
+      en: {
+        internal: window.EN,
         strings: {},
         pluralization: {}
       }
     };
 
     window.options = {
-      languages: ['ru'],
-      characters: {
-
-      }
+      languages: ['en'],
+      characters: {}
     };
 
     const { action, withStory } = window.novely;

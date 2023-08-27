@@ -1,4 +1,3 @@
-import { render } from 'solid-js/web';
 import { novely, localStorageStorage } from '@novely/core';
 import { createT9N, RU, EN } from '@novely/t9n';
 import { createSolidRenderer } from '@novely/solid-renderer';
@@ -9,7 +8,7 @@ import { snow } from './particles';
 import outdoor from './assets/outdoor.png';
 import lily_ok from './assets/lily.png';
 
-const { createRenderer, Novely, registerScreen, registerMainmenuItem } = createSolidRenderer({
+const { createRenderer, registerScreen, registerMainmenuItem } = createSolidRenderer({
 	fullscreen: false,
 });
 
@@ -284,18 +283,5 @@ engine.withStory({
 		action.end(),
 	],
 });
-
-render(
-	() => (
-		<Novely
-			style={{
-				'--novely-settings-background-image': `url(${outdoor})`,
-				'--novely-main-menu-background-image': `url(${outdoor})`,
-				'--novely-saves-background-image': `url(${outdoor})`,
-			}}
-		/>
-	),
-	document.body,
-);
 
 export {};

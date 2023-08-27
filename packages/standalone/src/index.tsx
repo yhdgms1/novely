@@ -1,6 +1,5 @@
 import type { BaseTranslationStrings, T9N, SetupT9N } from '@novely/t9n'
 
-import { render } from 'solid-js/web';
 import { novely as createNovely, localStorageStorage } from '@novely/core'
 import { createT9N, EN, RU, KK, JP } from '@novely/t9n'
 import { createSolidRenderer } from '@novely/solid-renderer'
@@ -28,8 +27,6 @@ declare global {
 
     solidRenderer: SolidRenderer;
     novely: ReturnType<typeof createNovely>;
-
-    target: HTMLElement;
   }
 }
 
@@ -37,8 +34,6 @@ window.RU = RU;
 window.EN = EN;
 window.KK = KK;
 window.JP = JP;
-
-window.target ||= document.body;
 
 let rendererOptions: CreateSolidRendererOptions | undefined;
 
@@ -63,7 +58,6 @@ Object.defineProperty(window, 'translation', {
 });
 
 let options: NovelyParameters | undefined;
-let dispose: (() => void) | undefined;
 
 Object.defineProperty(window, 'options', {
   get() {
@@ -97,29 +91,5 @@ Object.defineProperty(window, 'options', {
       t9n: translation,
       renderer: window.solidRenderer.createRenderer
     });
-
-    const original = window.novely.withStory;
-
-    window.novely.withStory = (story) => {
-      const promise = original(story);
-
-      promise.then(() => {
-        if (!window.solidRenderer) {
-          const message = ru
-            ? `'solidRenderer' не определен. Невозможно запустить игру.`
-            : `'solidRenderer' is not defined. Unable to start the game.`;
-
-          throw new Error(message);
-        }
-
-        if (dispose) dispose();
-
-        const { Novely } = window.solidRenderer;
-
-        dispose = render(() => <Novely />, window.target);
-      });
-
-      return promise;
-    }
   }
 });

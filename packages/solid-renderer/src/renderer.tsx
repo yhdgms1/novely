@@ -9,9 +9,11 @@ import type {
 	NovelyScreen,
 } from '@novely/core';
 import type { JSX } from 'solid-js';
+import type { MountableElement } from 'solid-js/web';
 
 import { Switch, Match, createEffect } from 'solid-js';
 import { createStore } from 'solid-js/store';
+import { render } from 'solid-js/web';
 
 import { canvasDrawImages, createImage, escape, toMedia, findLast } from '$utils';
 import { Provider } from '$context';
@@ -143,9 +145,10 @@ type StateScreen = () => {
 
 type StateScreens = Record<string, StateScreen>;
 
-type StateMainmenuItems = ((
-	goto: (name: NovelyScreen | (string & Record<never, never>)) => void,
-) => JSX.ButtonHTMLAttributes<HTMLButtonElement>)[];
+type PossibleScreen = NovelyScreen | (string & Record<never, never>);
+
+type StateMainmenuItem = (goto: (name: PossibleScreen) => void) => JSX.ButtonHTMLAttributes<HTMLButtonElement>;
+type StateMainmenuItems = StateMainmenuItem[];
 
 interface State {
 	background: string;
@@ -159,7 +162,7 @@ interface State {
 		items: StateMainmenuItems;
 	};
 	text: StateText;
-	screen: NovelyScreen | (string & Record<never, never>);
+	screen: PossibleScreen;
 
 	exitPromptShown: boolean
 }
@@ -185,9 +188,14 @@ interface CreateSolidRendererOptions {
 	 * @default true
 	 */
 	skipTypewriterWhenGoingBack?: boolean;
+	/**
+	 * Where Novely will be mounted
+	 * @default document.body
+	 */
+	target?: MountableElement
 }
 
-const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTypewriterWhenGoingBack = true }: CreateSolidRendererOptions = {}) => {
+const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTypewriterWhenGoingBack = true, target = document.body }: CreateSolidRendererOptions = {}) => {
 	const [state, setState] = createStore<State>({
 		background: '',
 		characters: {},
@@ -234,6 +242,67 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 	let root!: HTMLElement;
 
 	let currentBackground: string | Record<string, string>;
+
+	let unmount: (() => void) | undefined | void;
+
+	const Novely = () => {
+		createEffect(() => {
+			/**
+			 * Access `screen` outside of if statement
+			 */
+			const screen = state.screen;
+
+			if (fullscreen && document.fullscreenEnabled) {
+				/**
+				 * Will not work when initial screen is set to `game` because user interaction is required
+				 */
+				if (screen === 'game' && !document.fullscreenElement) {
+					document.documentElement.requestFullscreen().catch(() => {});
+
+					/**
+					 * When mainmenu is opened, then exit fullscreen
+					 */
+				} else if (screen === 'mainmenu' && document.fullscreenElement && 'exitFullscreen' in document) {
+					document.exitFullscreen().catch(() => {});
+				}
+			}
+		});
+
+		return (
+			<div ref={root as HTMLDivElement}>
+				<Provider storeData={options.$} coreData={options.$$} options={options} renderer={renderer}>
+					<Switch>
+						<Match when={state.screen === 'game'}>
+							<Game
+								state={state}
+								setState={/* @once */ setState}
+								store={/* @once */ store}
+								characters={/* @once */ characters}
+								renderer={/* @once */ renderer}
+
+								controls={/* @once */ controls}
+								skipTypewriterWhenGoingBack={/* @once */ skipTypewriterWhenGoingBack}
+							/>
+						</Match>
+						<Match when={state.screen === 'mainmenu'}>
+							<MainMenu state={state} setState={/* @once */ setState} />
+						</Match>
+						<Match when={state.screen === 'saves'}>
+							<Saves setState={/* @once */ setState} />
+						</Match>
+						<Match when={state.screen === 'settings'}>
+							<Settings setState={/* @once */ setState} />
+						</Match>
+						<Match when={state.screen === 'loading'}>
+							<Loading />
+						</Match>
+					</Switch>
+
+					<CustomScreen name={state.screen} state={state} setState={/* @once */ setState} />
+				</Provider>
+			</div>
+		);
+	};
 
 	return {
 		createRenderer(init: RendererInit): Renderer {
@@ -588,74 +657,26 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 					},
 					showExitPrompt() {
 						setState('exitPromptShown', true);
+					},
+					start() {
+						unmount?.();
+
+						unmount = render(() => <Novely />, target);
+
+						return {
+							unmount() {
+								unmount?.();
+								unmount = void 0;
+							}
+						}
 					}
 				},
 			});
 		},
-		Novely(props: Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children' | 'ref'>) {
-			createEffect(() => {
-				/**
-				 * Access `screen` outside of if statement
-				 */
-				const screen = state.screen;
-
-				if (fullscreen && document.fullscreenEnabled) {
-					/**
-					 * Will not work when initial screen is set to `game` because user interaction is required
-					 */
-					if (screen === 'game' && !document.fullscreenElement) {
-						document.documentElement.requestFullscreen().catch(() => {});
-
-						/**
-						 * When mainmenu is opened, then exit fullscreen
-						 */
-					} else if (screen === 'mainmenu' && document.fullscreenElement && 'exitFullscreen' in document) {
-						document.exitFullscreen().catch(() => {});
-					}
-				}
-			});
-
-			return (
-				<div {...props} ref={root as HTMLDivElement}>
-					<Provider storeData={options.$} options={options} renderer={renderer}>
-						<Switch>
-							<Match when={state.screen === 'game'}>
-								<Game
-									state={state}
-									setState={/* @once */ setState}
-									store={/* @once */ store}
-									characters={/* @once */ characters}
-									renderer={/* @once */ renderer}
-
-									controls={/* @once */ controls}
-									skipTypewriterWhenGoingBack={/* @once */ skipTypewriterWhenGoingBack}
-								/>
-							</Match>
-							<Match when={state.screen === 'mainmenu'}>
-								<MainMenu state={state} setState={/* @once */ setState} />
-							</Match>
-							<Match when={state.screen === 'saves'}>
-								<Saves setState={/* @once */ setState} />
-							</Match>
-							<Match when={state.screen === 'settings'}>
-								<Settings setState={/* @once */ setState} />
-							</Match>
-							<Match when={state.screen === 'loading'}>
-								<Loading />
-							</Match>
-						</Switch>
-
-						<CustomScreen name={state.screen} state={state} setState={/* @once */ setState} />
-					</Provider>
-				</div>
-			);
-		},
 		registerScreen(name: string, screen: StateScreen) {
 			setState('screens', name, () => screen);
 		},
-		registerMainmenuItem(
-			fn: (goto: (name: NovelyScreen | (string & Record<never, never>)) => void) => JSX.ButtonHTMLAttributes<HTMLButtonElement>,
-		) {
+		registerMainmenuItem(fn: StateMainmenuItem,) {
 			setState('mainmenu', 'items', (prev) => [...prev, fn]);
 		},
 	};

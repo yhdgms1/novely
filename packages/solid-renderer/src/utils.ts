@@ -1,3 +1,5 @@
+import { untrack, batch } from 'solid-js';
+
 const capitalize = (str: string) => {
 	return str[0].toUpperCase() + str.slice(1);
 };
@@ -82,4 +84,18 @@ const findLast = <T>(array: T[], fn: (item: T) => boolean) => {
 	return;
 };
 
-export { isCSSImage, canvasDrawImages, url, createImage, capitalize, escape, onKey, toMedia, findLast };
+const simple = <T extends unknown[], R>(fn: (...args: T) => R) => {
+	return (...args: T) => {
+		let result!: R;
+
+		batch(() => {
+			untrack(() => {
+				result = fn(...args);
+			});
+		});
+
+		return result;
+	}
+}
+
+export { isCSSImage, canvasDrawImages, url, createImage, capitalize, escape, onKey, toMedia, findLast, simple };

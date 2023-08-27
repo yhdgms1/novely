@@ -4,6 +4,7 @@ import type { State } from '../renderer';
 import type { NovelyScreen } from '@novely/core';
 import { For, Show } from 'solid-js';
 import { useData } from '$context';
+import { simple } from '$utils';
 
 interface MainMenuProps {
 	state: State;
@@ -14,9 +15,11 @@ const MainMenu: VoidComponent<MainMenuProps> = (props) => {
 	const data = useData();
 	const language = () => data.storeData().meta[0];
 
-	const goto = (screen: NovelyScreen | (string & Record<never, never>)) => {
+	const goto = simple((screen: NovelyScreen | (string & Record<never, never>)) => {
+		if (!data.coreData().dataLoaded) return;
+
 		props.setState('screen', screen);
-	};
+	})
 
 	return (
 		<div class="root main-menu">

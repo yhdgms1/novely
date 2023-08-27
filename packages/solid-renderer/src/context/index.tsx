@@ -1,5 +1,5 @@
 import type { Accessor, FlowComponent } from 'solid-js';
-import type { Renderer, RendererInit, StorageData, Stored, BaseTranslationStrings } from '@novely/core';
+import type { Renderer, RendererInit, StorageData, Stored, BaseTranslationStrings, CoreData } from '@novely/core';
 
 import { from, createContext, useContext, Show } from 'solid-js';
 import { useMedia } from '$hooks';
@@ -7,6 +7,9 @@ import { useMedia } from '$hooks';
 interface DataContext {
 	storeData: Accessor<StorageData>;
 	storeDataUpdate: (fn: (prev: StorageData) => StorageData) => void;
+
+	coreData: Accessor<CoreData>;
+	coreDataUpdate: (fn: (prev: CoreData) => CoreData) => void;
 
 	options: RendererInit;
 	renderer: Renderer;
@@ -22,17 +25,22 @@ const Context = createContext<DataContext>();
 
 interface ProviderProps {
 	storeData: Stored<StorageData>;
+	coreData: Stored<CoreData>;
 
 	options: RendererInit;
 	renderer: Renderer;
 }
 
 const Provider: FlowComponent<ProviderProps> = (props) => {
-	const storeData = from(props.storeData);
+	const storeData = from(props.storeData) as Accessor<StorageData>;
+	const coreData = from(props.coreData) as Accessor<CoreData>;
 
 	const value: DataContext = {
-		storeData: storeData as Accessor<StorageData>,
+		storeData: storeData,
 		storeDataUpdate: props.storeData.update,
+
+		coreData: coreData,
+		coreDataUpdate: props.coreData.update,
 
 		options: props.options,
 		renderer: props.renderer,
