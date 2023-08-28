@@ -311,55 +311,56 @@ const novely = <
 
 	$.subscribe(throttledOnStorageDataChange);
 
-	const getStoredData = () => {
-		storage.get().then((stored) => {
-			/**
-			 * Migration is done only once (when game loads it's data), and then it saves the updated format
-			 */
-			for (const migration of migrations) {
-				// @ts-expect-error Types does not match between versions
-				stored = migration(stored);
-			}
+	const getStoredData = async () => {
+		let stored = await storage.get();
 
-			/**
-			 * Default `localStorageStorage` returns empty array and engine set this up itself
-			 */
-			stored.meta[1] ||= DEFAULT_TYPEWRITER_SPEED;
+		/**
+		 * Migration is done only once (when game loads it's data), and then it saves the updated format
+		 */
+		for (const migration of migrations) {
+			// @ts-expect-error Types does not match between versions
+			stored = migration(stored);
+		}
 
-			/**
-			 * When we need to override it we do that, when not – only when language was not defined already
-			 */
-			if (overrideLanguage) {
-				stored.meta[0] = getLanguageWithoutParameters();
-			} else {
-				stored.meta[0] ||= getLanguageWithoutParameters();
-			}
+		/**
+		 * Default `localStorageStorage` returns empty array and engine set this up itself
+		 */
+		stored.meta[1] ||= DEFAULT_TYPEWRITER_SPEED;
 
-			/**
-			 * When data is empty replace it with `defaultData`
-			 * It also might be empty (default to empty)
-			 */
-			if (isEmpty(stored.data)) {
-				stored.data = defaultData as Data;
-			}
+		/**
+		 * When we need to override it we do that, when not – only when language was not defined already
+		 */
+		if (overrideLanguage) {
+			stored.meta[0] = getLanguageWithoutParameters();
+		} else {
+			stored.meta[0] ||= getLanguageWithoutParameters();
+		}
 
-			/**
-			 * Now the next store updates will entail saving via storage.set
-			 */
-			$$.update(prev => (prev.dataLoaded = true, prev));
+		/**
+		 * When data is empty replace it with `defaultData`
+		 * It also might be empty (default to empty)
+		 */
+		if (isEmpty(stored.data)) {
+			stored.data = defaultData as Data;
+		}
 
-			/**
-			 * Yay
-			 */
-			$.update(() => stored);
+		/**
+		 * Now the next store updates will entail saving via storage.set
+		 */
+		$$.update(prev => (prev.dataLoaded = true, prev));
 
-			/**
-			 * When initialScreen is game, then we will load it, but after the data is loaded and when assets are loaded if that is needed
-			 */
-			if (initialScreen === 'game') assetsLoaded.promise.then(() => {
-				restore();
-			});
-		});
+		/**
+		 * Yay
+		 */
+		$.update(() => stored);
+
+		/**
+		 * When initialScreen is game, then we will load it, but after the data is loaded and when assets are loaded if that is needed
+		 */
+		if (initialScreen === 'game') {
+			await assetsLoaded.promise;
+			restore();
+		}
 	};
 
 	/**

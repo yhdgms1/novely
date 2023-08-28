@@ -14,7 +14,7 @@ interface ControlPanelButtonsProps {
 const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => {
   const data = useData();
 
-	return (
+  return (
     <>
       <button
         role="menuitem"
@@ -50,7 +50,17 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
           props.setAuto((prev) => !prev);
         }}
       >
-        {data.t(props.auto() ? 'Stop' : 'Auto')}
+        <span class="control-panel__button__content">
+          {data.t(props.auto() ? 'Stop' : 'Auto')}
+        </span>
+        <Icon
+          class="control-panel__button__icon"
+          children={
+            props.auto()
+              ? <Icon.Stop />
+              : <Icon.Play />
+          }
+        />
       </button>
       <button
         role="menuitem"

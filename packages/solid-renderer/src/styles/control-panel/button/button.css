@@ -10,6 +10,7 @@
 	height: 2rem;
 
 	display: flex;
+	align-items: center;
 	justify-content: center;
 }
 
@@ -21,7 +22,7 @@
 	display: none;
 }
 
-@media (min-aspect-ratio: 0.26) or (max-aspect-ratio: 0.10) {
+@media (max-aspect-ratio: 0.8) and ((min-aspect-ratio: 0.26) or (max-aspect-ratio: 0.10)) {
 	.control-panel__button__icon {
 		display: block;
 	}
@@ -39,6 +40,6 @@
 
 @media (prefers-reduced-motion: no-preference) {
 	.control-panel__button--auto-mode {
-		display: inline-block;
+		display: flex;
 	}
 }

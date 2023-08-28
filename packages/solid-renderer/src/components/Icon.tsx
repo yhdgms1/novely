@@ -68,4 +68,19 @@ Icon.Close = () => {
 	)
 }
 
+Icon.Play = () => {
+	return (
+		<>
+			<path d="M4.75 6.75a2 2 0 0 1 2-2h10.5a2 2 0 0 1 2 2v10.5a2 2 0 0 1-2 2H6.75a2 2 0 0 1-2-2V6.75Z"/>
+			<path d="m15.25 12-5.5-3.25v6.5l5.5-3.25Z"/>
+		</>
+	)
+}
+
+Icon.Stop = () => {
+	return (
+		<rect width="12.5" height="12.5" x="5.75" y="5.75" rx="1" />
+	)
+}
+
 export { Icon };
