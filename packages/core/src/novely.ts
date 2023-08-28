@@ -31,7 +31,8 @@ import {
 	isBlockStatement,
 	isBlockExitStatement,
 	isSkippedDurigRestore,
-	isAction
+	isAction,
+	noop
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
@@ -908,7 +909,12 @@ const novely = <
 			/**
 			 * Clear the Scene
 			 */
-			match('clear', []);
+			vibrate(0);
+			/**
+			 * No-op used there because using push will make an infinite loop
+			 */
+			renderer.clear(goingBack, EMPTY_SET, EMPTY_SET)(noop);
+
 			/**
 			 * Go to the main menu
 			 */
