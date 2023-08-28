@@ -571,10 +571,10 @@ const novely = <
 
 				current = current[val];
 			} else if (type === 'choice') {
-				blocks.push(precurrent = current);
+				blocks.push(precurrent);
 				current = current[val + 1][1];
 			} else if (type === 'condition') {
-				blocks.push(precurrent = current);
+				blocks.push(precurrent);
 				current = current[2][val];
 			} else if (type === 'block') {
 				blocks.push(precurrent);
@@ -697,10 +697,10 @@ const novely = <
 				precurrent = current;
 				current = current[val];
 			} else if (type === 'choice') {
-				blocks.push(precurrent = current);
+				blocks.push(precurrent);
 				current = current[val as number + 1][1];
 			} else if (type === 'condition') {
-				blocks.push(precurrent = current);
+				blocks.push(precurrent);
 				current = current[2][val];
 			} else if (type === 'block') {
 				blocks.push(precurrent);
@@ -1105,7 +1105,7 @@ const novely = <
 	const render = () => {
 		const referred = refer();
 
-		if (Array.isArray(referred)) {
+		if (isAction(referred)) {
 			const [action, ...props] = referred;
 
 			match(action, props);
