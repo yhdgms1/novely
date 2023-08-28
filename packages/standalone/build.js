@@ -1,6 +1,5 @@
 import * as esbuild from 'esbuild';
 import { cssPlugin } from '../../env/index.js';
-import { solidPlugin } from 'esbuild-plugin-solid';
 
 const dev = process.argv.at(2) === '--watch';
 
@@ -17,7 +16,6 @@ const context = await esbuild.context({
 	bundle: true,
 	minify: true,
 	plugins: [
-		solidPlugin(),
 		cssPlugin({
 			loader: 'text',
 			minify: true
