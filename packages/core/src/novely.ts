@@ -314,22 +314,15 @@ const novely = <
 	const getStoredData = async () => {
 		let stored = await storage.get();
 
-		/**
-		 * Migration is done only once (when game loads it's data), and then it saves the updated format
-		 */
 		for (const migration of migrations) {
-			// @ts-expect-error Types does not match between versions
-			stored = migration(stored);
+			stored = migration(stored) as StorageData;
 		}
 
 		/**
-		 * Default `localStorageStorage` returns empty array and engine set this up itself
+		 * Default `localStorageStorage` returns empty array
 		 */
 		stored.meta[1] ||= DEFAULT_TYPEWRITER_SPEED;
 
-		/**
-		 * When we need to override it we do that, when not – only when language was not defined already
-		 */
 		if (overrideLanguage) {
 			stored.meta[0] = getLanguageWithoutParameters();
 		} else {
