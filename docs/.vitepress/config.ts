@@ -1,7 +1,9 @@
-import { defineConfig } from 'vitepress'
-import fs from 'fs'
+import { defineConfig } from "vitepress";
+import fs from "fs";
 
-const grammar = JSON.parse(fs.readFileSync('./docs/.vitepress/novely.tmLanguage.json', 'utf8'));
+const grammar = JSON.parse(
+  fs.readFileSync("./docs/.vitepress/novely.tmLanguage.json", "utf8")
+);
 
 export default defineConfig({
   title: "Novely",
@@ -18,11 +20,13 @@ export default defineConfig({
     nav: [
       { text: "Home", link: "/" },
       { text: "Docs", link: "/guide/getting-started" },
+      { text: "Comparison", link: "/comparison/monogatari" },
     ],
 
     sidebar: [
       {
         text: "Guide",
+        collapsed: false,
         items: [
           { text: "Getting Started", link: "/guide/getting-started" },
           { text: "Configuration", link: "/guide/configuration" },
@@ -32,6 +36,7 @@ export default defineConfig({
           { text: "Story", link: "/guide/story" },
           {
             text: "Actions",
+            collapsed: true,
             items: [
               { text: "About Actions", link: "/guide/actions/about" },
               { text: "Choice", link: "/guide/actions/choice" },
@@ -59,7 +64,6 @@ export default defineConfig({
               { text: "Custom", link: "/guide/actions/custom" },
               { text: "Preload", link: "/guide/actions/preload" },
             ],
-            collapsed: false,
           },
           {
             text: "Another Actions",
@@ -81,6 +85,16 @@ export default defineConfig({
           {
             text: "Standalone Package",
             link: "/guide/standalone",
+          },
+        ],
+      },
+      {
+        text: "Comparison",
+        collapsed: true,
+        items: [
+          {
+            text: "Monogatari",
+            link: "/comparison/monogatari",
           },
         ],
       },
