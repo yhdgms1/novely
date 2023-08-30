@@ -23,9 +23,7 @@ import {
 	getLanguage as defaultGetLanguage,
 	throttle,
 	isFunction,
-	vibrate,
 	findLastIndex,
-	preloadImagesBlocking,
 	createDeferredPromise,
 	findLastPathItemBeforeItemOfType,
 	isBlockStatement,
@@ -197,7 +195,7 @@ const novely = <
 		if (preloadAssets === 'blocking' && ASSETS_TO_PRELOAD.size > 0) {
 			renderer.ui.showScreen('loading');
 
-			await preloadImagesBlocking(ASSETS_TO_PRELOAD);
+			await renderer.misc.preloadImagesBlocking(ASSETS_TO_PRELOAD);
 		}
 
 		ASSETS_TO_PRELOAD.clear();
@@ -889,7 +887,7 @@ const novely = <
 			/**
 			 * Remove vibration
 			 */
-			vibrate(0);
+			renderer.vibrate(0);
 			/**
 			 * Call the actual `clear`
 			 */
@@ -909,7 +907,7 @@ const novely = <
 			/**
 			 * Clear the Scene
 			 */
-			vibrate(0);
+			renderer.vibrate(0);
 			/**
 			 * No-op used there because using push will make an infinite loop
 			 */
@@ -940,7 +938,7 @@ const novely = <
 			return result;
 		},
 		vibrate(pattern) {
-			vibrate(pattern);
+			renderer.vibrate(pattern);
 			push();
 		},
 		next() {

@@ -57,6 +57,12 @@ type Renderer = {
 		push: () => void,
 	) => Thenable<void>;
 	text: (str: string, resolve: () => void, goingBack: boolean) => void;
+	vibrate: (pattern: VibratePattern) => void;
+
+	misc: {
+		preloadImagesBlocking: (images: Set<string>) => Promise<PromiseSettledResult<unknown>[]>;
+	};
+
 	store: RendererStore;
 
 	ui: {

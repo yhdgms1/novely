@@ -109,14 +109,6 @@ const throttle = <Fn extends (...args: any[]) => any>(fn: Fn, ms: number) => {
 	return wrapper as unknown as (...args: Parameters<Fn>) => void;
 };
 
-const vibrate = (pattern: VibratePattern) => {
-	try {
-		if ('vibrate' in navigator) {
-			navigator.vibrate(pattern);
-		}
-	} catch {}
-};
-
 const findLastIndex = <T>(array: T[], fn: (item: T, next?: T) => boolean) => {
 	for (let i = array.length - 1; i >= 0; i--) {
 		if (fn(array[i], array[i + 1])) {
@@ -126,27 +118,6 @@ const findLastIndex = <T>(array: T[], fn: (item: T, next?: T) => boolean) => {
 
 	return -1;
 };
-
-const preloadImagesBlocking = (images: Set<string>) => {
-	return Promise.allSettled([...images].map(src => {
-		const img = document.createElement('img');
-
-		img.src = src;
-
-		return new Promise<unknown>((resolve, reject) => {
-			/**
-			 * Image is already loaded
-			 */
-			if (img.complete && img.naturalHeight !== 0) {
-				resolve(void 0);
-			}
-
-			img.addEventListener('load', resolve);
-			img.addEventListener('abort', reject);
-			img.addEventListener('error', reject);
-		});
-	}));
-}
 
 const createDeferredPromise = <T = void>() => {
 	let resolve!: (value: T | PromiseLike<T>) => void, reject!: (reason?: any) => void;
@@ -200,9 +171,7 @@ export {
 	getLanguage,
 	throttle,
 	isFunction,
-	vibrate,
 	findLastIndex,
-	preloadImagesBlocking,
 	createDeferredPromise,
 	findLastPathItemBeforeItemOfType,
 	isBlockStatement,

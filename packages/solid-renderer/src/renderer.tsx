@@ -647,6 +647,13 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 
 					return result;
 				},
+				vibrate(pattern) {
+					try {
+						if ('vibrate' in navigator) {
+							navigator.vibrate(pattern);
+						}
+					} catch {}
+				},
 				text(content, resolve, goingBack) {
 					setState('text', { content, resolve, goingBack });
 				},
@@ -671,6 +678,28 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 						}
 					}
 				},
+				misc: {
+					preloadImagesBlocking: (images) => {
+						return Promise.allSettled([...images].map(src => {
+							const img = document.createElement('img');
+
+							img.src = src;
+
+							return new Promise<unknown>((resolve, reject) => {
+								/**
+								 * Image is already loaded
+								 */
+								if (img.complete && img.naturalHeight !== 0) {
+									resolve(void 0);
+								}
+
+								img.addEventListener('load', resolve);
+								img.addEventListener('abort', reject);
+								img.addEventListener('error', reject);
+							});
+						}));
+					}
+				}
 			});
 		},
 		registerScreen(name: string, screen: StateScreen) {
