@@ -27,6 +27,8 @@
 		"build:vite-plugin-nvl": "pnpm --filter=@novely/vite-plugin-nvl... --parallel build",
 		"dev:standalone": "pnpm --filter=@novely/standalone... --parallel dev",
 		"build:standalone": "pnpm --filter=@novely/standalone... --parallel build",
+		"dev:deepmerge": "pnpm --filter=@novely/deepmerge... --parallel dev",
+		"build:deepmerge": "pnpm --filter=@novely/deepmerge... --parallel build",
 		"format": "prettier --write ."
 	},
 	"devDependencies": {
