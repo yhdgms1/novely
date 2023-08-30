@@ -1,4 +1,4 @@
-import type { ActionProxyProvider, CustomHandler, ValidAction } from './action';
+import type { ActionProxyProvider, CustomHandler } from './action';
 import type { Character } from './character';
 import type { Thenable, Path, PathItem } from './types';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE } from './constants';
