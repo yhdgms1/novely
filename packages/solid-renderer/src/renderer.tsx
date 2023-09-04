@@ -698,6 +698,9 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 								img.addEventListener('error', reject);
 							});
 						}));
+					},
+					preloadImage: (image) => {
+						return document.createElement('img').src = image;
 					}
 				}
 			});

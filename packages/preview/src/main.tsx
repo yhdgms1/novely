@@ -74,7 +74,17 @@ const engine = novely({
 
 	preloadAssets: 'lazy',
 
-	askBeforeExit: false
+	askBeforeExit: false,
+
+	migrations: [
+		(saved) => {
+			if (saved && typeof saved === 'object' && 'saves' in saved && Array.isArray(saved.saves)) {
+				saved.saves = saved.saves.filter((item) => Array.isArray(item) && item[2][0] > 1693459780762);
+			}
+
+			return saved;
+		}
+	]
 });
 
 const { action, state, data, t, unwrap } = engine;
@@ -152,17 +162,17 @@ registerScreen('achievements', () => {
 	};
 });
 
-registerMainmenuItem((goto) => ({
-	type: 'button',
-	class: 'button main-menu__button',
-	textContent: unwrap({
-		en: 'Achievements',
-		ru: 'Достижения',
-	}),
-	onClick: () => {
-		goto('achievements');
-	},
-}));
+// registerMainmenuItem((goto) => ({
+// 	type: 'button',
+// 	class: 'button main-menu__button',
+// 	textContent: unwrap({
+// 		en: 'Achievements',
+// 		ru: 'Достижения',
+// 	}),
+// 	onClick: () => {
+// 		goto('achievements');
+// 	},
+// }));
 
 engine.withStory({
 	'block:adv': [
@@ -184,7 +194,6 @@ engine.withStory({
 		})),
 		action.custom(particles(snow)),
 		action.showBackground(outdoor),
-		action.block('block:adv'),
 		action.showCharacter('Lily', 'ok'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.dialog(

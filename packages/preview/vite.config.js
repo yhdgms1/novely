@@ -30,4 +30,5 @@ export default defineConfig({
 		legalComments: 'none',
 		charset: 'utf8',
 	},
+	base: './'
 });

@@ -34,7 +34,7 @@ import {
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
-import { all as deepmerge } from 'deepmerge';
+import { default as deepmerge } from 'deepmerge';
 import { klona } from 'klona/json';
 import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED } from './constants';
 import { replace as replaceT9N } from '@novely/t9n';
@@ -245,7 +245,7 @@ const novely = <
 		if (!value) return stack.value[1] as StateScheme | void;
 
 		const prev = stack.value[1];
-		const val = isFunction(value) ? value(prev as StateScheme) : deepmerge([prev, value]);
+		const val = isFunction(value) ? value(prev as StateScheme) : deepmerge(prev, value);
 
 		stack.value[1] = val as StateScheme;
 	}
@@ -1058,11 +1058,11 @@ const novely = <
 			render();
 		},
 		preload([source]) {
-			if (!PRELOADED_ASSETS.has(source) && !goingBack && !restoring) {
+			if (!goingBack && !restoring && !PRELOADED_ASSETS.has(source)) {
 				/**
 				 * Make image load
 				 */
-				PRELOADED_ASSETS.add(document.createElement('img').src = source);
+				PRELOADED_ASSETS.add(renderer.misc.preloadImage(source));
 			}
 
 			push();
@@ -1162,7 +1162,7 @@ const novely = <
 		if (!value) return $.get().data as DataScheme | void;
 
 		const prev = $.get().data;
-		const val = isFunction(value) ? value(prev as DataScheme) : deepmerge([prev, value]);
+		const val = isFunction(value) ? value(prev as DataScheme) : deepmerge(prev, value);
 
 		$.update((prev) => {
 			prev.data = val;
