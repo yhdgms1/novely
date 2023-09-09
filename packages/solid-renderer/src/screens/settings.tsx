@@ -8,6 +8,8 @@ import { useData } from '$context';
 
 interface SettingsProps {
 	setState: SetStoreFunction<State>;
+
+	useNativeLanguageNames: boolean;
 }
 
 const Settings: VoidComponent<SettingsProps> = (props) => {
@@ -16,12 +18,19 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 	const language = () => data.storeData().meta[0];
 	const textSpeed = () => data.storeData().meta[1];
 
-	const languageNames = createMemo(
-		() =>
-			new Intl.DisplayNames([language()], {
-				type: 'language',
-			}),
-	);
+	const getLanguageName = (lang: string): string => {
+		/**
+		 * `useNativeLanguageNames`:
+		 *
+		 * True  — "English, Русский, Polskie"
+		 * False — "Angielski, Rosyjski, Polski"
+		 */
+		const intl = new Intl.DisplayNames([props.useNativeLanguageNames ? lang : language()], {
+			type: 'language'
+		});
+
+		return intl.of(lang) || lang;
+	}
 
 	const onLanguageSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = ({ currentTarget: { value } }) => {
 		data.storeDataUpdate((prev) => {
@@ -57,7 +66,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 						<For each={data.options.languages}>
 							{(lang) => (
 								<option value={lang} selected={lang === language()}>
-									{capitalize(languageNames().of(lang) || lang)}
+									{capitalize(getLanguageName(lang))}
 								</option>
 							)}
 						</For>

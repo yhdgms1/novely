@@ -193,9 +193,14 @@ interface CreateSolidRendererOptions {
 	 * @default document.body
 	 */
 	target?: MountableElement
+	/**
+	 * In the settings screen languages will be shown in it's own language instead of selected language
+	 * @default true
+	 */
+	useNativeLanguageNames?: boolean
 }
 
-const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTypewriterWhenGoingBack = true, target = document.body }: CreateSolidRendererOptions = {}) => {
+const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTypewriterWhenGoingBack = true, useNativeLanguageNames = true, target = document.body }: CreateSolidRendererOptions = {}) => {
 	const [state, setState] = createStore<State>({
 		background: '',
 		characters: {},
@@ -291,7 +296,7 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 							<Saves setState={/* @once */ setState} />
 						</Match>
 						<Match when={state.screen === 'settings'}>
-							<Settings setState={/* @once */ setState} />
+							<Settings setState={/* @once */ setState} useNativeLanguageNames={useNativeLanguageNames} />
 						</Match>
 						<Match when={state.screen === 'loading'}>
 							<Loading />
