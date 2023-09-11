@@ -25,7 +25,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
         onClick={data.options.back}
       >
         <span class="control-panel__button__content">{data.t('GoBack')}</span>
-        <Icon class="control-panel__button__icon" children={Icon.Back()} />
+        <Icon class="control-panel__button__icon" children={/* @once */ Icon.Back()} />
       </button>
       <button
         role="menuitem"
@@ -38,7 +38,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
         }}
       >
         <span class="control-panel__button__content">{data.t('DoSave')}</span>
-        <Icon class="control-panel__button__icon" children={Icon.Save()} />
+        <Icon class="control-panel__button__icon" children={/* @once */ Icon.Save()} />
       </button>
       <button
         role="menuitem"
@@ -74,7 +74,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
         }}
       >
         <span class="control-panel__button__content">{data.t('Settings')}</span>
-        <Icon class="control-panel__button__icon" children={Icon.Settings()} />
+        <Icon class="control-panel__button__icon" children={/* @once */ Icon.Settings()} />
       </button>
       <button
         role="menuitem"
@@ -87,7 +87,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
         }}
       >
         <span class="control-panel__button__content">{data.t('Exit')}</span>
-        <Icon class="control-panel__button__icon" children={Icon.Exit()} />
+        <Icon class="control-panel__button__icon" children={/* @once */ Icon.Exit()} />
       </button>
 
       <Show when={data.media.hyperWide()}>
@@ -101,7 +101,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
             props.closeDropdown();
           }}
         >
-          <Icon children={Icon.Close()} />
+          <Icon children={/* @once */ Icon.Close()} />
         </button>
       </Show>
     </>

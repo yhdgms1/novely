@@ -1,3 +1,20 @@
 .main-menu__button {
 	min-width: 30vw;
+
+	display: grid;
+	grid-template-rows: 1fr;
+	/* Icon is exactly 24 pixels wide */
+	grid-template-columns: calc(100% - 24px) 24px;
+	align-content: space-around;
+	justify-items: center;
+}
+
+@media (max-aspect-ratio: 0.26) {
+	.main-menu__button {
+		grid-template-columns: 1fr;
+	}
+
+	.main-menu__button__text {
+		display: none;
+	}
 }

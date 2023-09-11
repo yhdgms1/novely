@@ -5,6 +5,7 @@ import type { NovelyScreen } from '@novely/core';
 import { For, Show } from 'solid-js';
 import { useData } from '$context';
 import { simple } from '$utils';
+import { Icon } from '$components';
 
 interface MainMenuProps {
 	state: State;
@@ -24,18 +25,31 @@ const MainMenu: VoidComponent<MainMenuProps> = (props) => {
 	return (
 		<div class="root main-menu">
 			<button type="button" class="button main-menu__button" onClick={data.options.newGame}>
-				{data.t('NewGame')}
+				<span class="main-menu__button__text">
+					{data.t('NewGame')}
+				</span>
+				<Icon children={/* @once */ Icon.FilePlus()} />
 			</button>
 			<button type="button" class="button main-menu__button" onClick={() => data.options.restore()}>
-				{data.t('LoadSave')}
+				<span class="main-menu__button__text">
+					{data.t('LoadSave')}
+				</span>
+				<Icon children={/* @once */ Icon.Play()} />
 			</button>
 			<button type="button" class="button main-menu__button" onClick={() => props.setState('screen', 'saves')}>
-				{data.t('Saves')}
+				<span class="main-menu__button__text">
+					{data.t('Saves')}
+				</span>
+				<Icon children={/* @once */ Icon.Files()} />
 			</button>
 			<button type="button" class="button main-menu__button" onClick={() => props.setState('screen', 'settings')}>
-				{data.t('Settings')}
+				<span class="main-menu__button__text">
+					{data.t('Settings')}
+				</span>
+				<Icon children={/* @once */ Icon.Settings()} />
 			</button>
 			<Show when={language()} keyed>
+				{/* @todo: button icon */}
 				{(_) => <For each={props.state.mainmenu.items}>{(item) => <button {...item(goto)} />}</For>}
 			</Show>
 		</div>

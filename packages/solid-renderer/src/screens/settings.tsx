@@ -2,7 +2,7 @@ import type { VoidComponent, JSX } from 'solid-js';
 import type { SetStoreFunction } from 'solid-js/store';
 import type { State } from '../renderer';
 
-import { For, createUniqueId, createMemo } from 'solid-js';
+import { For, createUniqueId } from 'solid-js';
 import { capitalize } from '$utils';
 import { useData } from '$context';
 
@@ -60,7 +60,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 			<div class="settings__column">
 				<div class="select">
 					<label class="select__label" for={languageSelectID}>
-						{data.t('Language')}
+						<span aria-hidden={true}>🌎</span> {data.t('Language')}
 					</label>
 					<select class="select__select" id={languageSelectID} onChange={onLanguageSelect}>
 						<For each={data.options.languages}>
@@ -74,7 +74,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 				</div>
 				<div class="select">
 					<label class="select__label" for={speedSelectID}>
-						{data.t('TextSpeed')}
+					<span aria-hidden={true}>⚡</span> {data.t('TextSpeed')}
 					</label>
 					<select class="select__select" id={speedSelectID} onChange={onSpeedSelect}>
 						<For each={['Slow', 'Medium', 'Fast', 'Auto']}>
