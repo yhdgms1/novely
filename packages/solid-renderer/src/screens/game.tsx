@@ -133,7 +133,19 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 	return (
 		<div class="root game" style={background()}>
-			<div data-characters={true} class="characters">
+			<div
+				data-characters={true}
+				class="characters"
+				style={{
+					'--shown-characters-count': Object.values(props.state.characters).reduce((acc, char) => {
+						if (char.visible) {
+							return acc + 1;
+						}
+
+						return acc;
+					}, 0)
+				}}
+			>
 				<For each={Object.entries(props.state.characters)}>
 					{([character, data]) => (
 						<Show when={data.visible}>
