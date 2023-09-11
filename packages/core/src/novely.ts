@@ -34,7 +34,7 @@ import {
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
-import { default as deepmerge } from 'deepmerge';
+import { deepmerge } from '@novely/deepmerge';
 import { klona } from 'klona/json';
 import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED } from './constants';
 import { replace as replaceT9N } from '@novely/t9n';
@@ -663,14 +663,16 @@ const novely = <
 				if (skip) continue;
 
 				match(action, meta);
-			} else if (action === 'showBackground' || action === 'animateCharacter') {
+			} else if (action === 'showBackground' || action === 'animateCharacter' || action === 'preload') {
 				/**
 				 * @todo: Также сравнивать персонажей в animateCharacter. Чтобы не просто последний запускался, а последний для персонажа.
+				 * Тем не менее таким образом могут быть лишнии анимации.
+				 * Можно проверить, что одна анимация идёт сразу за другой, а не через, например, dialog
 				 */
 
 				/**
-				 * Такая же оптимизация применяется к фонам и анимированию персонажей.
-				 * Если фон изменится, то нет смысла устанавливать текущий
+				 * Такая же оптимизация применяется к фонам и анимированию персонажей, и `preload`.
+				 * Если фон изменится, то нет смысла устанавливать или предзагружать текущий
 				 */
 				const notLatest = next(i).some(([_action]) => action === _action);
 
