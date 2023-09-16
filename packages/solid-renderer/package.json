@@ -1,6 +1,6 @@
 {
 	"name": "@novely/solid-renderer",
-	"version": "0.10.4",
+	"version": "0.10.5",
 	"type": "module",
 	"publishConfig": {
 		"access": "public"
