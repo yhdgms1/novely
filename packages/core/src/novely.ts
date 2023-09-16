@@ -364,6 +364,28 @@ const novely = <
 	const initial = getDefaultSave(klona(defaultState));
 	const stack = createStack(initial);
 
+	/**
+	 * Try to save data when page is switched
+	 */
+	addEventListener('visibilitychange', () => {
+		if (document.visibilityState === 'hidden') {
+			/**
+			 * Will check for `$$.get().dataLoaded`
+			 */
+			onStorageDataChange($.get());
+		}
+	});
+
+	/**
+	 * Try to save data when page is going to be unloaded
+	 */
+	addEventListener('beforeunload', () => {
+		/**
+		 * Will check for `$$.get().dataLoaded`
+		 */
+		onStorageDataChange($.get());
+	});
+
 	const save = (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
 		if (!$$.get().dataLoaded) return;
 
