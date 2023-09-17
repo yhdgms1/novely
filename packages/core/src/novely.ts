@@ -307,6 +307,9 @@ const novely = <
 	};
 
 	const throttledOnStorageDataChange = throttle(onStorageDataChange, throttleTimeout);
+	const throttledEmergencyOnStorageDataChange = throttle(() => {
+		onStorageDataChange($.get());
+	}, 10);
 
 	$.subscribe(throttledOnStorageDataChange);
 
@@ -369,22 +372,14 @@ const novely = <
 	 */
 	addEventListener('visibilitychange', () => {
 		if (document.visibilityState === 'hidden') {
-			/**
-			 * Will check for `$$.get().dataLoaded`
-			 */
-			onStorageDataChange($.get());
+			throttledEmergencyOnStorageDataChange()
 		}
 	});
 
 	/**
 	 * Try to save data when page is going to be unloaded
 	 */
-	addEventListener('beforeunload', () => {
-		/**
-		 * Will check for `$$.get().dataLoaded`
-		 */
-		onStorageDataChange($.get());
-	});
+	addEventListener('beforeunload', throttledEmergencyOnStorageDataChange);
 
 	const save = (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
 		if (!$$.get().dataLoaded) return;
