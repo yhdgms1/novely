@@ -2,10 +2,10 @@ import { novely, localStorageStorage } from '@novely/core';
 import { createT9N, RU, EN } from '@novely/t9n';
 import { createSolidRenderer } from '@novely/solid-renderer';
 
-import { particles, hide } from '@novely/particles';
+import { particles, hide as hideParticles } from '@novely/particles';
 import { snow } from './particles';
 
-import { show, animate } from '@novely/rive';
+import { show, animate, hide as hideRive } from '@novely/rive';
 
 import outdoor from './assets/outdoor.png';
 import lily_ok from './assets/lily.png';
@@ -188,7 +188,8 @@ engine.withStory({
 		}),
 	],
 	start: [
-		action.custom(hide()),
+		action.custom(hideParticles()),
+		hideRive('car'), //same as particles
 		action.preload(outdoor),
 		action.text(t({
 			en: 'You wake up, but do not see your keyboard anymore, instead...',

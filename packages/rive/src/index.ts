@@ -131,12 +131,6 @@ const show = (id: Id, setup: Setup) => {
 
     hideNativeCharactersElement(root);
     insertCanvas(element, canvas);
-
-    /**
-     * Стоит ли ожидать пока загрузится? С одной стороны да, потому что иначе оно будет не вовремя появлятся, но ожидать это долго.
-     * Ещё стоит подумать над тем чтобы загруза включала в себя и эти ассеты.
-     */
-    // await loaded;
   }
 
   handler.id = 'rive-control-' + id;
@@ -144,10 +138,6 @@ const show = (id: Id, setup: Setup) => {
   handler.skipClearOnGoingBack = true;
 
   return ['custom', handler] as unknown as ['custom', [CustomHandler]];
-}
-
-show.pure = (id: Id, setup: Setup) => {
-  return show(id, setup)[1] as unknown as CustomHandler;
 }
 
 const animate = (id: Id, name: string) => {
@@ -169,7 +159,7 @@ const animate = (id: Id, name: string) => {
 
       if (!parent) return;
 
-      parent.style.display = 'block';
+      parent.style.opacity = '1';
     })
   }
 
@@ -186,9 +176,7 @@ const hide = (id: Id) => {
 
     const data = dataChannel() as unknown as Data;
 
-    if (!(id in data)) {
-      throw new Error('before using `hide` first call the `show` and make sure same ID is used')
-    }
+    if (!data[id]) return;
 
     data[id].loaded.then(rive => {
       data[id].active = false;
@@ -199,7 +187,7 @@ const hide = (id: Id) => {
 
       if (!parent) return;
 
-      parent.style.display = 'none';
+      parent.style.opacity = '0';
     });
   }
 

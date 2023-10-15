@@ -11,7 +11,7 @@ const insertCanvas = (parent: HTMLElement | null, canvas: HTMLCanvasElement) => 
 
   const wrapper = document.createElement('div');
 
-  wrapper.style.cssText += `overflow: clip; position: relative; width: 30vw; height: 80vh;`
+  wrapper.style.cssText += `overflow: clip; position: relative; width: 30vw; height: 80vh; opacity: 0;`
   canvas.style.cssText += `position: absolute; width: 100%; height: 100%;`
 
   wrapper.appendChild(canvas);
