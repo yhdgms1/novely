@@ -1,0 +1,51 @@
+{
+	"name": "@novely/rive",
+	"description": "Rive Action",
+	"version": "0.0.0",
+	"type": "module",
+	"sideEffects": false,
+	"types": "./dist/index.d.ts",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"dev": "tsup --watch",
+		"build": "tsup"
+	},
+	"dependencies": {
+		"@novely/core": "workspace:*",
+    "@rive-app/canvas": "^2.6.0"
+	},
+	"devDependencies": {
+		"tsup": "^7.1.0",
+		"typescript": "^5.1.6"
+	},
+	"peerDependencies": {
+		"@novely/core": "*",
+		"@rive-app/canvas": "^2.6.0"
+	},
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/yhdgms1/novely/issues"
+	},
+	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/rive",
+	"keywords": [
+		"rive",
+		"animation",
+		"novely"
+	],
+	"author": {
+		"name": "Artemiy Schukin",
+		"url": "https://github.com/yhdgms1"
+	},
+	"contributors": [],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/yhdgms1/novely.git"
+	},
+	"files": [
+		"dist/*"
+	]
+}

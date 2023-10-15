@@ -5,6 +5,8 @@ import { createSolidRenderer } from '@novely/solid-renderer';
 import { particles, hide } from '@novely/particles';
 import { snow } from './particles';
 
+import { show, animate } from '@novely/rive';
+
 import outdoor from './assets/outdoor.png';
 import lily_ok from './assets/lily.png';
 
@@ -196,6 +198,12 @@ engine.withStory({
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		show('car', ({ canvas, init }) => {
+			init({
+				canvas,
+				src: 'https://cdn.rive.app/animations/vehicles.riv',
+			});
+		}),
 		action.dialog(
 			'Lily',
 			t({
@@ -203,6 +211,7 @@ engine.withStory({
 				ru: 'Привет',
 			}),
 		),
+		animate('car', 'curves'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.dialog(
 			'Lily',
@@ -211,6 +220,7 @@ engine.withStory({
 				ru: 'Я расскажу тебе про движок Novely',
 			}),
 		),
+		animate('car', 'bounce'),
 		action.dialog(
 			'You',
 			t({
@@ -218,6 +228,7 @@ engine.withStory({
 				ru: 'Отлично, что-то новое. Какие возможности он дает?',
 			}),
 		),
+		animate('car', 'idle'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.dialog(
 			'Lily',

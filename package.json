@@ -29,6 +29,9 @@
 		"build:standalone": "pnpm --filter=@novely/standalone... --parallel build",
 		"dev:deepmerge": "pnpm --filter=@novely/deepmerge... --parallel dev",
 		"build:deepmerge": "pnpm --filter=@novely/deepmerge... --parallel build",
+		"dev:rive": "pnpm --filter=@novely/rive... --parallel dev",
+		"build:rive": "pnpm --filter=@novely/rive... --parallel build",
+
 		"format": "prettier --write ."
 	},
 	"devDependencies": {
