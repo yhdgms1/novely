@@ -24,7 +24,7 @@ type Id = string;
 type SetupProvided = {
   module: typeof rive;
   canvas: HTMLCanvasElement;
-  init: (options: RiveOptions, callbacks?: Partial<Callbacks>) => rive.Rive;
+  init: (options: RiveOptions & { callbacks?: Partial<Callbacks> }) => rive.Rive;
 }
 
 type Setup = (provided: SetupProvided) => void;
@@ -73,7 +73,7 @@ const show = (id: Id, setup: Setup) => {
     setup({
       module: rive,
       canvas,
-      init(options, callbacks) {
+      init({ callbacks, ...options }) {
         if (inited) return data[id].instance;
 
         inited = true;
@@ -201,3 +201,4 @@ const hide = (id: Id) => {
 const remove = () => {}
 
 export { show, animate, hide, remove }
+export { bottomBarIntergration as _tg43os } from './intergration';
