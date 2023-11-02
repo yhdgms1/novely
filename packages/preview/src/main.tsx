@@ -2,8 +2,10 @@ import { novely, localStorageStorage } from '@novely/core';
 import { createT9N, RU, EN } from '@novely/t9n';
 import { createSolidRenderer } from '@novely/solid-renderer';
 
-import { particles, hide } from '@novely/particles';
+import { particles, hide as hideParticles } from '@novely/particles';
 import { snow } from './particles';
+
+import { show, animate, hide as hideRive, remove } from '@novely/rive';
 
 import outdoor from './assets/outdoor.png';
 import lily_ok from './assets/lily.png';
@@ -186,7 +188,8 @@ engine.withStory({
 		}),
 	],
 	start: [
-		action.custom(hide()),
+		action.custom(hideParticles()),
+		hideRive('car'), //same as particles
 		action.preload(outdoor),
 		action.text(t({
 			en: 'You wake up, but do not see your keyboard anymore, instead...',
@@ -196,6 +199,13 @@ engine.withStory({
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		show('car', ({ canvas, init }) => {
+			init({
+				canvas,
+				src: 'https://cdn.rive.app/animations/vehicles.riv',
+			});
+		}),
+		animate('car', 'curves'),
 		action.dialog(
 			'Lily',
 			t({
@@ -211,6 +221,7 @@ engine.withStory({
 				ru: 'Я расскажу тебе про движок Novely',
 			}),
 		),
+		animate('car', 'bounce'),
 		action.dialog(
 			'You',
 			t({
@@ -218,6 +229,7 @@ engine.withStory({
 				ru: 'Отлично, что-то новое. Какие возможности он дает?',
 			}),
 		),
+		animate('car', 'idle'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.dialog(
 			'Lily',
@@ -226,6 +238,7 @@ engine.withStory({
 				ru: 'У Novely есть много преимуществ: поддержка нескольких языков, типизация на TypeScript, открытый исходный код, мультплатформенность и легковесность.',
 			}),
 		),
+		remove('car'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.dialog(
 			'Lily',

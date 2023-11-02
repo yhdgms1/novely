@@ -175,6 +175,9 @@ importers:
       '@novely/particles':
         specifier: workspace:*
         version: link:../particles
+      '@novely/rive':
+        specifier: workspace:*
+        version: link:../rive
       '@novely/solid-renderer':
         specifier: workspace:*
         version: link:../solid-renderer
@@ -212,6 +215,22 @@ importers:
       vite-plugin-solid:
         specifier: ^2.7.0
         version: 2.7.0(solid-js@1.7.7)(vite@4.4.2)
+
+  packages/rive:
+    dependencies:
+      '@novely/core':
+        specifier: workspace:*
+        version: link:../core
+      '@rive-app/canvas':
+        specifier: ^2.6.0
+        version: 2.6.0
+    devDependencies:
+      tsup:
+        specifier: ^7.1.0
+        version: 7.2.0(typescript@5.2.2)
+      typescript:
+        specifier: ^5.1.6
+        version: 5.2.2
 
   packages/solid-renderer:
     dependencies:
@@ -1573,6 +1592,10 @@ packages:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.15.0
     dev: true
+
+  /@rive-app/canvas@2.6.0:
+    resolution: {integrity: sha512-QfZiwLWjFLVtxRPUGT2RzXWrn3DLxxrH31zux2miTP0QiHjqddjZaehd1mWTiChjrcfqgmWd5krX5uhpNTYEJA==}
+    dev: false
 
   /@types/babel__core@7.20.1:
     resolution: {integrity: sha512-aACu/U/omhdk15O4Nfb+fHgH/z3QsfQzpnvRZhYhThms83ZnAOZz7zZAWO7mn2yyNQaA4xTO8GLK3uqFU4bYYw==}

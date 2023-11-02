@@ -20,6 +20,7 @@
 		"@novely/solid-renderer": "workspace:*",
 		"@novely/t9n": "workspace:*",
 		"@novely/video": "workspace:*",
+		"@novely/rive": "workspace:*",
 		"animate.css": "^4.1.1",
 		"modern-normalize": "~2.0.0",
 		"solid-js": "1.7.7",
