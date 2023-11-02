@@ -198,7 +198,32 @@ const hide = (id: Id) => {
   return ['custom', handler] as unknown as ['custom', [CustomHandler]]
 }
 
-const remove = () => {}
+const remove = (id: Id) => {
+  const handler: CustomHandler = async (get) => {
+    const { data: dataChannel } = get('rive', true);
+
+    const data = dataChannel() as unknown as Data;
+
+    if (!data[id]) return;
+
+    const parent = data[id].canvas.parentElement;
+
+    if (parent) parent.remove();
+
+    data[id].active = false;
+    data[id].loaded.then(rive => {
+      rive.cleanup();
+
+      delete data[id];
+    });
+  }
+
+  handler.id = 'rive-control-' + id;
+  handler.callOnlyLatest = true;
+  handler.skipClearOnGoingBack = true;
+
+  return ['custom', handler] as unknown as ['custom', [CustomHandler]]
+}
 
 export { show, animate, hide, remove }
 export { bottomBarIntergration as _tg43os } from './intergration';

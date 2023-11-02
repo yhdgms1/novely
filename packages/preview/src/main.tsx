@@ -5,7 +5,7 @@ import { createSolidRenderer } from '@novely/solid-renderer';
 import { particles, hide as hideParticles } from '@novely/particles';
 import { snow } from './particles';
 
-import { show, animate, hide as hideRive } from '@novely/rive';
+import { show, animate, hide as hideRive, remove } from '@novely/rive';
 
 import outdoor from './assets/outdoor.png';
 import lily_ok from './assets/lily.png';
@@ -205,6 +205,7 @@ engine.withStory({
 				src: 'https://cdn.rive.app/animations/vehicles.riv',
 			});
 		}),
+		animate('car', 'curves'),
 		action.dialog(
 			'Lily',
 			t({
@@ -212,7 +213,6 @@ engine.withStory({
 				ru: 'Привет',
 			}),
 		),
-		animate('car', 'curves'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.dialog(
 			'Lily',
@@ -238,6 +238,7 @@ engine.withStory({
 				ru: 'У Novely есть много преимуществ: поддержка нескольких языков, типизация на TypeScript, открытый исходный код, мультплатформенность и легковесность.',
 			}),
 		),
+		remove('car'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.dialog(
 			'Lily',
