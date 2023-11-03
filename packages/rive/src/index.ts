@@ -7,7 +7,7 @@ import { hideNativeCharactersElement, insertCanvas } from './utils';
 /**
  * Buffer is omited here because using it is not optimal
  */
-type RiveOptions = Omit<rive.RiveParameters, 'buffer'> & { src: string };
+type RiveOptions = Omit<rive.RiveParameters, 'buffer' | 'canvas'> & { src: string };
 
 /**
  * Callbacks for init method
@@ -93,6 +93,7 @@ const show = (id: Id, setup: Setup) => {
          */
         const instance = new rive.Rive({
           ...options,
+          canvas,
           onLoad(event) {
             instance.resizeDrawingSurfaceToCanvas();
 

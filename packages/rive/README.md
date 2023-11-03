@@ -15,8 +15,7 @@ engine.withStory({
      */
     hideRive('boy'),
     // ...
-    startRive('boy', ({ canvas, init }) => init({
-      canvas,
+    startRive('boy', ({ init }) => init({
       src: boyRiv // pass src
     })),
     animateRive('boy', 'AnimationName'),
