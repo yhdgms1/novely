@@ -10,7 +10,8 @@ import type {
 import type { Storage } from './storage';
 import type { Save, State, Data, StorageData, DeepPartial, NovelyScreen, Migration, ActionFN, CoreData } from './types';
 import type { Renderer, RendererInit } from './renderer';
-import type { SetupT9N } from '@novely/t9n';
+import type { TranslationActions, Pluralization } from './translation';
+import type { BaseTranslationStrings } from './translations';
 import {
 	matchAction,
 	isNumber,
@@ -37,13 +38,12 @@ import { store } from './store';
 import { deepmerge } from '@novely/deepmerge';
 import { klona } from 'klona/json';
 import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED } from './constants';
-import { replace as replaceT9N } from '@novely/t9n';
+import { replace as replaceT9N } from './translation';
 import { localStorageStorage } from './storage';
 
 interface NovelyInit<
 	Languages extends string,
 	Characters extends Record<string, Character<Languages>>,
-	Inter extends ReturnType<SetupT9N<Languages>>,
 	StateScheme extends State,
 	DataScheme extends Data,
 > {
@@ -75,7 +75,18 @@ interface NovelyInit<
 	/**
 	 * An object containing the translation functions used in the game
 	 */
-	t9n: Inter;
+	translation: Record<
+		Languages,
+		{
+			internal: Record<BaseTranslationStrings, string>;
+			/**
+			 * IETF BCP 47 language tag
+			 */
+			tag?: string;
+			plural?: Record<string, Pluralization>,
+			actions?: TranslationActions
+		}
+	>;
 	/**
 	 * Initial state value
 	 */
@@ -130,7 +141,6 @@ interface NovelyInit<
 const novely = <
 	Languages extends string,
 	Characters extends Record<string, Character<Languages>>,
-	Inter extends ReturnType<SetupT9N<Languages>>,
 	StateScheme extends State,
 	DataScheme extends Data,
 >({
@@ -139,7 +149,7 @@ const novely = <
 	storageDelay = Promise.resolve(),
 	renderer: createRenderer,
 	initialScreen = 'mainmenu',
-	t9n,
+	translation,
 	languages,
 	state: defaultState,
 	data: defaultData,
@@ -150,7 +160,7 @@ const novely = <
 	overrideLanguage = false,
 	askBeforeExit = true,
 	preloadAssets = "lazy"
-}: NovelyInit<Languages, Characters, Inter, StateScheme, DataScheme>) => {
+}: NovelyInit<Languages, Characters, StateScheme, DataScheme>) => {
 	let story: Story;
 
 	const times = new Set<number>();
@@ -778,6 +788,10 @@ const novely = <
 		return stack.back(), restore(stack.value);
 	};
 
+	const t = (key: BaseTranslationStrings, lang: string | Languages) => {
+		return translation[lang as Languages].internal[key]
+	}
+
 	const renderer = createRenderer({
 		characters,
 		set,
@@ -786,9 +800,9 @@ const novely = <
 		newGame,
 		exit,
 		back,
+		t,
 		stack,
 		languages,
-		t: t9n.i,
 		$,
 		$$
 	});
@@ -1173,6 +1187,15 @@ const novely = <
 		const cnt = isFunction(content) ? content(lang, obj) : typeof content === 'string' ? content : content[lang];
 
 		const str = isFunction(cnt) ? cnt() : cnt;
+
+		const trans = translation[lang as Languages];
+
+		if (trans.actions || trans.plural) {
+			/**
+			 * Should kinda work, but creating PluralRules each time is not really efficient
+			 */
+			return replaceT9N(str, obj, trans.plural, trans.actions, new Intl.PluralRules(trans.tag || lang));
+		}
 
 		return replaceT9N(str, obj);
 	};

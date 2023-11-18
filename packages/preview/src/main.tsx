@@ -29,10 +29,11 @@ const engine = novely({
 			},
 		},
 	},
-	t9n: createT9N({
+
+	translation: {
 		ru: {
 			internal: RU,
-			pluralization: {
+			plural: {
 				years: {
 					zero: 'лет',
 					one: 'год',
@@ -43,7 +44,7 @@ const engine = novely({
 		},
 		en: {
 			internal: EN,
-			pluralization: {
+			plural: {
 				years: {
 					zero: 'years',
 					one: 'year',
@@ -52,8 +53,8 @@ const engine = novely({
 					other: 'years',
 				},
 			},
-		},
-	}),
+		}
+	},
 
 	state: {
 		age: 0,
@@ -198,9 +199,8 @@ engine.withStory({
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		show('car', ({ canvas, init }) => {
+		show('car', ({ init }) => {
 			init({
-				canvas,
 				src: 'https://cdn.rive.app/animations/vehicles.riv',
 			});
 		}),

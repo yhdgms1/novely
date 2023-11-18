@@ -1,3 +1,5 @@
 # @novely/core
 
-Novely - движок визуальных новелл для создания интерактивных историй и игр.
+Novely - Novel Engine for creating interactive stories
+
+See more on [website](https://novely.pages.dev)
