@@ -1215,10 +1215,6 @@ const novely = <
 		unwrap(content: Exclude<Unwrappable, Record<string, string>> | Record<Languages, string>) {
 			return unwrap(content, true);
 		},
-		/**
-		 * Function that is used for translation
-		 */
-		t: t9n.t as Inter['t'],
 	};
 };
 

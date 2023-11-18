@@ -86,7 +86,7 @@ const engine = novely({
 	]
 });
 
-const { action, state, data, t, unwrap } = engine;
+const { action, state, data, unwrap } = engine;
 
 registerScreen('achievements', () => {
 	return {
@@ -173,25 +173,27 @@ registerScreen('achievements', () => {
 // 	},
 // }));
 
+// const t = <T,>(a: T) => a;
+
 engine.withStory({
 	'block:adv': [
 		action.condition(() => true, {
 			true: [
-				action.text(t({
+				action.text({
 					en: 'You will be shown a full-screen ad',
 					ru: 'Вам будет показана полноэкранная реклама',
-				})),
+				}),
 			]
 		}),
 	],
 	start: [
 		action.custom(hideParticles()),
-		hideRive('car'), //same as particles
+		hideRive('car'), //same as particles needs to be cleared at start
 		action.preload(outdoor),
-		action.text(t({
+		action.text({
 			en: 'You wake up, but do not see your keyboard anymore, instead...',
 			ru: 'Вы просыпаетесь, но больше не видите своей клавиатуры, вместо неё...'
-		})),
+		}),
 		action.custom(particles(snow)),
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok'),
@@ -203,71 +205,49 @@ engine.withStory({
 			});
 		}),
 		animate('car', 'curves'),
-		action.dialog(
-			'Lily',
-			t({
-				en: 'Hii~',
-				ru: 'Привет',
-			}),
-		),
+		action.dialog('Lily', {
+			en: 'Hii~',
+			ru: 'Привет',
+		}),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		// looks better!!
 		action.dialog('Lily',	{
 			en: 'Iʼm going to tell you about the Novely engine',
 			ru: 'Я расскажу тебе про движок Novely',
 		}),
 		animate('car', 'bounce'),
-		action.dialog(
-			'You',
-			t({
-				en: 'Great, something new. What kind of features does it offer?',
-				ru: 'Отлично, что-то новое. Какие возможности он дает?',
-			}),
-		),
+		action.dialog('You', {
+			en: 'Great, something new. What kind of features does it offer?',
+			ru: 'Отлично, что-то новое. Какие возможности он дает?',
+		}),
 		animate('car', 'idle'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog(
-			'Lily',
-			t({
-				en: 'Novely has many features: multi-language support, TypeScript support, and it is open source, multi-platform and lightweight.',
-				ru: 'У Novely есть много преимуществ: поддержка нескольких языков, типизация на TypeScript, открытый исходный код, мультплатформенность и легковесность.',
-			}),
-		),
+		action.dialog('Lily', {
+			en: 'Novely has many features: multi-language support, TypeScript support, and it is open source, multi-platform and lightweight.',
+			ru: 'У Novely есть много преимуществ: поддержка нескольких языков, типизация на TypeScript, открытый исходный код, мультплатформенность и легковесность.',
+		}),
 		remove('car'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog(
-			'Lily',
-			t({
-				en: 'As a result, it can be used to create interactive stories and short stories with a minimum of effort.',
-				ru: 'В итоге с его помощью можно создавать интерактивные истории и новеллы с минимумом усилий.',
-			}),
-		),
-		action.dialog(
-			'You',
-			t({
-				en: 'Sounds promising. How easy is it to use?',
-				ru: 'Звучит многообещающе. Насколько просто им пользоваться?',
-			}),
-		),
+		action.dialog('Lily', {
+			en: 'As a result, it can be used to create interactive stories and short stories with a minimum of effort.',
+			ru: 'В итоге с его помощью можно создавать интерактивные истории и новеллы с минимумом усилий.',
+		}),
+		action.dialog('You', {
+			en: 'Sounds promising. How easy is it to use?',
+			ru: 'Звучит многообещающе. Насколько просто им пользоваться?',
+		}),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog(
-			'Lily',
-			t({
-				en: 'The Novely API is very simple and intuitive, so even a little programming experience is enough to start creating visual novels. And once you\'ve studied the documentation, you\'ll get the hang of it!',
-				ru: 'API Novely очень простой и интуитивный, так что даже небольшой опыт в программировании подойдёт чтобы начать создавать визуальные новеллы. А уж после изучения документации всё получится!',
-			}),
-		),
+		action.dialog('Lily', {
+			en: 'The Novely API is very simple and intuitive, so even a little programming experience is enough to start creating visual novels. And once you\'ve studied the documentation, you\'ll get the hang of it!',
+			ru: 'API Novely очень простой и интуитивный, так что даже небольшой опыт в программировании подойдёт чтобы начать создавать визуальные новеллы. А уж после изучения документации всё получится!',
+		}),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog(
-			'Lily',
-			t({
-				en: 'By the way, how old are you?',
-				ru: 'Кстати, сколько тебе лет?'
-			}),
-		),
+		action.dialog('Lily', {
+			en: 'By the way, how old are you?',
+			ru: 'Кстати, сколько тебе лет?'
+		}),
 		action.input(
 			{
-				en: 'Enter you\'r age',
+				en: `Enter you'r age`,
 				ru: 'Введите ваш возраст'
 			},
 			({ input, error }) => {
@@ -281,19 +261,16 @@ engine.withStory({
 			},
 		),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog(
-			'Lily',
-			t({
-				en: "Ah, {{age}} {{age@years}} old? It's a wonderful age",
-				ru: "Ох, {{age}} {{age@years}}? Это прекрасный возраст",
-			})
-		),
+		action.dialog('Lily',{
+			en: "Ah, {{age}} {{age@years}} old? It's a wonderful age",
+			ru: "Ох, {{age}} {{age@years}}? Это прекрасный возраст",
+		}),
 		action.condition(() => true, {
 			true: [
-				action.text(t({
+				action.text({
 					en: 'The End',
 					ru: 'Конец'
-				})),
+				}),
 				// Проверка автоматического exit
 			]
 		}),

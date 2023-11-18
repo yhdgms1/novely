@@ -30,8 +30,8 @@ type Story = Record<string, ValidAction[]>;
 
 type Unwrappable =
 	| string
-	| ((lang: string, obj: Record<string, unknown>) => string)
 	| Record<string, string | (() => string)>;
+
 type FunctionableValue<T> = T | (() => T);
 
 type CustomHandlerGetResultDataFunction = {
