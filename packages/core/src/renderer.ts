@@ -1,7 +1,7 @@
 import type { BackgroundImage, DefaultActionProxyProvider, ValidAction } from './action';
 import type { Character } from './character';
 import type { CoreData, Save, Stack, StorageData, Thenable } from './types';
-import type { BaseTranslationStrings } from '@novely/t9n';
+import type { BaseTranslationStrings } from './translations';
 import type { Stored } from './store';
 
 interface CharacterHandle {
