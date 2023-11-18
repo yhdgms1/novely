@@ -16,7 +16,6 @@ const { createRenderer, registerScreen, registerMainmenuItem } = createSolidRend
 
 const engine = novely({
 	languages: ['ru', 'en'],
-	storage: localStorageStorage({ key: 'novely-saves' }),
 	renderer: createRenderer,
 	characters: {
 		Lily: {
@@ -214,13 +213,11 @@ engine.withStory({
 			}),
 		),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog(
-			'Lily',
-			t({
-				en: 'Iʼm going to tell you about the Novely engine',
-				ru: 'Я расскажу тебе про движок Novely',
-			}),
-		),
+		// looks better!!
+		action.dialog('Lily',	{
+			en: 'Iʼm going to tell you about the Novely engine',
+			ru: 'Я расскажу тебе про движок Novely',
+		}),
 		animate('car', 'bounce'),
 		action.dialog(
 			'You',
@@ -271,10 +268,10 @@ engine.withStory({
 			}),
 		),
 		action.input(
-			t({
+			{
 				en: 'Enter you\'r age',
 				ru: 'Введите ваш возраст'
-			}),
+			},
 			({ input, error }) => {
 				error(input.validationMessage);
 				state({ age: input.valueAsNumber });

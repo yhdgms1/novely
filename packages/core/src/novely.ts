@@ -38,6 +38,7 @@ import { deepmerge } from '@novely/deepmerge';
 import { klona } from 'klona/json';
 import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED } from './constants';
 import { replace as replaceT9N } from '@novely/t9n';
+import { localStorageStorage } from './storage';
 
 interface NovelyInit<
 	Languages extends string,
@@ -56,8 +57,9 @@ interface NovelyInit<
 	characters: Characters;
 	/**
 	 * An object that provides access to the game's storage system.
+	 * @default localStorage // at key `novely-game-storage`
 	 */
-	storage: Storage;
+	storage?: Storage;
 	/**
 	 * Delay loading data until Promise is resolved
 	 */
@@ -133,7 +135,7 @@ const novely = <
 	DataScheme extends Data,
 >({
 	characters,
-	storage,
+	storage = localStorageStorage({ key: 'novely-game-storage' }),
 	storageDelay = Promise.resolve(),
 	renderer: createRenderer,
 	initialScreen = 'mainmenu',

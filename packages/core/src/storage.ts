@@ -12,12 +12,20 @@ interface Storage {
 const localStorageStorage = (options: LocalStorageStorageSettings): Storage => {
 	return {
 		async get() {
-			const value = localStorage.getItem(options.key);
+			const fallback = { saves: [], data: {}, meta: [] };
 
-			return value ? JSON.parse(value) : { saves: [], data: {}, meta: [] };
+			try {
+				const value = localStorage.getItem(options.key);
+
+				return value ? JSON.parse(value) : fallback;
+			} catch {
+				return fallback
+			}
 		},
 		async set(data) {
-			localStorage.setItem(options.key, JSON.stringify(data));
+			try {
+				localStorage.setItem(options.key, JSON.stringify(data));
+			} catch {}
 		},
 	};
 };
