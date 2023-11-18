@@ -1,7 +1,6 @@
-import type { BaseTranslationStrings, T9N, SetupT9N } from '@novely/t9n'
+import type { BaseTranslationStrings } from '@novely/core'
 
-import { novely as createNovely, localStorageStorage } from '@novely/core'
-import { createT9N, EN, RU, KK, JP } from '@novely/t9n'
+import { novely as createNovely, localStorageStorage, EN, RU, KK, JP } from '@novely/core'
 import { createSolidRenderer } from '@novely/solid-renderer'
 import { style } from './styles'
 
@@ -16,7 +15,6 @@ type NovelyParameters = Omit<Parameters<typeof createNovely>[0], 't9n' | 'render
 declare global {
   interface Window {
     rendererOptions: CreateSolidRendererOptions;
-    translation: Parameters<SetupT9N<string>>[0];
 
     RU: Record<BaseTranslationStrings, string>;
     EN: Record<BaseTranslationStrings, string>;
@@ -46,14 +44,14 @@ Object.defineProperty(window, 'rendererOptions', {
   }
 });
 
-let translation: T9N<string, string> | undefined;
+let translation: NovelyParameters['translation'] | undefined;
 
 Object.defineProperty(window, 'translation', {
   get() {
     return translation;
   },
   set(value) {
-    translation = createT9N(value);
+    translation = value;
   }
 });
 
@@ -88,7 +86,7 @@ Object.defineProperty(window, 'options', {
 
     window.novely = createNovely({
       ...options,
-      t9n: translation,
+      translation,
       renderer: window.solidRenderer.createRenderer
     });
   }

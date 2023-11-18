@@ -1,24 +1,19 @@
-import { novely, localStorageStorage } from '@novely/core'
-import { createT9N, EN } from '@novely/t9n'
+import { novely, localStorageStorage, EN } from '@novely/core'
 import { createSolidRenderer } from '@novely/solid-renderer'
 
 import lily from './assets/lily.png'
 
 const { createRenderer } = createSolidRenderer()
 
-const translation = createT9N({
-	en: {
-		internal: EN,
-		pluralization: {},
-		strings: {},
-	},
-})
-
 const engine = novely({
 	languages: ['en'],
 	renderer: createRenderer,
 	storage: localStorageStorage({ key: 'my-game' }),
-	t9n: translation,
+	translation: {
+		en: {
+			internal: EN,
+		}
+	},
 	characters: {
 		Lily: {
 			name: {

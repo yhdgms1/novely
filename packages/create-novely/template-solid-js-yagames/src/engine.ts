@@ -1,5 +1,4 @@
-import { novely } from '@novely/core'
-import { createT9N, EN, RU } from '@novely/t9n'
+import { novely, EN, RU } from '@novely/core'
 import { createSolidRenderer } from '@novely/solid-renderer'
 import { games } from './utilities'
 
@@ -12,24 +11,18 @@ const { createRenderer } = createSolidRenderer({
 	controls: 'inside',
 })
 
-const translation = createT9N({
-	en: {
-		internal: EN,
-		pluralization: {},
-		strings: {},
-	},
-	ru: {
-		internal: RU,
-		pluralization: {},
-		strings: {},
-	},
-})
-
 const engine = novely({
 	languages: ['en'], // Для поддержки русского языка добавить сюда 'ru'
 	renderer: createRenderer,
 	storage: games,
-	t9n: translation,
+	translation: {
+		en: {
+			internal: EN,
+		},
+		// ru: {
+		// 	internal: RU
+		// }
+	},
 	storageDelay: games.loaded,
 	characters: {
 		Lily: {

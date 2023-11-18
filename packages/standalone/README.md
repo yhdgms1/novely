@@ -17,8 +17,6 @@
     window.translation = {
       en: {
         internal: window.EN,
-        strings: {},
-        pluralization: {}
       }
     };
 

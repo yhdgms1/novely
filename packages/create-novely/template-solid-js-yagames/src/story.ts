@@ -2,7 +2,7 @@ import { engine } from './engine'
 
 import outdoor from './assets/outdoor.png'
 
-const { withStory, t, action: a, state } = engine
+const { withStory, action: a, state } = engine
 
 const story = {
 	start: [
