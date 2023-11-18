@@ -61,7 +61,7 @@ type DeepPartial<T> = unknown extends T
 	  }
 	: T;
 
-type ActionFN = ActionProxyProvider<Record<string, Character>>[keyof ActionProxyProvider<Record<string, Character>>];
+type ActionFN = ActionProxyProvider<Record<string, Character>, string>[keyof ActionProxyProvider<Record<string, Character>, string>];
 
 type NonEmptyRecord<T extends Record<PropertyKey, unknown>> = keyof T extends never ? never : T;
 

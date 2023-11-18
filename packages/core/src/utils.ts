@@ -4,8 +4,8 @@ import type { Thenable, Path, PathItem } from './types';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE } from './constants';
 
 type MatchActionMap = {
-	[Key in keyof ActionProxyProvider<Record<string, Character>>]: (
-		data: Parameters<ActionProxyProvider<Record<string, Character>>[Key]>,
+	[Key in keyof ActionProxyProvider<Record<string, Character>, string>]: (
+		data: Parameters<ActionProxyProvider<Record<string, Character>, string>[Key]>,
 	) => void;
 };
 

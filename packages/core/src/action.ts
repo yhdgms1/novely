@@ -5,7 +5,7 @@ type ValidAction =
 	| ['choice', [number]]
 	| ['clear', [Set<keyof DefaultActionProxyProvider>?, Set<string>?]]
 	| ['condition', [() => boolean, Record<string, ValidAction[]>]]
-	| ['dialog', [string | undefined, Unwrappable, string | undefined]]
+	| ['dialog', [string | undefined, Unwrappable<string>, string | undefined]]
 	| ['end', []]
 	| ['showBackground', [string | NonEmptyRecord<BackgroundImage>]]
 	| ['playMusic', [string]]
@@ -28,9 +28,9 @@ type ValidAction =
 
 type Story = Record<string, ValidAction[]>;
 
-type Unwrappable =
+type Unwrappable<L extends string> =
 	| string
-	| Record<string, string | (() => string)>;
+	| Record<L, string | (() => string)>;
 
 type FunctionableValue<T> = T | (() => T);
 
@@ -101,12 +101,12 @@ type BackgroundImage = Partial<
 	>
 > & Record<(string), string>;
 
-type ActionProxyProvider<Characters extends Record<string, Character>> = {
+type ActionProxyProvider<Characters extends Record<string, Character>, Languages extends string> = {
 	choice: {
-		(...choices: ([Unwrappable, ValidAction[]] | [Unwrappable, ValidAction[], () => boolean])[]): ValidAction;
+		(...choices: ([Unwrappable<Languages>, ValidAction[]] | [Unwrappable<Languages>, ValidAction[], () => boolean])[]): ValidAction;
 		(
-			question: Unwrappable,
-			...choices: ([Unwrappable, ValidAction[]] | [Unwrappable, ValidAction[], () => boolean])[]
+			question: Unwrappable<Languages>,
+			...choices: ([Unwrappable<Languages>, ValidAction[]] | [Unwrappable<Languages>, ValidAction[], () => boolean])[]
 		): ValidAction;
 	};
 
@@ -122,11 +122,11 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 	dialog: {
 		<C extends keyof Characters>(
 			person: C,
-			content: Unwrappable,
+			content: Unwrappable<Languages>,
 			emotion?: keyof Characters[C]['emotions'],
 		): ValidAction;
-		(person: undefined, content: Unwrappable, emotion?: undefined): ValidAction;
-		(person: string, content: Unwrappable, emotion?: undefined): ValidAction;
+		(person: undefined, content: Unwrappable<Languages>, emotion?: undefined): ValidAction;
+		(person: string, content: Unwrappable<Languages>, emotion?: undefined): ValidAction;
 	};
 
 	end: () => ValidAction;
@@ -157,7 +157,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 	function: (fn: (restoring: boolean, goingBack: boolean) => Thenable<void>) => ValidAction;
 
 	input: (
-		question: Unwrappable,
+		question: Unwrappable<Languages>,
 		onInput: (meta: ActionInputOnInputMeta) => void,
 		setup?: ActionInputSetup,
 	) => ValidAction;
@@ -168,14 +168,14 @@ type ActionProxyProvider<Characters extends Record<string, Character>> = {
 
 	next: () => ValidAction;
 
-	text: (...text: Unwrappable[]) => ValidAction;
+	text: (...text: Unwrappable<Languages>[]) => ValidAction;
 
 	preload: (source: string) => ValidAction;
 
 	block: (scene: string) => ValidAction;
 };
 
-type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>>;
+type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>, string>;
 type GetActionParameters<T extends Capitalize<keyof DefaultActionProxyProvider>> = Parameters<
 	DefaultActionProxyProvider[Uncapitalize<T>]
 >;

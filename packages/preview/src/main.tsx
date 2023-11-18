@@ -261,7 +261,7 @@ engine.withStory({
 			},
 		),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog('Lily',{
+		action.dialog('Lily', {
 			en: "Ah, {{age}} {{age@years}} old? It's a wonderful age",
 			ru: "Ох, {{age}} {{age@years}}? Это прекрасный возраст",
 		}),

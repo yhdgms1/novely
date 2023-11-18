@@ -219,7 +219,7 @@ const novely = <
 		if (initialScreen !== 'game') renderer.ui.showScreen(initialScreen);
 	};
 
-	const action = new Proxy({} as ActionProxyProvider<Characters>, {
+	const action = new Proxy({} as ActionProxyProvider<Characters, Languages>, {
 		get(_, prop) {
 			return (...props: Parameters<ActionFN>) => {
 				if (preloadAssets === 'blocking') {
@@ -878,7 +878,7 @@ const novely = <
 				/**
 				 * Первый элемент может быть как строкой, так и элементов выбора
 				 */
-				choices.unshift(question as unknown as [Unwrappable, ValidAction[], () => boolean]);
+				choices.unshift(question as unknown as [Unwrappable<Languages>, ValidAction[], () => boolean]);
 				/**
 				 * Значит, текст не требуется
 				 */
@@ -1177,14 +1177,14 @@ const novely = <
 	 * unwrap('Hello, {{name}}');
 	 * ```
 	 */
-	const unwrap = (content: Unwrappable, global = false) => {
+	const unwrap = (content: Unwrappable<Languages>, global = false) => {
 		const {
 			data,
 			meta: [lang],
 		} = $.get();
 
 		const obj = global ? data : state();
-		const cnt = isFunction(content) ? content(lang, obj) : typeof content === 'string' ? content : content[lang];
+		const cnt = isFunction(content) ? content(lang, obj) : typeof content === 'string' ? content : content[lang as Languages];
 
 		const str = isFunction(cnt) ? cnt() : cnt;
 
@@ -1235,7 +1235,7 @@ const novely = <
 		/**
 		 * Unwraps translatable content to a string value
 		 */
-		unwrap(content: Exclude<Unwrappable, Record<string, string>> | Record<Languages, string>) {
+		unwrap(content: Exclude<Unwrappable<Languages>, Record<string, string>> | Record<Languages, string>) {
 			return unwrap(content, true);
 		},
 	};
