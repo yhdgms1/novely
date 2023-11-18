@@ -7,7 +7,6 @@ type EmptyObject = Record<never, never>;
 type FunctionalSetupT9N = <
 	LanguageKey extends string,
 	PluralKey extends string,
-	StringKey extends string,
 	Actions extends string,
 >(parameters: {
 	[Lang in LanguageKey]: {
@@ -15,14 +14,12 @@ type FunctionalSetupT9N = <
 			[Plural in PluralKey]: Pluralization;
 		};
 		internal: { [Key in BaseTranslationStrings]: string };
-		strings: { [Str in StringKey]: string };
 		actions?: { [Action in Actions]?: (value: string) => string };
 	};
-}) => T9N<LanguageKey, StringKey>;
+}) => T9N<LanguageKey>;
 
 type SetupT9N<LanguageKey extends string> = <
 	PluralKey extends string,
-	StringKey extends string,
 	Actions extends string,
 >(parameters: {
 	[Lang in LanguageKey]: {
@@ -30,15 +27,12 @@ type SetupT9N<LanguageKey extends string> = <
 			[Plural in PluralKey]: Pluralization;
 		};
 		internal: { [Key in BaseTranslationStrings]: string };
-		strings: { [Str in StringKey]: string };
 		actions?: { [Action in Actions]?: (value: string) => string };
 	};
-}) => T9N<LanguageKey, StringKey>;
+}) => T9N<LanguageKey>;
 
-type T9N<LanguageKey extends string, StringKey extends string> = {
-	t(
-		key: StringKey | Record<LanguageKey, AllowedContent>,
-	): (lang: LanguageKey | (string & EmptyObject), obj: Record<string, unknown>) => string;
+type T9N<LanguageKey extends string> = {
+	t(key: Record<LanguageKey, AllowedContent>,): (lang: LanguageKey | (string & EmptyObject), obj: Record<string, unknown>) => string;
 	i(key: BaseTranslationStrings, lang: LanguageKey | (string & EmptyObject)): string;
 };
 

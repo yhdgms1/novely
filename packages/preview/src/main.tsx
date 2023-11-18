@@ -1,4 +1,4 @@
-import { novely, localStorageStorage } from '@novely/core';
+import { novely } from '@novely/core';
 import { createT9N, RU, EN } from '@novely/t9n';
 import { createSolidRenderer } from '@novely/solid-renderer';
 
@@ -40,7 +40,6 @@ const engine = novely({
 					many: 'лет',
 				},
 			},
-			strings: {},
 		},
 		en: {
 			internal: EN,
@@ -53,7 +52,6 @@ const engine = novely({
 					other: 'years',
 				},
 			},
-			strings: {},
 		},
 	}),
 

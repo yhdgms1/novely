@@ -5,10 +5,11 @@
 ## Использование
 
 ```ts title="main.ts"
-import { createT9N } from '@novely/t9n';
+import { createT9N, RU, EN } from '@novely/t9n';
 
 const { t } = createT9N({
 	ru: {
+		internal: RU,
 		pluralization: {
 			years: {
 				zero: 'лет',
@@ -17,9 +18,6 @@ const { t } = createT9N({
 				many: 'лет',
 			},
 		},
-		strings: {
-			hi: 'Меня зовут {{name%capitalize}}, мне {{age}} {{age@years}}! 👋',
-		},
 		actions: {
 			capitalize: (str) => {
 				return str.charAt(0).toUpperCase() + str.slice(1);
@@ -27,6 +25,7 @@ const { t } = createT9N({
 		},
 	},
 	en: {
+		internal: EN,
 		pluralization: {
 			years: {
 				zero: 'years',
@@ -36,14 +35,15 @@ const { t } = createT9N({
 				other: 'years',
 			},
 		},
-		strings: {
-			hi: 'My name is {{name}}, I am {{age}} {{age@years}} old! 👋',
-		},
 	},
 });
 
-const hi = t('hi');
-const str = hi('ru', { name: 'Артём', age: 16 });
+const hi = t({
+	ru: 'Меня зовут {{name%capitalize}}, мне {{age}} {{age@years}}! 👋',
+	en: 'My name is {{name}}, I am {{age}} {{age@years}} old! 👋'
+});
+
+const str = hi('ru', { name: 'Артём', age: 17 });
 ```
 
 ## Credits

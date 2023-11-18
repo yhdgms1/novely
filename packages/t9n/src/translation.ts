@@ -59,6 +59,9 @@ const createT9N: FunctionalSetupT9N = (parameters) => {
 	let pr: Intl.PluralRules | undefined;
 
 	return {
+		/**
+		 * @deprecated
+		 */
 		t(key) {
 			return (lang, obj) => {
 				/**
@@ -70,7 +73,7 @@ const createT9N: FunctionalSetupT9N = (parameters) => {
 				}
 
 				const language = lang as LanguageKey;
-				const str = typeof key === 'object' ? key[language] : parameters[language]['strings'][key];
+				const str = key[language];
 
 				if (!str) return '';
 
