@@ -1,15 +1,14 @@
 # @novely/t9n
 
-Примитивный t9n
+Примитивный t9n. Более не используется.
 
 ## Использование
 
 ```ts title="main.ts"
-import { createT9N, RU, EN } from '@novely/t9n';
+import { createT9N } from '@novely/t9n';
 
 const { t } = createT9N({
 	ru: {
-		internal: RU,
 		pluralization: {
 			years: {
 				zero: 'лет',
@@ -25,7 +24,6 @@ const { t } = createT9N({
 		},
 	},
 	en: {
-		internal: EN,
 		pluralization: {
 			years: {
 				zero: 'years',

@@ -59,9 +59,6 @@ const createT9N: FunctionalSetupT9N = (parameters) => {
 	let pr: Intl.PluralRules | undefined;
 
 	return {
-		/**
-		 * @deprecated
-		 */
 		t(key) {
 			return (lang, obj) => {
 				/**
@@ -79,9 +76,6 @@ const createT9N: FunctionalSetupT9N = (parameters) => {
 
 				return replace(str, obj, parameters[language]['pluralization'], parameters[language]['actions'], pr);
 			};
-		},
-		i(key, lang) {
-			return parameters[lang as LanguageKey]['internal'][key];
 		},
 	};
 };
