@@ -37,7 +37,7 @@ You might not want to use bundler. Here you go! We have a [@novely/standalone](h
 Alternatively, you can install all needed packages by yourself
 
 ```bash
-npm i @novely/core @novely/t9n
+npm i @novely/core
 ```
 
 Since Novely has different ways to display the game, you should choose which renderer you will use. Note that each renderer is configured in a different ways.

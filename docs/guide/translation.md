@@ -1,7 +1,5 @@
 # Translation
 
-As shown earlier, the translation requires the `createT9N` function, as well as a suspicious EN object
-
 ## UI Translations
 
 The UI translation has the following scheme:
@@ -38,7 +36,7 @@ interface InterfaceTranslation {
 You can customize the translation of the interface as you want
 
 ```ts
-import { EN } from "@novely/t9n";
+import { EN } from "@novely/core";
 
 const custom = {
   ...EN,
@@ -50,14 +48,15 @@ const custom = {
 
 Pluralization is configured as follows
 
-```ts{8-15}
-const translation = createT9N({
+```ts{8-17}
+translation: {
   en: {
+    tag: 'en-GB',
     internal: EN,
     /**
      * Pluralization strings
      */
-    pluralization: {
+    plural: {
       'year': {
         'zero': 'years',
         'two': 'years',
@@ -67,9 +66,13 @@ const translation = createT9N({
         'one': 'year',
       }
     },
-    strings: {},
+    actions: {
+      backwards: (string) => {
+        return [...string].reverse().join('');
+      }
+    },
   },
-});
+};
 ```
 
 The pluralization object is of the following type:
@@ -80,40 +83,9 @@ type PluralObject = {
 };
 ```
 
-## Strings
-
-Strings are strings that can be used in dialogues (a character says something), and so on. They are quite simple to set up.
-
-```ts{15}
-const translation = createT9N({
-  en: {
-    internal: EN,
-    pluralization: {
-      'years': {
-        'zero': 'years',
-        'two': 'years',
-        'few': 'years',
-        'many': 'years',
-        'other': 'years',
-        'one': 'year',
-      }
-    },
-    strings: {
-      'Greeting': 'Hi, my name is {{data.name}} and I am {{data.years}} {{data.years@year}} old',
-      'Fact': 'Did you know that {{data.name}} is {{data.name%backwards}} backwards?'
-    },
-    actions: {
-      backwards: (string) => {
-        return [...string].reverse().join('');
-      }
-    }
-  },
-});
-```
-
 ## Usage
 
-Once you have configured the engine, you can use the `t` function to get the content in the desired language. The example also uses the content enclosed between {{ and }} – it will be taken from state, which can be supplied via the `state` function, which is also available from the engine. When content between {{ and }} contain's `@` it will look for pluralization. Look at the following example:
+Once you have configured the engine, you can get the content. The example also uses the content enclosed between {{ and }} – it will be taken from state, which can be supplied via the `state` function, which is also available from the engine. When content between {{ and }} contain's `@` it will look for pluralization. Look at the following example:
 
 ```ts
 engine.withStory({
@@ -121,7 +93,10 @@ engine.withStory({
     engine.action.function(() => {
       engine.state({ data: { name: "Harley Quinn", age: 21 } });
     }),
-    engine.action.dialog("Person", engine.t("Greeting")), // Will replace {{data.name}} with Herley Quinn, {{data.years}} with 21, and {{data.years@year}} with `years`
+    engine.action.dialog(
+      "Person",
+      'Hi, my name is {{data.name}} and I am {{data.years}} {{data.years@year}} old'
+    ), // Will replace {{data.name}} with Herley Quinn, {{data.years}} with 21, and {{data.years@year}} with `years`
   ],
 });
 ```
@@ -132,28 +107,26 @@ Also there is "actions" thing. When you type `%` and an action name after it, it
 engine.withStory({
   start: [
     engine.action.function(() => {
-      engine.state({ data: { name: "Lana" } });
+      engine.state({ data: { name: "Alice" } });
     }),
-    engine.action.dialog("Person", engine.t("Fact")), // Will replace {{data.name%backwards}} with result of `backwards` function with `Lana` as an argument
-    engine.action.dialog("Player", "This is not funny..."),
+    engine.action.dialog(
+      "Person",
+      "Did you know that {{data.name}} is {{data.name%backwards}} backwards?"
+    ), // Will replace {{data.name%backwards}} with result of `backwards` function with `Alice` as an argument
+    engine.action.dialog("Player", "Very impressive..."),
   ],
 });
 ```
 
-Alongside with `strings` object in `createT9N` there is another way of translating the game:
+For multiple languages you should provide an object with each language as a key
 
 ```ts
 engine.withStory({
   start: [
-    engine.action.dialog(
-      "Person",
-      engine.t({
-        en: "Hello",
-        ru: "Привет"
-      })
-    )
+    engine.action.dialog("Person", {
+      en: "Hello",
+      ru: "Привет"
+    })
   ]
 });
 ```
-
-It may be more convenient and visual. But, for example, for identical strings in different modules you can refer to `strings` key
