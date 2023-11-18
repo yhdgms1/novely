@@ -10,8 +10,8 @@
 	},
 	"devDependencies": {
 		"@novely/vite-plugin-nvl": "workspace:^",
-		"typescript": "^5.1.6",
-		"vite": "^4.4.2",
+		"typescript": "^5.2.2",
+		"vite": "^4.5.0",
 		"vite-plugin-solid": "^2.7.0"
 	},
 	"dependencies": {
@@ -23,7 +23,7 @@
 		"@novely/rive": "workspace:*",
 		"animate.css": "^4.1.1",
 		"modern-normalize": "~2.0.0",
-		"solid-js": "1.7.7",
+		"solid-js": "1.8.5",
 		"tsparticles-engine": "^2.10.1",
 		"tsparticles-slim": "^2.10.1"
 	}

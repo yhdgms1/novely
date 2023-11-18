@@ -12,12 +12,12 @@
 		"@novely/core": "latest",
 		"@novely/solid-renderer": "latest",
 		"modern-normalize": "~2.0.0",
-		"solid-js": "~1.7.7"
+		"solid-js": "~1.8.5"
 	},
 	"devDependencies": {
 		"@novely/vite-plugin-nvl": "latest",
-		"@vitejs/plugin-basic-ssl": "^1.0.1",
+		"@vitejs/plugin-basic-ssl": "^1.0.2",
 		"svelte-yagames": "^0.3.2",
-		"vite": "~4.3.9"
+		"vite": "~5.0.0"
 	}
 }
