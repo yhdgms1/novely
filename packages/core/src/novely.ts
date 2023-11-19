@@ -1173,6 +1173,7 @@ const novely = <
 	 * @example ```
 	 * unwrap({ en: 'Hello', ru: 'Привет' });
 	 * unwrap({ en: () => data().ad_viewed ? 'Diamond Hat' : 'Diamond Hat (Watch Adv)' })
+	 * unwrap(() => `Today is ${new Date()}`)
 	 * unwrap('Hello, {{name}}');
 	 * ```
 	 */
@@ -1183,7 +1184,7 @@ const novely = <
 		} = $.get();
 
 		const obj = global ? data : state();
-		const cnt = isFunction(content) ? content(lang, obj) : typeof content === 'string' ? content : content[lang as Languages];
+		const cnt = isFunction(content) ? content() : typeof content === 'string' ? content : content[lang as Languages];
 
 		const str = isFunction(cnt) ? cnt() : cnt;
 

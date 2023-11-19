@@ -30,6 +30,7 @@ type Story = Record<string, ValidAction[]>;
 
 type Unwrappable<L extends string> =
 	| string
+	| (() => string)
 	| Record<L, string | (() => string)>;
 
 type FunctionableValue<T> = T | (() => T);
