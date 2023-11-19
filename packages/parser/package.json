@@ -16,7 +16,7 @@
 		"test": "npm run build && node ./tests"
 	},
 	"devDependencies": {
-		"tsup": "^7.3.0",
+		"tsup": "^8.0.0",
 		"typescript": "^5.2.2",
 		"uvu": "^0.5.6"
 	},

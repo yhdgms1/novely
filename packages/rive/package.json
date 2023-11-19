@@ -19,7 +19,7 @@
     "@rive-app/canvas": "^2.6.0"
 	},
 	"devDependencies": {
-		"tsup": "^7.3.0",
+		"tsup": "^8.0.0",
 		"typescript": "^5.2.2"
 	},
 	"peerDependencies": {

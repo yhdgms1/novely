@@ -1171,7 +1171,6 @@ const novely = <
 	 * Unwraps translatable content to string
 	 *
 	 * @example ```
-	 * unwrap(t('Hello'));
 	 * unwrap({ en: 'Hello', ru: 'Привет' });
 	 * unwrap({ en: () => data().ad_viewed ? 'Diamond Hat' : 'Diamond Hat (Watch Adv)' })
 	 * unwrap('Hello, {{name}}');

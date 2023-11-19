@@ -14,7 +14,7 @@
 	},
 	"devDependencies": {
 		"@types/prompts": "^2.4.4",
-		"tsup": "^7.3.0",
+		"tsup": "^8.0.0",
 		"typescript": "^5.2.2"
 	},
 	"dependencies": {
