@@ -1,7 +1,7 @@
 {
 	"name": "@novely/vite-plugin-nvl",
 	"description": "Vite Plugin for Novely Story Language",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"type": "module",
 	"sideEffects": false,
 	"types": "./dist/index.d.ts",
@@ -20,6 +20,7 @@
 		"vite": "^5.0.0"
 	},
 	"peerDependencies": {
+		"@novely/core": "latest",
 		"vite": "^5.0.0"
 	},
 	"license": "ISC",

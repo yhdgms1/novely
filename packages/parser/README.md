@@ -12,7 +12,7 @@ const js = transform(ast);
 
 const fn = eval(js);
 
-const story = fn({});
+const story = fn(engine.action, {});
 ```
 
 ## Для чего

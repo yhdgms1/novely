@@ -1,9 +1,9 @@
 import type { Ast, AstNode, TransformOptions } from './types';
 
-const RESERVED = ['undefined', 'null', 'window', 'globalThis', '()'];
+const RESERVED = ['undefined', 'null', 'window', 'globalThis', '()', '$actions'];
 
 const transform = (ast: Ast, { rewrites = {}, useWith = false }: TransformOptions = {}) => {
-	let code = useWith ? '($values1) => { with($values1) { return {' : '($values1) => ({';
+	let code = useWith ? '($actions, $values1) => { with($values1) { return {' : '($actions, $values1) => ({';
 
 	const print_js_value = (value: Extract<AstNode, { type: 'JSValue' }>) => {
 		const isReserved = RESERVED.some((reserved) => value.content.startsWith(reserved));
@@ -43,7 +43,7 @@ const transform = (ast: Ast, { rewrites = {}, useWith = false }: TransformOption
 		const children = value.children.map((child) => print_with_unknown_printer(child));
 		const name = value.name in rewrites ? rewrites[value.name] : value.name;
 
-		return `["${name}", ${children.join(',')}]`;
+		return `$actions["${name}"](${children.join(',')})`;
 	};
 
 	const print_with_unknown_printer = (child: AstNode) => {

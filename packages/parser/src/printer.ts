@@ -1,6 +1,6 @@
 import type { Ast, AstNode, PrintOptions } from './types';
+import { NEW_LINE } from './constants';
 
-const NEW_LINE = '\n';
 const DOUBLE_SPACE = '  ';
 
 const to_number = (value: string) => {

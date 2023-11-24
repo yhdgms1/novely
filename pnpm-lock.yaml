@@ -300,6 +300,9 @@ importers:
 
   packages/vite-plugin-nvl:
     dependencies:
+      '@novely/core':
+        specifier: latest
+        version: link:../core
       '@novely/parser':
         specifier: latest
         version: link:../parser
