@@ -31,7 +31,8 @@ import {
 	isBlockExitStatement,
 	isSkippedDurigRestore,
 	isAction,
-	noop
+	noop,
+	flattenStory
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
@@ -161,7 +162,7 @@ const novely = <
 	askBeforeExit = true,
 	preloadAssets = "lazy"
 }: NovelyInit<Languages, Characters, StateScheme, DataScheme>) => {
-	let story: Story;
+	const story: Story = {};
 
 	const times = new Set<number>();
 
@@ -181,28 +182,34 @@ const novely = <
 		return times.add(value), value;
 	};
 
-	const withStory = async (s: Story) => {
+	/**
+	 * Setup your story here
+	 *
+	 * Call more than once to merge different story parts
+	 *
+	 * @example
+	 *
+	 * ```js
+	 * engine.script({
+	 *  start: [action.jump('another-part')]
+	 * })
+	 *
+	 * engine.script({
+	 *  'another-part': []
+	 * })
+	 * ```
+	 *
+	 * @todo: make this default
+	 */
+	const script = (part: Story) => {
 		/**
-		 * Transforms `(ValidAction | ValidAction[])[]` to `ValidAction[]`
+		 * Merge story parts
 		 */
-		story = Object.fromEntries(
-			Object.entries(s).map(([name, items]) => {
-				const flat = (item: (ValidAction | ValidAction[])[]): ValidAction[] => {
-					return item.flatMap((data) => {
-						const type = data[0];
+		Object.assign(story, flattenStory(part));
+	}
 
-						/**
-						 * This is not just an action like `['name', ...arguments]`, but an array of actions
-						 */
-						if (Array.isArray(type)) return flat(data as ValidAction[]);
-
-						return [data as ValidAction];
-					});
-				};
-
-				return [name, flat(items)];
-			}),
-		);
+	const withStory = async (story: Story) => {
+		script(story);
 
 		if (preloadAssets === 'blocking' && ASSETS_TO_PRELOAD.size > 0) {
 			renderer.ui.showScreen('loading');

@@ -1,4 +1,4 @@
-import type { ActionProxyProvider, CustomHandler } from './action';
+import type { ActionProxyProvider, CustomHandler, Story, ValidAction } from './action';
 import type { Character } from './character';
 import type { Thenable, Path, PathItem } from './types';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE } from './constants';
@@ -158,6 +158,30 @@ const isAction = (element: unknown): element is [keyof MatchActionMapComplete, .
 	return Array.isArray(element) && isString(element[0]);
 }
 
+/**
+ * Transforms `(ValidAction | ValidAction[])[]` to `ValidAction[]`
+ */
+const flattenStory = (story: Story) => {
+	const entries = Object.entries(story).map(([name, items]) => {
+		const flat = (item: (ValidAction | ValidAction[])[]): ValidAction[] => {
+			return item.flatMap((data) => {
+				const type = data[0];
+
+				/**
+				 * This is not just an action like `['name', ...arguments]`, but an array of actions
+				 */
+				if (Array.isArray(type)) return flat(data as ValidAction[]);
+
+				return [data as ValidAction];
+			});
+		};
+
+		return [name, flat(items)];
+	});
+
+	return Object.fromEntries(entries);
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -178,5 +202,6 @@ export {
 	isBlockExitStatement,
 	isSkippedDurigRestore,
 	noop,
-	isAction
+	isAction,
+	flattenStory
 };
