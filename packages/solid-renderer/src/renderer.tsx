@@ -667,6 +667,9 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 					showScreen(name) {
 						setState('screen', name);
 					},
+					getScreen() {
+						return state.screen;
+					},
 					showExitPrompt() {
 						setState('exitPromptShown', true);
 					},

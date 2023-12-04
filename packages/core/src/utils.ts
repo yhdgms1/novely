@@ -119,14 +119,29 @@ const findLastIndex = <T>(array: T[], fn: (item: T, next?: T) => boolean) => {
 	return -1;
 };
 
-const createDeferredPromise = <T = void>() => {
+const createControlledPromise = <T = void>() => {
 	let resolve!: (value: T | PromiseLike<T>) => void, reject!: (reason?: any) => void;
 
 	const promise = new Promise<T>((res, rej) => {
 		resolve = res; reject = rej;
 	});
 
-	return { resolve, reject, promise }
+
+	return {
+		resolve,
+		reject,
+		promise,
+
+		reset() {
+
+			// I think I should think about something else there
+			// // 24.11.23
+			// // todo: should we reject promise here?
+			// // promise.reject();
+
+			Object.assign(this, createControlledPromise<T>())
+		}
+	}
 }
 
 const findLastPathItemBeforeItemOfType = (path: Path, name: PathItem[0]) => {
@@ -182,6 +197,21 @@ const flattenStory = (story: Story) => {
 	return Object.fromEntries(entries);
 }
 
+/**
+ * A wrapper on `fn` to make it run only once!
+ * @param fn Function that needed to run no more than one time
+ */
+const once = (fn: () => void) => {
+	let ran = false;
+
+	return () => {
+		if (ran) return;
+
+		ran = true;
+		fn();
+	}
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -196,12 +226,13 @@ export {
 	throttle,
 	isFunction,
 	findLastIndex,
-	createDeferredPromise,
+	createControlledPromise,
 	findLastPathItemBeforeItemOfType,
 	isBlockStatement,
 	isBlockExitStatement,
 	isSkippedDurigRestore,
 	noop,
 	isAction,
-	flattenStory
+	flattenStory,
+	once
 };

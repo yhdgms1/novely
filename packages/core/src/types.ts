@@ -5,6 +5,7 @@ type Thenable<T> = T | Promise<T>;
 
 type PathItem =
 	| [null, number | string]
+	| ['jump', string]
 	| ['choice', number]
 	| ['choice:exit']
 	| ['condition', string]

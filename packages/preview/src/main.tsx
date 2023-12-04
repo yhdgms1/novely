@@ -70,9 +70,9 @@ const engine = novely({
 
 	autosaves: true,
 
-	initialScreen: 'mainmenu',
+	initialScreen: 'game',
 
-	preloadAssets: 'lazy',
+	preloadAssets: 'blocking',
 
 	askBeforeExit: false,
 
@@ -174,8 +174,6 @@ registerScreen('achievements', () => {
 // 	},
 // }));
 
-// const t = <T,>(a: T) => a;
-
 engine.withStory({
 	'block:adv': [
 		action.condition(() => true, {
@@ -276,6 +274,19 @@ engine.withStory({
 		}),
 		action.end(),
 	],
+	'another': [
+		action.function(() => {
+			console.log('GOT ANOTHER')
+			// engine.script({
+			// 	'test': [
+			// 		action.dialog('Lily', 'Hiii')
+			// 	]
+			// })
+		}),
+		action.dialog('Lily', 'He hee'),
+		action.end()
+		// action.jump('test')
+	]
 });
 
 export {};

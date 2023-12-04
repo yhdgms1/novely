@@ -1,6 +1,6 @@
 import type { BackgroundImage, DefaultActionProxyProvider, ValidAction } from './action';
 import type { Character } from './character';
-import type { CoreData, Save, Stack, StorageData, Thenable } from './types';
+import type { CoreData, NovelyScreen, Save, Stack, StorageData, Thenable } from './types';
 import type { BaseTranslationStrings } from './translations';
 import type { Stored } from './store';
 
@@ -79,7 +79,11 @@ type Renderer = {
 		/**
 		 * Shows the screen
 		 */
-		showScreen(name: 'mainmenu' | 'game' | 'saves' | 'settings' | 'loading'): void;
+		showScreen(name: NovelyScreen | 'loading'): void;
+		/**
+		 * Returns current screen
+		 */
+		getScreen(): NovelyScreen | 'loading' | (string & Record<never, never>);
 		/**
 		 * Shows prompt to exit
 		 */

@@ -25,7 +25,7 @@ import {
 	throttle,
 	isFunction,
 	findLastIndex,
-	createDeferredPromise,
+	createControlledPromise,
 	findLastPathItemBeforeItemOfType,
 	isBlockStatement,
 	isBlockExitStatement,
@@ -167,7 +167,7 @@ const novely = <
 	const times = new Set<number>();
 
 	const ASSETS_TO_PRELOAD = new Set<string>();
-	const assetsLoaded = createDeferredPromise();
+	const assetsLoaded = createControlledPromise();
 
 	/**
 	 * Prevent `undefined`
@@ -272,7 +272,7 @@ const novely = <
 	const getDefaultSave = (state = {}) => {
 		return [
 			[
-				[null, 'start'],
+				['jump', 'start'],
 				[null, 0],
 			],
 			state,
@@ -543,7 +543,10 @@ const novely = <
 		const blocks = [];
 
 		for (const [type, val] of path) {
-			if (type === null) {
+			if (type === 'jump') {
+				precurrent = story;
+				current = current[val];
+			} else if (type === null) {
 				precurrent = current;
 
 				if (isNumber(val)) {
@@ -730,7 +733,13 @@ const novely = <
 		const blocks: any[] = [];
 
 		for (const [type, val] of path) {
-			if (type === null) {
+			console.log(type, val);
+
+
+			if (type === 'jump') {
+				precurrent = story;
+				current = current[val];
+			} else if (type === null) {
 				precurrent = current;
 				current = current[val];
 			} else if (type === 'choice') {
@@ -919,7 +928,7 @@ const novely = <
 			 * `-1` index is used here because `clear` will run `next` that will increase index to `0`
 			 */
 			stack.value[0] = [
-				[null, scene],
+				['jump', scene],
 				[null, -1],
 			];
 
@@ -1141,7 +1150,7 @@ const novely = <
 		 */
 		const last = path.at(-1);
 
-		if (last && isNull(last[0]) && isNumber(last[1])) {
+		if (last && (isNull(last[0]) || last[0] === 'jump') && isNumber(last[1])) {
 			last[1]++;
 		} else {
 			path.push([null, 0])
