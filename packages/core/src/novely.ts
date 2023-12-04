@@ -733,9 +733,6 @@ const novely = <
 		const blocks: any[] = [];
 
 		for (const [type, val] of path) {
-			console.log(type, val);
-
-
 			if (type === 'jump') {
 				precurrent = story;
 				current = current[val];
