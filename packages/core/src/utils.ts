@@ -119,29 +119,55 @@ const findLastIndex = <T>(array: T[], fn: (item: T, next?: T) => boolean) => {
 	return -1;
 };
 
-const createControlledPromise = <T = void>() => {
-	let resolve!: (value: T | PromiseLike<T>) => void, reject!: (reason?: any) => void;
-
-	const promise = new Promise<T>((res, rej) => {
-		resolve = res; reject = rej;
-	});
-
-
-	return {
-		resolve,
-		reject,
-		promise,
-
-		reset() {
-
-			// I think I should think about something else there
-			// // 24.11.23
-			// // todo: should we reject promise here?
-			// // promise.reject();
-
-			Object.assign(this, createControlledPromise<T>())
-		}
+type ControlledPromise<T> = Promise<
+	{
+		value: T;
+		cancelled: false
 	}
+		|
+	{
+		value: null;
+		cancelled: true;
+	}
+>;
+
+type ControlledPromiseObj<T> = {
+	resolve: (value: T | PromiseLike<T>) => void;
+	reject: (reason?: any) => void;
+
+	promise: ControlledPromise<T>;
+
+	cancel: () => void;
+}
+
+const createControlledPromise = <T = void>() => {
+	const object = {
+		resolve: null,
+		reject: null,
+
+		promise: null,
+
+		cancel: null
+	} as unknown as ControlledPromiseObj<T>;
+
+	const init = () => {
+		const promise = new Promise((resolve, reject) => {
+			object.reject = reject;
+			object.resolve = (value) => {
+				resolve({ cancelled: false, value });
+			}
+
+			object.cancel = () => {
+				resolve({ cancelled: true, value: null });
+				init();
+			}
+		});
+
+		// @ts-expect-error Types does not match and this is expected
+		object.promise = promise;
+	}
+
+	return init(), object;
 }
 
 const findLastPathItemBeforeItemOfType = (path: Path, name: PathItem[0]) => {
