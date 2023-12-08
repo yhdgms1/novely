@@ -15,7 +15,7 @@ import { Switch, Match, createEffect } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { render } from 'solid-js/web';
 
-import { canvasDrawImages, createImage, escape, toMedia, findLast } from '$utils';
+import { canvasDrawImages, createImage, escape, toMedia, findLast, createCanVibrate } from '$utils';
 import { Provider } from '$context';
 import { Game, MainMenu, Saves, Settings, Loading, CustomScreen } from '$screens';
 
@@ -199,6 +199,8 @@ interface CreateSolidRendererOptions {
 	 */
 	useNativeLanguageNames?: boolean
 }
+
+const canVibrate = createCanVibrate();
 
 const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTypewriterWhenGoingBack = true, useNativeLanguageNames = true, target = document.body }: CreateSolidRendererOptions = {}) => {
 	const [state, setState] = createStore<State>({
@@ -654,7 +656,7 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 				},
 				vibrate(pattern) {
 					try {
-						if ('vibrate' in navigator) {
+						if (canVibrate() && 'vibrate' in navigator) {
 							navigator.vibrate(pattern);
 						}
 					} catch {}

@@ -98,4 +98,18 @@ const simple = <T extends unknown[], R>(fn: (...args: T) => R) => {
 	}
 }
 
-export { isCSSImage, canvasDrawImages, url, createImage, capitalize, escape, onKey, toMedia, findLast, simple };
+const createCanVibrate = () => {
+	let canVibrate = false;
+
+	const onPointerDown = () => {
+		canVibrate = true;
+
+		document.removeEventListener('pointerdown', onPointerDown);
+	}
+
+	document.addEventListener('pointerdown', onPointerDown)
+
+	return () => canVibrate;
+}
+
+export { isCSSImage, canvasDrawImages, url, createImage, capitalize, escape, onKey, toMedia, findLast, simple, createCanVibrate };
