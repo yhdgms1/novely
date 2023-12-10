@@ -8,7 +8,17 @@ import type {
 	CustomHandler,
 } from './action';
 import type { Storage } from './storage';
-import type { Save, State, Data, StorageData, DeepPartial, NovelyScreen, Migration, ActionFN, CoreData } from './types';
+import type {
+	Save,
+	State,
+	Data,
+	StorageData,
+	DeepPartial,
+	NovelyScreen,
+	Migration,
+	ActionFN,
+	CoreData,
+} from './types';
 import type { Renderer, RendererInit } from './renderer';
 import type { TranslationActions, Pluralization } from './translation';
 import type { BaseTranslationStrings } from './translations';
@@ -32,7 +42,7 @@ import {
 	isSkippedDurigRestore,
 	isAction,
 	noop,
-	flattenStory
+	flattenStory,
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
@@ -84,8 +94,8 @@ interface NovelyInit<
 			 * IETF BCP 47 language tag
 			 */
 			tag?: string;
-			plural?: Record<string, Pluralization>,
-			actions?: TranslationActions
+			plural?: Record<string, Pluralization>;
+			actions?: TranslationActions;
 		}
 	>;
 	/**
@@ -136,7 +146,7 @@ interface NovelyInit<
 	/**
 	 * @default "lazy"
 	 */
-	preloadAssets?: "lazy" | "blocking"
+	preloadAssets?: 'lazy' | 'blocking';
 }
 
 const novely = <
@@ -160,7 +170,7 @@ const novely = <
 	getLanguage = defaultGetLanguage,
 	overrideLanguage = false,
 	askBeforeExit = true,
-	preloadAssets = "lazy"
+	preloadAssets = 'lazy',
 }: NovelyInit<Languages, Characters, StateScheme, DataScheme>) => {
 	const story: Story = {};
 
@@ -206,7 +216,7 @@ const novely = <
 		 * Merge story parts
 		 */
 		Object.assign(story, flattenStory(part));
-	}
+	};
 
 	const withStory = async (story: Story) => {
 		script(story);
@@ -302,7 +312,7 @@ const novely = <
 
 	const getLanguageWithoutParameters = () => {
 		return getLanguage(languages, defaultGetLanguage);
-	}
+	};
 
 	/**
 	 * 1) Novely rendered using the `initialData`, but you can't start new game or `load` an empty one - this is scary, imagine losing your progress
@@ -315,8 +325,8 @@ const novely = <
 	};
 
 	const coreData: CoreData = {
-		dataLoaded: false
-	}
+		dataLoaded: false,
+	};
 
 	const $ = store(initialData);
 	const $$ = store(coreData);
@@ -361,7 +371,7 @@ const novely = <
 		/**
 		 * Now the next store updates will entail saving via storage.set
 		 */
-		$$.update(prev => (prev.dataLoaded = true, prev));
+		$$.update((prev) => ((prev.dataLoaded = true), prev));
 
 		/**
 		 * Yay
@@ -391,7 +401,7 @@ const novely = <
 	 */
 	addEventListener('visibilitychange', () => {
 		if (document.visibilityState === 'hidden') {
-			throttledEmergencyOnStorageDataChange()
+			throttledEmergencyOnStorageDataChange();
 		}
 	});
 
@@ -616,7 +626,7 @@ const novely = <
 				current = current[2][val];
 			} else if (type === 'block') {
 				blocks.push(precurrent);
-				current = story[val]
+				current = story[val];
 			} else if (type === 'block:exit' || type === 'choice:exit' || type === 'condition:exit') {
 				current = blocks.pop();
 				ignoreNested = true;
@@ -658,7 +668,7 @@ const novely = <
 						const isIdenticalID = c0.id && c1.id && c0.id === c1.id;
 						const isIdenticalByReference = c0 === c1;
 
-						return isIdenticalID || isIdenticalByReference || (str(c0) === str(c1));
+						return isIdenticalID || isIdenticalByReference || str(c0) === str(c1);
 					});
 
 					if (notLatest) continue;
@@ -741,7 +751,7 @@ const novely = <
 				current = current[val];
 			} else if (type === 'choice') {
 				blocks.push(precurrent);
-				current = current[val as number + 1][1];
+				current = current[(val as number) + 1][1];
 			} else if (type === 'condition') {
 				blocks.push(precurrent);
 				current = current[2][val];
@@ -749,7 +759,7 @@ const novely = <
 				blocks.push(precurrent);
 				current = story[val];
 			} else if (type === 'block:exit' || type === 'choice:exit' || type === 'condition:exit') {
-				current = blocks.pop()
+				current = blocks.pop();
 			}
 		}
 
@@ -802,8 +812,8 @@ const novely = <
 	};
 
 	const t = (key: BaseTranslationStrings, lang: string | Languages) => {
-		return translation[lang as Languages].internal[key]
-	}
+		return translation[lang as Languages].internal[key];
+	};
 
 	const renderer = createRenderer({
 		characters,
@@ -817,7 +827,7 @@ const novely = <
 		stack,
 		languages,
 		$,
-		$$
+		$$,
 	});
 
 	renderer.ui.start();
@@ -866,7 +876,7 @@ const novely = <
 					}
 
 					if (lang in block) {
-						return block[lang as Languages]
+						return block[lang as Languages];
 					}
 				}
 
@@ -902,10 +912,7 @@ const novely = <
 				return [unwrap(content), action, visible] as [string, ValidAction[], () => boolean];
 			});
 
-			const run = renderer.choices(
-				unwrap(question),
-				unwrapped,
-			);
+			const run = renderer.choices(unwrap(question), unwrapped);
 
 			run((selected) => {
 				enmemory();
@@ -943,10 +950,7 @@ const novely = <
 		},
 		condition([condition]) {
 			if (!restoring) {
-				stack.value[0].push(
-					['condition', String(condition())],
-					[null, 0]
-				);
+				stack.value[0].push(['condition', String(condition())], [null, 0]);
 
 				render();
 			}
@@ -1040,7 +1044,7 @@ const novely = <
 
 			const path = stack.value[0];
 			const last = path.at(-1);
-			const ignore: ("choice:exit" | "condition:exit" | "block:exit")[] = [];
+			const ignore: ('choice:exit' | 'condition:exit' | 'block:exit')[] = [];
 
 			/**
 			 * - should be an array
@@ -1117,10 +1121,7 @@ const novely = <
 		},
 		block([scene]) {
 			if (!restoring) {
-				stack.value[0].push(
-					['block', scene],
-					[null, 0]
-				);
+				stack.value[0].push(['block', scene], [null, 0]);
 
 				render();
 			}
@@ -1150,7 +1151,7 @@ const novely = <
 		if (last && (isNull(last[0]) || last[0] === 'jump') && isNumber(last[1])) {
 			last[1]++;
 		} else {
-			path.push([null, 0])
+			path.push([null, 0]);
 		}
 	};
 
@@ -1177,7 +1178,7 @@ const novely = <
 	};
 
 	const interactivity = (value = false) => {
-		interacted = value ? (interacted + 1) : 0;
+		interacted = value ? interacted + 1 : 0;
 	};
 
 	/**
@@ -1197,7 +1198,11 @@ const novely = <
 		} = $.get();
 
 		const obj = global ? data : state();
-		const cnt = isFunction(content) ? content() : typeof content === 'string' ? content : content[lang as Languages];
+		const cnt = isFunction(content)
+			? content()
+			: typeof content === 'string'
+			  ? content
+			  : content[lang as Languages];
 
 		const str = isFunction(cnt) ? cnt() : cnt;
 

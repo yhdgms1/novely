@@ -20,32 +20,24 @@ const MainMenu: VoidComponent<MainMenuProps> = (props) => {
 		if (!data.coreData().dataLoaded) return;
 
 		props.setState('screen', screen);
-	})
+	});
 
 	return (
 		<div class="root main-menu">
 			<button type="button" class="button main-menu__button" onClick={data.options.newGame}>
-				<span class="main-menu__button__text">
-					{data.t('NewGame')}
-				</span>
+				<span class="main-menu__button__text">{data.t('NewGame')}</span>
 				<Icon children={/* @once */ Icon.FilePlus()} />
 			</button>
 			<button type="button" class="button main-menu__button" onClick={() => data.options.restore()}>
-				<span class="main-menu__button__text">
-					{data.t('LoadSave')}
-				</span>
+				<span class="main-menu__button__text">{data.t('LoadSave')}</span>
 				<Icon children={/* @once */ Icon.Play()} />
 			</button>
 			<button type="button" class="button main-menu__button" onClick={() => props.setState('screen', 'saves')}>
-				<span class="main-menu__button__text">
-					{data.t('Saves')}
-				</span>
+				<span class="main-menu__button__text">{data.t('Saves')}</span>
 				<Icon children={/* @once */ Icon.Files()} />
 			</button>
 			<button type="button" class="button main-menu__button" onClick={() => props.setState('screen', 'settings')}>
-				<span class="main-menu__button__text">
-					{data.t('Settings')}
-				</span>
+				<span class="main-menu__button__text">{data.t('Settings')}</span>
 				<Icon children={/* @once */ Icon.Settings()} />
 			</button>
 			<Show when={language()} keyed>

@@ -74,6 +74,6 @@ Not documented yet.
 
 | Name                       | Description          |
 | -------------------------- | -------------------- |
-| `(max-aspect-ratio: 0.8)`  | Portrait            |
-| `(max-aspect-ratio: 0.26)` | Hyper-Wide Portrait |
+| `(max-aspect-ratio: 0.8)`  | Portrait             |
+| `(max-aspect-ratio: 0.26)` | Hyper-Wide Portrait  |
 | `(max-aspect-ratio: 0.10)` | Thermometer Portrait |

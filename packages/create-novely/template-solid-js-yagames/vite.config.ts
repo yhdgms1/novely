@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite'
 import { novelyPlugin } from '@novely/vite-plugin-nvl'
-import pluginSSL from '@vitejs/plugin-basic-ssl';
+import pluginSSL from '@vitejs/plugin-basic-ssl'
 
 export default defineConfig(({ mode }) => {
-	const dev = mode.includes('development');
+	const dev = mode.includes('development')
 
 	return {
 		plugins: [
@@ -18,19 +18,19 @@ export default defineConfig(({ mode }) => {
 				/**
 				 * Can be used to map one action to another one, can be used for writing in cyrillic
 				 */
-				rewrites: {}
+				rewrites: {},
 			}),
 			/**
 			 * Enable only in dev mode
 			 */
-			dev && pluginSSL()
+			dev && pluginSSL(),
 		],
 		build: {
 			cssCodeSplit: false,
 			target: ['chrome75', 'safari13'],
 		},
 		server: {
-			https: dev
+			https: dev,
 		},
 		esbuild: {
 			charset: 'utf8',

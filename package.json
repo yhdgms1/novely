@@ -4,6 +4,9 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
+		"dev": "pnpm dev:preview",
+		"init-repo": "pnpm build:parser && pnpm build:vite-plugin-nvl && pnpm build:deepmerge && pnpm build:core && pnpm build:typewriter && pnpm build:solid",
+		"format": "prettier --write .",
 		"dev:core": "pnpm --filter=@novely/core... --parallel dev",
 		"build:core": "pnpm --filter=@novely/core... --parallel build",
 		"dev:t9n": "pnpm --filter=@novely/t9n... --parallel dev",
@@ -30,8 +33,7 @@
 		"dev:deepmerge": "pnpm --filter=@novely/deepmerge... --parallel dev",
 		"build:deepmerge": "pnpm --filter=@novely/deepmerge... --parallel build",
 		"dev:rive": "pnpm --filter=@novely/rive... --parallel dev",
-		"build:rive": "pnpm --filter=@novely/rive... --parallel build",
-		"format": "prettier --write ."
+		"build:rive": "pnpm --filter=@novely/rive... --parallel build"
 	},
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "^6.11.0",

@@ -26,12 +26,12 @@ test('transforms', () => {
 
 test('with works', async () => {
 	const code = transform(parse(await readFile('./tests/with.nvl', 'utf8')), {
-		useWith: true
+		useWith: true,
 	});
 
 	// Code is valid
-	assert.throws(() => eval(code), { message: "Strict mode code may not include a with statement" })
-})
+	assert.throws(() => eval(code), { message: 'Strict mode code may not include a with statement' });
+});
 
 test('print', () => {
 	assert.not.throws(() => print(parse(input)));
@@ -45,7 +45,7 @@ test('print', () => {
 
 		temp = res;
 	}
-})
+});
 
 test('traverse', async () => {
 	const ast = parse(await readFile('./tests/ru.nvl', 'utf8'));
@@ -62,9 +62,7 @@ test('traverse', async () => {
 							{
 								type: 'MapItem',
 								name: 'ru',
-								children: [
-									text
-								]
+								children: [text],
 							},
 							{
 								type: 'MapItem',
@@ -72,18 +70,18 @@ test('traverse', async () => {
 								children: [
 									{
 										type: 'Value',
-										content: 'En'
-									}
-								]
+										content: 'En',
+									},
+								],
 							},
-						]
-					}
+						],
+					};
 				}
 			}
 		}
 	});
 
 	assert.not.throws(() => print(ast));
-})
+});
 
 test.run();

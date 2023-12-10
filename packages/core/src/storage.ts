@@ -19,7 +19,7 @@ const localStorageStorage = (options: LocalStorageStorageSettings): Storage => {
 
 				return value ? JSON.parse(value) : fallback;
 			} catch {
-				return fallback
+				return fallback;
 			}
 		},
 		async set(data) {

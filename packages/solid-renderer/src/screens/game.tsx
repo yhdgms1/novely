@@ -18,7 +18,7 @@ interface GameProps {
 	characters: Record<string, CharacterType>;
 	renderer: Renderer;
 
-	controls: "inside" | "outside"
+	controls: 'inside' | 'outside';
 	skipTypewriterWhenGoingBack: boolean;
 }
 
@@ -143,7 +143,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 						}
 
 						return acc;
-					}, 0)
+					}, 0),
 				}}
 			>
 				<For each={Object.entries(props.state.characters)}>
@@ -237,7 +237,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 							{props.state.choices.question || <>&#8197;</>}
 						</span>
 						<For each={props.state.choices.choices}>
-							{([text,, active], i) => {
+							{([text, , active], i) => {
 								const disabled = active ? !active() : false;
 								const index = i();
 
@@ -342,26 +342,17 @@ const Game: VoidComponent<GameProps> = (props) => {
 				/>
 			</div>
 
-			<div
-				class="control-panel"
-			>
-				<Show
-					when={data.media.hyperWide()}
-				>
-					<Show
-						when={!controlPanelMenuExpanded()}
-					>
+			<div class="control-panel">
+				<Show when={data.media.hyperWide()}>
+					<Show when={!controlPanelMenuExpanded()}>
 						<button
 							type="button"
 							class="button control-panel__button"
-
 							title={data.t('OpenMenu')}
-
 							aria-controls={controlPanelMenuID}
 							aria-expanded={controlPanelMenuExpanded()}
-
 							onClick={() => {
-								setControlPanelMenuExpanded(prev => !prev);
+								setControlPanelMenuExpanded((prev) => !prev);
 							}}
 						>
 							<Icon children={Icon.Menu()} />
@@ -379,31 +370,27 @@ const Game: VoidComponent<GameProps> = (props) => {
 				<div
 					role="menubar"
 					id={controlPanelMenuID}
-
 					class="control-panel-container"
 					classList={{
 						'control-panel-container--center': controls === 'inside',
 						'control-panel-container--wide-closed': data.media.hyperWide() && !controlPanelMenuExpanded(),
-						'control-panel-container--wide-open': data.media.hyperWide() && controlPanelMenuExpanded()
+						'control-panel-container--wide-open': data.media.hyperWide() && controlPanelMenuExpanded(),
 					}}
-
 					ref={(element) => {
 						clickOutside(element, () => {
 							if (untrack(data.media.hyperWide) && untrack(controlPanelMenuExpanded)) {
 								setControlPanelMenuExpanded(false);
 							}
-						})
+						});
 					}}
 				>
 					<ControlPanelButtons
 						openSettings={() => {
 							props.setState('screen', 'settings');
 						}}
-
 						closeDropdown={() => {
 							setControlPanelMenuExpanded(false);
 						}}
-
 						auto={auto}
 						setAuto={setAuto}
 					/>

@@ -27,9 +27,11 @@ const createElement = <K extends keyof HTMLElementTagNameMap>(
 	return Object.assign(document.createElement(name), properties);
 };
 
-document.head.append(createElement('style', {
-	innerHTML: style
-}));
+document.head.append(
+	createElement('style', {
+		innerHTML: style,
+	}),
+);
 
 const video = ({ controls, close, loop, url }: VideoParameters): CustomHandler => {
 	const handler: CustomHandler = (get, _, resolve) => {

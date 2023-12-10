@@ -16,7 +16,7 @@
 	},
 	"dependencies": {
 		"@novely/core": "workspace:*",
-    "@rive-app/canvas": "^2.6.0"
+		"@rive-app/canvas": "^2.6.0"
 	},
 	"devDependencies": {
 		"tsup": "^8.0.0",

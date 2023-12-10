@@ -42,5 +42,4 @@ const story = {
 /**
  * Setup story
  */
-withStory(story);
-
+withStory(story)

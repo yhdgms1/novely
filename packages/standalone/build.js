@@ -11,20 +11,20 @@ const context = await esbuild.context({
 	format: 'iife',
 	outdir: './dist',
 	loader: {
-		'.css': 'text'
+		'.css': 'text',
 	},
 	bundle: true,
 	minify: true,
 	plugins: [
 		cssPlugin({
 			loader: 'text',
-			minify: true
-		})
-	]
+			minify: true,
+		}),
+	],
 });
 
 if (dev) {
-	context.watch()
+	context.watch();
 } else {
 	await context.rebuild();
 	context.dispose();

@@ -38,7 +38,7 @@ const { t } = createT9N({
 
 const hi = t({
 	ru: 'Меня зовут {{name%capitalize}}, мне {{age}} {{age@years}}! 👋',
-	en: 'My name is {{name}}, I am {{age}} {{age@years}} old! 👋'
+	en: 'My name is {{name}}, I am {{age}} {{age@years}} old! 👋',
 });
 
 const str = hi('ru', { name: 'Артём', age: 17 });

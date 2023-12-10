@@ -46,17 +46,21 @@ const engine = novely({
 	overrideLanguage: true,
 	getLanguage(languages, original) {
 		if ('sdk' in games) {
-			const { environment: { i18n: { lang } }} = games.sdk;
+			const {
+				environment: {
+					i18n: { lang },
+				},
+			} = games.sdk
 
 			if (languages.includes(lang)) {
-				return document.documentElement.lang = lang;
+				return (document.documentElement.lang = lang)
 			}
 
 			//! Замените `languages[0]` на язык по-умолчанию. Например, русский для Казахстана
-			return document.documentElement.lang = languages[0];
+			return (document.documentElement.lang = languages[0])
 		}
 
-		return document.documentElement.lang = original(languages);
+		return (document.documentElement.lang = original(languages))
 	},
 	autosaves: false,
 	askBeforeExit: false,

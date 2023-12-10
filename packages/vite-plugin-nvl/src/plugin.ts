@@ -15,7 +15,7 @@ interface PluginOptions {
 	 * Use with statement to get $values1 values
 	 * @default false
 	 */
-	useWith?: boolean
+	useWith?: boolean;
 }
 
 const defaults = {
@@ -25,10 +25,14 @@ const defaults = {
 		ввод: 'input',
 		выбор: 'choice',
 	},
-	useWith: false
+	useWith: false,
 };
 
-const novelyPlugin = ({ extensions = defaults.extensions, rewrites = defaults.rewrites, useWith = defaults.useWith }: PluginOptions = {}) => {
+const novelyPlugin = ({
+	extensions = defaults.extensions,
+	rewrites = defaults.rewrites,
+	useWith = defaults.useWith,
+}: PluginOptions = {}) => {
 	const plugin: Plugin = {
 		name: 'vite-plugin-nvl',
 		async load(id) {
@@ -37,7 +41,7 @@ const novelyPlugin = ({ extensions = defaults.extensions, rewrites = defaults.re
 				const ast = parse(contents);
 				const func = transform(ast, {
 					rewrites,
-					useWith
+					useWith,
 				});
 
 				return `export default ${func}`;

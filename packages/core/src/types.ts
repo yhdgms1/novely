@@ -53,16 +53,19 @@ type NovelyScreen = 'mainmenu' | 'game' | 'saves' | 'settings';
 type DeepPartial<T> = unknown extends T
 	? T
 	: T extends object
-	? {
-			[P in keyof T]?: T[P] extends Array<infer U>
-				? Array<DeepPartial<U>>
-				: T[P] extends ReadonlyArray<infer U>
-				? ReadonlyArray<DeepPartial<U>>
-				: DeepPartial<T[P]>;
-	  }
-	: T;
+	  ? {
+				[P in keyof T]?: T[P] extends Array<infer U>
+					? Array<DeepPartial<U>>
+					: T[P] extends ReadonlyArray<infer U>
+					  ? ReadonlyArray<DeepPartial<U>>
+					  : DeepPartial<T[P]>;
+	    }
+	  : T;
 
-type ActionFN = ActionProxyProvider<Record<string, Character>, string>[keyof ActionProxyProvider<Record<string, Character>, string>];
+type ActionFN = ActionProxyProvider<Record<string, Character>, string>[keyof ActionProxyProvider<
+	Record<string, Character>,
+	string
+>];
 
 type NonEmptyRecord<T extends Record<PropertyKey, unknown>> = keyof T extends never ? never : T;
 
@@ -87,5 +90,5 @@ export type {
 	Data,
 	ActionFN,
 	NonEmptyRecord,
-	CoreData
+	CoreData,
 };

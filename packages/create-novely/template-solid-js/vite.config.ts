@@ -15,7 +15,7 @@ export default defineConfig(() => {
 				/**
 				 * Can be used to map one action to another one, can be used for writing in cyrillic
 				 */
-				rewrites: {}
+				rewrites: {},
 			}),
 		],
 		build: {

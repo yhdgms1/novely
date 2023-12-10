@@ -35,7 +35,7 @@ type Ast = Extract<AstNode, { type: 'Property' }>[];
 
 type TransformOptions = {
 	rewrites?: Record<string, string>;
-	useWith?: boolean
+	useWith?: boolean;
 };
 
 type PrintOptions = object;

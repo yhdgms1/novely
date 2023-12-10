@@ -120,15 +120,14 @@ const findLastIndex = <T>(array: T[], fn: (item: T, next?: T) => boolean) => {
 };
 
 type ControlledPromise<T> = Promise<
-	{
-		value: T;
-		cancelled: false
-	}
-		|
-	{
-		value: null;
-		cancelled: true;
-	}
+	| {
+			value: T;
+			cancelled: false;
+	  }
+	| {
+			value: null;
+			cancelled: true;
+	  }
 >;
 
 type ControlledPromiseObj<T> = {
@@ -138,7 +137,7 @@ type ControlledPromiseObj<T> = {
 	promise: ControlledPromise<T>;
 
 	cancel: () => void;
-}
+};
 
 const createControlledPromise = <T = void>() => {
 	const object = {
@@ -147,7 +146,7 @@ const createControlledPromise = <T = void>() => {
 
 		promise: null,
 
-		cancel: null
+		cancel: null,
 	} as unknown as ControlledPromiseObj<T>;
 
 	const init = () => {
@@ -155,49 +154,53 @@ const createControlledPromise = <T = void>() => {
 			object.reject = reject;
 			object.resolve = (value) => {
 				resolve({ cancelled: false, value });
-			}
+			};
 
 			object.cancel = () => {
 				resolve({ cancelled: true, value: null });
 				init();
-			}
+			};
 		});
 
 		// @ts-expect-error Types does not match and this is expected
 		object.promise = promise;
-	}
+	};
 
 	return init(), object;
-}
+};
 
 const findLastPathItemBeforeItemOfType = (path: Path, name: PathItem[0]) => {
 	const index = findLastIndex(path, ([_name, _value], next) => {
 		return isNull(_name) && isNumber(_value) && next != null && next[0] === name;
 	});
 
-	return path[index] as undefined | [
-		null,
-		number
-	];
-}
+	return path[index] as undefined | [null, number];
+};
 
 const isBlockStatement = (statement: unknown): statement is 'choice' | 'condition' | 'block' => {
 	return BLOCK_STATEMENTS.has(statement as any);
-}
+};
 
-const isBlockExitStatement = (statement: unknown): statement is "choice:exit" | "condition:exit" | "block:exit" => {
+const isBlockExitStatement = (
+	statement: unknown,
+): statement is 'choice:exit' | 'condition:exit' | 'block:exit' => {
 	return BLOCK_EXIT_STATEMENTS.has(statement as any);
-}
+};
 
-const isSkippedDurigRestore = (item: unknown): item is "vibrate" | "dialog" | "input" | "choice" | "text" => {
+const isSkippedDurigRestore = (item: unknown): item is 'vibrate' | 'dialog' | 'input' | 'choice' | 'text' => {
 	return SKIPPED_DURING_RESTORE.has(item as any);
-}
+};
 
-const noop = () => {}
+const noop = () => {};
 
-const isAction = (element: unknown): element is [keyof MatchActionMapComplete, ...Parameters<MatchActionMapComplete[keyof MatchActionMapComplete]>] => {
+const isAction = (
+	element: unknown,
+): element is [
+	keyof MatchActionMapComplete,
+	...Parameters<MatchActionMapComplete[keyof MatchActionMapComplete]>,
+] => {
 	return Array.isArray(element) && isString(element[0]);
-}
+};
 
 /**
  * Transforms `(ValidAction | ValidAction[])[]` to `ValidAction[]`
@@ -221,7 +224,7 @@ const flattenStory = (story: Story) => {
 	});
 
 	return Object.fromEntries(entries);
-}
+};
 
 /**
  * A wrapper on `fn` to make it run only once!
@@ -235,8 +238,8 @@ const once = (fn: () => void) => {
 
 		ran = true;
 		fn();
-	}
-}
+	};
+};
 
 export {
 	matchAction,
@@ -260,5 +263,5 @@ export {
 	noop,
 	isAction,
 	flattenStory,
-	once
+	once,
 };

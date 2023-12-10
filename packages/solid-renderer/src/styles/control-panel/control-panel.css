@@ -37,10 +37,10 @@
 	position: fixed;
 	z-index: 30;
 
-	left: .4rem;
-	bottom: .4rem;
+	left: 0.4rem;
+	bottom: 0.4rem;
 
-	width: calc(100% - .4rem * 2);
+	width: calc(100% - 0.4rem * 2);
 }
 
 .control-panel-container-backdrop {
@@ -58,7 +58,7 @@
 	vertical-align: middle;
 }
 
-@media (max-aspect-ratio: 0.8) and ((min-aspect-ratio: 0.26) or (max-aspect-ratio: 0.10)) {
+@media (max-aspect-ratio: 0.8) and ((min-aspect-ratio: 0.26) or (max-aspect-ratio: 0.1)) {
 	.control-panel {
 		left: 0.4rem;
 	}

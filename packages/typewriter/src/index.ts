@@ -1,7 +1,10 @@
 import type { TypewriterOptions } from './types';
 import { defaultSpeed, collectTextNodes } from './utils';
 
-const map = (it: string, cb: (value: string, prev: HTMLSpanElement | undefined) => HTMLSpanElement | void | undefined) => {
+const map = (
+	it: string,
+	cb: (value: string, prev: HTMLSpanElement | undefined) => HTMLSpanElement | void | undefined,
+) => {
 	const result: HTMLSpanElement[] = [];
 
 	for (const value of it) {
@@ -13,7 +16,7 @@ const map = (it: string, cb: (value: string, prev: HTMLSpanElement | undefined) 
 	}
 
 	return result;
-}
+};
 
 /**
  * Typewriter

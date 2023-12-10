@@ -8,7 +8,7 @@ const to_number = (value: string) => {
 	const isString = isNaN(numeralized) || !isFinite(numeralized);
 
 	return isString ? '' : numeralized;
-}
+};
 
 const print = (ast: Ast, {}: PrintOptions = {}) => {
 	let code = '';
@@ -44,7 +44,10 @@ const print = (ast: Ast, {}: PrintOptions = {}) => {
 
 			const offset = start + DOUBLE_SPACE;
 
-			return `${start}\\${value.content.split(NEW_LINE).map((s, i) => i === 0 ? '' : offset + s).join(NEW_LINE)}`
+			return `${start}\\${value.content
+				.split(NEW_LINE)
+				.map((s, i) => (i === 0 ? '' : offset + s))
+				.join(NEW_LINE)}`;
 		}
 
 		if (short) {
@@ -52,7 +55,7 @@ const print = (ast: Ast, {}: PrintOptions = {}) => {
 			const needToEscape = has(' ') || has('"');
 
 			if (needToEscape) {
-				return JSON.stringify(value.content)
+				return JSON.stringify(value.content);
 			}
 
 			return value.content;
@@ -64,27 +67,36 @@ const print = (ast: Ast, {}: PrintOptions = {}) => {
 	const print_map_item = (value: Extract<AstNode, { type: 'MapItem' }>, depth: number) => {
 		const children = value.children.map((child) => print_with_unknown_printer(child, depth + 1)).join(NEW_LINE);
 
-		return `${DOUBLE_SPACE.repeat(depth)}${value.name}${NEW_LINE}${children}`
-	}
+		return `${DOUBLE_SPACE.repeat(depth)}${value.name}${NEW_LINE}${children}`;
+	};
 
 	const print_map = (value: Extract<AstNode, { type: 'Map' }>, depth: number): string => {
 		const children = value.children.map((child) => print_map_item(child, depth + 1));
 
-		return `${DOUBLE_SPACE.repeat(depth)}*${NEW_LINE}${children.join(NEW_LINE)}`
+		return `${DOUBLE_SPACE.repeat(depth)}*${NEW_LINE}${children.join(NEW_LINE)}`;
 	};
 
 	const print_action = (value: Extract<AstNode, { type: 'Action' }>, depth: number): string => {
-		const all_is_number = value.children.every((item) => item.type !== 'Map' && item.type !== 'Array' && typeof to_number(item.content) === 'number') && value.children.length > 1;
+		const all_is_number =
+			value.children.every(
+				(item) => item.type !== 'Map' && item.type !== 'Array' && typeof to_number(item.content) === 'number',
+			) && value.children.length > 1;
 		const has_map_or_array = value.children.some((item) => item.type === 'Map' || item.type === 'Array');
-		const larger_than_80 = value.children.map((item) => (item.type === 'Map' || item.type === 'Array') ? '' : item.content).join('').length > 80;
-		const is_starts_with_new_line = value.children.some((item) => item.type === 'Value' && item.content.startsWith('\n'));
+		const larger_than_80 =
+			value.children.map((item) => (item.type === 'Map' || item.type === 'Array' ? '' : item.content)).join('')
+				.length > 80;
+		const is_starts_with_new_line = value.children.some(
+			(item) => item.type === 'Value' && item.content.startsWith('\n'),
+		);
 
 		const long = all_is_number || has_map_or_array || larger_than_80 || is_starts_with_new_line;
 		const short = !long;
 
-		const children = value.children.map((child) => print_with_unknown_printer(child, depth + 1, short)).join(short ? ' ' : NEW_LINE);
+		const children = value.children
+			.map((child) => print_with_unknown_printer(child, depth + 1, short))
+			.join(short ? ' ' : NEW_LINE);
 
-		return `${DOUBLE_SPACE.repeat(depth)}!${value.name}${short ? ' ' : NEW_LINE}${children}`
+		return `${DOUBLE_SPACE.repeat(depth)}!${value.name}${short ? ' ' : NEW_LINE}${children}`;
 	};
 
 	const print_with_unknown_printer = (child: AstNode, depth: number, short = false) => {
@@ -104,7 +116,7 @@ const print = (ast: Ast, {}: PrintOptions = {}) => {
 	};
 
 	for (const top of ast) {
-		code += `${top.name}${top.name ? NEW_LINE : ''}`
+		code += `${top.name}${top.name ? NEW_LINE : ''}`;
 
 		for (const child of top.children) {
 			code += print_with_unknown_printer(child, 1) + NEW_LINE;
@@ -112,7 +124,7 @@ const print = (ast: Ast, {}: PrintOptions = {}) => {
 	}
 
 	return code;
-}
+};
 
-export { print }
-export type { PrintOptions } from './types'
+export { print };
+export type { PrintOptions } from './types';

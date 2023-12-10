@@ -12,7 +12,7 @@ export default defineConfig((options) => {
 		dts: options.dts,
 		watch: options.watch,
 		loader: {
-			'.css': 'text'
+			'.css': 'text',
 		},
 	};
 });

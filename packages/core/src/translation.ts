@@ -52,7 +52,7 @@ const replace = (
 		const [pathstr, plural, action] = split(key.trim(), ['@', '%']);
 
 		if (!pathstr) {
-			return ''
+			return '';
 		}
 
 		const path = pathstr.split('.');
@@ -71,5 +71,5 @@ const replace = (
 	});
 };
 
-export { unwrap, replace }
-export type { AllowedContent, PluralType, Pluralization, TranslationActions }
+export { unwrap, replace };
+export type { AllowedContent, PluralType, Pluralization, TranslationActions };

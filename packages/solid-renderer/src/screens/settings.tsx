@@ -26,11 +26,11 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 		 * False — "Angielski, Rosyjski, Polski"
 		 */
 		const intl = new Intl.DisplayNames([props.useNativeLanguageNames ? lang : language()], {
-			type: 'language'
+			type: 'language',
 		});
 
 		return intl.of(lang) || lang;
-	}
+	};
 
 	const onLanguageSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = ({ currentTarget: { value } }) => {
 		data.storeDataUpdate((prev) => {
@@ -74,7 +74,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 				</div>
 				<div class="select">
 					<label class="select__label" for={speedSelectID}>
-					<span aria-hidden={true}>⚡</span> {data.t('TextSpeed')}
+						<span aria-hidden={true}>⚡</span> {data.t('TextSpeed')}
 					</label>
 					<select class="select__select" id={speedSelectID} onChange={onSpeedSelect}>
 						<For each={['Slow', 'Medium', 'Fast', 'Auto']}>

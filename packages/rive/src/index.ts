@@ -13,8 +13,8 @@ type RiveOptions = Omit<rive.RiveParameters, 'buffer' | 'canvas'> & { src: strin
  * Callbacks for init method
  */
 type Callbacks = {
-  onResize: () => void;
-}
+	onResize: () => void;
+};
 
 /**
  * Unique ID for each rive instance
@@ -22,209 +22,209 @@ type Callbacks = {
 type Id = string;
 
 type SetupProvided = {
-  module: typeof rive;
-  canvas: HTMLCanvasElement;
-  init: (options: RiveOptions & { callbacks?: Partial<Callbacks> }) => rive.Rive;
-}
+	module: typeof rive;
+	canvas: HTMLCanvasElement;
+	init: (options: RiveOptions & { callbacks?: Partial<Callbacks> }) => rive.Rive;
+};
 
 type Setup = (provided: SetupProvided) => void;
 
 type Data = Record<
-  Id,
-  {
-    canvas: HTMLCanvasElement;
-    instance: rive.Rive;
+	Id,
+	{
+		canvas: HTMLCanvasElement;
+		instance: rive.Rive;
 
-    /**
-     * Is currently shown
-     */
-    active: boolean;
+		/**
+		 * Is currently shown
+		 */
+		active: boolean;
 
-    /**
-     * Promise to know the loading state
-     */
-    loaded: Promise<rive.Rive>;
-  }
+		/**
+		 * Promise to know the loading state
+		 */
+		loaded: Promise<rive.Rive>;
+	}
 >;
 
 const show = (id: Id, setup: Setup) => {
-  const handler: CustomHandler = async (get) => {
-    const { data: dataChannel, root, element, clear } = get('rive', true);
+	const handler: CustomHandler = async (get) => {
+		const { data: dataChannel, root, element, clear } = get('rive', true);
 
-    const data = dataChannel() as unknown as Data;
+		const data = dataChannel() as unknown as Data;
 
-    if (id in data) {
-      /**
-       * Purpose of `show` is to activate the Rive, not to
-       */
-      return;
-    }
+		if (id in data) {
+			/**
+			 * Purpose of `show` is to activate the Rive, not to
+			 */
+			return;
+		}
 
-    const canvas = createCanvas2D();
+		const canvas = createCanvas2D();
 
-    let inited = false;
+		let inited = false;
 
-    let resolve: (instance: rive.Rive) => void;
+		let resolve: (instance: rive.Rive) => void;
 
-    const loaded = new Promise<rive.Rive>(res => {
-      resolve = res;
-    });
+		const loaded = new Promise<rive.Rive>((res) => {
+			resolve = res;
+		});
 
-    setup({
-      module: rive,
-      canvas,
-      init({ callbacks, ...options }) {
-        if (inited) return data[id].instance;
+		setup({
+			module: rive,
+			canvas,
+			init({ callbacks, ...options }) {
+				if (inited) return data[id].instance;
 
-        inited = true;
+				inited = true;
 
-        /**
-         * Best for characters
-         */
-        if (!options.layout) {
-          options.layout = new rive.Layout({
-            fit: rive.Fit.Contain,
-            alignment: rive.Alignment.BottomCenter,
-          })
-        }
+				/**
+				 * Best for characters
+				 */
+				if (!options.layout) {
+					options.layout = new rive.Layout({
+						fit: rive.Fit.Contain,
+						alignment: rive.Alignment.BottomCenter,
+					});
+				}
 
-        /**
-         * Now Rive is inited
-         */
-        const instance = new rive.Rive({
-          ...options,
-          canvas,
-          onLoad(event) {
-            instance.resizeDrawingSurfaceToCanvas();
+				/**
+				 * Now Rive is inited
+				 */
+				const instance = new rive.Rive({
+					...options,
+					canvas,
+					onLoad(event) {
+						instance.resizeDrawingSurfaceToCanvas();
 
-            if (options.onLoad) options.onLoad(event);
+						if (options.onLoad) options.onLoad(event);
 
-            resolve(instance);
-          }
-        });
+						resolve(instance);
+					},
+				});
 
-        const updated = {
-          ...data,
-          [id]: {
-            canvas,
-            instance,
-            loaded,
+				const updated = {
+					...data,
+					[id]: {
+						canvas,
+						instance,
+						loaded,
 
-            active: true,
-          }
-        } satisfies Data;
+						active: true,
+					},
+				} satisfies Data;
 
-        dataChannel(updated);
+				dataChannel(updated);
 
-        const listener = () => {
-          if (updated[id].active) {
-            updated[id].instance.resizeDrawingSurfaceToCanvas();
-            if (callbacks?.onResize) callbacks.onResize();
-          }
-        };
+				const listener = () => {
+					if (updated[id].active) {
+						updated[id].instance.resizeDrawingSurfaceToCanvas();
+						if (callbacks?.onResize) callbacks.onResize();
+					}
+				};
 
-        addEventListener("resize", listener, false);
-        clear(() => removeEventListener('resize', listener));
+				addEventListener('resize', listener, false);
+				clear(() => removeEventListener('resize', listener));
 
-        return instance;
-      }
-    });
+				return instance;
+			},
+		});
 
-    hideNativeCharactersElement(root);
-    insertCanvas(element, canvas);
-  }
+		hideNativeCharactersElement(root);
+		insertCanvas(element, canvas);
+	};
 
-  handler.id = 'rive-control-' + id;
-  handler.callOnlyLatest = true;
-  handler.skipClearOnGoingBack = true;
+	handler.id = 'rive-control-' + id;
+	handler.callOnlyLatest = true;
+	handler.skipClearOnGoingBack = true;
 
-  return ['custom', handler] as unknown as ['custom', [CustomHandler]];
-}
+	return ['custom', handler] as unknown as ['custom', [CustomHandler]];
+};
 
 const animate = (id: Id, name: string) => {
-  const handler: CustomHandler = async (get) => {
-    const { data: dataChannel } = get('rive', true);
+	const handler: CustomHandler = async (get) => {
+		const { data: dataChannel } = get('rive', true);
 
-    const data = dataChannel() as unknown as Data;
+		const data = dataChannel() as unknown as Data;
 
-    if (!(id in data)) {
-      throw new Error('before using `animate` first call the `show` and make sure same ID is used')
-    }
+		if (!(id in data)) {
+			throw new Error('before using `animate` first call the `show` and make sure same ID is used');
+		}
 
-    data[id].loaded.then(rive => {
-      data[id].active = true;
+		data[id].loaded.then((rive) => {
+			data[id].active = true;
 
-      rive.play(name);
+			rive.play(name);
 
-      const parent = data[id].canvas.parentElement;
+			const parent = data[id].canvas.parentElement;
 
-      if (!parent) return;
+			if (!parent) return;
 
-      parent.style.opacity = '1';
-    })
-  }
+			parent.style.opacity = '1';
+		});
+	};
 
-  handler.id = 'rive-change-' + id;
-  handler.callOnlyLatest = true;
-  handler.skipClearOnGoingBack = true;
+	handler.id = 'rive-change-' + id;
+	handler.callOnlyLatest = true;
+	handler.skipClearOnGoingBack = true;
 
-  return ['custom', handler] as unknown as ['custom', [CustomHandler]]
-}
+	return ['custom', handler] as unknown as ['custom', [CustomHandler]];
+};
 
 const hide = (id: Id) => {
-  const handler: CustomHandler = async (get) => {
-    const { data: dataChannel } = get('rive', true);
+	const handler: CustomHandler = async (get) => {
+		const { data: dataChannel } = get('rive', true);
 
-    const data = dataChannel() as unknown as Data;
+		const data = dataChannel() as unknown as Data;
 
-    if (!data[id]) return;
+		if (!data[id]) return;
 
-    data[id].loaded.then(rive => {
-      data[id].active = false;
+		data[id].loaded.then((rive) => {
+			data[id].active = false;
 
-      rive.stop();
+			rive.stop();
 
-      const parent = data[id].canvas.parentElement;
+			const parent = data[id].canvas.parentElement;
 
-      if (!parent) return;
+			if (!parent) return;
 
-      parent.style.opacity = '0';
-    });
-  }
+			parent.style.opacity = '0';
+		});
+	};
 
-  handler.id = 'rive-control-' + id;
-  handler.callOnlyLatest = true;
-  handler.skipClearOnGoingBack = true;
+	handler.id = 'rive-control-' + id;
+	handler.callOnlyLatest = true;
+	handler.skipClearOnGoingBack = true;
 
-  return ['custom', handler] as unknown as ['custom', [CustomHandler]]
-}
+	return ['custom', handler] as unknown as ['custom', [CustomHandler]];
+};
 
 const remove = (id: Id) => {
-  const handler: CustomHandler = async (get) => {
-    const { data: dataChannel } = get('rive', true);
+	const handler: CustomHandler = async (get) => {
+		const { data: dataChannel } = get('rive', true);
 
-    const data = dataChannel() as unknown as Data;
+		const data = dataChannel() as unknown as Data;
 
-    if (!data[id]) return;
+		if (!data[id]) return;
 
-    const parent = data[id].canvas.parentElement;
+		const parent = data[id].canvas.parentElement;
 
-    if (parent) parent.remove();
+		if (parent) parent.remove();
 
-    data[id].active = false;
-    data[id].loaded.then(rive => {
-      rive.cleanup();
+		data[id].active = false;
+		data[id].loaded.then((rive) => {
+			rive.cleanup();
 
-      delete data[id];
-    });
-  }
+			delete data[id];
+		});
+	};
 
-  handler.id = 'rive-control-' + id;
-  handler.callOnlyLatest = true;
-  handler.skipClearOnGoingBack = true;
+	handler.id = 'rive-control-' + id;
+	handler.callOnlyLatest = true;
+	handler.skipClearOnGoingBack = true;
 
-  return ['custom', handler] as unknown as ['custom', [CustomHandler]]
-}
+	return ['custom', handler] as unknown as ['custom', [CustomHandler]];
+};
 
-export { show, animate, hide, remove }
+export { show, animate, hide, remove };
 export { bottomBarIntergration as _tg43os } from './intergration';

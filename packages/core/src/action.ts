@@ -28,10 +28,7 @@ type ValidAction =
 
 type Story = Record<string, ValidAction[]>;
 
-type Unwrappable<L extends string> =
-	| string
-	| (() => string)
-	| Record<L, string | (() => string)>;
+type Unwrappable<L extends string> = string | (() => string) | Record<L, string | (() => string)>;
 
 type FunctionableValue<T> = T | (() => T);
 
@@ -95,19 +92,22 @@ interface ActionInputOnInputMeta {
 
 type ActionInputSetup = (input: HTMLInputElement, cleanup: (cb: () => void) => void) => void;
 
-type BackgroundImage = Partial<
-	Record<
-		"portrait" | "landscape" | "all",
-		string
-	>
-> & Record<(string), string>;
+type BackgroundImage = Partial<Record<'portrait' | 'landscape' | 'all', string>> & Record<string, string>;
 
 type ActionProxyProvider<Characters extends Record<string, Character>, Languages extends string> = {
 	choice: {
-		(...choices: ([Unwrappable<Languages>, ValidAction[]] | [Unwrappable<Languages>, ValidAction[], () => boolean])[]): ValidAction;
+		(
+			...choices: (
+				| [Unwrappable<Languages>, ValidAction[]]
+				| [Unwrappable<Languages>, ValidAction[], () => boolean]
+			)[]
+		): ValidAction;
 		(
 			question: Unwrappable<Languages>,
-			...choices: ([Unwrappable<Languages>, ValidAction[]] | [Unwrappable<Languages>, ValidAction[], () => boolean])[]
+			...choices: (
+				| [Unwrappable<Languages>, ValidAction[]]
+				| [Unwrappable<Languages>, ValidAction[], () => boolean]
+			)[]
 		): ValidAction;
 	};
 
@@ -132,7 +132,9 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 
 	end: () => ValidAction;
 
-	showBackground: <T extends string | BackgroundImage>(background: T extends string ? T : T extends Record<PropertyKey, unknown> ? NonEmptyRecord<T> : never) => ValidAction;
+	showBackground: <T extends string | BackgroundImage>(
+		background: T extends string ? T : T extends Record<PropertyKey, unknown> ? NonEmptyRecord<T> : never,
+	) => ValidAction;
 
 	playMusic: (audio: string) => ValidAction;
 
@@ -149,7 +151,12 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 		): ValidAction;
 	};
 
-	hideCharacter: (character: keyof Characters, className?: string, style?: string, duration?: number) => ValidAction;
+	hideCharacter: (
+		character: keyof Characters,
+		className?: string,
+		style?: string,
+		duration?: number,
+	) => ValidAction;
 
 	animateCharacter: (character: keyof Characters, timeout: number, ...classes: string[]) => ValidAction;
 
@@ -193,5 +200,5 @@ export type {
 	CustomHandlerGetResultDataFunction,
 	FunctionableValue,
 	ActionInputOnInputMeta,
-	BackgroundImage
+	BackgroundImage,
 };

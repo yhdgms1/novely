@@ -72,7 +72,7 @@ const toMedia = (media: 'portrait' | 'landscape' | (string & Record<never, never
 	}
 
 	return media;
-}
+};
 
 const findLast = <T>(array: T[], fn: (item: T) => boolean) => {
 	for (let i = array.length - 1; i >= 0; i--) {
@@ -95,8 +95,8 @@ const simple = <T extends unknown[], R>(fn: (...args: T) => R) => {
 		});
 
 		return result;
-	}
-}
+	};
+};
 
 const createCanVibrate = () => {
 	let canVibrate = false;
@@ -105,11 +105,23 @@ const createCanVibrate = () => {
 		canVibrate = true;
 
 		document.removeEventListener('pointerdown', onPointerDown);
-	}
+	};
 
-	document.addEventListener('pointerdown', onPointerDown)
+	document.addEventListener('pointerdown', onPointerDown);
 
 	return () => canVibrate;
-}
+};
 
-export { isCSSImage, canvasDrawImages, url, createImage, capitalize, escape, onKey, toMedia, findLast, simple, createCanVibrate };
+export {
+	isCSSImage,
+	canvasDrawImages,
+	url,
+	createImage,
+	capitalize,
+	escape,
+	onKey,
+	toMedia,
+	findLast,
+	simple,
+	createCanVibrate,
+};

@@ -53,7 +53,7 @@ const engine = novely({
 					other: 'years',
 				},
 			},
-		}
+		},
 	},
 
 	state: {
@@ -83,8 +83,8 @@ const engine = novely({
 			}
 
 			return saved;
-		}
-	]
+		},
+	],
 });
 
 const { action, state, data, unwrap } = engine;
@@ -98,7 +98,7 @@ registerScreen('achievements', () => {
 						<button type="button" class="button saves__button" data-novely-goto="mainmenu">
 							{unwrap({
 								en: 'Exit',
-								ru: 'Выйти'
+								ru: 'Выйти',
 							})}
 						</button>
 					</div>
@@ -107,7 +107,7 @@ registerScreen('achievements', () => {
 							<caption>
 								{unwrap({
 									en: 'Youʼr achievements',
-									ru: 'Твои достижения'
+									ru: 'Твои достижения',
 								})}
 							</caption>
 							<thead>
@@ -115,19 +115,19 @@ registerScreen('achievements', () => {
 									<th scope="col">
 										{unwrap({
 											en: 'Money',
-											ru: 'Деньги'
+											ru: 'Деньги',
 										})}
 									</th>
 									<th scope="col">
 										{unwrap({
 											en: 'Love',
-											ru: 'Любовь'
+											ru: 'Любовь',
 										})}
 									</th>
 									<th scope="col">
 										{unwrap({
 											en: 'Cars',
-											ru: 'Тачки'
+											ru: 'Тачки',
 										})}
 									</th>
 								</tr>
@@ -182,7 +182,7 @@ engine.withStory({
 					en: 'You will be shown a full-screen ad',
 					ru: 'Вам будет показана полноэкранная реклама',
 				}),
-			]
+			],
 		}),
 	],
 	start: [
@@ -191,7 +191,7 @@ engine.withStory({
 		action.preload(outdoor),
 		action.text({
 			en: 'You wake up, but do not see your keyboard anymore, instead...',
-			ru: 'Вы просыпаетесь, но больше не видите своей клавиатуры, вместо неё...'
+			ru: 'Вы просыпаетесь, но больше не видите своей клавиатуры, вместо неё...',
 		}),
 		action.custom(particles(snow)),
 		action.showBackground(outdoor),
@@ -208,7 +208,7 @@ engine.withStory({
 			ru: 'Привет',
 		}),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog('Lily',	{
+		action.dialog('Lily', {
 			en: 'Iʼm going to tell you about the Novely engine',
 			ru: 'Я расскажу тебе про движок Novely',
 		}),
@@ -235,18 +235,18 @@ engine.withStory({
 		}),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.dialog('Lily', {
-			en: 'The Novely API is very simple and intuitive, so even a little programming experience is enough to start creating visual novels. And once you\'ve studied the documentation, you\'ll get the hang of it!',
+			en: "The Novely API is very simple and intuitive, so even a little programming experience is enough to start creating visual novels. And once you've studied the documentation, you'll get the hang of it!",
 			ru: 'API Novely очень простой и интуитивный, так что даже небольшой опыт в программировании подойдёт чтобы начать создавать визуальные новеллы. А уж после изучения документации всё получится!',
 		}),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.dialog('Lily', {
 			en: 'By the way, how old are you?',
-			ru: 'Кстати, сколько тебе лет?'
+			ru: 'Кстати, сколько тебе лет?',
 		}),
 		action.input(
 			{
 				en: `Enter you'r age`,
-				ru: 'Введите ваш возраст'
+				ru: 'Введите ваш возраст',
 			},
 			({ input, error }) => {
 				error(input.validationMessage);
@@ -261,22 +261,22 @@ engine.withStory({
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.dialog('Lily', {
 			en: "Ah, {{age}} {{age@years}} old? It's a wonderful age",
-			ru: "Ох, {{age}} {{age@years}}? Это прекрасный возраст",
+			ru: 'Ох, {{age}} {{age@years}}? Это прекрасный возраст',
 		}),
 		action.condition(() => true, {
 			true: [
 				action.text({
 					en: 'The End',
-					ru: 'Конец'
+					ru: 'Конец',
 				}),
 				// Проверка автоматического exit
-			]
+			],
 		}),
 		action.end(),
 	],
-	'another': [
+	another: [
 		action.function(() => {
-			console.log('GOT ANOTHER')
+			console.log('GOT ANOTHER');
 			// engine.script({
 			// 	'test': [
 			// 		action.dialog('Lily', 'Hiii')
@@ -284,9 +284,9 @@ engine.withStory({
 			// })
 		}),
 		action.dialog('Lily', 'He hee'),
-		action.end()
+		action.end(),
 		// action.jump('test')
-	]
+	],
 });
 
 export {};

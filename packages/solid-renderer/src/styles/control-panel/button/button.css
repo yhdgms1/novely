@@ -22,7 +22,7 @@
 	display: none;
 }
 
-@media (max-aspect-ratio: 0.8) and ((min-aspect-ratio: 0.26) or (max-aspect-ratio: 0.10)) {
+@media (max-aspect-ratio: 0.8) and ((min-aspect-ratio: 0.26) or (max-aspect-ratio: 0.1)) {
 	.control-panel__button {
 		flex-grow: 1;
 	}

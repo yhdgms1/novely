@@ -12,7 +12,7 @@ const engine = novely({
 	translation: {
 		en: {
 			internal: EN,
-		}
+		},
 	},
 	characters: {
 		Lily: {

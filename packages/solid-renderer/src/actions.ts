@@ -8,4 +8,4 @@ const clickOutside = (node: HTMLElement, handler: () => void) => {
 	onCleanup(() => document.removeEventListener('click', handleClick, true));
 };
 
-export { clickOutside }
+export { clickOutside };

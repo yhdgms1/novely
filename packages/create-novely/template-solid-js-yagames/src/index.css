@@ -4,27 +4,27 @@
 /**
  * Скрывает кнопку автоматического режима
  */
- .control-panel__button--auto-mode {
-  display: none;
+.control-panel__button--auto-mode {
+	display: none;
 }
 
 /**
  * Делает так, чтобы кнопки управления не наезжали на диалог
  */
 .action-dialog-container {
-  padding-bottom: 0;
-  margin-bottom: 2.4rem;
+	padding-bottom: 0;
+	margin-bottom: 2.4rem;
 }
 
 /**
  *  Скрывает кнопку настроек на панели управления
  */
 .button.control-panel__button:nth-child(4) {
-  display: none;
+	display: none;
 }
 
 :root {
-  --novely-settings-background-image: url('./assets/outdoor.png');
- 	--novely-main-menu-background-image: url('./assets/outdoor.png');
- 	--novely-saves-background-image: url('./assets/outdoor.png');
+	--novely-settings-background-image: url('./assets/outdoor.png');
+	--novely-main-menu-background-image: url('./assets/outdoor.png');
+	--novely-saves-background-image: url('./assets/outdoor.png');
 }

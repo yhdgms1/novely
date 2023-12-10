@@ -164,7 +164,7 @@ interface State {
 	text: StateText;
 	screen: PossibleScreen;
 
-	exitPromptShown: boolean
+	exitPromptShown: boolean;
 }
 
 interface SolidRendererStore extends RendererStore {
@@ -182,7 +182,7 @@ interface CreateSolidRendererOptions {
 	 * Controls position
 	 * @default "outside"
 	 */
-	controls?: "inside" | "outside"
+	controls?: 'inside' | 'outside';
 	/**
 	 * When `goingBack` typewriter effect won't be applied
 	 * @default true
@@ -192,17 +192,23 @@ interface CreateSolidRendererOptions {
 	 * Where Novely will be mounted
 	 * @default document.body
 	 */
-	target?: MountableElement
+	target?: MountableElement;
 	/**
 	 * In the settings screen languages will be shown in it's own language instead of selected language
 	 * @default true
 	 */
-	useNativeLanguageNames?: boolean
+	useNativeLanguageNames?: boolean;
 }
 
 const canVibrate = createCanVibrate();
 
-const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTypewriterWhenGoingBack = true, useNativeLanguageNames = true, target = document.body }: CreateSolidRendererOptions = {}) => {
+const createSolidRenderer = ({
+	fullscreen = false,
+	controls = 'outside',
+	skipTypewriterWhenGoingBack = true,
+	useNativeLanguageNames = true,
+	target = document.body,
+}: CreateSolidRendererOptions = {}) => {
 	const [state, setState] = createStore<State>({
 		background: '',
 		characters: {},
@@ -210,7 +216,7 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 			content: '',
 			name: '',
 			visible: false,
-			goingBack: false
+			goingBack: false,
 		},
 		choices: {
 			question: '',
@@ -224,7 +230,7 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 		},
 		text: {
 			content: '',
-			goingBack: false
+			goingBack: false,
 		},
 		layers: {},
 		screens: {},
@@ -232,7 +238,7 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 			items: [],
 		},
 		screen: 'mainmenu',
-		exitPromptShown: false
+		exitPromptShown: false,
 	});
 
 	const store: SolidRendererStore = {
@@ -286,7 +292,6 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 								store={/* @once */ store}
 								characters={/* @once */ characters}
 								renderer={/* @once */ renderer}
-
 								controls={/* @once */ controls}
 								skipTypewriterWhenGoingBack={/* @once */ skipTypewriterWhenGoingBack}
 							/>
@@ -357,7 +362,7 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 						const bg = last ? background[last.media] : '';
 
 						setState('background', bg);
-					}
+					};
 
 					for (const mq of mediaQueries) {
 						mq.onchange = handle;
@@ -474,7 +479,7 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 							emotion,
 							visible: true,
 							resolve,
-							goingBack
+							goingBack,
 						}));
 					};
 				},
@@ -684,41 +689,43 @@ const createSolidRenderer = ({ fullscreen = false, controls = "outside", skipTyp
 							unmount() {
 								unmount?.();
 								unmount = void 0;
-							}
-						}
-					}
+							},
+						};
+					},
 				},
 				misc: {
 					preloadImagesBlocking: (images) => {
-						return Promise.allSettled([...images].map(src => {
-							const img = document.createElement('img');
+						return Promise.allSettled(
+							[...images].map((src) => {
+								const img = document.createElement('img');
 
-							img.src = src;
+								img.src = src;
 
-							return new Promise<unknown>((resolve, reject) => {
-								/**
-								 * Image is already loaded
-								 */
-								if (img.complete && img.naturalHeight !== 0) {
-									resolve(void 0);
-								}
+								return new Promise<unknown>((resolve, reject) => {
+									/**
+									 * Image is already loaded
+									 */
+									if (img.complete && img.naturalHeight !== 0) {
+										resolve(void 0);
+									}
 
-								img.addEventListener('load', resolve);
-								img.addEventListener('abort', reject);
-								img.addEventListener('error', reject);
-							});
-						}));
+									img.addEventListener('load', resolve);
+									img.addEventListener('abort', reject);
+									img.addEventListener('error', reject);
+								});
+							}),
+						);
 					},
 					preloadImage: (image) => {
-						return document.createElement('img').src = image;
-					}
-				}
+						return (document.createElement('img').src = image);
+					},
+				},
 			});
 		},
 		registerScreen(name: string, screen: StateScreen) {
 			setState('screens', name, () => screen);
 		},
-		registerMainmenuItem(fn: StateMainmenuItem,) {
+		registerMainmenuItem(fn: StateMainmenuItem) {
 			setState('mainmenu', 'items', (prev) => [...prev, fn]);
 		},
 	};

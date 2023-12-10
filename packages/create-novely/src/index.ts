@@ -29,8 +29,8 @@ async function main() {
 					},
 					{
 						title: lightGray('standalone'),
-						value: 'standalone'
-					}
+						value: 'standalone',
+					},
 				],
 				initial: 0,
 			},

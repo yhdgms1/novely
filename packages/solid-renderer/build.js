@@ -19,7 +19,7 @@ const context = await esbuild.context({
 	plugins: [
 		cssPlugin({
 			loader: 'css',
-			minify: false
+			minify: false,
 		}),
 		solidPlugin({
 			babel: {
@@ -29,12 +29,12 @@ const context = await esbuild.context({
 				highlightCode: false,
 				plugins: [],
 			},
-		})
-	]
+		}),
+	],
 });
 
 if (dev) {
-	context.watch()
+	context.watch();
 } else {
 	await context.rebuild();
 	context.dispose();

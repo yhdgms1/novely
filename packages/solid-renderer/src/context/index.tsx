@@ -17,8 +17,8 @@ interface DataContext {
 	t: (key: BaseTranslationStrings | (string & Record<never, never>)) => string;
 
 	media: {
-		hyperWide: Accessor<boolean>
-	}
+		hyperWide: Accessor<boolean>;
+	};
 }
 
 const Context = createContext<DataContext>();
@@ -50,8 +50,8 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
 		},
 
 		media: {
-			hyperWide: useMedia('(max-aspect-ratio: 0.26)')
-		}
+			hyperWide: useMedia('(max-aspect-ratio: 0.26)'),
+		},
 	};
 
 	return (

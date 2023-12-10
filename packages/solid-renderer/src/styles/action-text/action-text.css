@@ -34,7 +34,8 @@
 	text-decoration: underline;
 }
 
-.action-text, .action-text > span {
+.action-text,
+.action-text > span {
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 	-webkit-tap-highlight-color: transparent;
 	-webkit-touch-callout: none;

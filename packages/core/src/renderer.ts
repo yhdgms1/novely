@@ -35,7 +35,12 @@ interface RendererStore {
 type Renderer = {
 	character: (character: string) => CharacterHandle;
 	background: (background: string | BackgroundImage) => void;
-	dialog: (content: string, name: string, character?: string, emotion?: string) => (resolve: () => void, goingBack: boolean) => void;
+	dialog: (
+		content: string,
+		name: string,
+		character?: string,
+		emotion?: string,
+	) => (resolve: () => void, goingBack: boolean) => void;
 	choices: (
 		question: string,
 		choices: ([string, ValidAction[]] | [string, ValidAction[], () => boolean])[],

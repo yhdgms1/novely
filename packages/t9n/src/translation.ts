@@ -33,7 +33,7 @@ const replace = (
 		const [pathstr, plural, action] = split(key.trim(), ['@', '%']);
 
 		if (!pathstr) {
-			return ''
+			return '';
 		}
 
 		const path = pathstr.split('.');
@@ -81,4 +81,4 @@ const createT9N: FunctionalSetupT9N = (parameters) => {
 };
 
 export { createT9N, replace };
-export type { SetupT9N, T9N, AllowedContent, FunctionalSetupT9N } from './types'
+export type { SetupT9N, T9N, AllowedContent, FunctionalSetupT9N } from './types';
