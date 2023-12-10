@@ -1,4 +1,4 @@
 declare module '*.novely' {
-	const FN: (parameters?: Record<string, unknown>) => Record<string, []>
-	export default FN
+	const FN: (actions: unknown, parameters: Record<string, unknown>) => any;
+	export default FN;
 }
