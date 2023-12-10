@@ -1,5 +1,4 @@
-import { novely } from '@novely/core';
-import { createT9N, RU, EN } from '@novely/t9n';
+import { novely, RU, EN } from '@novely/core';
 import { createSolidRenderer } from '@novely/solid-renderer';
 
 import { particles, hide as hideParticles } from '@novely/particles';
@@ -186,8 +185,7 @@ engine.withStory({
 		}),
 	],
 	start: [
-		action.custom(hideParticles()),
-		hideRive('car'), //same as particles needs to be cleared at start
+		// hideRive('car'), //same as particles needs to be cleared at start
 		action.preload(outdoor),
 		action.text({
 			en: 'You wake up, but do not see your keyboard anymore, instead...',
@@ -197,12 +195,12 @@ engine.withStory({
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		show('car', ({ init }) => {
-			init({
-				src: 'https://cdn.rive.app/animations/vehicles.riv',
-			});
-		}),
-		animate('car', 'curves'),
+		// show('car', ({ init }) => {
+		// 	init({
+		// 		src: 'https://cdn.rive.app/animations/vehicles.riv',
+		// 	});
+		// }),
+		// animate('car', 'curves'),
 		action.dialog('Lily', {
 			en: 'Hii~',
 			ru: 'Привет',
@@ -212,18 +210,18 @@ engine.withStory({
 			en: 'Iʼm going to tell you about the Novely engine',
 			ru: 'Я расскажу тебе про движок Novely',
 		}),
-		animate('car', 'bounce'),
+		// animate('car', 'bounce'),
 		action.dialog('You', {
 			en: 'Great, something new. What kind of features does it offer?',
 			ru: 'Отлично, что-то новое. Какие возможности он дает?',
 		}),
-		animate('car', 'idle'),
+		// animate('car', 'idle'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.dialog('Lily', {
 			en: 'Novely has many features: multi-language support, TypeScript support, and it is open source, multi-platform and lightweight.',
 			ru: 'У Novely есть много преимуществ: поддержка нескольких языков, типизация на TypeScript, открытый исходный код, мультплатформенность и легковесность.',
 		}),
-		remove('car'),
+		// remove('car'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.dialog('Lily', {
 			en: 'As a result, it can be used to create interactive stories and short stories with a minimum of effort.',

@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "pnpm dev:preview",
-		"init-repo": "pnpm build:parser && pnpm build:vite-plugin-nvl && pnpm build:deepmerge && pnpm build:core && pnpm build:typewriter && pnpm build:solid",
+		"init-repo": "pnpm build:parser && pnpm build:vite-plugin-nvl && pnpm build:deepmerge && pnpm build:core && pnpm build:typewriter && pnpm build:particles && pnpm build:solid",
 		"format": "prettier --write .",
 		"dev:core": "pnpm --filter=@novely/core... --parallel dev",
 		"build:core": "pnpm --filter=@novely/core... --parallel build",

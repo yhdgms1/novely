@@ -1,2 +1,2 @@
 tasks:
-  - init: pnpm i
+  - init: pnpm i && pnpm init-repo

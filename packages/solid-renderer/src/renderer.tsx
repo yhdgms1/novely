@@ -320,7 +320,7 @@ const createSolidRenderer = ({
 		createRenderer(init: RendererInit): Renderer {
 			(options = init), (characters = init.characters);
 
-			return (renderer = {
+			renderer = {
 				background(background) {
 					currentBackground = background;
 
@@ -720,7 +720,9 @@ const createSolidRenderer = ({
 						return (document.createElement('img').src = image);
 					},
 				},
-			});
+			};
+
+			return renderer;
 		},
 		registerScreen(name: string, screen: StateScreen) {
 			setState('screens', name, () => screen);
