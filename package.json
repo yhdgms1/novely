@@ -9,8 +9,6 @@
 		"format": "prettier --write .",
 		"dev:core": "pnpm --filter=@novely/core... --parallel dev",
 		"build:core": "pnpm --filter=@novely/core... --parallel build",
-		"dev:t9n": "pnpm --filter=@novely/t9n... --parallel dev",
-		"build:t9n": "pnpm --filter=@novely/t9n... --parallel build",
 		"dev:solid": "pnpm --filter=@novely/solid-renderer... --parallel dev",
 		"build:solid": "pnpm --filter=@novely/solid-renderer... --parallel build",
 		"dev:preview": "pnpm --filter=@novely/preview... --parallel dev",
