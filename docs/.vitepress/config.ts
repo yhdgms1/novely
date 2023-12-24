@@ -20,7 +20,6 @@ export default defineConfig({
     nav: [
       { text: "Home", link: "/" },
       { text: "Docs", link: "/guide/getting-started" },
-      { text: "Comparison", link: "/comparison/monogatari" },
     ],
 
     sidebar: [
@@ -85,16 +84,6 @@ export default defineConfig({
           {
             text: "Standalone Package",
             link: "/guide/standalone",
-          },
-        ],
-      },
-      {
-        text: "Comparison",
-        collapsed: true,
-        items: [
-          {
-            text: "Monogatari",
-            link: "/comparison/monogatari",
           },
         ],
       },
