@@ -113,13 +113,14 @@ export default defineConfig({
   markdown: {
     languages: [
       {
-        id: "novely",
-        scopeName: "novely",
-        aliases: ["novely"],
-        grammar: grammar,
-        path: ".",
-      },
+        ...grammar,
+        name: 'novely'
+      }
     ],
+    theme: {
+      light: 'light-plus',
+      dark: 'dark-plus'
+    }
   },
 
   head: [
