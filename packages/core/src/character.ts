@@ -1,7 +1,7 @@
 type Name<Keys extends string = string> = string | Record<Keys, string>;
 type Emotions<Keys extends string = string> = Record<
 	Keys,
-	string | { body: Record<'left' | 'right', string>; head: string }
+	string | string[]
 >;
 
 type Character<LanguageKeys extends string = string> = {

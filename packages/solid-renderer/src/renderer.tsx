@@ -376,6 +376,12 @@ const createSolidRenderer = ({
 					const canvas = (<canvas data-character={character} />) as HTMLCanvasElement;
 					const ctx = canvas.getContext('2d')!;
 
+					const render = (images: HTMLImageElement[]) => {
+						return () => {
+							canvasDrawImages(canvas, ctx, images);
+						};
+					};
+
 					return (store.characters[character] = {
 						canvas,
 						ctx,
@@ -383,37 +389,16 @@ const createSolidRenderer = ({
 						withEmotion(emotion) {
 							const stored = this.emotions[emotion];
 
-							const render = (...images: HTMLImageElement[]) => {
-								return () => {
-									canvasDrawImages(canvas, ctx, images);
-								};
-							};
-
 							if (stored) {
-								if (stored instanceof HTMLImageElement) {
-									return render(stored);
-								}
-
-								return render(...Object.values(stored));
+								return render(Object.values(stored));
 							}
 
-							const emotionData = characters[character].emotions[emotion];
+							const characterEmotion = characters[character].emotions[emotion];
+							const emotionData = (unknown => Array.isArray(unknown) ? unknown : [unknown])(characterEmotion);
 
-							if (typeof emotionData === 'string') {
-								return render((this.emotions[emotion] = createImage(emotionData)));
-							}
+							this.emotions[emotion] = emotionData.map(src => createImage(src));
 
-							const head = createImage(emotionData.head);
-							const left = createImage(emotionData.body.left);
-							const right = createImage(emotionData.body.right);
-
-							this.emotions[emotion] = {
-								head,
-								left,
-								right,
-							};
-
-							return render(head, left, right);
+							return render(this.emotions[emotion]);
 						},
 						append(className, style) {
 							clearTimeout(state.characters[character]?.timeoutId);

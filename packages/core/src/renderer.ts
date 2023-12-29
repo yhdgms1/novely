@@ -16,7 +16,7 @@ interface CharacterHandle {
 		duration?: number,
 	) => (resolve: () => void, restoring: boolean) => void;
 
-	emotions: Record<string, HTMLImageElement | Record<'head' | 'left' | 'right', HTMLImageElement>>;
+	emotions: Record<string, HTMLImageElement[]>;
 }
 
 interface AudioHandle {

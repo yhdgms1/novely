@@ -253,12 +253,12 @@ const novely = <
 					if (prop === 'showCharacter' && typeof props[0] === 'string' && typeof props[1] === 'string') {
 						const images = characters[props[0]].emotions[props[1]];
 
-						if (typeof images === 'string') {
-							ASSETS_TO_PRELOAD.add(images);
-						} else {
-							for (const asset of [images.head, images.body.left, images.body.right]) {
+						if (Array.isArray(images)) {
+							for (const asset of images) {
 								ASSETS_TO_PRELOAD.add(asset);
 							}
+						} else {
+							ASSETS_TO_PRELOAD.add(images)
 						}
 					}
 				}
