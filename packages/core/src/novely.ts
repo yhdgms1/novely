@@ -1037,6 +1037,14 @@ const novely = <
 			push();
 		},
 		animateCharacter([character, timeout, ...classes]) {
+			if (DEV && classes.length === 0) {
+				throw new Error('Attempt to use AnimateCharacter without classes. Classes should be provided [https://novely.pages.dev/guide/actions/animateCharacter.html]')
+			}
+
+			if (DEV && (timeout <= 0 || !Number.isFinite(timeout) || Number.isNaN(timeout))) {
+				throw new Error('Attempt to use AnimateCharacter with unacceptable timeout. It should be finite at greater then zero')
+			}
+
 			const handler: CustomHandler = (get) => {
 				const { clear } = get('@@internal-animate-character', false);
 				const char = renderer.store.characters[character];
@@ -1044,6 +1052,10 @@ const novely = <
 				/**
 				 * Character is not defined, maybe, `animateCharacter` was called before `showCharacter`
 				 */
+				if (DEV && !char) {
+					throw new Error(`Attempt to call AnimateCharacter with character "${character}" which is not currently exists. Maybe AnimateCharacter was called before ShowCharacter?`)
+				}
+
 				if (!char) return;
 
 				const target = char.canvas;
