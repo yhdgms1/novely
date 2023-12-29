@@ -52,6 +52,8 @@ import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED } from './constants';
 import { replace as replaceT9N } from './translation';
 import { localStorageStorage } from './storage';
 
+import { DEV } from 'esm-env';
+
 interface NovelyInit<
 	Languages extends string,
 	Characters extends Record<string, Character<Languages>>,
@@ -849,6 +851,10 @@ const novely = <
 			push();
 		},
 		showCharacter([character, emotion, className, style]) {
+			if (DEV && !characters[character].emotions[emotion]) {
+				throw new Error(`Attempt to show character "${character}" with unknown emotion "${emotion}"`)
+			}
+
 			const handle = renderer.character(character);
 
 			handle.append(className, style, restoring);
@@ -909,8 +915,16 @@ const novely = <
 			}
 
 			const unwrapped = choices.map(([content, action, visible]) => {
+				if (DEV && action.length === 0 && (!visible || visible())) {
+					console.warn(`Choice children should not be empty, either add content there or make item not selectable`)
+				}
+
 				return [unwrap(content), action, visible] as [string, ValidAction[], () => boolean];
 			});
+
+			if (DEV && unwrapped.length === 0) {
+				throw new Error(`Running choice without variants to choose from, look at how to use Choice action properly [https://novely.pages.dev/guide/actions/choice#usage]`)
+			}
 
 			const run = renderer.choices(unwrap(question), unwrapped);
 
@@ -922,12 +936,24 @@ const novely = <
 				 */
 				const offset = isWithoutQuestion ? 0 : 1;
 
+				if (DEV && !unwrapped[selected + offset]) {
+					throw new Error('Choice children is empty, either add content there or make item not selectable')
+				}
+
 				stack.value[0].push(['choice', selected + offset], [null, 0]);
 				render();
 				interactivity(true);
 			});
 		},
 		jump([scene]) {
+			if (DEV && !story[scene]) {
+				throw new Error(`Attempt to jump to unknown scene "${scene}"`)
+			}
+
+			if (DEV && story[scene].length === 0) {
+				throw new Error(`Attempt to jump to empty scene "${scene}"`)
+			}
+
 			/**
 			 * `-1` index is used here because `clear` will run `next` that will increase index to `0`
 			 */
@@ -948,9 +974,23 @@ const novely = <
 			 */
 			renderer.clear(goingBack, keep || EMPTY_SET, characters || EMPTY_SET)(push);
 		},
-		condition([condition]) {
+		condition([condition, variants]) {
+			if (DEV && Object.values(variants).length === 0) {
+				throw new Error(`Attempt to use Condition action with empty variants object`)
+			}
+
 			if (!restoring) {
-				stack.value[0].push(['condition', String(condition())], [null, 0]);
+				const val = String(condition());
+
+				if (DEV && !variants[val]) {
+					throw new Error(`Attempt to go to unknown variant "${val}"`)
+				}
+
+				if (DEV && variants[val].length === 0) {
+					throw new Error(`Attempt to go to empty variant "${val}"`)
+				}
+
+				stack.value[0].push(['condition', val], [null, 0]);
 
 				render();
 			}
@@ -1037,7 +1077,13 @@ const novely = <
 			match('custom', [handler]);
 		},
 		text(text) {
-			renderer.text(text.map((content) => unwrap(content)).join(' '), forward, goingBack);
+			const string = text.map((content) => unwrap(content)).join(' ');
+
+			if (DEV && string.length === 0) {
+				throw new Error(`Action Text was called with empty string or array`)
+			}
+
+			renderer.text(string, forward, goingBack);
 		},
 		exit() {
 			if (restoring) return;
@@ -1120,6 +1166,14 @@ const novely = <
 			push();
 		},
 		block([scene]) {
+			if (DEV && !story[scene]) {
+				throw new Error(`Attempt to call Block action with unknown scene "${scene}"`)
+			}
+
+			if (DEV && story[scene].length === 0) {
+				throw new Error(`Attempt to call Block action with empty scene "${scene}"`)
+			}
+
 			if (!restoring) {
 				stack.value[0].push(['block', scene], [null, 0]);
 
