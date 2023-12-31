@@ -173,7 +173,7 @@ registerScreen('achievements', () => {
 // 	},
 // }));
 
-engine.withStory({
+engine.script({
 	'block:adv': [
 		action.condition(() => true, {
 			true: [
@@ -270,21 +270,20 @@ engine.withStory({
 				// Проверка автоматического exit
 			],
 		}),
+		action.jump('another'),
 		action.end(),
-	],
-	another: [
-		action.function(() => {
-			console.log('GOT ANOTHER');
-			// engine.script({
-			// 	'test': [
-			// 		action.dialog('Lily', 'Hiii')
-			// 	]
-			// })
-		}),
-		action.dialog('Lily', 'He hee'),
-		action.end(),
-		// action.jump('test')
 	],
 });
+
+engine.script({
+	another: [
+		action.showBackground(outdoor),
+		action.dialog('Lily', {
+			en: 'Part 2 Comes',
+			ru: 'Часть 2'
+		}),
+		action.end(),
+	]
+})
 
 export {};

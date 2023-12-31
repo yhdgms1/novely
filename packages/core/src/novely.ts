@@ -51,6 +51,7 @@ import { klona } from 'klona/json';
 import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED } from './constants';
 import { replace as replaceT9N } from './translation';
 import { localStorageStorage } from './storage';
+import pLimit from 'p-limit';
 
 import { DEV } from 'esm-env';
 
@@ -174,12 +175,18 @@ const novely = <
 	askBeforeExit = true,
 	preloadAssets = 'lazy',
 }: NovelyInit<Languages, Characters, StateScheme, DataScheme>) => {
+	const limitScript = pLimit(1);
+
 	const story: Story = {};
 
 	const times = new Set<number>();
 
 	const ASSETS_TO_PRELOAD = new Set<string>();
 	const assetsLoaded = createControlledPromise();
+
+	const dataLoaded = createControlledPromise();
+
+	let scriptCalled = false;
 
 	/**
 	 * Prevent `undefined`
@@ -192,6 +199,35 @@ const novely = <
 	 */
 	const intime = (value: number) => {
 		return times.add(value), value;
+	};
+
+	const scriptBase = async (part: Story) => {
+		Object.assign(story, flattenStory(part));
+
+		if (preloadAssets === 'blocking' && ASSETS_TO_PRELOAD.size > 0) {
+			renderer.ui.showScreen('loading');
+
+			await renderer.misc.preloadImagesBlocking(ASSETS_TO_PRELOAD);
+		}
+
+		const screen = renderer.ui.getScreen();
+		const nextScreen = (scriptCalled ? screen : initialScreen) as NovelyScreen;
+
+		ASSETS_TO_PRELOAD.clear();
+		assetsLoaded.resolve();
+
+		if (nextScreen === 'game') {
+			await assetsLoaded.promise;
+			await dataLoaded.promise;
+
+			if (!scriptCalled) {
+				restore();
+			}
+		} else {
+			renderer.ui.showScreen(nextScreen);
+		}
+
+		scriptCalled = true;
 	};
 
 	/**
@@ -210,33 +246,10 @@ const novely = <
 	 *  'another-part': []
 	 * })
 	 * ```
-	 *
-	 * @todo: make this default
 	 */
 	const script = (part: Story) => {
-		/**
-		 * Merge story parts
-		 */
-		Object.assign(story, flattenStory(part));
-	};
-
-	const withStory = async (story: Story) => {
-		script(story);
-
-		if (preloadAssets === 'blocking' && ASSETS_TO_PRELOAD.size > 0) {
-			renderer.ui.showScreen('loading');
-
-			await renderer.misc.preloadImagesBlocking(ASSETS_TO_PRELOAD);
-		}
-
-		ASSETS_TO_PRELOAD.clear();
-		assetsLoaded.resolve();
-
-		/**
-		 * When `initialScreen` is not a game, we can safely show it
-		 */
-		if (initialScreen !== 'game') renderer.ui.showScreen(initialScreen);
-	};
+		return limitScript(() => scriptBase(part));
+	}
 
 	const action = new Proxy({} as ActionProxyProvider<Characters, Languages>, {
 		get(_, prop) {
@@ -374,19 +387,12 @@ const novely = <
 		 * Now the next store updates will entail saving via storage.set
 		 */
 		$$.update((prev) => ((prev.dataLoaded = true), prev));
+		dataLoaded.resolve();
 
 		/**
 		 * Yay
 		 */
 		$.update(() => stored);
-
-		/**
-		 * When initialScreen is game, then we will load it, but after the data is loaded and when assets are loaded if that is needed
-		 */
-		if (initialScreen === 'game') {
-			await assetsLoaded.promise;
-			restore();
-		}
 	};
 
 	/**
@@ -1042,7 +1048,7 @@ const novely = <
 			}
 
 			if (DEV && (timeout <= 0 || !Number.isFinite(timeout) || Number.isNaN(timeout))) {
-				throw new Error('Attempt to use AnimateCharacter with unacceptable timeout. It should be finite at greater then zero')
+				throw new Error('Attempt to use AnimateCharacter with unacceptable timeout. It should be finite and greater than zero')
 			}
 
 			const handler: CustomHandler = (get) => {
@@ -1301,9 +1307,9 @@ const novely = <
 
 	return {
 		/**
-		 * Function to set story
+		 * Function to set game script
 		 */
-		withStory,
+		script,
 		/**
 		 * Function to get actions
 		 */
