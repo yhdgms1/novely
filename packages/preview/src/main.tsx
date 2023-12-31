@@ -277,7 +277,7 @@ engine.script({
 
 engine.script({
 	another: [
-		action.showBackground(outdoor),
+		action.showBackground('https://catherineasquithgallery.com/uploads/posts/2021-02/1612298572_91-p-anime-peizazh-fon-fioletovii-138.jpg'),
 		action.dialog('Lily', {
 			en: 'Part 2 Comes',
 			ru: 'Часть 2'
