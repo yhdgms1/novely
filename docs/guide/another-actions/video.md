@@ -40,7 +40,7 @@ declare interface VideoParameters {
 ```ts
 import { video } from "@novely/video";
 
-engine.withStory({
+engine.script({
   start: [
     engine.action.custom(
       video({

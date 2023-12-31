@@ -7,7 +7,7 @@ Since Novely uses `index` in stories to load it is quite important when updating
 ## Usage
 
 ```ts
-engine.withStory({
+engine.script({
   start: [engine.action.next()],
 });
 ```
@@ -17,7 +17,7 @@ engine.withStory({
 When game was released, the script looked like this:
 
 ```ts
-engine.withStory({
+engine.script({
   start: [
     engine.action.dialog(
       "Jack",
@@ -34,7 +34,7 @@ But then because of your [government and laws](https://en.wikipedia.org/wiki/Rus
 If you just delete the line, as in the example below...
 
 ```ts
-engine.withStory({
+engine.script({
   start: [
     engine.action.function(() => {}), // index: 0
     engine.action.dialog("Max", "Oh no"), // index: 1
@@ -47,7 +47,7 @@ The dialog with "Max" now have an index of `1` instead of `2`, the history will 
 Therefore, you should replace the deleted action with `next`:
 
 ```ts
-engine.withStory({
+engine.script({
   start: [
     engine.action.next(), // index: 0
     engine.action.function(() => {}), // index: 1

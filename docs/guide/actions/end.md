@@ -5,7 +5,7 @@ Goes to main menu
 ## Usage
 
 ```ts
-engine.withStory({
+engine.script({
   start: [action.end()],
 });
 ```

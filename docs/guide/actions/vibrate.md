@@ -11,7 +11,7 @@ Make the device physically vibrate
 ## Usage
 
 ```ts
-engine.withStory({
+engine.script({
   start: [
     engine.action.vibrate(
       100,

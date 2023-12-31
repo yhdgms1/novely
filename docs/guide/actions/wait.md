@@ -11,7 +11,7 @@ Makes the game wait for a while before continuing
 ## Usage
 
 ```ts
-engine.withStory({
+engine.script({
   start: [engine.action.wait(500), engine.action.wait(() => 100)],
 });
 ```

@@ -14,7 +14,7 @@ Hides the character
 ## Usage
 
 ```ts
-engine.withStory({
+engine.script({
   start: [
     engine.action.hideCharacter(
       "Naruto",

@@ -12,7 +12,7 @@ Shows the choice display
 ## Usage
 
 ```ts
-engine.withStory({
+engine.script({
   start: [
     action.choice(
       // 'What would you say to Triss?',

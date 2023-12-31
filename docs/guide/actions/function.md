@@ -11,7 +11,7 @@ Runs the function
 ## Usage
 
 ```ts
-engine.withStory({
+engine.script({
   start: [
     engine.action.function(async () => {
       console.log("got here");

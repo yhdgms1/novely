@@ -83,7 +83,7 @@ action.skipClearOnGoingBack = true;
  */
 action.requireUserAction = true;
 
-engine.withStory({
+engine.script({
   start: [engine.action.custom(action)],
 });
 ```

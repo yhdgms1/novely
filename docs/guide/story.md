@@ -1,11 +1,11 @@
 # Story
 
-Writing a story is quite simple - use the `withStory` method provided by engine. A story is an object with arrays of actions (more on them later). Each story must have a 'start' key.
+Writing a story is quite simple - use the `script` method provided by engine. A story is an object with arrays of actions (more on them later). Each story must have a 'start' key.
 
 ```ts
 const engine = novely(...);
 
-engine.withStory({
+engine.script({
   start: [
     engine.action.jump('dojo')
   ],
@@ -14,7 +14,7 @@ engine.withStory({
     engine.action.dialog('Senpai', 'This is how story defined...'),
     [
       engine.action.showBackground('./dojo-2.jpeg'),
-      engine.action.dialog('Senpai', 'And arrays are used...')
+      engine.action.dialog('Senpai', 'And arrays can be used there')
     ]
   ]
 });
@@ -25,13 +25,13 @@ You could also use special [story format](https://github.com/yhdgms1/novely/tree
 ```ts
 import setupStory from './story.novely';
 
-const story = setupStory({
+const story = setupStory(engine.action, {
   /**
    * JavaScript values goes here
    */
 });
 
-engine.withStory(story);
+engine.script(story);
 ```
 
 More on story format [here](/guide/story-format).

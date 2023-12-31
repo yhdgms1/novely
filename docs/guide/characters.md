@@ -7,7 +7,6 @@ Let's create a character:
 ```ts
 const engine = novely({
   renderer,
-  storage,
   translation,
   languages: ["en", "ru"],
   characters: {

@@ -35,7 +35,7 @@ interface InputMeta {
 ## Usage
 
 ```ts
-engine.withStory({
+engine.script({
   start: [
     action.input(
       "What's you'r name?",

@@ -7,7 +7,7 @@ Basically, you write story inside javascript or typescript files, you get smart 
 ::: code-group
 
 ```js [story.js]
-engine.withStory({
+engine.script({
   start: [
     a.showBackground(room),
     a.showCharacter("Sister", "curious"),
@@ -173,7 +173,7 @@ const story = setupStory({
   },
 });
 
-engine.withStory(story);
+engine.script(story);
 ```
 
 ## How to Avoid using `$values1`

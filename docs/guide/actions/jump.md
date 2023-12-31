@@ -11,7 +11,7 @@ Performs a transition to the scene
 ## Usage
 
 ```ts
-engine.withStory({
+engine.script({
   start: [engine.action.jump("train")],
   train: [engine.action.showBackground("./train.jpeg")],
 });

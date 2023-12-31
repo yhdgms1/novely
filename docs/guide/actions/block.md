@@ -11,7 +11,7 @@ Gives you the way to not repeat some actions multiple times, but have it in one 
 ## Usage
 
 ```ts
-engine.withStory({
+engine.script({
   // name it as you want
   "block:adv": [
     engine.action.condition(() => canShowAdv(), {

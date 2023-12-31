@@ -3,29 +3,25 @@
 After installation, you need to configure the engine. First you need to import important components
 
 ```ts
-import { novely, localStorageStorage, EN } from "@novely/core";
+import { novely, EN } from "@novely/core";
 ```
 
-The `novely` function is the main one here, this is the engine itself. It is important for the game to save the progress and then load it - this is where `localStorageStorage` appears.
+The `novely` function is the main one here, this is the engine itself.
 
-The game also requires localization - translation of parts of the interface, as well as the dialogues themselves, for this there is `EN`` - translation for English language.
+The game also requires localization - translation of parts of the interface, as well as the dialogues themselves, for this there is `EN` — translation for English language.
 
-The configuration of the engine includes languages, renderer, storage, translation, and characters, including their pictures.
-
-Also, since a renderer is needed, let's create it:
+The basic configuration of the engine includes languages, renderer, characters, including their pictures, and the renderer.
 
 ```ts
+// Import renderer and run novely
+
 import { createSolidRenderer } from "@novely/solid-renderer";
 
-const solidRenderer = createSolidRenderer();
-```
-
-Now you can start configuration your game:
+const { createRenderer } = createSolidRenderer();
 
 const engine = novely({
   languages: ["en"],
-  renderer: solidRenderer.createRenderer,
-  storage: localStorageStorage({ key: "my-game" }),
+  renderer: createRenderer,
   translation: {
     en: {
       internal: EN

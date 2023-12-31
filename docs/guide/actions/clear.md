@@ -5,7 +5,7 @@ Clears the screen, hides all dialogs, and sets a black background.
 ## Usage
 
 ```ts
-engine.withStory({
+engine.script({
   start: [engine.action.clear()],
 });
 ```

@@ -11,7 +11,7 @@ Stops the background music
 ## Usage
 
 ```ts
-engine.withStory({
+engine.script({
   start: [
     /**
      * The same address as used in `playMusic`

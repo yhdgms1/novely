@@ -11,7 +11,7 @@ Plays the background music
 ## Usage
 
 ```ts
-engine.withStory({
+engine.script({
   start: [action.playMusic("./assets/annoying-melody.mp3")],
 });
 ```

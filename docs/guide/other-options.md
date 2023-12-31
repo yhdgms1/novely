@@ -83,6 +83,19 @@ const engine = novely({
 ```
 Here you can give game the language here. By default, Novely will check the browsers language, but your platform may require different way of setting the language up.
 
+### Storage
+
+```ts
+import { localStorageStorage } from 'novely';
+
+const engine = novely({
+  ...,
+  storage: localStorageStorage({ key: 'awd' })
+})
+```
+
+Storage is an object with `get` and `set` functions. By default novely uses `localStorageStorage` function that being exported. 
+
 ### StorageDelay
 
 ```ts

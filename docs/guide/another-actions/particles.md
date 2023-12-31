@@ -18,7 +18,7 @@ const snow = {
   ...
 };
 
-engine.withStory({
+engine.script({
   start: [
     /**
      * Show

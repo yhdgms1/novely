@@ -12,7 +12,7 @@ Condition, based on the result of the function
 ## Usage
 
 ```ts
-engine.withStory({
+engine.script({
   start: [
     engine.action.condition(
       () => {

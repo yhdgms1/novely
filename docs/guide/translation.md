@@ -88,7 +88,7 @@ type PluralObject = {
 Once you have configured the engine, you can get the content. The example also uses the content enclosed between {{ and }} – it will be taken from state, which can be supplied via the `state` function, which is also available from the engine. When content between {{ and }} contain's `@` it will look for pluralization. Look at the following example:
 
 ```ts
-engine.withStory({
+engine.script({
   start: [
     engine.action.function(() => {
       engine.state({ data: { name: "Harley Quinn", age: 21 } });
@@ -104,7 +104,7 @@ engine.withStory({
 Also there is "actions" thing. When you type `%` and an action name after it, it will transform the content using the function defined in `actions` object. When no function found - it will ignore `%action`.
 
 ```ts
-engine.withStory({
+engine.script({
   start: [
     engine.action.function(() => {
       engine.state({ data: { name: "Alice" } });
@@ -121,7 +121,7 @@ engine.withStory({
 For multiple languages you should provide an object with each language as a key
 
 ```ts
-engine.withStory({
+engine.script({
   start: [
     engine.action.dialog("Person", {
       en: "Hello",

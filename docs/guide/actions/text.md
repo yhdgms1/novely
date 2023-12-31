@@ -11,7 +11,7 @@ Shows the text in the center of screen on a black background
 ## Usage
 
 ```ts
-engine.withStory({
+engine.script({
   start: [
     engine.action.text(
       "If Kira gets caught, he is evil.",

@@ -16,7 +16,7 @@ var assets = {
   class: "./classroom.png",
 };
 
-engine.withStory({
+engine.script({
   start: [
     // engine.action.preload(assets.home), // calling preload here will have no effect
     engine.action.showBackground(assets.home),

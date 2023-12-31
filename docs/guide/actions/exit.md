@@ -13,7 +13,7 @@ Look at examples below to understand how `Exit` can be used
 ### Choice
 
 ```ts{12,19}
-engine.withStory({
+engine.script({
   start: [
     engine.action.choice(
       "What flavor do you like?",
@@ -43,7 +43,7 @@ engine.withStory({
 ### Condition
 
 ```ts{8,12}
-engine.withStory({
+engine.script({
   start: [
     engine.action.condition(
       () => Math.random() >= 0.5 ? 'true' : 'false',
@@ -66,7 +66,7 @@ engine.withStory({
 ### Combined
 
 ```ts{15,23,27,31}
-engine.withStory({
+engine.script({
   start: [
     engine.action.condition(
       () => state().age >= 18 ? 'true' : 'false',

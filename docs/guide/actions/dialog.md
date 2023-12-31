@@ -13,7 +13,7 @@ Shows the text that someone says
 ## Usage
 
 ```ts
-engine.withStory({
+engine.script({
   start: [
     engine.action.dialog(
       "character id",
