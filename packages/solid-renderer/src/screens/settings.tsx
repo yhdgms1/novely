@@ -114,6 +114,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 						<input
 							class="range__range"
 							type="range"
+							id={musicVolumeSelectID}
 							min={0}
 							max={1}
 							step={0.01}
@@ -128,6 +129,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 						<input
 							class="range__range"
 							type="range"
+							id={soundVolumeSelectID}
 							min={0}
 							max={1}
 							step={0.01}
@@ -142,6 +144,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 						<input
 							class="range__range"
 							type="range"
+							id={voiceVolumeSelectID}
 							min={0}
 							max={1}
 							step={0.01}
