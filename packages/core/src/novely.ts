@@ -336,7 +336,7 @@ const novely = <
 	const initialData: StorageData = {
 		saves: [],
 		data: klona(defaultData) as Data,
-		meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED],
+		meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED, 1, 1, 1],
 	};
 
 	const coreData: CoreData = {
@@ -374,6 +374,13 @@ const novely = <
 		} else {
 			stored.meta[0] ||= getLanguageWithoutParameters();
 		}
+
+		/**
+		 * Sound Volumes
+		 */
+		stored.meta[2] ??= 1;
+		stored.meta[3] ??= 1;
+		stored.meta[4] ??= 1;
 
 		/**
 		 * When data is empty replace it with `defaultData`
@@ -516,7 +523,7 @@ const novely = <
 			$.update(() => ({
 				saves: [initial],
 				data: klona(defaultData) as Data,
-				meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED],
+				meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED, 1, 1, 1],
 			}));
 
 			latest = klona(initial);

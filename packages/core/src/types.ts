@@ -28,7 +28,9 @@ type Save = [path: Path, state: State, meta: SaveMeta];
 
 type Lang = string;
 type TypewriterSpeed = 'Slow' | 'Medium' | 'Fast' | 'Auto' | (string & Record<never, never>);
-type StorageMeta = [lang: Lang, typewriter_speed: TypewriterSpeed];
+type SoundVolume = number;
+
+type StorageMeta = [lang: Lang, typewriter_speed: TypewriterSpeed, music_volume: SoundVolume, sound_volume: SoundVolume, voice_volume: SoundVolume];
 
 type Migration = (save: unknown) => unknown;
 

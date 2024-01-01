@@ -30,6 +30,9 @@ const RU = {
 	ExitDialogBack: 'Вернуться в игру',
 	OpenMenu: 'Открыть меню',
 	CloseMenu: 'Закрыть меню',
+	MusicVolume: 'Громкость музыки',
+	SoundVolume: 'Громкость звуков',
+	VoiceVolume: 'Громкость речи'
 };
 
 type BaseTranslationStrings = keyof typeof RU;
@@ -66,6 +69,9 @@ const EN: Record<BaseTranslationStrings, string> = {
 	ExitDialogBack: 'Return to game',
 	OpenMenu: 'Open menu',
 	CloseMenu: 'Close menu',
+	MusicVolume: 'Music volume',
+	SoundVolume: 'Sound volume',
+	VoiceVolume: 'Voice volume'
 };
 
 /**
@@ -103,6 +109,9 @@ const KK: Record<BaseTranslationStrings, string> = {
 	ExitDialogBack: 'Ойынға оралу',
 	OpenMenu: 'Мәзірді ашыңыз',
 	CloseMenu: 'Мәзірді жабу',
+	MusicVolume: 'Музыканың көлемі',
+	SoundVolume: 'Дыбыстардың көлемі',
+	VoiceVolume: 'Сөйлеу көлемі'
 };
 
 /**
@@ -140,6 +149,9 @@ const JP: Record<BaseTranslationStrings, string> = {
 	ExitDialogBack: 'ゲームに戻る',
 	OpenMenu: 'メニューを開く',
 	CloseMenu: 'メニューを閉じる',
+	MusicVolume: '音楽のボリューム',
+	SoundVolume: '音量',
+	VoiceVolume: 'スピーチの量'
 };
 
 export { RU, EN, KK, JP };

@@ -5,6 +5,7 @@
 @import './control-panel/index.css';
 @import './action-text/index.css';
 @import './select/index.css';
+@import './range/index.css';
 @import './action-dialog/index.css';
 @import './dialog/index.css';
 @import './input-dialog/index.css';

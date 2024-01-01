@@ -4,6 +4,6 @@
 
 @media (max-aspect-ratio: 0.8) {
 	.settings__button {
-		min-width: 80%;
+		min-width: 100%;
 	}
 }
