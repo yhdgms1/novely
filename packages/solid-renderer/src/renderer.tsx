@@ -317,13 +317,21 @@ const createSolidRenderer = ({
 		});
 
 		options.$.subscribe(() => {
-			for (const type of ['music'] as const) {
+			for (const type of ['music', 'voice'] as const) {
 				const volume = getVolume(type);
 
-				for (const howl of Object.values(store.audio[type].store)) {
-					if (!howl) continue;
+				if (type === 'music') {
+					for (const howl of Object.values(store.audio[type].store)) {
+						if (!howl) continue;
 
-					howl.fade(howl.volume(), volume, 150);
+						howl.fade(howl.volume(), volume, 150);
+					}
+				} else if (type === 'voice') {
+					const howl = store.audio.voice.current;
+
+					if (howl) {
+						howl.fade(howl.volume(), volume, 150);
+					}
 				}
 			}
 		});
@@ -611,6 +619,8 @@ const createSolidRenderer = ({
 							const resource = music.store[source] ||= new Howl({
 								src: source,
 								loop: true,
+
+								volume: getVolume(method)
 							});
 
 							this.start();
@@ -640,6 +650,8 @@ const createSolidRenderer = ({
 						store.audio.voice.current = new Howl({
 							src: source,
 							autoplay: true,
+
+							volume: getVolume('voice'),
 
 							onend() {
 								store.audio.voice.current = undefined;
@@ -830,8 +842,10 @@ const createSolidRenderer = ({
 
 						return new Promise((resolve) => {
 							// @todo: move this to another function
+							// @todo: how to preload voices???
 							const howl = store.audio[type].store[source] ||= new Howl({
 								src: source,
+								volume: getVolume(type),
 								loop: true
 							});
 
