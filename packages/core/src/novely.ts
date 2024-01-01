@@ -864,6 +864,14 @@ const novely = <
 			renderer.audio.music(source, 'music').stop();
 			push();
 		},
+		voice([source]) {
+			renderer.audio.voice(source);
+			push();
+		},
+		stopVoice() {
+			renderer.audio.voiceStop();
+			push();
+		},
 		showCharacter([character, emotion, className, style]) {
 			if (DEV && !characters[character].emotions[emotion]) {
 				throw new Error(`Attempt to show character "${character}" with unknown emotion "${emotion}"`)

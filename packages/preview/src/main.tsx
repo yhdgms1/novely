@@ -17,6 +17,10 @@ import lily_ok from './assets/lily.png';
  */
 import sakura_girl from './assets/sakura_girl.mp3';
 
+import voice1 from './assets/voice/1.mp3'
+import voice2 from './assets/voice/2.mp3'
+import voice3 from './assets/voice/3.mp3'
+
 const { createRenderer, registerScreen, registerMainmenuItem } = createSolidRenderer({
 	fullscreen: false,
 });
@@ -182,6 +186,24 @@ registerScreen('achievements', () => {
 // }));
 
 engine.script({
+	start: [
+		action.preload(outdoor),
+		action.text('Нажимайте на текст для продолжения'),
+		action.showBackground(outdoor),
+		action.showCharacter('Lily', 'ok'),
+		action.voice(voice1),
+		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		action.dialog('Lily', 'Ну привет, мальчик-неудачник'),
+		action.voice(voice2),
+		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		action.dialog('Lily', 'Как же ты ничтожен...'),
+		action.voice(voice3),
+		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		action.dialog('Lily', 'Потому что ты не достоин!'),
+	]
+})
+
+false && engine.script({
 	'block:adv': [
 		action.condition(() => true, {
 			true: [

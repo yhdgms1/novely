@@ -10,6 +10,8 @@ type ValidAction =
 	| ['showBackground', [string | NonEmptyRecord<BackgroundImage>]]
 	| ['playMusic', [string]]
 	| ['stopMusic', [string]]
+	| ['voice', [string]]
+	| ['stopVoice', []]
 	| ['jump', [string]]
 	| ['showCharacter', [string, keyof Character['emotions'], string?, string?]]
 	| ['hideCharacter', [string, string?, string?, number?]]
@@ -139,6 +141,15 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 	playMusic: (audio: string) => ValidAction;
 
 	stopMusic: (audio: string) => ValidAction;
+
+	/**
+	 * Plays voice
+	 */
+	voice: (voice: string) => ValidAction;
+	/**
+	 * Stops currently playing voice
+	 */
+	stopVoice: () => ValidAction;
 
 	jump: (scene: string) => ValidAction;
 

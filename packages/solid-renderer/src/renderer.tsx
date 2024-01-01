@@ -179,6 +179,10 @@ interface SolidRendererStore extends RendererStore {
 			resumeList: Howl[];
 		}
 
+		voice: {
+			current?: Howl
+		}
+
 		onDocumentVisibilityChangeListener?: () => void;
 	}
 }
@@ -259,7 +263,8 @@ const createSolidRenderer = ({
 			music: {
 				store: {},
 				resumeList: []
-			}
+			},
+			voice: {}
 		}
 	};
 
@@ -627,6 +632,31 @@ const createSolidRenderer = ({
 
 						return null as unknown as AudioHandle;
 					},
+					voice(source) {
+						this.start();
+						this.voiceStop();
+
+						store.audio.voice.current = new Howl({
+							src: source,
+							autoplay: true,
+
+							onend() {
+								store.audio.voice.current = undefined;
+							}
+						})
+					},
+					voiceStop() {
+						const currentVoice = store.audio.voice.current;
+
+						if (currentVoice) {
+							currentVoice.stop();
+
+							/**
+							 * @todo: is this really necessary?
+							 */
+							store.audio.music.resumeList = store.audio.music.resumeList.filter(howl => howl !== currentVoice);
+						}
+					},
 					start() {
 						if (!store.audio.onDocumentVisibilityChangeListener) {
 							const onDocumentVisibilityChange = () => {
@@ -637,6 +667,14 @@ const createSolidRenderer = ({
 											howl.pause();
 										}
 									}
+
+									const currentVoice = store.audio.voice.current;
+
+									if (currentVoice && currentVoice.playing()) {
+										store.audio.music.resumeList.push(currentVoice);
+										currentVoice.pause();
+									}
+
 								} else {
 									for (const howl of store.audio.music.resumeList) {
 										howl.play();

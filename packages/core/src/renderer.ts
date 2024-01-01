@@ -48,6 +48,8 @@ type Renderer = {
 		setup?: Parameters<DefaultActionProxyProvider['input']>[2],
 	) => (resolve: () => void) => void;
 	audio: {
+		voice: (source: string) => void;
+		voiceStop: () => void;
 		music: (source: string, method: 'music') => AudioHandle;
 		/**
 		 * Stop all sounds
