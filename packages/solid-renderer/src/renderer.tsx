@@ -312,6 +312,7 @@ const createSolidRenderer = ({
 
 			if (screen !== 'game' && screen !== 'settings' && screen !== 'loading') {
 				renderer.audio.destroy();
+				renderer.audio.voiceStop();
 			}
 		});
 
