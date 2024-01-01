@@ -263,6 +263,16 @@ const createSolidRenderer = ({
 		}
 	};
 
+	const getVolume = (type: 'music' | 'sound' | 'voice') => {
+		const TYPE_META_MAP = {
+			'music': 2,
+			'sound': 3,
+			'voice': 4
+		} as const;
+
+		return options.$.get().meta[TYPE_META_MAP[type]];
+	}
+
 	let characters!: Record<string, Character>;
 	let renderer!: Renderer;
 	let options: RendererInit;
@@ -297,9 +307,18 @@ const createSolidRenderer = ({
 
 			if (screen !== 'game' && screen !== 'settings' && screen !== 'loading') {
 				renderer.audio.destroy();
+			}
+		});
 
+		options.$.subscribe(() => {
+			for (const type of ['music'] as const) {
+				const volume = getVolume(type);
 
-				// @todo: change volume when it changes in settings
+				for (const howl of Object.values(store.audio[type].store)) {
+					if (!howl) continue;
+
+					howl.fade(howl.volume(), volume, 150);
+				}
 			}
 		});
 
@@ -337,16 +356,6 @@ const createSolidRenderer = ({
 			</div>
 		);
 	};
-
-	const getVolume = (type: 'music' | 'sound' | 'voice') => {
-		const TYPE_META_MAP = {
-			'music': 2,
-			'sound': 3,
-			'voice': 4
-		} as const;
-
-		return options.$.get().meta[TYPE_META_MAP[type]];
-	}
 
 	return {
 		createRenderer(init: RendererInit): Renderer {
