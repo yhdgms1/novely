@@ -294,6 +294,13 @@ const createSolidRenderer = ({
 					document.exitFullscreen().catch(() => {});
 				}
 			}
+
+			if (screen !== 'game' && screen !== 'settings' && screen !== 'loading') {
+				renderer.audio.destroy();
+
+
+				// @todo: change volume when it changes in settings
+			}
 		});
 
 		return (
@@ -330,6 +337,16 @@ const createSolidRenderer = ({
 			</div>
 		);
 	};
+
+	const getVolume = (type: 'music' | 'sound' | 'voice') => {
+		const TYPE_META_MAP = {
+			'music': 2,
+			'sound': 3,
+			'voice': 4
+		} as const;
+
+		return options.$.get().meta[TYPE_META_MAP[type]];
+	}
 
 	return {
 		createRenderer(init: RendererInit): Renderer {
@@ -585,17 +602,17 @@ const createSolidRenderer = ({
 
 							return {
 								pause() {
-									resource.fade(1, 0, 300);
+									resource.fade(getVolume(method), 0, 300);
 									resource.once('fade', resource.pause);
 								},
 								play() {
 									resource.play();
-									resource.fade(0, 1, 300);
+									resource.fade(0, getVolume(method), 300);
 								},
 								stop() {
-									resource.fade(1, 0, 300);
+									resource.fade(getVolume(method), 0, 300);
 									resource.once('fade', resource.stop);
-								}
+								},
 							} satisfies AudioHandle;
 						}
 
@@ -608,15 +625,12 @@ const createSolidRenderer = ({
 									for (const howl of Object.values(store.audio.music.store)) {
 										if (howl && howl.playing()) {
 											store.audio.music.resumeList.push(howl);
-
-											howl.fade(1, 0, 150);
-											howl.once('fade', howl.pause);
+											howl.pause();
 										}
 									}
 								} else {
 									for (const howl of store.audio.music.resumeList) {
 										howl.play();
-										howl.fade(0, 1, 150);
 									}
 
 									store.audio.music.resumeList = [];
@@ -761,6 +775,11 @@ const createSolidRenderer = ({
 						return (document.createElement('img').src = image);
 					},
 					preloadAudioBlocking: (type, source) => {
+						/**
+						 * Unlikely we really need to preload that audio
+						 */
+						if (getVolume(type) === 0) return Promise.resolve()
+
 						return new Promise((resolve) => {
 							// @todo: move this to another function
 							const howl = store.audio[type].store[source] ||= new Howl({
