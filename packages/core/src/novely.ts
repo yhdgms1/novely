@@ -787,6 +787,7 @@ const novely = <
 
 		stack.clear();
 		renderer.ui.showScreen('mainmenu');
+		renderer.audio.destroy();
 
 		/**
 		 * First two save elements and it's type
@@ -849,11 +850,11 @@ const novely = <
 			push();
 		},
 		playMusic([source]) {
-			renderer.music(source, 'music').play();
+			renderer.audio.music(source, 'music').play();
 			push();
 		},
 		stopMusic([source]) {
-			renderer.music(source, 'music').stop();
+			renderer.audio.music(source, 'music').stop();
 			push();
 		},
 		showCharacter([character, emotion, className, style]) {
@@ -979,6 +980,8 @@ const novely = <
 			 * Call the actual `clear`
 			 */
 			renderer.clear(goingBack, keep || EMPTY_SET, characters || EMPTY_SET)(push);
+
+			renderer.audio.clear();
 		},
 		condition([condition, variants]) {
 			if (DEV && Object.values(variants).length === 0) {

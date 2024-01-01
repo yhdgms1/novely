@@ -19,9 +19,7 @@ interface CharacterHandle {
 	emotions: Record<string, HTMLImageElement[]>;
 }
 
-interface AudioHandle {
-	element: HTMLAudioElement;
-
+type AudioHandle = {
 	stop: () => void;
 	pause: () => void;
 	play: () => void;
@@ -29,7 +27,6 @@ interface AudioHandle {
 
 interface RendererStore {
 	characters: Record<string, CharacterHandle>;
-	audio: Partial<Record<'music', AudioHandle>>;
 }
 
 type Renderer = {
@@ -50,7 +47,22 @@ type Renderer = {
 		onInput: Parameters<DefaultActionProxyProvider['input']>[1],
 		setup?: Parameters<DefaultActionProxyProvider['input']>[2],
 	) => (resolve: () => void) => void;
-	music: (source: string, method: keyof RendererStore['audio']) => AudioHandle;
+	audio: {
+		music: (source: string, method: 'music') => AudioHandle;
+		/**
+		 * Stop all sounds
+		 */
+		clear: () => void;
+		/**
+		 * Destroy
+		 */
+		destroy: () => void;
+		/**
+		 * Start
+		 * @todo: more descriptive
+		 */
+		start: () => void;
+	};
 	clear: (
 		goingBack: boolean,
 		keep: Set<keyof DefaultActionProxyProvider>,
@@ -76,6 +88,13 @@ type Renderer = {
 		 * @returns Image URL
 		 */
 		preloadImage: <T extends string>(image: T) => T;
+
+		/**
+		 * Function to preload audio
+		 * @param type kind of audio
+		 * @param source <url> pointing to the audio
+		 */
+		preloadAudioBlocking: (type: 'music', source: string) => Promise<void>;
 	};
 
 	store: RendererStore;

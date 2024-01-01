@@ -9,6 +9,14 @@ import { show, animate, hide as hideRive, remove } from '@novely/rive';
 import outdoor from './assets/outdoor.png';
 import lily_ok from './assets/lily.png';
 
+/**
+ * Peach by Sakura Girl | https://soundcloud.com/sakuragirl_official
+ * Music promoted by https://www.chosic.com/free-music/all/
+ * Creative Commons CC BY 3.0
+ * https://creativecommons.org/licenses/by/3.0/
+ */
+import sakura_girl from './assets/sakura_girl.mp3';
+
 const { createRenderer, registerScreen, registerMainmenuItem } = createSolidRenderer({
 	fullscreen: false,
 });
@@ -69,7 +77,7 @@ const engine = novely({
 
 	autosaves: true,
 
-	initialScreen: 'game',
+	initialScreen: 'mainmenu',
 
 	preloadAssets: 'blocking',
 
@@ -187,6 +195,7 @@ engine.script({
 	start: [
 		// hideRive('car'), //same as particles needs to be cleared at start
 		action.preload(outdoor),
+		action.playMusic(sakura_girl),
 		action.text({
 			en: 'You wake up, but do not see your keyboard anymore, instead...',
 			ru: 'Вы просыпаетесь, но больше не видите своей клавиатуры, вместо неё...',
@@ -277,7 +286,7 @@ engine.script({
 
 engine.script({
 	another: [
-		action.showBackground('https://catherineasquithgallery.com/uploads/posts/2021-02/1612298572_91-p-anime-peizazh-fon-fioletovii-138.jpg'),
+		action.showBackground(outdoor),
 		action.dialog('Lily', {
 			en: 'Part 2 Comes',
 			ru: 'Часть 2'

@@ -7,6 +7,7 @@ import type {
 	CustomHandler,
 	CustomHandlerGetResult,
 	NovelyScreen,
+	AudioHandle,
 } from '@novely/core';
 import type { JSX } from 'solid-js';
 import type { MountableElement } from 'solid-js/web';
@@ -14,6 +15,7 @@ import type { MountableElement } from 'solid-js/web';
 import { Switch, Match, createEffect } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { render } from 'solid-js/web';
+import { Howl } from 'howler';
 
 import { canvasDrawImages, createImage, escape, toMedia, findLast, createCanVibrate } from '$utils';
 import { Provider } from '$context';
@@ -170,6 +172,15 @@ interface State {
 interface SolidRendererStore extends RendererStore {
 	dialogRef?: HTMLParagraphElement;
 	textRef?: HTMLParagraphElement;
+
+	audio: {
+		music: {
+			store: Partial<Record<string, Howl>>;
+			resumeList: Howl[];
+		}
+
+		onDocumentVisibilityChangeListener?: () => void;
+	}
 }
 
 interface CreateSolidRendererOptions {
@@ -243,9 +254,13 @@ const createSolidRenderer = ({
 
 	const store: SolidRendererStore = {
 		characters: {},
+
 		audio: {
-			music: undefined,
-		},
+			music: {
+				store: {},
+				resumeList: []
+			}
+		}
 	};
 
 	let characters!: Record<string, Character>;
@@ -556,34 +571,75 @@ const createSolidRenderer = ({
 						input.dispatchEvent(new InputEvent('input', { bubbles: true }));
 					};
 				},
-				music(source, method) {
-					const stored = store.audio?.[method];
+				audio: {
+					music(source, method) {
+						if (method === 'music') {
+							const music = store.audio[method];
 
-					if (stored && stored.element.src.endsWith(source)) return (stored.element.currentTime = 0), stored;
+							const resource = music.store[source] ||= new Howl({
+								src: source,
+								loop: true,
+							});
 
-					const element = new Audio(source);
+							this.start();
 
-					const onClick = () => {
-						removeEventListener('click', onClick), element.play();
-					};
+							return {
+								pause() {
+									resource.fade(1, 0, 300);
+									resource.once('fade', resource.pause);
+								},
+								play() {
+									resource.play();
+									resource.fade(0, 1, 300);
+								},
+								stop() {
+									resource.fade(1, 0, 300);
+									resource.once('fade', resource.stop);
+								}
+							} satisfies AudioHandle;
+						}
 
-					const handle = {
-						element,
-						pause: element.pause,
-						play() {
-							/**
-							 * Пользователь должен сначала взаимодействовать с документом
-							 */
-							addEventListener('click', onClick);
-						},
-						stop() {
-							removeEventListener('click', onClick);
-							element.pause();
-							element.currentTime = 0;
-						},
-					};
+						return null as unknown as AudioHandle;
+					},
+					start() {
+						if (!store.audio.onDocumentVisibilityChangeListener) {
+							const onDocumentVisibilityChange = () => {
+								if (document.visibilityState === 'hidden') {
+									for (const howl of Object.values(store.audio.music.store)) {
+										if (howl && howl.playing()) {
+											store.audio.music.resumeList.push(howl);
 
-					return (store.audio[method] = handle);
+											howl.fade(1, 0, 150);
+											howl.once('fade', howl.pause);
+										}
+									}
+								} else {
+									for (const howl of store.audio.music.resumeList) {
+										howl.play();
+										howl.fade(0, 1, 150);
+									}
+
+									store.audio.music.resumeList = [];
+								}
+							}
+
+							document.addEventListener('visibilitychange', store.audio.onDocumentVisibilityChangeListener = onDocumentVisibilityChange)
+						}
+					},
+					clear() {
+						for (const music of Object.values(store.audio.music.store)) {
+							if (!music) continue;
+
+							music.stop();
+						}
+					},
+					destroy() {
+						this.clear();
+
+						if (store.audio.onDocumentVisibilityChangeListener) {
+							document.removeEventListener('visibilitychange', store.audio.onDocumentVisibilityChangeListener);
+						}
+					}
 				},
 				custom(fn, goingBack, resolve) {
 					const get: Parameters<CustomHandler>[0] = (id, insert = true) => {
@@ -704,6 +760,23 @@ const createSolidRenderer = ({
 					preloadImage: (image) => {
 						return (document.createElement('img').src = image);
 					},
+					preloadAudioBlocking: (type, source) => {
+						return new Promise((resolve) => {
+							// @todo: move this to another function
+							const howl = store.audio[type].store[source] ||= new Howl({
+								src: source,
+								loop: true
+							});
+
+							if (howl.state() === 'loaded') {
+								resolve();
+								return;
+							}
+
+							howl.once('load', resolve);
+							howl.once('loaderror', () => resolve());
+						})
+					}
 				},
 			};
 
