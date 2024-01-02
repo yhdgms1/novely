@@ -18,13 +18,13 @@ import { createSolidRenderer } from '@novely/solid-renderer';
 import '@novely/solid-renderer/dist/index.css';
 
 // Специфичная для `@novely/solid-renderer` настройка
-const { createRenderer, Novely } = createSolidRenderer();
+const { renderer, Novely } = createSolidRenderer();
 
 // Задайте начальные настройки
 const engine = novely({
+	renderer,
 	languages: ['ru'],
 	storage: localStorageStorage({ key: 'my-story' }),
-	renderer: createRenderer,
 	characters: {
 		Spike: {
 			name: {

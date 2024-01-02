@@ -3,11 +3,11 @@ import { createSolidRenderer } from '@novely/solid-renderer'
 
 import lily from './assets/lily.png'
 
-const { createRenderer } = createSolidRenderer()
+const { renderer } = createSolidRenderer()
 
 const engine = novely({
+	renderer,
 	languages: ['en'],
-	renderer: createRenderer,
 	storage: localStorageStorage({ key: 'my-game' }),
 	translation: {
 		en: {

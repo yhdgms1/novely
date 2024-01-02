@@ -4,7 +4,7 @@ import { games } from './utilities'
 
 import lily from './assets/lily.png'
 
-const { createRenderer } = createSolidRenderer({
+const { renderer } = createSolidRenderer({
 	/**
 	 * Чтобы избежать отклонения по пункту 1.10.3 требований платформы переносим элементы управления внутрь диалогового окна
 	 */
@@ -12,8 +12,8 @@ const { createRenderer } = createSolidRenderer({
 })
 
 const engine = novely({
+	renderer,
 	languages: ['en'], // Для поддержки русского языка добавить сюда 'ru'
-	renderer: createRenderer,
 	storage: games,
 	translation: {
 		en: {

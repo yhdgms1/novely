@@ -87,7 +87,7 @@ Object.defineProperty(window, 'options', {
 		window.novely = createNovely({
 			...options,
 			translation,
-			renderer: window.solidRenderer.createRenderer,
+			renderer: window.solidRenderer.renderer,
 		});
 	},
 });
