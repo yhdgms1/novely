@@ -706,13 +706,13 @@ const createSolidRenderer = ({
 						const musics = Object.values(store.audio.music);
 						const sounds = Object.values(store.audio.sound);
 
-						const all = [...musics, ...sounds, store.audio.voice];
-
-						for (const music of all) {
+						for (const music of [...musics, ...sounds]) {
 							if (!music) continue;
 
 							music.stop();
 						}
+
+						this.voiceStop();
 					},
 					destroy() {
 						this.clear();
