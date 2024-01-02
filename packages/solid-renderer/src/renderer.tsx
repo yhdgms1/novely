@@ -11,7 +11,6 @@ import type {
 } from '@novely/core';
 import type { JSX } from 'solid-js';
 import type { MountableElement } from 'solid-js/web';
-import type { HowlOptions } from 'howler';
 
 import { Switch, Match, createEffect } from 'solid-js';
 import { createStore } from 'solid-js/store';
