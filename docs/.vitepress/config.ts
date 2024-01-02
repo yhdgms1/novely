@@ -47,8 +47,16 @@ export default defineConfig({
               { text: "Function", link: "/guide/actions/function" },
               { text: "Input", link: "/guide/actions/input" },
               { text: "Jump", link: "/guide/actions/jump" },
+
               { text: "PlayMusic", link: "/guide/actions/playMusic" },
               { text: "StopMusic", link: "/guide/actions/stopMusic" },
+              
+              { text: "PlaySound", link: "/guide/actions/playSound" },
+              { text: "StopSound", link: "/guide/actions/stopSound" },
+
+              { text: "Voice", link: "/guide/actions/voice" },
+              { text: "StopVoice", link: "/guide/actions/stopVoice" },
+
               { text: "ShowBackground", link: "/guide/actions/showBackground" },
               { text: "ShowCharacter", link: "/guide/actions/showCharacter" },
               {

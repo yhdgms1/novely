@@ -1,6 +1,6 @@
-# PlayMusic
+# Voice
 
-Plays the background music. Music does not stop when player goes to settings. Music is looped.
+Plays the voice. It does not loop. When one voice plays previous voice stops playing.
 
 ## Parameters
 
@@ -12,6 +12,6 @@ Plays the background music. Music does not stop when player goes to settings. Mu
 
 ```ts
 engine.script({
-  start: [action.playMusic("./assets/annoying-melody.mp3")],
+  start: [action.voice("./assets/hello.mp3")],
 });
 ```
