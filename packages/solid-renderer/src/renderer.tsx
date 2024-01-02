@@ -17,6 +17,7 @@ import { createStore } from 'solid-js/store';
 import { render } from 'solid-js/web';
 import { Howl } from 'howler';
 
+import { createEmitter } from './emitter';
 import { canvasDrawImages, createImage, escape, toMedia, findLast, createCanVibrate } from '$utils';
 import { Provider } from '$context';
 import { Game, MainMenu, Saves, Settings, Loading, CustomScreen } from '$screens';
@@ -223,6 +224,12 @@ const createSolidRenderer = ({
 	useNativeLanguageNames = true,
 	target = document.body,
 }: CreateSolidRendererOptions = {}) => {
+	const emitter = createEmitter<{
+		'screen:change': {
+			screen: PossibleScreen | 'loading'
+		}
+	}>();
+
 	const [state, setState] = createStore<State>({
 		background: '',
 		characters: {},
@@ -322,6 +329,8 @@ const createSolidRenderer = ({
 			if (screen !== 'game' && screen !== 'settings' && screen !== 'loading') {
 				renderer.audio.destroy();
 			}
+
+			emitter.emit('screen:change', { screen })
 		});
 
 		options.$.subscribe(() => {
@@ -382,7 +391,8 @@ const createSolidRenderer = ({
 	};
 
 	return {
-		createRenderer(init: RendererInit): Renderer {
+		emitter,
+		renderer(init: RendererInit): Renderer {
 			(options = init), (characters = init.characters);
 
 			renderer = {
@@ -872,5 +882,5 @@ const createSolidRenderer = ({
 	};
 };
 
-export { createSolidRenderer };
+export { createSolidRenderer, Howl };
 export type { State, StateScreen, StateScreens, SolidRendererStore };

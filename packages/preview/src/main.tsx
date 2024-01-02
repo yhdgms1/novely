@@ -21,13 +21,13 @@ import voice1 from './assets/voice/1.mp3'
 import voice2 from './assets/voice/2.mp3'
 import voice3 from './assets/voice/3.mp3'
 
-const { createRenderer, registerScreen, registerMainmenuItem } = createSolidRenderer({
+const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidRenderer({
 	fullscreen: false,
 });
 
 const engine = novely({
 	languages: ['ru', 'en'],
-	renderer: createRenderer,
+	renderer,
 	characters: {
 		Lily: {
 			name: {

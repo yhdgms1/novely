@@ -866,9 +866,11 @@ const novely = <
 		},
 		playSound([source, loop]) {
 			renderer.audio.music(source, 'sound', loop || false).play();
+			push();
 		},
 		stopSound([source]) {
-			renderer.audio.music(source, 'sound').stop()
+			renderer.audio.music(source, 'sound').stop();
+			push();
 		},
 		voice([source]) {
 			renderer.audio.voice(source);
