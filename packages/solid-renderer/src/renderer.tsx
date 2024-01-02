@@ -624,7 +624,7 @@ const createSolidRenderer = ({
 					};
 				},
 				audio: {
-					music(src, method, loop = true) {
+					music(src, method, loop = method === 'music') {
 						const resource = getHowl(method, src, loop);
 
 						/**
