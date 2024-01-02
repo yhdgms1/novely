@@ -50,7 +50,7 @@ type Renderer = {
 	audio: {
 		voice: (source: string) => void;
 		voiceStop: () => void;
-		music: (source: string, method: 'music') => AudioHandle;
+		music: (source: string, method: 'music' | 'sound', loop?: boolean) => AudioHandle;
 		/**
 		 * Stop all sounds
 		 */

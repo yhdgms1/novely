@@ -857,12 +857,18 @@ const novely = <
 			push();
 		},
 		playMusic([source]) {
-			renderer.audio.music(source, 'music').play();
+			renderer.audio.music(source, 'music', true).play();
 			push();
 		},
 		stopMusic([source]) {
 			renderer.audio.music(source, 'music').stop();
 			push();
+		},
+		playSound([source, loop]) {
+			renderer.audio.music(source, 'sound', loop || false).play();
+		},
+		stopSound([source]) {
+			renderer.audio.music(source, 'sound').stop()
 		},
 		voice([source]) {
 			renderer.audio.voice(source);

@@ -142,6 +142,10 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 
 	stopMusic: (audio: string) => ValidAction;
 
+	playSound: (audio: string, loop?: boolean) => ValidAction;
+
+	stopSound: (audio: string) => ValidAction;
+
 	/**
 	 * Plays voice
 	 */

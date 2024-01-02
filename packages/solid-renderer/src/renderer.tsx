@@ -11,6 +11,7 @@ import type {
 } from '@novely/core';
 import type { JSX } from 'solid-js';
 import type { MountableElement } from 'solid-js/web';
+import type { HowlOptions } from 'howler';
 
 import { Switch, Match, createEffect } from 'solid-js';
 import { createStore } from 'solid-js/store';
@@ -174,14 +175,13 @@ interface SolidRendererStore extends RendererStore {
 	textRef?: HTMLParagraphElement;
 
 	audio: {
-		music: {
-			store: Partial<Record<string, Howl>>;
-			resumeList: Howl[];
-		}
+		music: Partial<Record<string, Howl>>
+		sound: Partial<Record<string, Howl>>
+		voices: Partial<Record<string, Howl>>
 
-		voice: {
-			current?: Howl
-		}
+		voice?: Howl;
+
+		resumeList: Howl[];
 
 		onDocumentVisibilityChangeListener?: () => void;
 	}
@@ -260,11 +260,11 @@ const createSolidRenderer = ({
 		characters: {},
 
 		audio: {
-			music: {
-				store: {},
-				resumeList: []
-			},
-			voice: {}
+			music: {},
+			sound: {},
+			voices: {},
+
+			resumeList: []
 		}
 	};
 
@@ -276,6 +276,16 @@ const createSolidRenderer = ({
 		} as const;
 
 		return options.$.get().meta[TYPE_META_MAP[type]];
+	}
+
+	const getHowl = (type: 'music' | 'sound' | 'voice', src: string, loop: boolean) => {
+		const kind = type === 'voice' ? 'voices' : type;
+
+		return store.audio[kind][src] ||= new Howl({
+			src,
+			volume: getVolume(type),
+			loop
+		});
 	}
 
 	let characters!: Record<string, Character>;
@@ -317,17 +327,19 @@ const createSolidRenderer = ({
 		});
 
 		options.$.subscribe(() => {
-			for (const type of ['music', 'voice'] as const) {
+			for (const type of ['music', 'sound', 'voice'] as const) {
 				const volume = getVolume(type);
 
-				if (type === 'music') {
-					for (const howl of Object.values(store.audio[type].store)) {
+				if (type === 'music' || type === 'sound') {
+					for (const howl of Object.values(store.audio[type])) {
 						if (!howl) continue;
 
 						howl.fade(howl.volume(), volume, 150);
 					}
-				} else if (type === 'voice') {
-					const howl = store.audio.voice.current;
+				}
+
+				if (type === 'voice') {
+					const howl = store.audio.voice;
 
 					if (howl) {
 						howl.fade(howl.volume(), volume, 150);
@@ -612,54 +624,45 @@ const createSolidRenderer = ({
 					};
 				},
 				audio: {
-					music(source, method) {
-						if (method === 'music') {
-							const music = store.audio[method];
+					music(src, method, loop = true) {
+						const resource = getHowl(method, src, loop);
 
-							const resource = music.store[source] ||= new Howl({
-								src: source,
-								loop: true,
+						/**
+						 * Update
+						 */
+						resource.loop(loop);
 
-								volume: getVolume(method)
-							});
+						this.start();
 
-							this.start();
-
-							return {
-								pause() {
-									resource.fade(getVolume(method), 0, 300);
-									resource.once('fade', resource.pause);
-								},
-								play() {
-									resource.play();
-									resource.fade(0, getVolume(method), 300);
-								},
-								stop() {
-									resource.fade(getVolume(method), 0, 300);
-									resource.once('fade', resource.stop);
-								},
-							} satisfies AudioHandle;
-						}
-
-						return null as unknown as AudioHandle;
+						return {
+							pause() {
+								resource.fade(getVolume(method), 0, 300);
+								resource.once('fade', resource.pause);
+							},
+							play() {
+								resource.play();
+								resource.fade(0, getVolume(method), 300);
+							},
+							stop() {
+								resource.fade(getVolume(method), 0, 300);
+								resource.once('fade', resource.stop);
+							},
+						} satisfies AudioHandle;
 					},
 					voice(source) {
 						this.start();
 						this.voiceStop();
 
-						store.audio.voice.current = new Howl({
-							src: source,
-							autoplay: true,
+						const resource = store.audio.voice = getHowl('voice', source, false);
 
-							volume: getVolume('voice'),
+						resource.once('end', () => {
+							store.audio.voice = undefined;
+						});
 
-							onend() {
-								store.audio.voice.current = undefined;
-							}
-						})
+						resource.play();
 					},
 					voiceStop() {
-						const currentVoice = store.audio.voice.current;
+						const currentVoice = store.audio.voice;
 
 						if (currentVoice) {
 							currentVoice.stop();
@@ -667,33 +670,33 @@ const createSolidRenderer = ({
 							/**
 							 * @todo: is this really necessary?
 							 */
-							store.audio.music.resumeList = store.audio.music.resumeList.filter(howl => howl !== currentVoice);
+							store.audio.resumeList = store.audio.resumeList.filter(howl => howl !== currentVoice);
 						}
 					},
 					start() {
 						if (!store.audio.onDocumentVisibilityChangeListener) {
 							const onDocumentVisibilityChange = () => {
 								if (document.visibilityState === 'hidden') {
-									for (const howl of Object.values(store.audio.music.store)) {
+									for (const howl of Object.values(store.audio.music)) {
 										if (howl && howl.playing()) {
-											store.audio.music.resumeList.push(howl);
+											store.audio.resumeList.push(howl);
 											howl.pause();
 										}
 									}
 
-									const currentVoice = store.audio.voice.current;
+									const currentVoice = store.audio.voice;
 
 									if (currentVoice && currentVoice.playing()) {
-										store.audio.music.resumeList.push(currentVoice);
+										store.audio.resumeList.push(currentVoice);
 										currentVoice.pause();
 									}
 
 								} else {
-									for (const howl of store.audio.music.resumeList) {
+									for (const howl of store.audio.resumeList) {
 										howl.play();
 									}
 
-									store.audio.music.resumeList = [];
+									store.audio.resumeList = [];
 								}
 							}
 
@@ -701,7 +704,12 @@ const createSolidRenderer = ({
 						}
 					},
 					clear() {
-						for (const music of Object.values(store.audio.music.store)) {
+						const musics = Object.values(store.audio.music);
+						const sounds = Object.values(store.audio.sound);
+
+						const all = [...musics, ...sounds, store.audio.voice];
+
+						for (const music of all) {
 							if (!music) continue;
 
 							music.stop();
@@ -836,18 +844,12 @@ const createSolidRenderer = ({
 					},
 					preloadAudioBlocking: (type, source) => {
 						/**
-						 * Unlikely we really need to preload that audio
+						 * It's unlikely that we really need to pre-load this audio.
 						 */
 						if (getVolume(type) === 0) return Promise.resolve()
 
 						return new Promise((resolve) => {
-							// @todo: move this to another function
-							// @todo: how to preload voices???
-							const howl = store.audio[type].store[source] ||= new Howl({
-								src: source,
-								volume: getVolume(type),
-								loop: true
-							});
+							const howl = getHowl(type, source, false)
 
 							if (howl.state() === 'loaded') {
 								resolve();

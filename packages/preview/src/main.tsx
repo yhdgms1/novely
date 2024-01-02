@@ -185,7 +185,7 @@ registerScreen('achievements', () => {
 // 	},
 // }));
 
-engine.script({
+false && engine.script({
 	start: [
 		action.preload(outdoor),
 		action.text('Нажимайте на текст для продолжения'),
@@ -203,7 +203,7 @@ engine.script({
 	]
 })
 
-false && engine.script({
+engine.script({
 	'block:adv': [
 		action.condition(() => true, {
 			true: [
