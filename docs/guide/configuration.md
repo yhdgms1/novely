@@ -17,11 +17,11 @@ The basic configuration of the engine includes languages, renderer, characters, 
 
 import { createSolidRenderer } from "@novely/solid-renderer";
 
-const { createRenderer } = createSolidRenderer();
+const { renderer } = createSolidRenderer();
 
 const engine = novely({
+  renderer: renderer,
   languages: ["en"],
-  renderer: createRenderer,
   translation: {
     en: {
       internal: EN
