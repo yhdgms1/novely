@@ -1,5 +1,7 @@
 import type { Accessor, FlowComponent } from 'solid-js';
 import type { Renderer, RendererInit, StorageData, Stored, BaseTranslationStrings, CoreData } from '@novely/core';
+import type { EmitterEventsMap } from '../types';
+import type { Emitter } from '../emitter';
 
 import { from, createContext, useContext, Show } from 'solid-js';
 import { useMedia } from '$hooks';
@@ -16,6 +18,8 @@ interface DataContext {
 
 	t: (key: BaseTranslationStrings | (string & Record<never, never>)) => string;
 
+	emitter: Emitter<EmitterEventsMap>;
+
 	media: {
 		hyperWide: Accessor<boolean>;
 	};
@@ -29,6 +33,8 @@ interface ProviderProps {
 
 	options: RendererInit;
 	renderer: Renderer;
+
+	emitter: Emitter<EmitterEventsMap>;
 }
 
 const Provider: FlowComponent<ProviderProps> = (props) => {
@@ -48,6 +54,8 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
 		t(key: BaseTranslationStrings | (string & Record<never, never>)) {
 			return props.options.t(key as BaseTranslationStrings, this.storeData().meta[0]);
 		},
+
+		emitter: props.emitter,
 
 		media: {
 			hyperWide: useMedia('(max-aspect-ratio: 0.26)'),

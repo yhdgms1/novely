@@ -36,7 +36,9 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 
 	const onLanguageSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = ({ currentTarget: { value } }) => {
 		data.storeDataUpdate((prev) => {
-			return (prev.meta[0] = value), prev;
+			prev.meta[0] = value;
+
+			return prev;
 		});
 	};
 
