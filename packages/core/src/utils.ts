@@ -187,7 +187,7 @@ const isBlockExitStatement = (
 	return BLOCK_EXIT_STATEMENTS.has(statement as any);
 };
 
-const isSkippedDurigRestore = (item: unknown): item is 'vibrate' | 'dialog' | 'input' | 'choice' | 'text' => {
+const isSkippedDuringRestore = (item: unknown): item is 'vibrate' | 'dialog' | 'input' | 'choice' | 'text' => {
 	return SKIPPED_DURING_RESTORE.has(item as any);
 };
 
@@ -259,7 +259,7 @@ export {
 	findLastPathItemBeforeItemOfType,
 	isBlockStatement,
 	isBlockExitStatement,
-	isSkippedDurigRestore,
+	isSkippedDuringRestore,
 	noop,
 	isAction,
 	flattenStory,

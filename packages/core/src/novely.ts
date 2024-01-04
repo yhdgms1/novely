@@ -39,7 +39,7 @@ import {
 	findLastPathItemBeforeItemOfType,
 	isBlockStatement,
 	isBlockExitStatement,
-	isSkippedDurigRestore,
+	isSkippedDuringRestore,
 	isAction,
 	noop,
 	flattenStory,
@@ -620,7 +620,7 @@ const novely = <
 						 * Экшены, для закрытия которых пользователь должен с ними взаимодействовать
 						 * Также в эту группу входят экшены, которые не должны быть вызваны при восстановлении
 						 */
-						if (isSkippedDurigRestore(action) || isUserRequiredAction(action, meta)) {
+						if (isSkippedDuringRestore(action) || isUserRequiredAction(action, meta)) {
 							if (index === max && i === val) {
 								push();
 							} else {
@@ -1082,11 +1082,8 @@ const novely = <
 				const char = renderer.store.characters[character];
 
 				/**
-				 * Character is not defined, maybe, `animateCharacter` was called before `showCharacter`
+				 * Character is not defined, maybe, `animateCharacter` was called before `showCharacter` OR character was not just loaded yet
 				 */
-				if (DEV && !char) {
-					throw new Error(`Attempt to call AnimateCharacter with character "${character}" which is not currently exists. Maybe AnimateCharacter was called before ShowCharacter?`)
-				}
 
 				if (!char) return;
 
@@ -1137,17 +1134,6 @@ const novely = <
 			const ignore: ('choice:exit' | 'condition:exit' | 'block:exit')[] = [];
 
 			/**
-			 * Exit is impossible
-			 */
-			if (path.every(([name]) => !isBlockStatement(name))) {
-				/**
-				 * I think it's better to end the story here rather than showing some screen
-				 */
-				match('end', []);
-				return;
-			}
-
-			/**
 			 * - should be an array
 			 * - first element is action name
 			 */
@@ -1157,6 +1143,19 @@ const novely = <
 				} else {
 					path.pop();
 				}
+			}
+
+			/**
+			 * Exit is impossible
+			 */
+			if (path.every(([name]) => !isBlockStatement(name))) {
+				const referred = refer(path);
+
+				if (isAction(referred) && isSkippedDuringRestore(referred[0])) {
+					match('end', []);
+				}
+
+				return;
 			}
 
 			for (let i = path.length - 1; i > 0; i--) {
