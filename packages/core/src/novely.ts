@@ -1137,6 +1137,17 @@ const novely = <
 			const ignore: ('choice:exit' | 'condition:exit' | 'block:exit')[] = [];
 
 			/**
+			 * Exit is impossible
+			 */
+			if (path.every(([name]) => !isBlockStatement(name))) {
+				/**
+				 * I think it's better to end the story here rather than showing some screen
+				 */
+				match('end', []);
+				return;
+			}
+
+			/**
 			 * - should be an array
 			 * - first element is action name
 			 */
