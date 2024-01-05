@@ -241,6 +241,38 @@ const once = (fn: () => void) => {
 	};
 };
 
+const isExitImpossible = (path: Path) => {
+	const blockStatements = path.filter(([item]) => isBlockStatement(item));
+	const blockExitStatements = path.filter(([item]) => isBlockExitStatement(item));
+
+	/**
+	 * There were no blocks nor exits from blocks
+	 */
+	if (blockStatements.length === 0 && blockExitStatements.length === 0) {
+		return true;
+	}
+
+	/**
+	 * There is block that can be exited
+	 */
+	if (blockStatements.length > blockExitStatements.length) {
+		return false;
+	}
+
+	/**
+	 * Not the best check for every opened block has beed closed
+	 */
+	for (let i = 0; i++; i < blockStatements.length) {
+		const b = blockStatements[i][0];
+		const be = blockExitStatements[i][0];
+
+		if (!b || !be) return false;
+		if (!be.startsWith(b)) return false;
+	}
+
+	return true;
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -264,4 +296,5 @@ export {
 	isAction,
 	flattenStory,
 	once,
+	isExitImpossible
 };

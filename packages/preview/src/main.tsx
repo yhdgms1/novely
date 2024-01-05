@@ -302,7 +302,6 @@ engine.script({
 			],
 		}),
 		action.jump('another'),
-		action.end(),
 	],
 });
 
@@ -313,7 +312,6 @@ engine.script({
 			en: 'Part 2 Comes',
 			ru: 'Часть 2'
 		}),
-		action.end(),
 	]
 })
 

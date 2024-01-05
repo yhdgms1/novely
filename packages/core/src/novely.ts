@@ -43,6 +43,7 @@ import {
 	isAction,
 	noop,
 	flattenStory,
+	isExitImpossible
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
@@ -1145,10 +1146,7 @@ const novely = <
 				}
 			}
 
-			/**
-			 * Exit is impossible
-			 */
-			if (path.every(([name]) => !isBlockStatement(name))) {
+			if (isExitImpossible(path)) {
 				const referred = refer(path);
 
 				if (isAction(referred) && isSkippedDuringRestore(referred[0])) {
