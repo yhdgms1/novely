@@ -704,7 +704,14 @@ const novely = <
 					 */
 					await result;
 				}
-			} else if (action === 'showCharacter') {
+			} else if (action === 'showCharacter' || action === 'playSound' || action === 'playMusic') {
+				const closing =
+					action === 'showCharacter'
+						? 'hideCharacter'
+						: action === 'playSound'
+							? 'stopSound'
+							: 'stopMusic';
+
 				const skip = next(i).some(([_action, _meta]) => {
 					/**
 					 * Проверка на возможный `undefined`
@@ -712,13 +719,12 @@ const novely = <
 					if (!_meta || !meta) return false;
 
 					/**
-					 * Будет ли персонаж скрыт в будущем
-					 * Нет смысла при загрузке сохранения загружать и отрисовывать персонажа, который будет скрыт
+					 * If action will be hidden later
 					 */
-					const hidden = _action === 'hideCharacter' && _meta[0] === meta[0];
+					const hidden = _action === closing && _meta[0] === meta[0];
+
 					/**
-					 * Не нужно запускать рендер персонажа, если после этого будет ещё один рендер этого персонажа
-					 * Таким образом избегаем ситуации, когда при загрузке вследствие гонки при загрузки изображений отрисовывается не последняя эмоция
+					 * If another action of that type will be ran later
 					 */
 					const notLatest = _action === action && _meta[0] === meta[0];
 
@@ -728,7 +734,7 @@ const novely = <
 				if (skip) continue;
 
 				match(action, meta);
-			} else if (action === 'showBackground' || action === 'animateCharacter' || action === 'preload') {
+			} else if (action === 'showBackground' || action === 'animateCharacter' || action === 'preload' || action === 'voice') {
 				/**
 				 * @todo: Также сравнивать персонажей в animateCharacter. Чтобы не просто последний запускался, а последний для персонажа.
 				 * Тем не менее таким образом могут быть лишнии анимации.
@@ -1307,8 +1313,8 @@ const novely = <
 		const cnt = isFunction(content)
 			? content()
 			: typeof content === 'string'
-			  ? content
-			  : content[lang as Languages];
+				? content
+				: content[lang as Languages];
 
 		const str = isFunction(cnt) ? cnt() : cnt;
 
