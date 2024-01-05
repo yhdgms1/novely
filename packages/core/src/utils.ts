@@ -259,18 +259,18 @@ const isExitImpossible = (path: Path) => {
 		return false;
 	}
 
-	/**
-	 * Not the best check for every opened block has beed closed
-	 */
-	for (let i = 0; i++; i < blockStatements.length) {
-		const b = blockStatements[i][0];
-		const be = blockExitStatements[i][0];
+	return !blockExitStatements.every(([name], i) => name && name.startsWith(blockStatements[i][0]!))
+}
 
-		if (!b || !be) return false;
-		if (!be.startsWith(b)) return false;
-	}
+const getOppositeAction = (action: 'showCharacter' | 'playSound' | 'playMusic' | 'voice' | any) => {
+	const MAP = {
+		'showCharacter': 'hideCharacter',
+		'playSound': 'stopSound',
+		'playMusic': 'stopMusic',
+		'voice': 'stopVoice'
+	} as const;
 
-	return true;
+	return MAP[action as keyof typeof MAP];
 }
 
 export {
@@ -296,5 +296,6 @@ export {
 	isAction,
 	flattenStory,
 	once,
-	isExitImpossible
+	isExitImpossible,
+	getOppositeAction
 };

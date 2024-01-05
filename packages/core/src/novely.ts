@@ -43,7 +43,8 @@ import {
 	isAction,
 	noop,
 	flattenStory,
-	isExitImpossible
+	isExitImpossible,
+	getOppositeAction
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
@@ -704,37 +705,23 @@ const novely = <
 					 */
 					await result;
 				}
-			} else if (action === 'showCharacter' || action === 'playSound' || action === 'playMusic') {
-				const closing =
-					action === 'showCharacter'
-						? 'hideCharacter'
-						: action === 'playSound'
-							? 'stopSound'
-							: 'stopMusic';
+			} else if (action === 'showCharacter' || action === 'playSound' || action === 'playMusic' || action === 'voice') {
+				const closing = getOppositeAction(action);
 
 				const skip = next(i).some(([_action, _meta]) => {
-					/**
-					 * Проверка на возможный `undefined`
-					 */
 					if (!_meta || !meta) return false;
+					if (_meta[0] !== meta[0]) return false;
 
 					/**
-					 * If action will be hidden later
+					 * It either will be closed OR same action will be ran again
 					 */
-					const hidden = _action === closing && _meta[0] === meta[0];
-
-					/**
-					 * If another action of that type will be ran later
-					 */
-					const notLatest = _action === action && _meta[0] === meta[0];
-
-					return hidden || notLatest;
+					return _action === closing || _action === action;
 				});
 
 				if (skip) continue;
 
 				match(action, meta);
-			} else if (action === 'showBackground' || action === 'animateCharacter' || action === 'preload' || action === 'voice') {
+			} else if (action === 'showBackground' || action === 'animateCharacter' || action === 'preload') {
 				/**
 				 * @todo: Также сравнивать персонажей в animateCharacter. Чтобы не просто последний запускался, а последний для персонажа.
 				 * Тем не менее таким образом могут быть лишнии анимации.
