@@ -1,7 +1,6 @@
 import type { Character } from './character';
 import type {
 	ActionProxyProvider,
-	GetActionParameters,
 	Story,
 	ValidAction,
 	Unwrappable,
@@ -26,11 +25,8 @@ import {
 	matchAction,
 	isNumber,
 	isNull,
-	isPromise,
 	isEmpty,
 	isCSSImage,
-	str,
-	isUserRequiredAction,
 	getLanguage as defaultGetLanguage,
 	throttle,
 	isFunction,
@@ -44,7 +40,8 @@ import {
 	noop,
 	flattenStory,
 	isExitImpossible,
-	getOppositeAction
+	processQueue,
+	getActionsFromPath
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
@@ -533,122 +530,8 @@ const novely = <
 
 		(restoring = true), (stack.value = latest);
 
-		const path = stack.value[0];
-
-		/**
-		 * Current item in the story
-		 */
-		let current: any = story;
-		/**
-		 * Previous `current` value
-		 */
-		let precurrent: any;
-		/**
-		 * Should we ignore some actions
-		 */
-		let ignoreNested = false;
-
-		/**
-		 * Current item of type `[null, int]`
-		 */
-		let index = 0;
-
-		/**
-		 * Cound of items of type `[null, int]`
-		 */
-		const max = stack.value[0].reduce((acc, [type, val]) => {
-			if (isNull(type) && isNumber(val)) {
-				return acc + 1;
-			}
-
-			return acc;
-		}, 0);
-
-		const queue = [] as [any, any][];
-		const keep = new Set();
-		const characters = new Set();
-		const blocks = [];
-
-		for (const [type, val] of path) {
-			if (type === 'jump') {
-				precurrent = story;
-				current = current[val];
-			} else if (type === null) {
-				precurrent = current;
-
-				if (isNumber(val)) {
-					index++;
-
-					let startIndex = 0;
-
-					if (ignoreNested) {
-						const prev = findLastPathItemBeforeItemOfType(path.slice(0, index), 'block');
-
-						if (prev) {
-							startIndex = prev[1];
-							ignoreNested = false;
-						}
-					}
-
-					/**
-					 * Запустим все экшены которые идут в `[null, int]` от `0` до `int`
-					 * Почему-то потребовалось изменить `<` на `<=`, чтобы последний action попадал сюда
-					 */
-					for (let i = startIndex; i <= val; i++) {
-						const item = current[i];
-
-						/**
-						 * In case of broken save at least not throw
-						 * But is should not happen
-						 */
-						if (!isAction(item)) continue;
-
-						const [action, ...meta] = item;
-
-						/**
-						 * Add item to queue and action to keep
-						 */
-						const push = () => {
-							keep.add(action);
-							queue.push([action, meta]);
-						};
-
-						/**
-						 * Do not remove characters that will be here anyways
-						 */
-						if (action === 'showCharacter') characters.add(meta[0]);
-
-						/**
-						 * Экшены, для закрытия которых пользователь должен с ними взаимодействовать
-						 * Также в эту группу входят экшены, которые не должны быть вызваны при восстановлении
-						 */
-						if (isSkippedDuringRestore(action) || isUserRequiredAction(action, meta)) {
-							if (index === max && i === val) {
-								push();
-							} else {
-								continue;
-							}
-						}
-
-						push();
-					}
-				}
-
-				current = current[val];
-			} else if (type === 'choice') {
-				blocks.push(precurrent);
-				current = current[val + 1][1];
-			} else if (type === 'condition') {
-				blocks.push(precurrent);
-				current = current[2][val];
-			} else if (type === 'block') {
-				blocks.push(precurrent);
-				current = story[val];
-			} else if (type === 'block:exit' || type === 'choice:exit' || type === 'condition:exit') {
-				current = blocks.pop();
-				ignoreNested = true;
-			}
-		}
+		const [path] = stack.value;
+		const { keep, queue } = getActionsFromPath(story, path);
 
 		/**
 		 * Run these exactly before the main loop.
@@ -659,88 +542,7 @@ const novely = <
 		 */
 		match('clear', [keep, characters]);
 
-		/**
-		 * Get the next actions array.
-		 */
-		const next = (i: number) => queue.slice(i + 1);
-
-		for await (const [i, [action, meta]] of queue.entries()) {
-			if (action === 'function' || action === 'custom') {
-				/**
-				 * When `callOnlyLatest` is `true`
-				 */
-				if (action === 'custom' && (meta as GetActionParameters<'Custom'>)[0].callOnlyLatest) {
-					/**
-					 * We'll calculate it is `latest` or not
-					 */
-					const notLatest = next(i).some(([, _meta]) => {
-						if (!_meta || !meta) return false;
-
-						const c0 = _meta[0] as unknown as GetActionParameters<'Custom'>[0];
-						const c1 = meta[0] as unknown as GetActionParameters<'Custom'>[0];
-
-						/**
-						 * Also check for `undefined`
-						 */
-						const isIdenticalID = c0.id && c1.id && c0.id === c1.id;
-						const isIdenticalByReference = c0 === c1;
-
-						return isIdenticalID || isIdenticalByReference || str(c0) === str(c1);
-					});
-
-					if (notLatest) continue;
-				}
-
-				/**
-				 * Action can return Promise.
-				 */
-				const result = match(action, meta);
-
-				/**
-				 * Should wait until it resolved
-				 */
-				if (isPromise(result)) {
-					/**
-					 * Await it!
-					 */
-					await result;
-				}
-			} else if (action === 'showCharacter' || action === 'playSound' || action === 'playMusic' || action === 'voice') {
-				const closing = getOppositeAction(action);
-
-				const skip = next(i).some(([_action, _meta]) => {
-					if (!_meta || !meta) return false;
-					if (_meta[0] !== meta[0]) return false;
-
-					/**
-					 * It either will be closed OR same action will be ran again
-					 */
-					return _action === closing || _action === action;
-				});
-
-				if (skip) continue;
-
-				match(action, meta);
-			} else if (action === 'showBackground' || action === 'animateCharacter' || action === 'preload') {
-				/**
-				 * @todo: Также сравнивать персонажей в animateCharacter. Чтобы не просто последний запускался, а последний для персонажа.
-				 * Тем не менее таким образом могут быть лишнии анимации.
-				 * Можно проверить, что одна анимация идёт сразу за другой, а не через, например, dialog
-				 */
-
-				/**
-				 * Такая же оптимизация применяется к фонам и анимированию персонажей, и `preload`.
-				 * Если фон изменится, то нет смысла устанавливать или предзагружать текущий
-				 */
-				const notLatest = next(i).some(([_action]) => action === _action);
-
-				if (notLatest) continue;
-
-				match(action, meta);
-			} else {
-				match(action, meta);
-			}
-		}
+		await processQueue(queue, match);
 
 		(restoring = goingBack = false), render();
 	};
@@ -920,7 +722,9 @@ const novely = <
 		function([fn]) {
 			const result = fn(restoring, goingBack);
 
-			if (!restoring) result ? result.then(push) : push();
+			if (!restoring) {
+				result ? result.then(push) : push();
+			}
 
 			return result;
 		},
