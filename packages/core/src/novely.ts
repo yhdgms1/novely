@@ -47,7 +47,7 @@ import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
 import { deepmerge } from '@novely/deepmerge';
 import { klona } from 'klona/json';
-import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED } from './constants';
+import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, MAIN_CONTEXT_KEY } from './constants';
 import { replace as replaceT9N } from './translation';
 import { localStorageStorage } from './storage';
 import pLimit from 'p-limit';
@@ -590,7 +590,7 @@ const novely = <
 
 		stack.clear();
 		renderer.ui.showScreen('mainmenu');
-		renderer.audio.destroy();
+		context.audio.destroy();
 
 		/**
 		 * First two save elements and it's type
@@ -628,6 +628,8 @@ const novely = <
 	};
 
 	const renderer = createRenderer({
+		mainContextKey: MAIN_CONTEXT_KEY,
+
 		characters,
 		set,
 		restore,
@@ -642,6 +644,8 @@ const novely = <
 		$$,
 	});
 
+	const context = renderer.getContext(MAIN_CONTEXT_KEY);
+
 	renderer.ui.start();
 
 	const match = matchAction({
@@ -649,31 +653,31 @@ const novely = <
 			if (!restoring) setTimeout(push, isFunction(time) ? time() : time);
 		},
 		showBackground([background]) {
-			renderer.background(background);
+			context.background(background);
 			push();
 		},
 		playMusic([source]) {
-			renderer.audio.music(source, 'music', true).play();
+			context.audio.music(source, 'music', true).play();
 			push();
 		},
 		stopMusic([source]) {
-			renderer.audio.music(source, 'music').stop();
+			context.audio.music(source, 'music').stop();
 			push();
 		},
 		playSound([source, loop]) {
-			renderer.audio.music(source, 'sound', loop || false).play();
+			context.audio.music(source, 'sound', loop || false).play();
 			push();
 		},
 		stopSound([source]) {
-			renderer.audio.music(source, 'sound').stop();
+			context.audio.music(source, 'sound').stop();
 			push();
 		},
 		voice([source]) {
-			renderer.audio.voice(source);
+			context.audio.voice(source);
 			push();
 		},
 		stopVoice() {
-			renderer.audio.voiceStop();
+			context.audio.voiceStop();
 			push();
 		},
 		showCharacter([character, emotion, className, style]) {
@@ -681,15 +685,17 @@ const novely = <
 				throw new Error(`Attempt to show character "${character}" with unknown emotion "${emotion}"`)
 			}
 
-			const handle = renderer.character(character);
+			const handle = context.character(character);
 
 			handle.append(className, style, restoring);
-			handle.withEmotion(emotion)();
+			handle.emotion(emotion, true);
 
 			push();
 		},
 		hideCharacter([character, className, style, duration]) {
-			renderer.character(character).remove(className, style, duration)(push, restoring);
+			context.character(character).remove(className, style, duration, restoring).then(() => {
+				push();
+			})
 		},
 		dialog([character, content, emotion]) {
 			/**
@@ -715,7 +721,7 @@ const novely = <
 				return c || '';
 			})();
 
-			const run = renderer.dialog(unwrap(content), unwrap(name), character, emotion);
+			const run = context.dialog(unwrap(content), unwrap(name), character, emotion);
 
 			run(forward, goingBack);
 		},
@@ -754,7 +760,7 @@ const novely = <
 				throw new Error(`Running choice without variants to choose from, look at how to use Choice action properly [https://novely.pages.dev/guide/actions/choice#usage]`)
 			}
 
-			const run = renderer.choices(unwrap(question), unwrapped);
+			const run = context.choices(unwrap(question), unwrapped);
 
 			run((selected) => {
 				enmemory();
@@ -796,13 +802,13 @@ const novely = <
 			/**
 			 * Remove vibration
 			 */
-			renderer.vibrate(0);
+			context.vibrate(0);
 			/**
 			 * Call the actual `clear`
 			 */
-			renderer.clear(goingBack, keep || EMPTY_SET, characters || EMPTY_SET)(push);
+			context.clear(goingBack, keep || EMPTY_SET, characters || EMPTY_SET)(push);
 
-			renderer.audio.clear();
+			context.audio.clear();
 		},
 		condition([condition, variants]) {
 			if (DEV && Object.values(variants).length === 0) {
@@ -829,11 +835,11 @@ const novely = <
 			/**
 			 * Clear the Scene
 			 */
-			renderer.vibrate(0);
+			context.vibrate(0);
 			/**
 			 * No-op used there because using push will make an infinite loop
 			 */
-			renderer.clear(goingBack, EMPTY_SET, EMPTY_SET)(noop);
+			context.clear(goingBack, EMPTY_SET, EMPTY_SET)(noop);
 
 			/**
 			 * Go to the main menu
@@ -849,10 +855,10 @@ const novely = <
 			times.clear();
 		},
 		input([question, onInput, setup]) {
-			renderer.input(unwrap(question), onInput, setup)(forward);
+			context.input(unwrap(question), onInput, setup)(forward);
 		},
 		custom([handler]) {
-			const result = renderer.custom(handler, goingBack, () => {
+			const result = context.custom(handler, goingBack, () => {
 				if (!restoring && handler.requireUserAction) enmemory(), interactivity(true);
 				if (!restoring) push();
 			});
@@ -860,7 +866,7 @@ const novely = <
 			return result;
 		},
 		vibrate(pattern) {
-			renderer.vibrate(pattern);
+			context.vibrate(pattern);
 			push();
 		},
 		next() {
@@ -922,7 +928,7 @@ const novely = <
 				throw new Error(`Action Text was called with empty string or array`)
 			}
 
-			renderer.text(string, forward, goingBack);
+			context.text(string, forward, goingBack);
 		},
 		exit() {
 			if (restoring) return;

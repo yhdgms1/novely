@@ -4,9 +4,9 @@ import type {
 	Character,
 	CustomHandler,
 	AudioHandle,
+	CharacterHandle,
 } from '@novely/core';
 import type {
-	State,
   StateScreen,
   StateScreens,
   StateMainmenuItem,
@@ -17,18 +17,14 @@ import type {
 import type { JSX } from 'solid-js';
 
 import { Switch, Match, createEffect } from 'solid-js';
-import { createStore } from 'solid-js/store';
 import { render } from 'solid-js/web';
 import { Howl } from 'howler';
 
 import { createEmitter } from './emitter';
-import { canvasDrawImages, createImage, escape, toMedia, findLast, createCanVibrate } from '$utils';
+import { canvasDrawImages, createImage, escape, toMedia, findLast, vibrate } from '$utils';
 import { Provider } from '$context';
 import { Game, MainMenu, Saves, Settings, Loading, CustomScreen } from '$screens';
-
-
-
-const canVibrate = createCanVibrate();
+import { createGlobalState, useContextState } from './store';
 
 const createSolidRenderer = ({
 	fullscreen = false,
@@ -38,38 +34,7 @@ const createSolidRenderer = ({
 	target = document.body,
 }: CreateSolidRendererOptions = {}) => {
 	const emitter = createEmitter<EmitterEventsMap>();
-
-	const [state, setState] = createStore<State>({
-		background: '',
-		characters: {},
-		dialog: {
-			content: '',
-			name: '',
-			visible: false,
-			goingBack: false,
-		},
-		choices: {
-			question: '',
-			visible: false,
-			choices: [],
-		},
-		input: {
-			question: '',
-			error: '',
-			visible: false,
-		},
-		text: {
-			content: '',
-			goingBack: false,
-		},
-		layers: {},
-		screens: {},
-		mainmenu: {
-			items: [],
-		},
-		screen: 'mainmenu',
-		exitPromptShown: false,
-	});
+	const [globalState, setGlobalState] = createGlobalState();
 
 	const store: SolidRendererStore = {
 		characters: {},
@@ -114,11 +79,10 @@ const createSolidRenderer = ({
 	let unmount: (() => void) | undefined | void;
 
 	const Novely = () => {
+		const ctx = renderer.getContext('main');
+
 		createEffect(() => {
-			/**
-			 * Access `screen` outside of if statement
-			 */
-			const screen = state.screen;
+			const screen = globalState.screen;
 
 			if (fullscreen && document.fullscreenEnabled) {
 				/**
@@ -136,7 +100,7 @@ const createSolidRenderer = ({
 			}
 
 			if (screen !== 'game' && screen !== 'settings' && screen !== 'loading') {
-				renderer.audio.destroy();
+				ctx.audio.destroy();
 			}
 
 			emitter.emit('screen:change', screen)
@@ -166,34 +130,44 @@ const createSolidRenderer = ({
 
 		return (
 			<div ref={root as HTMLDivElement}>
-				<Provider storeData={options.$} coreData={options.$$} options={options} renderer={renderer} emitter={emitter}>
+				<Provider
+					globalState={globalState}
+					setGlobalState={setGlobalState}
+
+					storeData={options.$}
+					coreData={options.$$}
+					options={options}
+					renderer={renderer}
+					emitter={emitter}
+				>
 					<Switch>
-						<Match when={state.screen === 'game'}>
+						<Match when={globalState.screen === 'game'}>
 							<Game
-								state={state}
-								setState={/* @once */ setState}
+								state={useContextState(options.mainContextKey).state}
+								setState={/* @once */ useContextState(options.mainContextKey).setState}
+
 								store={/* @once */ store}
 								characters={/* @once */ characters}
-								renderer={/* @once */ renderer}
+								context={/* @once */ renderer.getContext(options.mainContextKey)}
 								controls={/* @once */ controls}
 								skipTypewriterWhenGoingBack={/* @once */ skipTypewriterWhenGoingBack}
 							/>
 						</Match>
-						<Match when={state.screen === 'mainmenu'}>
-							<MainMenu state={state} setState={/* @once */ setState} />
+						<Match when={globalState.screen === 'mainmenu'}>
+							<MainMenu />
 						</Match>
-						<Match when={state.screen === 'saves'}>
-							<Saves setState={/* @once */ setState} />
+						<Match when={globalState.screen === 'saves'}>
+							<Saves />
 						</Match>
-						<Match when={state.screen === 'settings'}>
-							<Settings setState={/* @once */ setState} useNativeLanguageNames={useNativeLanguageNames} />
+						<Match when={globalState.screen === 'settings'}>
+							<Settings useNativeLanguageNames={/* @once */ useNativeLanguageNames} />
 						</Match>
-						<Match when={state.screen === 'loading'}>
+						<Match when={globalState.screen === 'loading'}>
 							<Loading />
 						</Match>
 					</Switch>
 
-					<CustomScreen name={state.screen} state={state} setState={/* @once */ setState} />
+					<CustomScreen name={globalState.screen} />
 				</Provider>
 			</div>
 		);
@@ -201,424 +175,433 @@ const createSolidRenderer = ({
 
 	return {
 		emitter,
+
 		renderer(init: RendererInit): Renderer {
-			(options = init), (characters = init.characters);
+			options = init;
+			characters = init.characters;
 
 			renderer = {
-				background(background) {
-					currentBackground = background;
+				getContext(context) {
+					const { state, setState } = useContextState(context);
 
-					if (typeof background === 'string') {
-						setState('background', background);
+					return {
+						background(background) {
+							currentBackground = background;
 
-						return;
-					}
+							if (typeof background === 'string') {
+								setState('background', background);
 
-					/**
-					 * Change `portrait` to (orientation: portrait)
-					 * Same for `landscape`
-					 */
-					for (const [key, value] of Object.entries(background)) {
-						delete background[key];
-
-						background[toMedia(key)] = value;
-					}
-
-					const mediaQueries = Object.keys(background).map((media) => matchMedia(media));
-
-					/**
-					 * @todo: We can throttle that function, but should we?
-					 */
-					const handle = () => {
-						if (currentBackground !== background) {
-							for (const mq of mediaQueries) {
-								mq.onchange = null;
+								return;
 							}
-
-							return;
-						}
-
-						/**
-						 * Using ponyfill here because `Array.prototype.findLast` has not enough support
-						 * @see https://caniuse.com/?search=findLast
-						 */
-						const last = findLast(mediaQueries, ({ matches }) => matches);
-						const bg = last ? background[last.media] : '';
-
-						setState('background', bg);
-					};
-
-					for (const mq of mediaQueries) {
-						mq.onchange = handle;
-					}
-
-					handle();
-				},
-				character(character) {
-					if (store.characters[character]) return store.characters[character];
-
-					const canvas = (<canvas data-character={character} />) as HTMLCanvasElement;
-					const ctx = canvas.getContext('2d')!;
-
-					const render = (images: HTMLImageElement[]) => {
-						return () => {
-							canvasDrawImages(canvas, ctx, images);
-						};
-					};
-
-					return (store.characters[character] = {
-						canvas,
-						ctx,
-						emotions: {},
-						withEmotion(emotion) {
-							const stored = this.emotions[emotion];
-
-							if (stored) {
-								return render(Object.values(stored));
-							}
-
-							const characterEmotion = characters[character].emotions[emotion];
-							const emotionData = (unknown => Array.isArray(unknown) ? unknown : [unknown])(characterEmotion);
-
-							this.emotions[emotion] = emotionData.map(src => createImage(src));
-
-							return render(this.emotions[emotion]);
-						},
-						append(className, style) {
-							clearTimeout(state.characters[character]?.timeoutId);
 
 							/**
-							 * Set style and show
+							 * Change `portrait` to (orientation: portrait)
+							 * Same for `landscape`
 							 */
-							setState('characters', character, { style, visible: true });
+							for (const [key, value] of Object.entries(background)) {
+								delete background[key];
 
-							const { canvas: element } = store.characters[character];
+								background[toMedia(key)] = value;
+							}
+
+							const mediaQueries = Object.keys(background).map((media) => matchMedia(media));
 
 							/**
-							 * Remove className directly
+							 * @todo: We can throttle that function, but should we?
 							 */
-							element.className = '';
-
-							if (className) {
-								/**
-								 * Trigger reflow
-								 */
-								void element.offsetHeight;
-								/**
-								 * Set className directly
-								 */
-								element.className = className;
-							}
-						},
-						remove(className, style, duration) {
-							return (resolve, restoring) => {
-								if (restoring) {
-									/**
-									 * Ignore remove animations, because it is not shown anyway
-									 */
-									setState('characters', character, { visible: false });
-									resolve();
+							const handle = () => {
+								if (currentBackground !== background) {
+									for (const mq of mediaQueries) {
+										mq.onchange = null;
+									}
 
 									return;
 								}
 
-								const timeoutId = setTimeout(() => {
-									setState('characters', character, { visible: false });
-									resolve();
-								}, duration);
-
 								/**
-								 * Set className directly
+								 * Using ponyfill here because `Array.prototype.findLast` has not enough support
+								 * @see https://caniuse.com/?search=findLast
 								 */
-								if (className) {
-									store.characters[character].canvas.className = className as string;
-								}
+								const last = findLast(mediaQueries, ({ matches }) => matches);
+								const bg = last ? background[last.media] : '';
 
-								setState('characters', character, { style, timeoutId });
+								setState('background', bg);
+							};
+
+							for (const mq of mediaQueries) {
+								mq.onchange = handle;
+							}
+
+							handle();
+						},
+						character(character) {
+							if (store.characters[character]) {
+								return store.characters[character];
+							}
+
+							const canvas = (<canvas data-character={character} />) as HTMLCanvasElement;
+							const ctx = canvas.getContext('2d')!;
+
+							const characterHandle = {
+								canvas,
+								ctx,
+								emotions: {},
+								emotion(emotion, shouldRender) {
+									const stored = this.emotions[emotion];
+
+									if (!stored) {
+										const characterEmotion = characters[character].emotions[emotion];
+										const emotionData = (unknown => Array.isArray(unknown) ? unknown : [unknown])(characterEmotion);
+
+										this.emotions[emotion] = emotionData.map(src => createImage(src));
+									}
+
+									if (shouldRender) {
+										canvasDrawImages(canvas, ctx, this.emotions[emotion]);
+									}
+								},
+								append(className, style) {
+									clearTimeout(state.characters[character]?.timeoutId);
+
+									/**
+									 * Set style and show
+									 */
+									setState('characters', character, { style, visible: true });
+
+									const { canvas: element } = store.characters[character];
+
+									/**
+									 * Remove className directly
+									 */
+									element.className = '';
+
+									if (className) {
+										/**
+										 * Trigger reflow
+										 */
+										void element.offsetHeight;
+										/**
+										 * Set className directly
+										 */
+										element.className = className;
+									}
+								},
+								remove(className, style, duration, restoring) {
+									return new Promise((resolve) => {
+										if (restoring) {
+											/**
+											 * Ignore remove animations, because it is not shown anyway
+											 */
+											setState('characters', character, { visible: false });
+											resolve();
+
+											return;
+										}
+
+										const timeoutId = setTimeout(() => {
+											setState('characters', character, { visible: false });
+											resolve();
+										}, duration);
+
+										/**
+										 * Set className directly
+										 */
+										if (className) {
+											store.characters[character].canvas.className = className as string;
+										}
+
+										setState('characters', character, { style, timeoutId });
+									})
+								},
+							} satisfies CharacterHandle;
+
+							store.characters[character] = characterHandle;
+
+							return characterHandle;
+						},
+						dialog(content, name, character, emotion) {
+							return (resolve, goingBack) => {
+								setState('dialog', () => ({
+									content,
+									name,
+									character,
+									emotion,
+									visible: true,
+									resolve,
+									goingBack,
+								}));
 							};
 						},
-					});
-				},
-				dialog(content, name, character, emotion) {
-					return (resolve, goingBack) => {
-						setState('dialog', () => ({
-							content,
-							name,
-							character,
-							emotion,
-							visible: true,
-							resolve,
-							goingBack,
-						}));
-					};
-				},
-				choices(question, choices) {
-					return (resolve) => {
-						setState('choices', { choices, question, resolve, visible: true });
-					};
-				},
-				clear(goingBack, keep, keepCharacters) {
-					return (resolve) => {
-						setState('exitPromptShown', false);
+						choices(question, choices) {
+							return (resolve) => {
+								setState('choices', { choices, question, resolve, visible: true });
+							};
+						},
+						clear(goingBack, keep, keepCharacters) {
+							return (resolve) => {
+								setGlobalState('exitPromptShown', false);
 
-						if (!keep.has('showBackground')) setState('background', '#000');
-						if (!keep.has('choice'))
-							setState('choices', {
-								choices: [],
-								visible: false,
-								resolve: undefined,
-								question: '',
-							});
-						if (!keep.has('input'))
-							setState('input', {
-								element: undefined,
-								question: '',
-								visible: false,
-								error: '',
-							});
-						if (!keep.has('dialog')) setState('dialog', { visible: false, content: '', name: '' });
-						if (!keep.has('text')) setState('text', { content: '' });
+								if (!keep.has('showBackground')) setState('background', '#000');
+								if (!keep.has('choice'))
+									setState('choices', {
+										choices: [],
+										visible: false,
+										resolve: undefined,
+										question: '',
+									});
+								if (!keep.has('input'))
+									setState('input', {
+										element: undefined,
+										question: '',
+										visible: false,
+										error: '',
+									});
+								if (!keep.has('dialog')) setState('dialog', { visible: false, content: '', name: '' });
+								if (!keep.has('text')) setState('text', { content: '' });
 
-						for (const character of Object.keys(state.characters)) {
-							if (!keepCharacters.has(character)) setState('characters', character, { visible: false });
-						}
+								for (const character of Object.keys(state.characters)) {
+									if (!keepCharacters.has(character)) setState('characters', character, { visible: false });
+								}
 
-						for (const [id, layer] of Object.entries(state.layers)) {
-							if (!layer) continue;
+								for (const [id, layer] of Object.entries(state.layers)) {
+									if (!layer) continue;
 
-							/**
-							 * Если происходит переход назад, и слой просит пропустить очистку при переходе назад, то не будем очищать слой
-							 */
-							if (!(goingBack && layer.fn.skipClearOnGoingBack)) {
-								layer.clear(), setState('layers', id, undefined);
-							}
-						}
+									/**
+									 * Если происходит переход назад, и слой просит пропустить очистку при переходе назад, то не будем очищать слой
+									 */
+									if (!(goingBack && layer.fn.skipClearOnGoingBack)) {
+										layer.clear();
+										setState('layers', id, undefined);
+									}
+								}
 
-						resolve();
-					};
-				},
-				input(question, onInput, setup) {
-					return (resolve) => {
-						const error = (value: string) => {
-							setState('input', { error: value });
-						};
+								resolve();
+							};
+						},
+						input(question, onInput, setup) {
+							return (resolve) => {
+								const error = (value: string) => {
+									setState('input', { error: value });
+								};
 
-						const onInputHandler: JSX.EventHandlerUnion<HTMLInputElement, InputEvent> = (event) => {
-							let value: string | undefined;
+								const onInputHandler: JSX.EventHandlerUnion<HTMLInputElement, InputEvent> = (event) => {
+									let value: string | undefined;
 
-							onInput({
-								input,
-								event,
-								error,
-								get value() {
-									if (value) return value;
-									return (value = escape(input.value));
-								},
-							});
-						};
+									onInput({
+										input,
+										event,
+										error,
+										get value() {
+											if (value) return value;
+											return (value = escape(input.value));
+										},
+									});
+								};
 
-						const input = (
-							<input type="text" name="novely-input" required autocomplete="off" onInput={onInputHandler} />
-						) as HTMLInputElement;
+								const jsx = <input
+									type="text"
+									name="novely-input"
+									required
+									autocomplete="off"
+									onInput={onInputHandler}
+								/>;
 
-						if (setup) {
-							setup(input, (callback) => {
-								setState('input', { cleanup: callback });
-							});
-						}
+								const input = jsx as HTMLInputElement;
 
-						setState('input', {
-							element: input,
-							question,
-							visible: true,
-							resolve,
-						});
+								if (setup) {
+									setup(input, (callback) => setState('input', { cleanup: callback }));
+								}
 
-						/**
-						 * Initially run the fake input event to handle errors & etc
-						 */
-						input.dispatchEvent(new InputEvent('input', { bubbles: true }));
-					};
-				},
-				audio: {
-					music(src, method, loop = method === 'music') {
-						const resource = getHowl(method, src, loop);
+								setState('input', {
+									element: input,
+									question,
+									visible: true,
+									resolve,
+								});
 
-						/**
-						 * Update
-						 */
-						resource.loop(loop);
+								/**
+								 * Initially run the fake input event to handle errors & etc
+								 */
+								input.dispatchEvent(new InputEvent('input', { bubbles: true }));
+							};
+						},
+						audio: {
+							music(src, method, loop = method === 'music') {
+								const resource = getHowl(method, src, loop);
 
-						this.start();
+								/**
+								 * Update
+								 */
+								resource.loop(loop);
 
-						return {
-							pause() {
-								resource.fade(getVolume(method), 0, 300);
-								resource.once('fade', resource.pause);
+								this.start();
+
+								return {
+									pause() {
+										resource.fade(getVolume(method), 0, 300);
+										resource.once('fade', resource.pause);
+									},
+									play() {
+										resource.play();
+										resource.fade(0, getVolume(method), 300);
+									},
+									stop() {
+										resource.fade(getVolume(method), 0, 300);
+										resource.once('fade', resource.stop);
+									},
+								} satisfies AudioHandle;
 							},
-							play() {
+							voice(source) {
+								this.start();
+								this.voiceStop();
+
+								const resource = store.audio.voice = getHowl('voice', source, false);
+
+								resource.once('end', () => {
+									store.audio.voice = undefined;
+								});
+
 								resource.play();
-								resource.fade(0, getVolume(method), 300);
 							},
-							stop() {
-								resource.fade(getVolume(method), 0, 300);
-								resource.once('fade', resource.stop);
+							voiceStop() {
+								const currentVoice = store.audio.voice;
+
+								if (currentVoice) {
+									currentVoice.stop();
+
+									/**
+									 * @todo: is this really necessary?
+									 */
+									store.audio.resumeList = store.audio.resumeList.filter(howl => howl !== currentVoice);
+								}
 							},
-						} satisfies AudioHandle;
-					},
-					voice(source) {
-						this.start();
-						this.voiceStop();
+							start() {
+								if (!store.audio.onDocumentVisibilityChangeListener) {
+									const onDocumentVisibilityChange = () => {
+										if (document.visibilityState === 'hidden') {
+											for (const howl of Object.values(store.audio.music)) {
+												if (howl && howl.playing()) {
+													store.audio.resumeList.push(howl);
+													howl.pause();
+												}
+											}
 
-						const resource = store.audio.voice = getHowl('voice', source, false);
+											const currentVoice = store.audio.voice;
 
-						resource.once('end', () => {
-							store.audio.voice = undefined;
-						});
+											if (currentVoice && currentVoice.playing()) {
+												store.audio.resumeList.push(currentVoice);
+												currentVoice.pause();
+											}
 
-						resource.play();
-					},
-					voiceStop() {
-						const currentVoice = store.audio.voice;
+										} else {
+											for (const howl of store.audio.resumeList) {
+												howl.play();
+											}
 
-						if (currentVoice) {
-							currentVoice.stop();
-
-							/**
-							 * @todo: is this really necessary?
-							 */
-							store.audio.resumeList = store.audio.resumeList.filter(howl => howl !== currentVoice);
-						}
-					},
-					start() {
-						if (!store.audio.onDocumentVisibilityChangeListener) {
-							const onDocumentVisibilityChange = () => {
-								if (document.visibilityState === 'hidden') {
-									for (const howl of Object.values(store.audio.music)) {
-										if (howl && howl.playing()) {
-											store.audio.resumeList.push(howl);
-											howl.pause();
+											store.audio.resumeList = [];
 										}
 									}
 
-									const currentVoice = store.audio.voice;
+									document.addEventListener('visibilitychange', store.audio.onDocumentVisibilityChangeListener = onDocumentVisibilityChange)
+								}
+							},
+							clear() {
+								const musics = Object.values(store.audio.music);
+								const sounds = Object.values(store.audio.sound);
 
-									if (currentVoice && currentVoice.playing()) {
-										store.audio.resumeList.push(currentVoice);
-										currentVoice.pause();
-									}
+								for (const music of [...musics, ...sounds]) {
+									if (!music) continue;
 
-								} else {
-									for (const howl of store.audio.resumeList) {
-										howl.play();
-									}
+									music.stop();
+								}
 
-									store.audio.resumeList = [];
+								this.voiceStop();
+							},
+							destroy() {
+								this.clear();
+
+								if (store.audio.onDocumentVisibilityChangeListener) {
+									document.removeEventListener('visibilitychange', store.audio.onDocumentVisibilityChangeListener);
 								}
 							}
+						},
+						custom(fn, goingBack, resolve) {
+							const get: Parameters<CustomHandler>[0] = (id, insert = true) => {
+								/**
+								 * Get `chched` value
+								 */
+								const cached = state.layers[id];
 
-							document.addEventListener('visibilitychange', store.audio.onDocumentVisibilityChangeListener = onDocumentVisibilityChange)
-						}
-					},
-					clear() {
-						const musics = Object.values(store.audio.music);
-						const sounds = Object.values(store.audio.sound);
+								/**
+								 * Return it
+								 */
+								if (cached) return cached.value;
 
-						for (const music of [...musics, ...sounds]) {
-							if (!music) continue;
+								/**
+								 * `Clear` function
+								 */
+								let clear = () => {};
+								let store = {};
 
-							music.stop();
-						}
+								/**
+								 * Function that call the `Clear` defined by the action itself, and then deletes the layer
+								 */
+								const clearManager = () => {
+									clear(), setState('layers', id, undefined);
+								};
 
-						this.voiceStop();
-					},
-					destroy() {
-						this.clear();
+								/**
+								 * When no need to insert - just do not create it.
+								 */
+								const element = insert ? ((<div id={id} />) as HTMLDivElement) : null;
 
-						if (store.audio.onDocumentVisibilityChangeListener) {
-							document.removeEventListener('visibilitychange', store.audio.onDocumentVisibilityChangeListener);
-						}
+								setState('layers', id, {
+									fn,
+									dom: element,
+									clear: clearManager,
+									value: {
+										root,
+										element,
+										delete: clearManager,
+										data(data) {
+											return data ? (store = data) : store;
+										},
+										clear(cb) {
+											clear = cb;
+										},
+									},
+								});
+
+								return state.layers[id]!.value;
+							};
+
+							/**
+							 * Wait untill it is resolved
+							 */
+							const result = fn(get, goingBack, fn.requireUserAction ? resolve : () => {});
+
+							if (!fn.requireUserAction) result ? result.then(resolve) : resolve();
+
+							return result;
+						},
+						vibrate(pattern) {
+							vibrate(pattern);
+						},
+						text(content, resolve, goingBack) {
+							setState('text', { content, resolve, goingBack });
+						},
 					}
-				},
-				custom(fn, goingBack, resolve) {
-					const get: Parameters<CustomHandler>[0] = (id, insert = true) => {
-						/**
-						 * Get `chched` value
-						 */
-						const cached = state.layers[id];
-
-						/**
-						 * Return it
-						 */
-						if (cached) return cached.value;
-
-						/**
-						 * `Clear` function
-						 */
-						let clear = () => {};
-						let store = {};
-
-						/**
-						 * Function that call the `Clear` defined by the action itself, and then deletes the layer
-						 */
-						const clearManager = () => {
-							clear(), setState('layers', id, undefined);
-						};
-
-						/**
-						 * When no need to insert - just do not create it.
-						 */
-						const element = insert ? ((<div id={id} />) as HTMLDivElement) : null;
-
-						setState('layers', id, {
-							fn,
-							dom: element,
-							clear: clearManager,
-							value: {
-								root,
-								element,
-								delete: clearManager,
-								data(data) {
-									return data ? (store = data) : store;
-								},
-								clear(cb) {
-									clear = cb;
-								},
-							},
-						});
-
-						return state.layers[id]!.value;
-					};
-
-					/**
-					 * Wait untill it is resolved
-					 */
-					const result = fn(get, goingBack, fn.requireUserAction ? resolve : () => {});
-
-					if (!fn.requireUserAction) result ? result.then(resolve) : resolve();
-
-					return result;
-				},
-				vibrate(pattern) {
-					try {
-						if (canVibrate() && 'vibrate' in navigator) {
-							navigator.vibrate(pattern);
-						}
-					} catch {}
-				},
-				text(content, resolve, goingBack) {
-					setState('text', { content, resolve, goingBack });
 				},
 				store,
 				ui: {
 					showScreen(name) {
-						setState('screen', name);
+						setGlobalState('screen', name);
 					},
 					getScreen() {
-						return state.screen;
+						return globalState.screen;
 					},
 					showExitPrompt() {
-						setState('exitPromptShown', true);
+						setGlobalState('exitPromptShown', true);
 					},
 					start() {
 						unmount?.();
@@ -683,13 +666,13 @@ const createSolidRenderer = ({
 			return renderer;
 		},
 		registerScreen(name: string, screen: StateScreen) {
-			setState('screens', name, () => screen);
+			setGlobalState('screens', name, () => screen);
 		},
 		registerMainmenuItem(fn: StateMainmenuItem) {
-			setState('mainmenu', 'items', (prev) => [...prev, fn]);
+			setGlobalState('mainmenu', 'items', (prev) => [...prev, fn]);
 		},
 	};
 };
 
 export { createSolidRenderer, Howl };
-export type { State, StateScreen, StateScreens, SolidRendererStore };
+export type { StateScreen, StateScreens, SolidRendererStore };

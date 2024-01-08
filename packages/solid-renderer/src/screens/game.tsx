@@ -1,8 +1,8 @@
 import type { Renderer, Character as CharacterType } from '@novely/core';
 import type { VoidComponent } from 'solid-js';
-import type { JSX } from 'solid-js';
 import type { SetStoreFunction } from 'solid-js/store';
-import type { State, SolidRendererStore } from '../renderer';
+import type { SolidRendererStore } from '../renderer';
+import type { AtContextState } from '../types'
 
 import { createSignal, untrack, For, Show, createUniqueId, createEffect } from 'solid-js';
 import { Character, DialogName, Modal, Icon, ControlPanelButtons, createTypewriter } from '$components';
@@ -11,12 +11,13 @@ import { useData } from '$context';
 import { canvasDrawImages, url, isCSSImage, onKey } from '$utils';
 
 interface GameProps {
-	state: State;
-	setState: SetStoreFunction<State>;
+	state: AtContextState;
+	setState: SetStoreFunction<AtContextState>;
+
+	context: ReturnType<Renderer['getContext']>;
 
 	store: SolidRendererStore;
 	characters: Record<string, CharacterType>;
-	renderer: Renderer;
 
 	controls: 'inside' | 'outside';
 	skipTypewriterWhenGoingBack: boolean;
@@ -28,7 +29,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 	/**
 	 * Can be destructured because these are passed without getters
 	 */
-	const { setState, characters, store, renderer, controls, skipTypewriterWhenGoingBack } = props;
+	const { setState, characters, store, context, controls, skipTypewriterWhenGoingBack } = props;
 
 	const background = () => {
 		const is = isCSSImage(props.state.background);
@@ -36,7 +37,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 		return {
 			'background-image': is ? url(props.state.background) : '',
 			'background-color': is ? undefined : props.state.background,
-		} as Partial<JSX.CSSProperties>;
+		}
 	};
 
 	const [auto, setAuto] = createSignal(false);
@@ -44,7 +45,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 	const onChoicesButtonClick = ([disabled, i]: [boolean, number]) => {
 		if (disabled) return;
 
-		const resolve = props.state.choices.resolve;
+		const resolve = props.state.choices.resolve!;
 
 		setState('choices', {
 			choices: [],
@@ -52,7 +53,8 @@ const Game: VoidComponent<GameProps> = (props) => {
 			resolve: undefined,
 			question: '',
 		});
-		resolve?.(i);
+
+		resolve(i);
 	};
 
 	const onInputButtonClick = () => {
@@ -190,7 +192,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 								 * Если эмоция ещё не загружена - загрузим её
 								 */
 								if (!store['characters'][character] || !store['characters'][character]['emotions'][emotion]) {
-									renderer.character(character).withEmotion(emotion);
+									context.character(character).emotion(emotion, false);
 								}
 
 								const image = store['characters'][character]['emotions'][emotion];
@@ -223,7 +225,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				</div>
 			</div>
 
-			<Modal isOpen={() => props.state.choices.visible} trapFocus={() => !props.state.exitPromptShown}>
+			<Modal isOpen={() => props.state.choices.visible} trapFocus={() => !data.globalState.exitPromptShown}>
 				<div class="dialog-container">
 					<span class="dialog-fix" aria-hidden="true">
 						&#8203;
@@ -237,7 +239,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 							{props.state.choices.question || <>&#8197;</>}
 						</span>
 						<For each={props.state.choices.choices}>
-							{([text, , active], i) => {
+							{([text, _actions, active], i) => {
 								const disabled = active ? !active() : false;
 								const index = i();
 
@@ -257,7 +259,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				</div>
 			</Modal>
 
-			<Modal isOpen={() => props.state.input.visible} trapFocus={() => !props.state.exitPromptShown}>
+			<Modal isOpen={() => props.state.input.visible} trapFocus={() => !data.globalState.exitPromptShown}>
 				<div class="dialog-container">
 					<span class="dialog-fix" aria-hidden="true">
 						&#8203;
@@ -282,7 +284,10 @@ const Game: VoidComponent<GameProps> = (props) => {
 				</div>
 			</Modal>
 
-			<Modal isOpen={() => props.state.exitPromptShown} trapFocus={() => props.state.exitPromptShown}>
+			<Modal
+				isOpen={() => data.globalState.exitPromptShown}
+				trapFocus={() => data.globalState.exitPromptShown}
+			>
 				<div class="dialog-container">
 					<span class="dialog-fix" aria-hidden="true">
 						&#8203;
@@ -295,7 +300,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 								type="button"
 								class="button"
 								onClick={() => {
-									setState('exitPromptShown', false);
+									data.setGlobalState('exitPromptShown', false);
 								}}
 							>
 								{data.t('ExitDialogBack')}
@@ -360,7 +365,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 					</Show>
 				</Show>
 
-				<Show when={data.media.hyperWide() && controlPanelMenuExpanded() && !props.state.exitPromptShown}>
+				<Show when={data.media.hyperWide() && controlPanelMenuExpanded() && !data.globalState.exitPromptShown}>
 					<span class="control-panel-container-fix" aria-hidden="true">
 						&#8203;
 					</span>
@@ -386,7 +391,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				>
 					<ControlPanelButtons
 						openSettings={() => {
-							props.setState('screen', 'settings');
+							data.setGlobalState('screen', 'settings');
 						}}
 						closeDropdown={() => {
 							setControlPanelMenuExpanded(false);

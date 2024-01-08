@@ -1,14 +1,10 @@
 import type { VoidComponent, JSX } from 'solid-js';
-import type { SetStoreFunction } from 'solid-js/store';
-import type { State } from '../renderer';
 
 import { For, createUniqueId } from 'solid-js';
 import { capitalize } from '$utils';
 import { useData } from '$context';
 
 interface SettingsProps {
-	setState: SetStoreFunction<State>;
-
 	useNativeLanguageNames: boolean;
 }
 
@@ -69,7 +65,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 	return (
 		<div class="root settings">
 			<div class="settings__column">
-				<button type="button" class="button settings__button" onClick={() => props.setState('screen', 'mainmenu')}>
+				<button type="button" class="button settings__button" onClick={() => data.setGlobalState('screen', 'mainmenu')}>
 					{data.t('HomeScreen')}
 				</button>
 				<button type="button" class="button settings__button" onClick={() => data.options.restore()}>

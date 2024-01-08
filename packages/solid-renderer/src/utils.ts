@@ -98,19 +98,26 @@ const simple = <T extends unknown[], R>(fn: (...args: T) => R) => {
 	};
 };
 
-const createCanVibrate = () => {
-	let canVibrate = false;
+const vibrationPossible = (() => {
+	let can = false;
 
 	const onPointerDown = () => {
-		canVibrate = true;
-
+		can = true;
 		document.removeEventListener('pointerdown', onPointerDown);
 	};
 
 	document.addEventListener('pointerdown', onPointerDown);
 
-	return () => canVibrate;
-};
+	return () => can;
+})();
+
+const vibrate = (pattern: VibratePattern) => {
+	if (vibrationPossible() && 'vibrate' in navigator) {
+		try {
+			navigator.vibrate(pattern);
+		} catch {}
+	}
+}
 
 export {
 	isCSSImage,
@@ -123,5 +130,6 @@ export {
 	toMedia,
 	findLast,
 	simple,
-	createCanVibrate,
+	vibrationPossible,
+	vibrate
 };

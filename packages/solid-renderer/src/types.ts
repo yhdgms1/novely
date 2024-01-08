@@ -139,20 +139,22 @@ type PossibleScreen = NovelyScreen | (string & Record<never, never>);
 type StateMainmenuItem = (goto: (name: PossibleScreen) => void) => JSX.ButtonHTMLAttributes<HTMLButtonElement>;
 type StateMainmenuItems = StateMainmenuItem[];
 
-interface State {
+type AtContextState = {
   background: string;
   characters: Record<string, StateCharacter>;
   dialog: StateDialog;
   choices: StateChoices;
   input: StateInput;
   layers: StateLayers;
+  text: StateText;
+}
+
+type GlobalState = {
   screens: StateScreens;
   mainmenu: {
     items: StateMainmenuItems;
   };
-  text: StateText;
   screen: PossibleScreen;
-
   exitPromptShown: boolean;
 }
 
@@ -208,7 +210,8 @@ type EmitterEventsMap = {
 
 export type {
   EmitterEventsMap,
-  State,
+  AtContextState,
+  GlobalState,
   StateCharacter,
   StateChoices,
   StateDialog,

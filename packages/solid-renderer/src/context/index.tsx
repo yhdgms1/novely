@@ -1,12 +1,16 @@
 import type { Accessor, FlowComponent } from 'solid-js';
+import type { SetStoreFunction } from 'solid-js/store';
 import type { Renderer, RendererInit, StorageData, Stored, BaseTranslationStrings, CoreData } from '@novely/core';
-import type { EmitterEventsMap } from '../types';
+import type { EmitterEventsMap, GlobalState } from '../types';
 import type { Emitter } from '../emitter';
 
 import { from, createContext, useContext, Show } from 'solid-js';
 import { useMedia } from '$hooks';
 
 interface DataContext {
+	globalState: GlobalState;
+	setGlobalState: SetStoreFunction<GlobalState>;
+
 	storeData: Accessor<StorageData>;
 	storeDataUpdate: (fn: (prev: StorageData) => StorageData) => void;
 
@@ -28,6 +32,9 @@ interface DataContext {
 const Context = createContext<DataContext>();
 
 interface ProviderProps {
+	globalState: GlobalState;
+	setGlobalState: SetStoreFunction<GlobalState>;
+
 	storeData: Stored<StorageData>;
 	coreData: Stored<CoreData>;
 
@@ -42,6 +49,9 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
 	const coreData = from(props.coreData) as Accessor<CoreData>;
 
 	const value: DataContext = {
+		globalState: props.globalState,
+		setGlobalState: props.setGlobalState,
+
 		storeData: storeData,
 		storeDataUpdate: props.storeData.update,
 
@@ -52,7 +62,10 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
 		renderer: props.renderer,
 
 		t(key: BaseTranslationStrings | (string & Record<never, never>)) {
-			return props.options.t(key as BaseTranslationStrings, this.storeData().meta[0]);
+			return props.options.t(
+				key as BaseTranslationStrings,
+				storeData().meta[0]
+			);
 		},
 
 		emitter: props.emitter,

@@ -1,16 +1,16 @@
 import type { VoidComponent, JSX } from 'solid-js';
-import type { SetStoreFunction } from 'solid-js/store';
-import type { State } from '../renderer';
 import { createEffect, createSignal, Show } from 'solid-js';
+import { useData } from '$context'
 
 interface CustomScreenProps {
+	/**
+	 * Name of current custom screen
+	 */
 	name: string;
-
-	state: State;
-	setState: SetStoreFunction<State>;
 }
 
 const CustomScreen: VoidComponent<CustomScreenProps> = (props) => {
+	const { globalState, setGlobalState } = useData();
 	const [dom, setDOM] = createSignal<Element | JSX.Element | null>(null);
 
 	let unmount: undefined | (() => void);
@@ -24,8 +24,8 @@ const CustomScreen: VoidComponent<CustomScreenProps> = (props) => {
 		/**
 		 * CustomScreen is always rendered, so this check is required
 		 */
-		if (props.state.screen in props.state.screens) {
-			const current = props.state.screens[props.state.screen]();
+		if (props.name in globalState.screens) {
+			const current = globalState.screens[props.name]();
 
 			setDOM(current.mount());
 			unmount = current.unmount;
@@ -39,7 +39,7 @@ const CustomScreen: VoidComponent<CustomScreenProps> = (props) => {
 
 	const onClick: JSX.EventHandlerUnion<HTMLDivElement, MouseEvent> = ({ target }) => {
 		if (target instanceof HTMLElement && target.dataset.novelyGoto) {
-			props.setState('screen', target.dataset.novelyGoto);
+			setGlobalState('screen', target.dataset.novelyGoto);
 		}
 	};
 
