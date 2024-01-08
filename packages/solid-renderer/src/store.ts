@@ -30,6 +30,10 @@ const createContextState = () => {
       goingBack: false,
     },
     layers: {},
+
+    meta: {
+      restoring: false
+    }
   });
 
   return {

@@ -1,21 +1,41 @@
-import type { ActionProxyProvider, CustomHandler, Story, ValidAction, GetActionParameters } from './action';
+import type { ActionProxyProvider, DefaultActionProxyProvider, CustomHandler, Story, ValidAction, GetActionParameters } from './action';
 import type { Character } from './character';
 import type { Thenable, Path, PathItem } from './types';
+import type { Context } from './renderer';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE } from './constants';
 
+type MatchActionParams = {
+	data: Record<string, unknown>
+	ctx: Context
+}
+
 type MatchActionMap = {
-	[Key in keyof ActionProxyProvider<Record<string, Character>, string>]: (
-		data: Parameters<ActionProxyProvider<Record<string, Character>, string>[Key]>,
-	) => void;
+	[Key in keyof DefaultActionProxyProvider]: (params: MatchActionParams, data: Parameters<DefaultActionProxyProvider[Key]>) => void;
 };
 
 type MatchActionMapComplete = Omit<MatchActionMap, 'custom'> & {
-	custom: (value: [handler: CustomHandler]) => Thenable<void>;
+	custom: (params: MatchActionParams, value: [handler: CustomHandler]) => Thenable<void>;
 };
 
-const matchAction = <M extends MatchActionMapComplete>(values: M) => {
-	return (action: keyof MatchActionMap, props: any) => {
-		return values[action](props);
+type MatchActionParameters = {
+	/**
+	 * Name of context or context
+	 */
+	ctx: string | Context;
+	/**
+	 * Data from the save
+	 */
+	data: Record<string, unknown>;
+}
+
+const matchAction = <M extends MatchActionMapComplete>(getContext: (name: string) => Context, values: M) => {
+	return (action: keyof MatchActionMapComplete, props: any, { ctx, data }: MatchActionParameters) => {
+		const context = typeof ctx === 'string' ? getContext(ctx) : ctx;
+
+		return values[action]({
+			ctx: context,
+			data,
+		}, props);
 	};
 };
 
@@ -394,6 +414,7 @@ const getActionsFromPath = (story: Story, path: Path) => {
 
 	return {
 		keep,
+		characters,
 		queue
 	}
 }

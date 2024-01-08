@@ -6,6 +6,15 @@ const BLOCK_EXIT_STATEMENTS = new Set(['choice:exit', 'condition:exit', 'block:e
 
 const BLOCK_STATEMENTS = new Set(['choice', 'condition', 'block'] as const);
 
+const AUDIO_ACTIONS = new Set([
+  'playMusic',
+  'stopMusic',
+  'playSound',
+  'stopSound',
+  'voice',
+  'stopVoice'
+] as const);
+
 const EMPTY_SET = new Set<any>();
 
 const DEFAULT_TYPEWRITER_SPEED: TypewriterSpeed = 'Medium';
@@ -15,4 +24,4 @@ const DEFAULT_TYPEWRITER_SPEED: TypewriterSpeed = 'Medium';
  */
 const MAIN_CONTEXT_KEY = '$MAIN';
 
-export { SKIPPED_DURING_RESTORE, EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, BLOCK_EXIT_STATEMENTS, BLOCK_STATEMENTS, MAIN_CONTEXT_KEY };
+export { SKIPPED_DURING_RESTORE, EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, BLOCK_EXIT_STATEMENTS, BLOCK_STATEMENTS, MAIN_CONTEXT_KEY, AUDIO_ACTIONS };

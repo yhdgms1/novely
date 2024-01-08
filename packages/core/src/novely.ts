@@ -47,7 +47,7 @@ import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
 import { deepmerge } from '@novely/deepmerge';
 import { klona } from 'klona/json';
-import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, MAIN_CONTEXT_KEY } from './constants';
+import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, MAIN_CONTEXT_KEY, AUDIO_ACTIONS } from './constants';
 import { replace as replaceT9N } from './translation';
 import { localStorageStorage } from './storage';
 import pLimit from 'p-limit';
@@ -398,7 +398,7 @@ const novely = <
 		/**
 		 * Yay
 		 */
-		$.update(() => stored);
+		$.set(stored);
 	};
 
 	/**
@@ -503,7 +503,6 @@ const novely = <
 		return restore(save);
 	};
 
-	let restoring = false;
 	let goingBack = false;
 	let interacted = 0;
 
@@ -519,32 +518,46 @@ const novely = <
 		 * When there is no game, then make a new game
 		 */
 		if (!latest) {
-			$.update(() => ({
+			$.set({
 				saves: [initial],
 				data: klona(defaultData) as Data,
 				meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED, 1, 1, 1],
-			}));
+			});
 
 			latest = klona(initial);
 		}
 
-		(restoring = true), (stack.value = latest);
+		const context = renderer.getContext(MAIN_CONTEXT_KEY);
 
-		const [path] = stack.value;
-		const { keep, queue } = getActionsFromPath(story, path);
+		context.meta.restoring = true;
+
+		const [path] = stack.value = latest;
+		const { keep, characters, queue } = getActionsFromPath(story, path);
 
 		/**
 		 * Run these exactly before the main loop.
 		 */
 		renderer.ui.showScreen('game');
+
 		/**
 		 * Provide the `keep` in there
 		 */
-		match('clear', [keep, characters]);
+		match('clear', [keep, characters], {
+			ctx: context,
+			data: latest[1]
+		})
 
-		await processQueue(queue, match);
+		await processQueue(queue, (action, props) => {
+			if (!latest) return;
 
-		(restoring = goingBack = false), render();
+			return match(action, props, {
+				ctx: context,
+				data: latest[1]
+			});
+		});
+
+		context.meta.restoring = goingBack = false;
+		render();
 	};
 
 	const refer = (path = stack.value[0]) => {
@@ -590,7 +603,7 @@ const novely = <
 
 		stack.clear();
 		renderer.ui.showScreen('mainmenu');
-		context.audio.destroy();
+		renderer.getContext(MAIN_CONTEXT_KEY).audio.destroy();
 
 		/**
 		 * First two save elements and it's type
@@ -627,6 +640,23 @@ const novely = <
 		return translation[lang as Languages].internal[key];
 	};
 
+	const preview = async ([path, data]: Save, name: string) => {
+		const { queue } = getActionsFromPath(story, path);
+
+		await processQueue(queue, (action, props) => {
+			if (AUDIO_ACTIONS.has(action as any)) return;
+
+			// todo: virtual root and etc in custom actions
+			// todo(half done): also pass things like `restoring` instead of using globals
+			// todo: move `store` away and store everything under the context
+
+			return match(action, props, {
+				ctx: name,
+				data: data
+			});
+		})
+	}
+
 	const renderer = createRenderer({
 		mainContextKey: MAIN_CONTEXT_KEY,
 
@@ -638,66 +668,65 @@ const novely = <
 		exit,
 		back,
 		t,
+		preview,
 		stack,
 		languages,
 		$,
 		$$,
 	});
 
-	const context = renderer.getContext(MAIN_CONTEXT_KEY);
-
 	renderer.ui.start();
 
-	const match = matchAction({
-		wait([time]) {
-			if (!restoring) setTimeout(push, isFunction(time) ? time() : time);
+	const match = matchAction(renderer.getContext, {
+		wait({ ctx }, [time]) {
+			if (!ctx.meta.restoring) setTimeout(push, isFunction(time) ? time() : time);
 		},
-		showBackground([background]) {
-			context.background(background);
+		showBackground({ ctx }, [background]) {
+			ctx.background(background);
 			push();
 		},
-		playMusic([source]) {
-			context.audio.music(source, 'music', true).play();
+		playMusic({ ctx }, [source]) {
+			ctx.audio.music(source, 'music', true).play();
 			push();
 		},
-		stopMusic([source]) {
-			context.audio.music(source, 'music').stop();
+		stopMusic({ ctx }, [source]) {
+			ctx.audio.music(source, 'music').stop();
 			push();
 		},
-		playSound([source, loop]) {
-			context.audio.music(source, 'sound', loop || false).play();
+		playSound({ ctx }, [source, loop]) {
+			ctx.audio.music(source, 'sound', loop || false).play();
 			push();
 		},
-		stopSound([source]) {
-			context.audio.music(source, 'sound').stop();
+		stopSound({ ctx }, [source]) {
+			ctx.audio.music(source, 'sound').stop();
 			push();
 		},
-		voice([source]) {
-			context.audio.voice(source);
+		voice({ ctx }, [source]) {
+			ctx.audio.voice(source);
 			push();
 		},
-		stopVoice() {
-			context.audio.voiceStop();
+		stopVoice({ ctx }) {
+			ctx.audio.voiceStop();
 			push();
 		},
-		showCharacter([character, emotion, className, style]) {
+		showCharacter({ ctx }, [character, emotion, className, style]) {
 			if (DEV && !characters[character].emotions[emotion]) {
 				throw new Error(`Attempt to show character "${character}" with unknown emotion "${emotion}"`)
 			}
 
-			const handle = context.character(character);
+			const handle = ctx.character(character);
 
-			handle.append(className, style, restoring);
+			handle.append(className, style, ctx.meta.restoring);
 			handle.emotion(emotion, true);
 
 			push();
 		},
-		hideCharacter([character, className, style, duration]) {
-			context.character(character).remove(className, style, duration, restoring).then(() => {
+		hideCharacter({ ctx }, [character, className, style, duration]) {
+			ctx.character(character).remove(className, style, duration, ctx.meta.restoring).then(() => {
 				push();
 			})
 		},
-		dialog([character, content, emotion]) {
+		dialog({ ctx, data }, [character, content, emotion]) {
 			/**
 			 * Person name
 			 */
@@ -721,20 +750,20 @@ const novely = <
 				return c || '';
 			})();
 
-			const run = context.dialog(unwrap(content), unwrap(name), character, emotion);
+			const run = ctx.dialog(unwrap(content, data), unwrap(name, data), character, emotion);
 
 			run(forward, goingBack);
 		},
-		function([fn]) {
-			const result = fn(restoring, goingBack);
+		function({ ctx }, [fn]) {
+			const result = fn(ctx.meta.restoring, goingBack);
 
-			if (!restoring) {
+			if (!ctx.meta.restoring) {
 				result ? result.then(push) : push();
 			}
 
 			return result;
 		},
-		choice([question, ...choices]) {
+		choice({ ctx, data }, [question, ...choices]) {
 			const isWithoutQuestion = Array.isArray(question);
 
 			if (isWithoutQuestion) {
@@ -753,14 +782,14 @@ const novely = <
 					console.warn(`Choice children should not be empty, either add content there or make item not selectable`)
 				}
 
-				return [unwrap(content), action, visible] as [string, ValidAction[], () => boolean];
+				return [unwrap(content, data), action, visible] as [string, ValidAction[], () => boolean];
 			});
 
 			if (DEV && unwrapped.length === 0) {
 				throw new Error(`Running choice without variants to choose from, look at how to use Choice action properly [https://novely.pages.dev/guide/actions/choice#usage]`)
 			}
 
-			const run = context.choices(unwrap(question), unwrapped);
+			const run = ctx.choices(unwrap(question, data), unwrapped);
 
 			run((selected) => {
 				enmemory();
@@ -779,7 +808,7 @@ const novely = <
 				interactivity(true);
 			});
 		},
-		jump([scene]) {
+		jump({ ctx, data }, [scene]) {
 			if (DEV && !story[scene]) {
 				throw new Error(`Attempt to jump to unknown scene "${scene}"`)
 			}
@@ -796,26 +825,29 @@ const novely = <
 				[null, -1],
 			];
 
-			match('clear', []);
+			match('clear', [], {
+				ctx,
+				data,
+			});
 		},
-		clear([keep, characters]) {
+		clear({ ctx }, [keep, characters]) {
 			/**
 			 * Remove vibration
 			 */
-			context.vibrate(0);
+			ctx.vibrate(0);
 			/**
 			 * Call the actual `clear`
 			 */
-			context.clear(goingBack, keep || EMPTY_SET, characters || EMPTY_SET)(push);
+			ctx.clear(goingBack, keep || EMPTY_SET, characters || EMPTY_SET)(push);
 
-			context.audio.clear();
+			ctx.audio.clear();
 		},
-		condition([condition, variants]) {
+		condition({ ctx }, [condition, variants]) {
 			if (DEV && Object.values(variants).length === 0) {
 				throw new Error(`Attempt to use Condition action with empty variants object`)
 			}
 
-			if (!restoring) {
+			if (!ctx.meta.restoring) {
 				const val = String(condition());
 
 				if (DEV && !variants[val]) {
@@ -831,15 +863,15 @@ const novely = <
 				render();
 			}
 		},
-		end() {
+		end({ ctx }) {
 			/**
 			 * Clear the Scene
 			 */
-			context.vibrate(0);
+			ctx.vibrate(0);
 			/**
 			 * No-op used there because using push will make an infinite loop
 			 */
-			context.clear(goingBack, EMPTY_SET, EMPTY_SET)(noop);
+			ctx.clear(goingBack, EMPTY_SET, EMPTY_SET)(noop);
 
 			/**
 			 * Go to the main menu
@@ -854,25 +886,25 @@ const novely = <
 			 */
 			times.clear();
 		},
-		input([question, onInput, setup]) {
-			context.input(unwrap(question), onInput, setup)(forward);
+		input({ ctx, data }, [question, onInput, setup]) {
+			ctx.input(unwrap(question, data), onInput, setup)(forward);
 		},
-		custom([handler]) {
-			const result = context.custom(handler, goingBack, () => {
-				if (!restoring && handler.requireUserAction) enmemory(), interactivity(true);
-				if (!restoring) push();
+		custom({ ctx }, [handler]) {
+			const result = ctx.custom(handler, goingBack, () => {
+				if (!ctx.meta.restoring && handler.requireUserAction) enmemory(), interactivity(true);
+				if (!ctx.meta.restoring) push();
 			});
 
 			return result;
 		},
-		vibrate(pattern) {
-			context.vibrate(pattern);
+		vibrate({ ctx }, pattern) {
+			ctx.vibrate(pattern);
 			push();
 		},
 		next() {
 			push();
 		},
-		animateCharacter([character, timeout, ...classes]) {
+		animateCharacter({ ctx, data }, [character, timeout, ...classes]) {
 			if (DEV && classes.length === 0) {
 				throw new Error('Attempt to use AnimateCharacter without classes. Classes should be provided [https://novely.pages.dev/guide/actions/animateCharacter.html]')
 			}
@@ -919,19 +951,22 @@ const novely = <
 			/**
 			 * `callOnlyLatest` property will not have any effect, because `custom` is called directly
 			 */
-			match('custom', [handler]);
+			match('custom', [handler], {
+				ctx,
+				data,
+			});
 		},
-		text(text) {
-			const string = text.map((content) => unwrap(content)).join(' ');
+		text({ ctx, data }, text) {
+			const string = text.map((content) => unwrap(content, data)).join(' ');
 
 			if (DEV && string.length === 0) {
 				throw new Error(`Action Text was called with empty string or array`)
 			}
 
-			context.text(string, forward, goingBack);
+			ctx.text(string, forward, goingBack);
 		},
-		exit() {
-			if (restoring) return;
+		exit({ ctx, data }) {
+			if (ctx.meta.restoring) return;
 
 			const path = stack.value[0];
 			const last = path.at(-1);
@@ -953,7 +988,10 @@ const novely = <
 				const referred = refer(path);
 
 				if (isAction(referred) && isSkippedDuringRestore(referred[0])) {
-					match('end', []);
+					match('end', [], {
+						ctx,
+						data,
+					});
 				}
 
 				return;
@@ -1010,8 +1048,8 @@ const novely = <
 
 			render();
 		},
-		preload([source]) {
-			if (!goingBack && !restoring && !PRELOADED_ASSETS.has(source)) {
+		preload({ ctx }, [source]) {
+			if (!goingBack && !ctx.meta.restoring && !PRELOADED_ASSETS.has(source)) {
 				/**
 				 * Make image load
 				 */
@@ -1020,7 +1058,7 @@ const novely = <
 
 			push();
 		},
-		block([scene]) {
+		block({ ctx }, [scene]) {
 			if (DEV && !story[scene]) {
 				throw new Error(`Attempt to call Block action with unknown scene "${scene}"`)
 			}
@@ -1029,7 +1067,7 @@ const novely = <
 				throw new Error(`Attempt to call Block action with empty scene "${scene}"`)
 			}
 
-			if (!restoring) {
+			if (!ctx.meta.restoring) {
 				stack.value[0].push(['block', scene], [null, 0]);
 
 				render();
@@ -1038,7 +1076,7 @@ const novely = <
 	});
 
 	const enmemory = () => {
-		if (restoring) return;
+		if (renderer.getContext(MAIN_CONTEXT_KEY).meta.restoring) return;
 
 		const current = klona(stack.value);
 
@@ -1070,14 +1108,20 @@ const novely = <
 		if (isAction(referred)) {
 			const [action, ...props] = referred;
 
-			match(action, props);
+			match(action, props, {
+				ctx: MAIN_CONTEXT_KEY,
+				data: stack.value[1]
+			});
 		} else {
-			match('exit', []);
+			match('exit', [], {
+				ctx: MAIN_CONTEXT_KEY,
+				data: stack.value[1]
+			});
 		}
 	};
 
 	const push = () => {
-		if (!restoring) next(), render();
+		if (!renderer.getContext(MAIN_CONTEXT_KEY).meta.restoring) next(), render();
 	};
 
 	const forward = () => {
@@ -1100,13 +1144,13 @@ const novely = <
 	 * unwrap('Hello, {{name}}');
 	 * ```
 	 */
-	const unwrap = (content: Unwrappable<Languages>, global = false) => {
+	const unwrap = (content: Unwrappable<Languages>, values?: Data) => {
 		const {
 			data,
 			meta: [lang],
 		} = $.get();
 
-		const obj = global ? data : state();
+		const obj = values ? values : data;
 		const cnt = isFunction(content)
 			? content()
 			: typeof content === 'string'
@@ -1163,7 +1207,7 @@ const novely = <
 		 * Unwraps translatable content to a string value
 		 */
 		unwrap(content: Exclude<Unwrappable<Languages>, Record<string, string>> | Record<Languages, string>) {
-			return unwrap(content, true);
+			return unwrap(content, $.get().data);
 		},
 	};
 };

@@ -1,6 +1,7 @@
 type Stored<T> = {
 	subscribe: (cb: (value: T) => void) => () => void;
 	update: (fn: (prev: T) => T) => void;
+	set: (val: T) => void;
 	get: () => T;
 };
 
@@ -21,11 +22,15 @@ const store = <T>(current: T, subscribers = new Set<(value: T) => void>()): Stor
 		push((current = fn(current)));
 	};
 
+	const set = (val: T) => {
+		update(() => val);
+	}
+
 	const get = () => {
 		return current;
 	};
 
-	return { subscribe, update, get } as const;
+	return { subscribe, update, set, get } as const;
 };
 
 export { store };

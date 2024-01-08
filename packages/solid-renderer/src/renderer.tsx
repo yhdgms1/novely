@@ -79,7 +79,7 @@ const createSolidRenderer = ({
 	let unmount: (() => void) | undefined | void;
 
 	const Novely = () => {
-		const ctx = renderer.getContext('main');
+		const ctx = renderer.getContext(options.mainContextKey);
 
 		createEffect(() => {
 			const screen = globalState.screen;
@@ -590,6 +590,15 @@ const createSolidRenderer = ({
 						text(content, resolve, goingBack) {
 							setState('text', { content, resolve, goingBack });
 						},
+
+						meta: {
+							get restoring() {
+								return state.meta.restoring;
+							},
+							set restoring(value: boolean) {
+								setState('meta', { restoring: value })
+							}
+						}
 					}
 				},
 				store,

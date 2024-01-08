@@ -139,6 +139,10 @@ type PossibleScreen = NovelyScreen | (string & Record<never, never>);
 type StateMainmenuItem = (goto: (name: PossibleScreen) => void) => JSX.ButtonHTMLAttributes<HTMLButtonElement>;
 type StateMainmenuItems = StateMainmenuItem[];
 
+type StateMeta = {
+  restoring: boolean
+}
+
 type AtContextState = {
   background: string;
   characters: Record<string, StateCharacter>;
@@ -147,6 +151,8 @@ type AtContextState = {
   input: StateInput;
   layers: StateLayers;
   text: StateText;
+
+  meta: StateMeta;
 }
 
 type GlobalState = {

@@ -126,8 +126,15 @@ type Renderer = {
 		) => Thenable<void>;
 		text: (str: string, resolve: () => void, goingBack: boolean) => void;
 		vibrate: (pattern: VibratePattern) => void;
+
+		meta: {
+			get restoring(): boolean;
+			set restoring(value: boolean);
+		}
 	}
 };
+
+type Context = ReturnType<Renderer['getContext']>;
 
 type RendererInit = {
 	characters: Record<string, Character>;
@@ -156,6 +163,8 @@ type RendererInit = {
 	 * There is different context, and the main one which is used for game
 	 */
 	mainContextKey: string;
+
+	preview: (save: Save, name: string) => Promise<void>;
 };
 
-export type { CharacterHandle, AudioHandle, RendererStore, Renderer, RendererInit };
+export type { CharacterHandle, AudioHandle, RendererStore, Renderer, RendererInit, Context };

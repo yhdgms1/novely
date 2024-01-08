@@ -3,6 +3,7 @@ import type { VoidComponent } from 'solid-js';
 import { Show, For } from 'solid-js';
 import { capitalize } from '$utils';
 import { useData } from '$context';
+import { useContextState } from '../store';
 
 const Saves: VoidComponent = () => {
 	const { t, storeData, storeDataUpdate, options, setGlobalState } = useData();
@@ -48,6 +49,10 @@ const Saves: VoidComponent = () => {
 								);
 
 								const stringType = t(type === 'auto' ? 'Automatic' : 'Manual');
+
+								// options.preview(save, `save-${date}-${type}`).then(() => {
+								// 	console.log({...useContextState(`save-${date}-${type}`).state})
+								// })
 
 								return (
 									<li class="saves__list-item">
