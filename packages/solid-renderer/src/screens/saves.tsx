@@ -4,9 +4,10 @@ import { Show, For } from 'solid-js';
 import { capitalize } from '$utils';
 import { useData } from '$context';
 import { useContextState } from '../store';
+import { Game } from './game';
 
 const Saves: VoidComponent = () => {
-	const { t, storeData, storeDataUpdate, options, setGlobalState } = useData();
+	const { t, storeData, storeDataUpdate, options, setGlobalState, getContext } = useData();
 
 	const saves = () => storeData().saves;
 	const language = () => storeData().meta[0];
@@ -50,12 +51,27 @@ const Saves: VoidComponent = () => {
 
 								const stringType = t(type === 'auto' ? 'Automatic' : 'Manual');
 
-								// options.preview(save, `save-${date}-${type}`).then(() => {
-								// 	console.log({...useContextState(`save-${date}-${type}`).state})
-								// })
+								const KEY = `save-${date}-${type}`;
+								const ctx = useContextState(KEY);
+
+								// const game = <Game
+								// 	controls='inside'
+								// 	skipTypewriterWhenGoingBack={true}
+
+								// 	state={ctx.state}
+								// 	setState={ctx.setState}
+
+								// 	context={getContext(KEY)}
+								// 	store={{}}
+								// />;
+
+								options.preview(save, `save-${date}-${type}`).then(() => {
+									console.log({...useContextState(KEY).state})
+								})
 
 								return (
 									<li class="saves__list-item">
+
 										<button
 											type="button"
 											class="button saves__button-load"

@@ -1,6 +1,6 @@
 import type { Accessor, FlowComponent } from 'solid-js';
 import type { SetStoreFunction } from 'solid-js/store';
-import type { Renderer, RendererInit, StorageData, Stored, BaseTranslationStrings, CoreData } from '@novely/core';
+import type { Renderer, RendererInit, StorageData, Stored, BaseTranslationStrings, CoreData, Character, Context } from '@novely/core';
 import type { EmitterEventsMap, GlobalState } from '../types';
 import type { Emitter } from '../emitter';
 
@@ -27,6 +27,10 @@ interface DataContext {
 	media: {
 		hyperWide: Accessor<boolean>;
 	};
+
+	characters: Record<string, Character>;
+
+	getContext: (name: string) => Context;
 }
 
 const Context = createContext<DataContext>();
@@ -42,6 +46,10 @@ interface ProviderProps {
 	renderer: Renderer;
 
 	emitter: Emitter<EmitterEventsMap>;
+
+	characters: Record<string, Character>;
+
+	getContext: (name: string) => Context;
 }
 
 const Provider: FlowComponent<ProviderProps> = (props) => {
@@ -73,6 +81,10 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
 		media: {
 			hyperWide: useMedia('(max-aspect-ratio: 0.26)'),
 		},
+
+		characters: props.characters,
+
+		getContext: props.getContext
 	};
 
 	return (

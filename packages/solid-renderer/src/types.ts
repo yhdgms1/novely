@@ -1,9 +1,10 @@
 import type {
-  RendererStore,
   ValidAction,
   CustomHandler,
   CustomHandlerGetResult,
+  CharacterHandle,
   NovelyScreen,
+  Context
 } from '@novely/core';
 import type { JSX } from 'solid-js';
 import type { MountableElement } from 'solid-js/web';
@@ -153,6 +154,8 @@ type AtContextState = {
   text: StateText;
 
   meta: StateMeta;
+
+  store: SolidRendererStore;
 }
 
 type GlobalState = {
@@ -164,9 +167,11 @@ type GlobalState = {
   exitPromptShown: boolean;
 }
 
-interface SolidRendererStore extends RendererStore {
+type SolidRendererStore = {
   dialogRef?: HTMLParagraphElement;
   textRef?: HTMLParagraphElement;
+
+  characters: Record<string, CharacterHandle>;
 
   audio: {
     music: Partial<Record<string, Howl>>
@@ -181,7 +186,7 @@ interface SolidRendererStore extends RendererStore {
   }
 }
 
-interface CreateSolidRendererOptions {
+type CreateSolidRendererOptions = {
   /**
    * Enter fullscreen mode when opening a game, exit when opening main-menu
    * @default false
@@ -213,6 +218,10 @@ type EmitterEventsMap = {
   'screen:change': PossibleScreen | 'loading',
 };
 
+type SolidContext = Omit<Context, 'store' | 'setStore'> & {
+  store: SolidRendererStore;
+  setStore: (fn: (value: SolidRendererStore) => void) => void;
+}
 
 export type {
   EmitterEventsMap,
@@ -230,5 +239,6 @@ export type {
   StateMainmenuItem,
   StateMainmenuItems,
   SolidRendererStore,
-  CreateSolidRendererOptions
+  CreateSolidRendererOptions,
+  SolidContext
 }

@@ -26,10 +26,6 @@ type AudioHandle = {
 	play: () => void;
 }
 
-interface RendererStore {
-	characters: Record<string, CharacterHandle>;
-}
-
 type Renderer = {
 	misc: {
 		/**
@@ -51,8 +47,6 @@ type Renderer = {
 		 */
 		preloadAudioBlocking: (type: 'music', source: string) => Promise<void>;
 	};
-
-	store: RendererStore;
 
 	ui: {
 		/**
@@ -131,6 +125,11 @@ type Renderer = {
 			get restoring(): boolean;
 			set restoring(value: boolean);
 		}
+
+		store: unknown;
+		setStore: unknown;
+
+		getCharacter: (character: string) => CharacterHandle | undefined;
 	}
 };
 
@@ -167,4 +166,4 @@ type RendererInit = {
 	preview: (save: Save, name: string) => Promise<void>;
 };
 
-export type { CharacterHandle, AudioHandle, RendererStore, Renderer, RendererInit, Context };
+export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context };

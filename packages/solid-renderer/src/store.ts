@@ -33,6 +33,18 @@ const createContextState = () => {
 
     meta: {
       restoring: false
+    },
+
+    store: {
+      characters: {},
+
+      audio: {
+        music: {},
+        sound: {},
+        voices: {},
+
+        resumeList: []
+      }
     }
   });
 

@@ -642,6 +642,9 @@ const novely = <
 
 	const preview = async ([path, data]: Save, name: string) => {
 		const { queue } = getActionsFromPath(story, path);
+		const context = renderer.getContext(name);
+
+		// context.meta.something = true;
 
 		await processQueue(queue, (action, props) => {
 			if (AUDIO_ACTIONS.has(action as any)) return;
@@ -915,7 +918,7 @@ const novely = <
 
 			const handler: CustomHandler = (get) => {
 				const { clear } = get('@@internal-animate-character', false);
-				const char = renderer.store.characters[character];
+				const char = renderer.getContext(MAIN_CONTEXT_KEY).getCharacter(character);
 
 				/**
 				 * Character is not defined, maybe, `animateCharacter` was called before `showCharacter` OR character was not just loaded yet

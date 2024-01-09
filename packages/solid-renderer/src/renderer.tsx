@@ -5,6 +5,7 @@ import type {
 	CustomHandler,
 	AudioHandle,
 	CharacterHandle,
+	Context,
 } from '@novely/core';
 import type {
   StateScreen,
@@ -12,7 +13,8 @@ import type {
   StateMainmenuItem,
   SolidRendererStore,
   CreateSolidRendererOptions,
-	EmitterEventsMap
+	EmitterEventsMap,
+	SolidContext
 } from './types';
 import type { JSX } from 'solid-js';
 
@@ -25,6 +27,7 @@ import { canvasDrawImages, createImage, escape, toMedia, findLast, vibrate } fro
 import { Provider } from '$context';
 import { Game, MainMenu, Saves, Settings, Loading, CustomScreen } from '$screens';
 import { createGlobalState, useContextState } from './store';
+import { produce } from 'solid-js/store';
 
 const createSolidRenderer = ({
 	fullscreen = false,
@@ -36,18 +39,6 @@ const createSolidRenderer = ({
 	const emitter = createEmitter<EmitterEventsMap>();
 	const [globalState, setGlobalState] = createGlobalState();
 
-	const store: SolidRendererStore = {
-		characters: {},
-
-		audio: {
-			music: {},
-			sound: {},
-			voices: {},
-
-			resumeList: []
-		}
-	};
-
 	const getVolume = (type: 'music' | 'sound' | 'voice') => {
 		const TYPE_META_MAP = {
 			'music': 2,
@@ -58,18 +49,32 @@ const createSolidRenderer = ({
 		return options.$.get().meta[TYPE_META_MAP[type]];
 	}
 
-	const getHowl = (type: 'music' | 'sound' | 'voice', src: string, loop: boolean) => {
+	const getHowl = (ctx: SolidContext, type: 'music' | 'sound' | 'voice', src: string, loop: boolean) => {
 		const kind = type === 'voice' ? 'voices' : type;
+		const cached = ctx.store.audio[kind][src];
 
-		return store.audio[kind][src] ||= new Howl({
+		if (cached) return cached;
+
+		const howl = new Howl({
 			src,
 			volume: getVolume(type),
 			loop
 		});
+
+		ctx.setStore((store) => store.audio[kind][src] = howl);
+
+		return howl;
 	}
 
 	let characters!: Record<string, Character>;
-	let renderer!: Renderer;
+
+	let renderer!: Omit<Renderer, 'getContext'> & {
+		/**
+		 * Context in which `store` is not an `unknown`
+		 */
+		getContext(name: string): SolidContext;
+	};
+
 	let options: RendererInit;
 
 	let root!: HTMLElement;
@@ -107,6 +112,9 @@ const createSolidRenderer = ({
 		});
 
 		options.$.subscribe(() => {
+			const ctx = renderer.getContext(options.mainContextKey);
+			const store = ctx.store;
+
 			for (const type of ['music', 'sound', 'voice'] as const) {
 				const volume = getVolume(type);
 
@@ -139,15 +147,17 @@ const createSolidRenderer = ({
 					options={options}
 					renderer={renderer}
 					emitter={emitter}
+
+					characters={characters}
+
+					getContext={renderer.getContext}
 				>
 					<Switch>
 						<Match when={globalState.screen === 'game'}>
 							<Game
 								state={useContextState(options.mainContextKey).state}
 								setState={/* @once */ useContextState(options.mainContextKey).setState}
-
-								store={/* @once */ store}
-								characters={/* @once */ characters}
+								store={/* @once */ renderer.getContext(options.mainContextKey).store}
 								context={/* @once */ renderer.getContext(options.mainContextKey)}
 								controls={/* @once */ controls}
 								skipTypewriterWhenGoingBack={/* @once */ skipTypewriterWhenGoingBack}
@@ -184,7 +194,7 @@ const createSolidRenderer = ({
 				getContext(context) {
 					const { state, setState } = useContextState(context);
 
-					return {
+					const ctx = {
 						background(background) {
 							currentBackground = background;
 
@@ -235,16 +245,18 @@ const createSolidRenderer = ({
 							handle();
 						},
 						character(character) {
-							if (store.characters[character]) {
-								return store.characters[character];
+							const chars = this.store.characters;
+
+							if (chars[character]) {
+								return chars[character];
 							}
 
 							const canvas = (<canvas data-character={character} />) as HTMLCanvasElement;
-							const ctx = canvas.getContext('2d')!;
+							const canvasContext = canvas.getContext('2d')!;
 
 							const characterHandle = {
 								canvas,
-								ctx,
+								ctx: canvasContext,
 								emotions: {},
 								emotion(emotion, shouldRender) {
 									const stored = this.emotions[emotion];
@@ -257,7 +269,7 @@ const createSolidRenderer = ({
 									}
 
 									if (shouldRender) {
-										canvasDrawImages(canvas, ctx, this.emotions[emotion]);
+										canvasDrawImages(canvas, canvasContext, this.emotions[emotion]);
 									}
 								},
 								append(className, style) {
@@ -268,7 +280,7 @@ const createSolidRenderer = ({
 									 */
 									setState('characters', character, { style, visible: true });
 
-									const { canvas: element } = store.characters[character];
+									const { canvas: element } = chars[character];
 
 									/**
 									 * Remove className directly
@@ -307,7 +319,7 @@ const createSolidRenderer = ({
 										 * Set className directly
 										 */
 										if (className) {
-											store.characters[character].canvas.className = className as string;
+											chars[character].canvas.className = className as string;
 										}
 
 										setState('characters', character, { style, timeoutId });
@@ -315,7 +327,7 @@ const createSolidRenderer = ({
 								},
 							} satisfies CharacterHandle;
 
-							store.characters[character] = characterHandle;
+							this.setStore((store) => store.characters[character] = characterHandle)
 
 							return characterHandle;
 						},
@@ -427,7 +439,7 @@ const createSolidRenderer = ({
 						},
 						audio: {
 							music(src, method, loop = method === 'music') {
-								const resource = getHowl(method, src, loop);
+								const resource = getHowl(ctx, method, src, loop);
 
 								/**
 								 * Update
@@ -455,16 +467,16 @@ const createSolidRenderer = ({
 								this.start();
 								this.voiceStop();
 
-								const resource = store.audio.voice = getHowl('voice', source, false);
+								const resource = ctx.store.audio.voice = getHowl(ctx, 'voice', source, false);
 
 								resource.once('end', () => {
-									store.audio.voice = undefined;
+									ctx.setStore(store => store.audio.voice = undefined)
 								});
 
 								resource.play();
 							},
 							voiceStop() {
-								const currentVoice = store.audio.voice;
+								const currentVoice = ctx.store.audio.voice;
 
 								if (currentVoice) {
 									currentVoice.stop();
@@ -472,42 +484,45 @@ const createSolidRenderer = ({
 									/**
 									 * @todo: is this really necessary?
 									 */
-									store.audio.resumeList = store.audio.resumeList.filter(howl => howl !== currentVoice);
+									ctx.setStore(store => {
+										store.audio.resumeList = store.audio.resumeList.filter(howl => howl !== currentVoice);
+									})
 								}
 							},
 							start() {
-								if (!store.audio.onDocumentVisibilityChangeListener) {
+								if (!ctx.store.audio.onDocumentVisibilityChangeListener) {
 									const onDocumentVisibilityChange = () => {
 										if (document.visibilityState === 'hidden') {
-											for (const howl of Object.values(store.audio.music)) {
+											for (const howl of Object.values(ctx.store.audio.music)) {
 												if (howl && howl.playing()) {
-													store.audio.resumeList.push(howl);
+													ctx.setStore(store => store.audio.resumeList.push(howl))
 													howl.pause();
 												}
 											}
 
-											const currentVoice = store.audio.voice;
+											const currentVoice = ctx.store.audio.voice;
 
 											if (currentVoice && currentVoice.playing()) {
-												store.audio.resumeList.push(currentVoice);
+												ctx.setStore(store => store.audio.resumeList.push(currentVoice))
 												currentVoice.pause();
 											}
 
 										} else {
-											for (const howl of store.audio.resumeList) {
+											for (const howl of ctx.store.audio.resumeList) {
 												howl.play();
 											}
 
-											store.audio.resumeList = [];
+											ctx.setStore(store => store.audio.resumeList = []);
 										}
 									}
 
-									document.addEventListener('visibilitychange', store.audio.onDocumentVisibilityChangeListener = onDocumentVisibilityChange)
+									ctx.setStore(store => store.audio.onDocumentVisibilityChangeListener = onDocumentVisibilityChange)
+									document.addEventListener('visibilitychange', onDocumentVisibilityChange)
 								}
 							},
 							clear() {
-								const musics = Object.values(store.audio.music);
-								const sounds = Object.values(store.audio.sound);
+								const musics = Object.values(ctx.store.audio.music);
+								const sounds = Object.values(ctx.store.audio.sound);
 
 								for (const music of [...musics, ...sounds]) {
 									if (!music) continue;
@@ -520,22 +535,18 @@ const createSolidRenderer = ({
 							destroy() {
 								this.clear();
 
-								if (store.audio.onDocumentVisibilityChangeListener) {
-									document.removeEventListener('visibilitychange', store.audio.onDocumentVisibilityChangeListener);
+								if (ctx.store.audio.onDocumentVisibilityChangeListener) {
+									document.removeEventListener('visibilitychange', ctx.store.audio.onDocumentVisibilityChangeListener);
 								}
 							}
 						},
 						custom(fn, goingBack, resolve) {
 							const get: Parameters<CustomHandler>[0] = (id, insert = true) => {
-								/**
-								 * Get `chched` value
-								 */
 								const cached = state.layers[id];
 
-								/**
-								 * Return it
-								 */
-								if (cached) return cached.value;
+								if (cached) {
+									return cached.value;
+								}
 
 								/**
 								 * `Clear` function
@@ -598,10 +609,20 @@ const createSolidRenderer = ({
 							set restoring(value: boolean) {
 								setState('meta', { restoring: value })
 							}
+						},
+
+						store: state.store,
+						setStore: (fn) => {
+							setState('store', produce(fn))
+						},
+
+						getCharacter(character) {
+							return state.store.characters[character]
 						}
-					}
+					} satisfies SolidContext;
+
+					return ctx;
 				},
-				store,
 				ui: {
 					showScreen(name) {
 						setGlobalState('screen', name);
@@ -658,7 +679,8 @@ const createSolidRenderer = ({
 						if (getVolume(type) === 0) return Promise.resolve()
 
 						return new Promise((resolve) => {
-							const howl = getHowl(type, source, false)
+							// todo: there should be another way
+							const howl = getHowl(renderer.getContext(options.mainContextKey), type, source, false)
 
 							if (howl.state() === 'loaded') {
 								resolve();

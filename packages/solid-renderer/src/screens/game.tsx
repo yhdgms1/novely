@@ -1,4 +1,4 @@
-import type { Renderer, Character as CharacterType } from '@novely/core';
+import type { Renderer } from '@novely/core';
 import type { VoidComponent } from 'solid-js';
 import type { SetStoreFunction } from 'solid-js/store';
 import type { SolidRendererStore } from '../renderer';
@@ -17,7 +17,6 @@ interface GameProps {
 	context: ReturnType<Renderer['getContext']>;
 
 	store: SolidRendererStore;
-	characters: Record<string, CharacterType>;
 
 	controls: 'inside' | 'outside';
 	skipTypewriterWhenGoingBack: boolean;
@@ -29,7 +28,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 	/**
 	 * Can be destructured because these are passed without getters
 	 */
-	const { setState, characters, store, context, controls, skipTypewriterWhenGoingBack } = props;
+	const { setState, store, context, controls, skipTypewriterWhenGoingBack } = props;
 
 	const background = () => {
 		const is = isCSSImage(props.state.background);
@@ -166,7 +165,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				<DialogName
 					character={props.state.dialog.character}
 					name={props.state.dialog.name}
-					characters={characters}
+					characters={data.characters}
 				/>
 				<div
 					class="action-dialog-container"
@@ -191,11 +190,11 @@ const Game: VoidComponent<GameProps> = (props) => {
 								/**
 								 * Если эмоция ещё не загружена - загрузим её
 								 */
-								if (!store['characters'][character] || !store['characters'][character]['emotions'][emotion]) {
+								if (!store.characters[character] || !store.characters[character].emotions[emotion]) {
 									context.character(character).emotion(emotion, false);
 								}
 
-								const image = store['characters'][character]['emotions'][emotion];
+								const image = store.characters[character].emotions[emotion];
 
 								/**
 								 * Если элемент - картинка, не будем выполнять лишнюю отрисовку на `canvas`
