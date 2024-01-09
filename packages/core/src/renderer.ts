@@ -124,6 +124,9 @@ type Renderer = {
 		meta: {
 			get restoring(): boolean;
 			set restoring(value: boolean);
+
+			get preview(): boolean;
+			set preview(value: boolean);
 		}
 
 		store: unknown;

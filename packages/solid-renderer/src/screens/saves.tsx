@@ -66,8 +66,12 @@ const Saves: VoidComponent = () => {
 								// />;
 
 								options.preview(save, `save-${date}-${type}`).then(() => {
-									console.log({...useContextState(KEY).state})
+									// console.log({...useContextState(KEY).state})
 								})
+
+								// todo: context for stack
+								// todo: maybe goingBackwards variable can also be passed to context?
+								// todo: and also pass all these variables to custom and function actions
 
 								return (
 									<li class="saves__list-item">

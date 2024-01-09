@@ -32,7 +32,8 @@ const createContextState = () => {
     layers: {},
 
     meta: {
-      restoring: false
+      restoring: false,
+      preview: false
     },
 
     store: {

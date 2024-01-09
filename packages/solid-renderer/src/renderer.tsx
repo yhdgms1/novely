@@ -608,6 +608,13 @@ const createSolidRenderer = ({
 							},
 							set restoring(value: boolean) {
 								setState('meta', { restoring: value })
+							},
+
+							get preview() {
+								return state.meta.preview;
+							},
+							set preview(value: boolean) {
+								setState('meta', { preview: value })
 							}
 						},
 

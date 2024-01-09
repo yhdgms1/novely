@@ -18,7 +18,7 @@ import type {
 	ActionFN,
 	CoreData,
 } from './types';
-import type { Renderer, RendererInit } from './renderer';
+import type { Context, Renderer, RendererInit } from './renderer';
 import type { TranslationActions, Pluralization } from './translation';
 import type { BaseTranslationStrings } from './translations';
 import {
@@ -304,6 +304,7 @@ const novely = <
 		] as Save;
 	};
 
+	// how tf move that to context???
 	const createStack = (current: Save, stack = [current]) => {
 		return {
 			get value() {
@@ -557,7 +558,7 @@ const novely = <
 		});
 
 		context.meta.restoring = goingBack = false;
-		render();
+		render(context);
 	};
 
 	const refer = (path = stack.value[0]) => {
@@ -640,22 +641,35 @@ const novely = <
 		return translation[lang as Languages].internal[key];
 	};
 
+	/**
+	 * Execute save in context at `name`
+	 */
 	const preview = async ([path, data]: Save, name: string) => {
 		const { queue } = getActionsFromPath(story, path);
-		const context = renderer.getContext(name);
+		const ctx = renderer.getContext(name);
 
-		// context.meta.something = true;
+		/**
+		 * Enter restoring mode in action
+		 */
+		ctx.meta.restoring = true;
+		ctx.meta.preview = true;
+
+		await Promise.resolve();
+
+		console.log(ctx)
 
 		await processQueue(queue, (action, props) => {
 			if (AUDIO_ACTIONS.has(action as any)) return;
+			if (action === 'vibrate') return;
+			if (action === 'end' || action === 'custom') return;
 
 			// todo: virtual root and etc in custom actions
-			// todo(half done): also pass things like `restoring` instead of using globals
-			// todo: move `store` away and store everything under the context
+
+			// console.log(action, props)
 
 			return match(action, props, {
-				ctx: name,
-				data: data
+				ctx,
+				data,
 			});
 		})
 	}
@@ -686,31 +700,31 @@ const novely = <
 		},
 		showBackground({ ctx }, [background]) {
 			ctx.background(background);
-			push();
+			push(ctx);
 		},
 		playMusic({ ctx }, [source]) {
 			ctx.audio.music(source, 'music', true).play();
-			push();
+			push(ctx);
 		},
 		stopMusic({ ctx }, [source]) {
 			ctx.audio.music(source, 'music').stop();
-			push();
+			push(ctx);
 		},
 		playSound({ ctx }, [source, loop]) {
 			ctx.audio.music(source, 'sound', loop || false).play();
-			push();
+			push(ctx);
 		},
 		stopSound({ ctx }, [source]) {
 			ctx.audio.music(source, 'sound').stop();
-			push();
+			push(ctx);
 		},
 		voice({ ctx }, [source]) {
 			ctx.audio.voice(source);
-			push();
+			push(ctx);
 		},
 		stopVoice({ ctx }) {
 			ctx.audio.voiceStop();
-			push();
+			push(ctx);
 		},
 		showCharacter({ ctx }, [character, emotion, className, style]) {
 			if (DEV && !characters[character].emotions[emotion]) {
@@ -722,11 +736,11 @@ const novely = <
 			handle.append(className, style, ctx.meta.restoring);
 			handle.emotion(emotion, true);
 
-			push();
+			push(ctx);
 		},
 		hideCharacter({ ctx }, [character, className, style, duration]) {
 			ctx.character(character).remove(className, style, duration, ctx.meta.restoring).then(() => {
-				push();
+				push(ctx);
 			})
 		},
 		dialog({ ctx, data }, [character, content, emotion]) {
@@ -755,13 +769,13 @@ const novely = <
 
 			const run = ctx.dialog(unwrap(content, data), unwrap(name, data), character, emotion);
 
-			run(forward, goingBack);
+			run(() => forward(ctx), goingBack);
 		},
 		function({ ctx }, [fn]) {
 			const result = fn(ctx.meta.restoring, goingBack);
 
 			if (!ctx.meta.restoring) {
-				result ? result.then(push) : push();
+				result ? result.then(() => push(ctx)) : push(ctx);
 			}
 
 			return result;
@@ -795,7 +809,9 @@ const novely = <
 			const run = ctx.choices(unwrap(question, data), unwrapped);
 
 			run((selected) => {
-				enmemory();
+				if (!ctx.meta.preview) {
+					enmemory();
+				}
 
 				/**
 				 * If there is a question, then `index` should be shifted by `1`
@@ -807,7 +823,7 @@ const novely = <
 				}
 
 				stack.value[0].push(['choice', selected + offset], [null, 0]);
-				render();
+				render(ctx);
 				interactivity(true);
 			});
 		},
@@ -841,7 +857,9 @@ const novely = <
 			/**
 			 * Call the actual `clear`
 			 */
-			ctx.clear(goingBack, keep || EMPTY_SET, characters || EMPTY_SET)(push);
+			ctx.clear(goingBack, keep || EMPTY_SET, characters || EMPTY_SET)(() => {
+				push(ctx);
+			});
 
 			ctx.audio.clear();
 		},
@@ -863,10 +881,14 @@ const novely = <
 
 				stack.value[0].push(['condition', val], [null, 0]);
 
-				render();
+				render(ctx);
 			}
 		},
 		end({ ctx }) {
+			if (ctx.meta.preview) return;
+
+			console.log(ctx)
+
 			/**
 			 * Clear the Scene
 			 */
@@ -890,22 +912,24 @@ const novely = <
 			times.clear();
 		},
 		input({ ctx, data }, [question, onInput, setup]) {
-			ctx.input(unwrap(question, data), onInput, setup)(forward);
+			ctx.input(unwrap(question, data), onInput, setup)(() => {
+				forward(ctx)
+			});
 		},
 		custom({ ctx }, [handler]) {
 			const result = ctx.custom(handler, goingBack, () => {
-				if (!ctx.meta.restoring && handler.requireUserAction) enmemory(), interactivity(true);
-				if (!ctx.meta.restoring) push();
+				if (!ctx.meta.restoring && handler.requireUserAction && !ctx.meta.preview) enmemory(), interactivity(true);
+				if (!ctx.meta.restoring) push(ctx);
 			});
 
 			return result;
 		},
 		vibrate({ ctx }, pattern) {
 			ctx.vibrate(pattern);
-			push();
+			push(ctx);
 		},
-		next() {
-			push();
+		next({ ctx }) {
+			push(ctx);
 		},
 		animateCharacter({ ctx, data }, [character, timeout, ...classes]) {
 			if (DEV && classes.length === 0) {
@@ -966,7 +990,7 @@ const novely = <
 				throw new Error(`Action Text was called with empty string or array`)
 			}
 
-			ctx.text(string, forward, goingBack);
+			ctx.text(string, () => forward(ctx), goingBack);
 		},
 		exit({ ctx, data }) {
 			if (ctx.meta.restoring) return;
@@ -1049,7 +1073,7 @@ const novely = <
 				break;
 			}
 
-			render();
+			render(ctx);
 		},
 		preload({ ctx }, [source]) {
 			if (!goingBack && !ctx.meta.restoring && !PRELOADED_ASSETS.has(source)) {
@@ -1059,7 +1083,7 @@ const novely = <
 				PRELOADED_ASSETS.add(renderer.misc.preloadImage(source));
 			}
 
-			push();
+			push(ctx);
 		},
 		block({ ctx }, [scene]) {
 			if (DEV && !story[scene]) {
@@ -1073,7 +1097,7 @@ const novely = <
 			if (!ctx.meta.restoring) {
 				stack.value[0].push(['block', scene], [null, 0]);
 
-				render();
+				render(ctx);
 			}
 		},
 	});
@@ -1105,32 +1129,32 @@ const novely = <
 		}
 	};
 
-	const render = () => {
+	const render = (ctx: Context) => {
 		const referred = refer();
 
 		if (isAction(referred)) {
 			const [action, ...props] = referred;
 
 			match(action, props, {
-				ctx: MAIN_CONTEXT_KEY,
+				ctx,
 				data: stack.value[1]
 			});
 		} else {
 			match('exit', [], {
-				ctx: MAIN_CONTEXT_KEY,
+				ctx,
 				data: stack.value[1]
 			});
 		}
 	};
 
-	const push = () => {
-		if (!renderer.getContext(MAIN_CONTEXT_KEY).meta.restoring) next(), render();
+	const push = (ctx: Context) => {
+		if (!ctx.meta.restoring) next(), render(ctx);
 	};
 
-	const forward = () => {
-		enmemory();
-		push();
-		interactivity(true);
+	const forward = (ctx: Context) => {
+		if (!ctx.meta.preview) enmemory();
+		push(ctx);
+		if (!ctx.meta.preview) interactivity(true);
 	};
 
 	const interactivity = (value = false) => {

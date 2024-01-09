@@ -142,6 +142,7 @@ type StateMainmenuItems = StateMainmenuItem[];
 
 type StateMeta = {
   restoring: boolean
+  preview: boolean
 }
 
 type AtContextState = {
