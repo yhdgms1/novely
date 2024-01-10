@@ -5,7 +5,6 @@ import type {
 	CustomHandler,
 	AudioHandle,
 	CharacterHandle,
-	Context,
 } from '@novely/core';
 import type {
   StateScreen,
@@ -191,10 +190,11 @@ const createSolidRenderer = ({
 			characters = init.characters;
 
 			renderer = {
-				getContext(context) {
-					const { state, setState } = useContextState(context);
+				getContext(name) {
+					const { state, setState } = useContextState(name);
 
 					const ctx = {
+						id: name,
 						background(background) {
 							currentBackground = background;
 
@@ -615,6 +615,13 @@ const createSolidRenderer = ({
 							},
 							set preview(value: boolean) {
 								setState('meta', { preview: value })
+							},
+
+							get goingBack() {
+								return state.meta.goingBack;
+							},
+							set goingBack(value: boolean) {
+								setState('meta', { goingBack: value })
 							}
 						},
 

@@ -33,7 +33,8 @@ const createContextState = () => {
 
     meta: {
       restoring: false,
-      preview: false
+      preview: false,
+      goingBack: false
     },
 
     store: {
@@ -46,7 +47,7 @@ const createContextState = () => {
 
         resumeList: []
       }
-    }
+    },
   });
 
   return {

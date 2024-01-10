@@ -75,6 +75,13 @@ type CoreData = {
 	dataLoaded: boolean;
 };
 
+type UseStackFunctionReturnType = {
+	value: Save;
+	back(): void;
+	push(value: Save): void;
+	clear(): void;
+};
+
 export type {
 	Thenable,
 	PathItem,
@@ -93,4 +100,5 @@ export type {
 	ActionFN,
 	NonEmptyRecord,
 	CoreData,
+	UseStackFunctionReturnType
 };

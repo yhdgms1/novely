@@ -4,7 +4,7 @@ import type {
   CustomHandlerGetResult,
   CharacterHandle,
   NovelyScreen,
-  Context
+  Context,
 } from '@novely/core';
 import type { JSX } from 'solid-js';
 import type { MountableElement } from 'solid-js/web';
@@ -143,6 +143,7 @@ type StateMainmenuItems = StateMainmenuItem[];
 type StateMeta = {
   restoring: boolean
   preview: boolean
+  goingBack: boolean
 }
 
 type AtContextState = {

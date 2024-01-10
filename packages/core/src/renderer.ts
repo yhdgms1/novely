@@ -73,6 +73,8 @@ type Renderer = {
 	};
 
 	getContext: (context: string) => {
+		id: string;
+
 		character: (character: string) => CharacterHandle;
 		background: (background: string | BackgroundImage) => void;
 		dialog: (
@@ -127,6 +129,9 @@ type Renderer = {
 
 			get preview(): boolean;
 			set preview(value: boolean);
+
+			get goingBack(): boolean;
+			set goingBack(value: boolean);
 		}
 
 		store: unknown;
@@ -146,7 +151,6 @@ type RendererInit = {
 	newGame: () => void;
 	exit: (force?: boolean) => void;
 	back: () => Promise<void>;
-	stack: Stack;
 	languages: string[];
 
 	/**

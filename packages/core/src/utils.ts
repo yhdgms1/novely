@@ -1,8 +1,9 @@
 import type { ActionProxyProvider, DefaultActionProxyProvider, CustomHandler, Story, ValidAction, GetActionParameters } from './action';
 import type { Character } from './character';
-import type { Thenable, Path, PathItem } from './types';
-import type { Context } from './renderer';
+import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType } from './types';
+import type { Context, Renderer } from './renderer';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE } from './constants';
+import { STACK_MAP } from './shared';
 
 type MatchActionParams = {
 	data: Record<string, unknown>
@@ -504,6 +505,50 @@ const processQueue = async (queue: [any, any][], match: (action: keyof ActionPro
 	}
 }
 
+const getStack = (ctx: Context) => {
+	const { id } = ctx;
+	const cached = STACK_MAP.get(id);
+
+	if (cached) return cached;
+
+	const stack: Save[] = [];
+
+	STACK_MAP.set(id, stack);
+
+	return stack;
+}
+
+const createUseStackFunction = (renderer: Renderer) => {
+	const useStack = (context: Context | string): UseStackFunctionReturnType => {
+		const ctx = typeof context === 'string' ? renderer.getContext(context) : context;
+		const stack = getStack(ctx);
+
+		return {
+			get value() {
+				return stack.at(-1)!;
+			},
+			set value(value) {
+				stack[stack.length - 1] = value;
+			},
+
+			back() {
+				if (stack.length > 1) {
+					stack.pop();
+					ctx.meta.goingBack = true;
+				}
+			},
+			push(value: Save) {
+				stack.push(value);
+			},
+			clear() {
+				stack.length = 0;
+			}
+		}
+	}
+
+	return useStack;
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -531,5 +576,7 @@ export {
 	isExitImpossible,
 	getOppositeAction,
 	getActionsFromPath,
-	processQueue
+	processQueue,
+	getStack,
+	createUseStackFunction
 };

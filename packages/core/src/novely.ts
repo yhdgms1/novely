@@ -17,6 +17,7 @@ import type {
 	Migration,
 	ActionFN,
 	CoreData,
+	Path
 } from './types';
 import type { Context, Renderer, RendererInit } from './renderer';
 import type { TranslationActions, Pluralization } from './translation';
@@ -41,7 +42,9 @@ import {
 	flattenStory,
 	isExitImpossible,
 	processQueue,
-	getActionsFromPath
+	getActionsFromPath,
+	getStack,
+	createUseStackFunction
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
@@ -285,6 +288,8 @@ const novely = <
 	function state(value: DeepPartial<StateScheme> | ((prev: StateScheme) => StateScheme)): void;
 	function state(): StateScheme;
 	function state(value?: DeepPartial<StateScheme> | ((prev: StateScheme) => StateScheme)): StateScheme | void {
+		const stack = useStack(MAIN_CONTEXT_KEY);
+
 		if (!value) return stack.value[1] as StateScheme | void;
 
 		const prev = stack.value[1];
@@ -302,27 +307,6 @@ const novely = <
 			state,
 			[intime(Date.now()), 'auto'],
 		] as Save;
-	};
-
-	// how tf move that to context???
-	const createStack = (current: Save, stack = [current]) => {
-		return {
-			get value() {
-				return stack.at(-1)!;
-			},
-			set value(value: Save) {
-				stack[stack.length - 1] = value;
-			},
-			back() {
-				if (stack.length > 1) stack.pop(), (goingBack = true);
-			},
-			push(value: Save) {
-				stack.push(value);
-			},
-			clear() {
-				stack = [getDefaultSave(klona(defaultState))];
-			},
-		};
 	};
 
 	const getLanguageWithoutParameters = () => {
@@ -409,7 +393,6 @@ const novely = <
 	storageDelay.then(getStoredData);
 
 	const initial = getDefaultSave(klona(defaultState));
-	const stack = createStack(initial);
 
 	/**
 	 * Try to save data when page is switched
@@ -433,6 +416,10 @@ const novely = <
 		 */
 		if (!autosaves && type === 'auto') return;
 
+		/**
+		 * Saves only possible in main context, so there is no reason for context to be used here
+		 */
+		const stack = useStack(MAIN_CONTEXT_KEY);
 		const current = klona(stack.value);
 
 		$.update((prev) => {
@@ -496,15 +483,16 @@ const novely = <
 	};
 
 	/**
-	 * Set's the save
+	 * Set's the save and restores onto it
 	 */
-	const set = (save: Save) => {
+	const set = (save: Save, ctx?: Context) => {
+		const stack = useStack(ctx || renderer.getContext(MAIN_CONTEXT_KEY));
+
 		stack.value = save;
 
 		return restore(save);
 	};
 
-	let goingBack = false;
 	let interacted = 0;
 
 	/**
@@ -529,6 +517,7 @@ const novely = <
 		}
 
 		const context = renderer.getContext(MAIN_CONTEXT_KEY);
+		const stack = useStack(context);
 
 		context.meta.restoring = true;
 
@@ -557,11 +546,15 @@ const novely = <
 			});
 		});
 
-		context.meta.restoring = goingBack = false;
+		context.meta.restoring = context.meta.restoring = false;
 		render(context);
 	};
 
-	const refer = (path = stack.value[0]) => {
+	const refer = (path?: Path) => {
+		if (!path) {
+			path = useStack(MAIN_CONTEXT_KEY).value[0]
+		}
+
 		let current: any = story;
 		let precurrent: any = story;
 
@@ -600,11 +593,17 @@ const novely = <
 			return;
 		}
 
+		/**
+		 * Exit only possible in main context
+		 */
+		const ctx = renderer.getContext(MAIN_CONTEXT_KEY);
+
+		const stack = useStack(ctx);
 		const current = stack.value;
 
 		stack.clear();
 		renderer.ui.showScreen('mainmenu');
-		renderer.getContext(MAIN_CONTEXT_KEY).audio.destroy();
+		ctx.audio.destroy();
 
 		/**
 		 * First two save elements and it's type
@@ -633,8 +632,16 @@ const novely = <
 		times.clear();
 	};
 
-	const back = () => {
-		return stack.back(), restore(stack.value);
+
+	const back = async () => {
+		/**
+		 * Back also happens in main context only
+		 */
+		const stack = useStack(MAIN_CONTEXT_KEY);
+
+		stack.back();
+
+		await restore(stack.value);
 	};
 
 	const t = (key: BaseTranslationStrings, lang: string | Languages) => {
@@ -654,18 +661,12 @@ const novely = <
 		ctx.meta.restoring = true;
 		ctx.meta.preview = true;
 
-		await Promise.resolve();
-
-		console.log(ctx)
-
 		await processQueue(queue, (action, props) => {
 			if (AUDIO_ACTIONS.has(action as any)) return;
 			if (action === 'vibrate') return;
 			if (action === 'end' || action === 'custom') return;
 
 			// todo: virtual root and etc in custom actions
-
-			// console.log(action, props)
 
 			return match(action, props, {
 				ctx,
@@ -686,11 +687,17 @@ const novely = <
 		back,
 		t,
 		preview,
-		stack,
 		languages,
 		$,
 		$$,
 	});
+
+	const useStack = createUseStackFunction(renderer);
+
+	/**
+	 * Initiate
+	 */
+	useStack(MAIN_CONTEXT_KEY).push(initial);
 
 	renderer.ui.start();
 
@@ -769,10 +776,10 @@ const novely = <
 
 			const run = ctx.dialog(unwrap(content, data), unwrap(name, data), character, emotion);
 
-			run(() => forward(ctx), goingBack);
+			run(() => forward(ctx), ctx.meta.goingBack);
 		},
 		function({ ctx }, [fn]) {
-			const result = fn(ctx.meta.restoring, goingBack);
+			const result = fn(ctx.meta.restoring, ctx.meta.goingBack);
 
 			if (!ctx.meta.restoring) {
 				result ? result.then(() => push(ctx)) : push(ctx);
@@ -810,8 +817,10 @@ const novely = <
 
 			run((selected) => {
 				if (!ctx.meta.preview) {
-					enmemory();
+					enmemory(ctx);
 				}
+
+				const stack = useStack(ctx);
 
 				/**
 				 * If there is a question, then `index` should be shifted by `1`
@@ -836,6 +845,8 @@ const novely = <
 				throw new Error(`Attempt to jump to empty scene "${scene}"`)
 			}
 
+			const stack = useStack(ctx);
+
 			/**
 			 * `-1` index is used here because `clear` will run `next` that will increase index to `0`
 			 */
@@ -857,7 +868,7 @@ const novely = <
 			/**
 			 * Call the actual `clear`
 			 */
-			ctx.clear(goingBack, keep || EMPTY_SET, characters || EMPTY_SET)(() => {
+			ctx.clear(ctx.meta.goingBack, keep || EMPTY_SET, characters || EMPTY_SET)(() => {
 				push(ctx);
 			});
 
@@ -879,6 +890,8 @@ const novely = <
 					throw new Error(`Attempt to go to empty variant "${val}"`)
 				}
 
+				const stack = useStack(renderer.getContext(MAIN_CONTEXT_KEY));
+
 				stack.value[0].push(['condition', val], [null, 0]);
 
 				render(ctx);
@@ -896,7 +909,7 @@ const novely = <
 			/**
 			 * No-op used there because using push will make an infinite loop
 			 */
-			ctx.clear(goingBack, EMPTY_SET, EMPTY_SET)(noop);
+			ctx.clear(ctx.meta.goingBack, EMPTY_SET, EMPTY_SET)(noop);
 
 			/**
 			 * Go to the main menu
@@ -917,8 +930,8 @@ const novely = <
 			});
 		},
 		custom({ ctx }, [handler]) {
-			const result = ctx.custom(handler, goingBack, () => {
-				if (!ctx.meta.restoring && handler.requireUserAction && !ctx.meta.preview) enmemory(), interactivity(true);
+			const result = ctx.custom(handler, ctx.meta.goingBack, () => {
+				if (!ctx.meta.restoring && handler.requireUserAction && !ctx.meta.preview) enmemory(ctx), interactivity(true);
 				if (!ctx.meta.restoring) push(ctx);
 			});
 
@@ -990,10 +1003,12 @@ const novely = <
 				throw new Error(`Action Text was called with empty string or array`)
 			}
 
-			ctx.text(string, () => forward(ctx), goingBack);
+			ctx.text(string, () => forward(ctx), ctx.meta.goingBack);
 		},
 		exit({ ctx, data }) {
 			if (ctx.meta.restoring) return;
+
+			const stack = useStack(ctx);
 
 			const path = stack.value[0];
 			const last = path.at(-1);
@@ -1076,7 +1091,7 @@ const novely = <
 			render(ctx);
 		},
 		preload({ ctx }, [source]) {
-			if (!goingBack && !ctx.meta.restoring && !PRELOADED_ASSETS.has(source)) {
+			if (!ctx.meta.goingBack && !ctx.meta.restoring && !PRELOADED_ASSETS.has(source)) {
 				/**
 				 * Make image load
 				 */
@@ -1095,6 +1110,8 @@ const novely = <
 			}
 
 			if (!ctx.meta.restoring) {
+				const stack = useStack(ctx);
+
 				stack.value[0].push(['block', scene], [null, 0]);
 
 				render(ctx);
@@ -1102,8 +1119,10 @@ const novely = <
 		},
 	});
 
-	const enmemory = () => {
-		if (renderer.getContext(MAIN_CONTEXT_KEY).meta.restoring) return;
+	const enmemory = (ctx: Context) => {
+		if (ctx.meta.restoring) return;
+
+		const stack = useStack(ctx);
 
 		const current = klona(stack.value);
 
@@ -1114,7 +1133,8 @@ const novely = <
 		save(true, 'auto');
 	};
 
-	const next = () => {
+	const next = (ctx: Context) => {
+		const stack = useStack(ctx);
 		const path = stack.value[0];
 
 		/**
@@ -1131,6 +1151,7 @@ const novely = <
 
 	const render = (ctx: Context) => {
 		const referred = refer();
+		const stack = useStack(ctx);
 
 		if (isAction(referred)) {
 			const [action, ...props] = referred;
@@ -1148,11 +1169,11 @@ const novely = <
 	};
 
 	const push = (ctx: Context) => {
-		if (!ctx.meta.restoring) next(), render(ctx);
+		if (!ctx.meta.restoring) next(ctx), render(ctx);
 	};
 
 	const forward = (ctx: Context) => {
-		if (!ctx.meta.preview) enmemory();
+		if (!ctx.meta.preview) enmemory(ctx);
 		push(ctx);
 		if (!ctx.meta.preview) interactivity(true);
 	};
