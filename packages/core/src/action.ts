@@ -113,7 +113,14 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 		): ValidAction;
 	};
 
-	clear: (keep?: Set<keyof DefaultActionProxyProvider>, keepCharacters?: Set<string>) => ValidAction;
+	clear: (
+		keep?: Set<keyof DefaultActionProxyProvider>,
+		keepCharacters?: Set<string>,
+		keepAudio?: {
+			music: Set<string>,
+			sounds: Set<string>
+		}
+	) => ValidAction;
 
 	condition: <T extends string | true | false>(
 		condition: () => T,

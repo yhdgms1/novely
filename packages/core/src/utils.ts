@@ -1,6 +1,6 @@
 import type { ActionProxyProvider, DefaultActionProxyProvider, CustomHandler, Story, ValidAction, GetActionParameters } from './action';
 import type { Character } from './character';
-import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType } from './types';
+import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder } from './types';
 import type { Context, Renderer } from './renderer';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE } from './constants';
 import { STACK_MAP } from './shared';
@@ -328,8 +328,6 @@ const getActionsFromPath = (story: Story, path: Path) => {
 	}, 0);
 
 	const queue = [] as [any, any][];
-	const keep = new Set();
-	const characters = new Set();
 	const blocks = [];
 
 	for (const [type, val] of path) {
@@ -372,14 +370,8 @@ const getActionsFromPath = (story: Story, path: Path) => {
 					 * Add item to queue and action to keep
 					 */
 					const push = () => {
-						keep.add(action);
 						queue.push([action, meta]);
 					};
-
-					/**
-					 * Do not remove characters that will be here anyways
-					 */
-					if (action === 'showCharacter') characters.add(meta[0]);
 
 					/**
 					 * Экшены, для закрытия которых пользователь должен с ними взаимодействовать
@@ -414,19 +406,32 @@ const getActionsFromPath = (story: Story, path: Path) => {
 	}
 
 	return {
-		keep,
-		characters,
 		queue
 	}
 }
 
-const processQueue = async (queue: [any, any][], match: (action: keyof ActionProxyProvider<Record<string, Character>, string>, props: any) => Thenable<void>) => {
+const createQueueProcessor = (queue: [any, any][]) => {
+	const processedQueue: [any, any][] = [];
+
+	const keep = new Set();
+	const characters = new Set();
+	const audio = {
+		music: new Set(),
+		sound: new Set()
+	};
+
 	/**
 	 * Get the next actions array.
 	 */
 	const next = (i: number) => queue.slice(i + 1);
 
-	for await (const [i, [action, meta]] of queue.entries()) {
+	for (const [i, [action, meta]] of queue.entries()) {
+		/**
+		 * Keep actually does not keep any actions, clear method only works with things like `dialog` which can blink and etc
+		 * So it's just easies to add everything in there
+		 */
+		keep.add(action);
+
 		if (action === 'function' || action === 'custom') {
 			/**
 			 * When `callOnlyLatest` is `true`
@@ -453,20 +458,7 @@ const processQueue = async (queue: [any, any][], match: (action: keyof ActionPro
 				if (notLatest) continue;
 			}
 
-			/**
-			 * Action can return Promise.
-			 */
-			const result = match(action, meta);
-
-			/**
-			 * Should wait until it resolved
-			 */
-			if (isPromise(result)) {
-				/**
-				 * Await it!
-				 */
-				await result;
-			}
+			processedQueue.push([action, meta]);
 		} else if (action === 'showCharacter' || action === 'playSound' || action === 'playMusic' || action === 'voice') {
 			const closing = getOppositeAction(action);
 
@@ -482,7 +474,18 @@ const processQueue = async (queue: [any, any][], match: (action: keyof ActionPro
 
 			if (skip) continue;
 
-			match(action, meta);
+			/**
+			 * Actually, we do not need check above to add there things to keep because if something was hidden already we could not keep it visible
+			 */
+			if (action === 'showCharacter') {
+				characters.add(meta[0])
+			} else if (action === 'playMusic') {
+				audio.music.add(meta[0])
+			} else if (action === 'playSound') {
+				audio.sound.add(meta[0])
+			}
+
+			processedQueue.push([action, meta]);
 		} else if (action === 'showBackground' || action === 'animateCharacter' || action === 'preload') {
 			/**
 			 * @todo: Также сравнивать персонажей в animateCharacter. Чтобы не просто последний запускался, а последний для персонажа.
@@ -496,12 +499,35 @@ const processQueue = async (queue: [any, any][], match: (action: keyof ActionPro
 			 */
 			const notLatest = next(i).some(([_action]) => action === _action);
 
-			if (notLatest) continue;
-
-			match(action, meta);
+			if (!notLatest) processedQueue.push([action, meta]);
 		} else {
-			match(action, meta);
+			processedQueue.push([action, meta]);
 		}
+	}
+
+	const run = async (match: (action: keyof ActionProxyProvider<Record<string, Character>, string>, props: any) => Thenable<void>) => {
+		for await (const [action, meta] of processedQueue) {
+			const result = match(action, meta);
+
+			if (isPromise(result)) {
+				await result;
+			}
+		}
+
+		processedQueue.length = 0;
+	}
+
+	const getKeep = () => {
+		return {
+			keep,
+			characters,
+			audio
+		}
+	}
+
+	return {
+		run,
+		getKeep
 	}
 }
 
@@ -511,7 +537,7 @@ const getStack = (ctx: Context) => {
 
 	if (cached) return cached;
 
-	const stack: Save[] = [];
+	const stack = [] as unknown as StackHolder;
 
 	STACK_MAP.set(id, stack);
 
@@ -524,6 +550,9 @@ const createUseStackFunction = (renderer: Renderer) => {
 		const stack = getStack(ctx);
 
 		return {
+			get previous() {
+				return stack.previous;
+			},
 			get value() {
 				return stack.at(-1)!;
 			},
@@ -533,7 +562,7 @@ const createUseStackFunction = (renderer: Renderer) => {
 
 			back() {
 				if (stack.length > 1) {
-					stack.pop();
+					stack.previous = stack.pop();
 					ctx.meta.goingBack = true;
 				}
 			},
@@ -576,7 +605,7 @@ export {
 	isExitImpossible,
 	getOppositeAction,
 	getActionsFromPath,
-	processQueue,
+	createQueueProcessor,
 	getStack,
 	createUseStackFunction
 };

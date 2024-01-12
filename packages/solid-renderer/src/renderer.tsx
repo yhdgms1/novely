@@ -349,7 +349,7 @@ const createSolidRenderer = ({
 								setState('choices', { choices, question, resolve, visible: true });
 							};
 						},
-						clear(goingBack, keep, keepCharacters) {
+						clear(goingBack, keep, keepCharacters, keepAudio) {
 							return (resolve) => {
 								setGlobalState('exitPromptShown', false);
 
@@ -385,6 +385,17 @@ const createSolidRenderer = ({
 										layer.clear();
 										setState('layers', id, undefined);
 									}
+								}
+
+								ctx.audio.voiceStop();
+
+								const musics = Object.entries(ctx.store.audio.music).filter(([name]) => !keepAudio.music.has(name)).map(([_, h]) => h);
+								const sounds = Object.entries(ctx.store.audio.sound).filter(([name]) => !keepAudio.sounds.has(name)).map(([_, h]) => h);
+
+								for (const music of [...musics, ...sounds]) {
+									if (!music) continue;
+
+									music.stop();
 								}
 
 								resolve();
@@ -454,6 +465,8 @@ const createSolidRenderer = ({
 										resource.once('fade', resource.pause);
 									},
 									play() {
+										if (resource.playing()) return;
+
 										resource.play();
 										resource.fade(0, getVolume(method), 300);
 									},
@@ -476,18 +489,7 @@ const createSolidRenderer = ({
 								resource.play();
 							},
 							voiceStop() {
-								const currentVoice = ctx.store.audio.voice;
-
-								if (currentVoice) {
-									currentVoice.stop();
-
-									/**
-									 * @todo: is this really necessary?
-									 */
-									ctx.setStore(store => {
-										store.audio.resumeList = store.audio.resumeList.filter(howl => howl !== currentVoice);
-									})
-								}
+								ctx.store.audio.voice?.stop();
 							},
 							start() {
 								if (!ctx.store.audio.onDocumentVisibilityChangeListener) {

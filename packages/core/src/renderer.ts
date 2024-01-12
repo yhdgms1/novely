@@ -92,6 +92,22 @@ type Renderer = {
 			onInput: Parameters<DefaultActionProxyProvider['input']>[1],
 			setup?: Parameters<DefaultActionProxyProvider['input']>[2],
 		) => (resolve: () => void) => void;
+		clear: (
+			goingBack: boolean,
+			keep: Set<keyof DefaultActionProxyProvider>,
+			keepCharacters: Set<string>,
+			keepAudio: {
+				music: Set<string>,
+				sounds: Set<string>
+			}
+		) => (resolve: () => void) => void;
+		custom: (
+			fn: Parameters<DefaultActionProxyProvider['custom']>[0],
+			goingBack: boolean,
+			push: () => void,
+		) => Thenable<void>;
+		text: (str: string, resolve: () => void, goingBack: boolean) => void;
+		vibrate: (pattern: VibratePattern) => void;
 		audio: {
 			voice: (source: string) => void;
 			voiceStop: () => void;
@@ -110,18 +126,6 @@ type Renderer = {
 			 */
 			start: () => void;
 		};
-		clear: (
-			goingBack: boolean,
-			keep: Set<keyof DefaultActionProxyProvider>,
-			keepCharacters: Set<string>,
-		) => (resolve: () => void) => void;
-		custom: (
-			fn: Parameters<DefaultActionProxyProvider['custom']>[0],
-			goingBack: boolean,
-			push: () => void,
-		) => Thenable<void>;
-		text: (str: string, resolve: () => void, goingBack: boolean) => void;
-		vibrate: (pattern: VibratePattern) => void;
 
 		meta: {
 			get restoring(): boolean;

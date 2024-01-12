@@ -41,10 +41,9 @@ import {
 	noop,
 	flattenStory,
 	isExitImpossible,
-	processQueue,
 	getActionsFromPath,
-	getStack,
-	createUseStackFunction
+	createUseStackFunction,
+	createQueueProcessor
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
@@ -522,7 +521,7 @@ const novely = <
 		context.meta.restoring = true;
 
 		const [path] = stack.value = latest;
-		const { keep, characters, queue } = getActionsFromPath(story, path);
+		const { queue } = getActionsFromPath(story, path);
 
 		/**
 		 * Run these exactly before the main loop.
@@ -530,14 +529,18 @@ const novely = <
 		renderer.ui.showScreen('game');
 
 		/**
-		 * Provide the `keep` in there
+		 * @todo: Using stack.previous find out what `custom` action that was called in that previous is missing now in current, and then call the clear method
+		 * Problem is actions store their stuff inside the `get` method by `id` which is unknown before we call function and we should not call it really
 		 */
-		match('clear', [keep, characters], {
+		const processor = createQueueProcessor(queue);
+		const { keep, characters, audio } = processor.getKeep();
+
+		match('clear', [keep, characters, audio], {
 			ctx: context,
 			data: latest[1]
-		})
+		});
 
-		await processQueue(queue, (action, props) => {
+		await processor.run((action, props) => {
 			if (!latest) return;
 
 			return match(action, props, {
@@ -661,7 +664,9 @@ const novely = <
 		ctx.meta.restoring = true;
 		ctx.meta.preview = true;
 
-		await processQueue(queue, (action, props) => {
+		const processor = createQueueProcessor(queue);
+
+		await processor.run((action, props) => {
 			if (AUDIO_ACTIONS.has(action as any)) return;
 			if (action === 'vibrate') return;
 			if (action === 'end' || action === 'custom') return;
@@ -672,7 +677,7 @@ const novely = <
 				ctx,
 				data,
 			});
-		})
+		});
 	}
 
 	const renderer = createRenderer({
@@ -860,19 +865,23 @@ const novely = <
 				data,
 			});
 		},
-		clear({ ctx }, [keep, characters]) {
+		clear({ ctx }, [keep, characters, audio]) {
 			/**
 			 * Remove vibration
 			 */
 			ctx.vibrate(0);
+
 			/**
 			 * Call the actual `clear`
 			 */
-			ctx.clear(ctx.meta.goingBack, keep || EMPTY_SET, characters || EMPTY_SET)(() => {
-				push(ctx);
-			});
+			const run = ctx.clear(
+				ctx.meta.goingBack,
+				keep || EMPTY_SET,
+				characters || EMPTY_SET,
+				audio || { music: EMPTY_SET, sounds: EMPTY_SET }
+			);
 
-			ctx.audio.clear();
+			run(() => push(ctx));
 		},
 		condition({ ctx }, [condition, variants]) {
 			if (DEV && Object.values(variants).length === 0) {
@@ -890,7 +899,7 @@ const novely = <
 					throw new Error(`Attempt to go to empty variant "${val}"`)
 				}
 
-				const stack = useStack(renderer.getContext(MAIN_CONTEXT_KEY));
+				const stack = useStack(MAIN_CONTEXT_KEY);
 
 				stack.value[0].push(['condition', val], [null, 0]);
 
@@ -900,8 +909,6 @@ const novely = <
 		end({ ctx }) {
 			if (ctx.meta.preview) return;
 
-			console.log(ctx)
-
 			/**
 			 * Clear the Scene
 			 */
@@ -909,7 +916,7 @@ const novely = <
 			/**
 			 * No-op used there because using push will make an infinite loop
 			 */
-			ctx.clear(ctx.meta.goingBack, EMPTY_SET, EMPTY_SET)(noop);
+			ctx.clear(ctx.meta.goingBack, EMPTY_SET, EMPTY_SET, { music: EMPTY_SET, sounds: EMPTY_SET })(noop);
 
 			/**
 			 * Go to the main menu

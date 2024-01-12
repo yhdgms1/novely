@@ -215,13 +215,14 @@ engine.script({
 		}),
 	],
 	start: [
+		action.custom(hideParticles()),
 		// hideRive('car'), //same as particles needs to be cleared at start
 		action.preload(outdoor),
-		action.playMusic(sakura_girl),
 		action.text({
 			en: 'You wake up, but do not see your keyboard anymore, instead...',
 			ru: 'Вы просыпаетесь, но больше не видите своей клавиатуры, вместо неё...',
 		}),
+		action.playMusic(sakura_girl),
 		action.custom(particles(snow)),
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok'),
