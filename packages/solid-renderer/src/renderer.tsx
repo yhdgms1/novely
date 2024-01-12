@@ -193,7 +193,7 @@ const createSolidRenderer = ({
 				getContext(name) {
 					const { state, setState } = useContextState(name);
 
-					const ctx = {
+					const ctx: SolidContext = {
 						id: name,
 						background(background) {
 							currentBackground = background;
@@ -332,7 +332,7 @@ const createSolidRenderer = ({
 							return characterHandle;
 						},
 						dialog(content, name, character, emotion) {
-							return (resolve, goingBack) => {
+							return (resolve) => {
 								setState('dialog', () => ({
 									content,
 									name,
@@ -340,7 +340,6 @@ const createSolidRenderer = ({
 									emotion,
 									visible: true,
 									resolve,
-									goingBack,
 								}));
 							};
 						},
@@ -349,7 +348,7 @@ const createSolidRenderer = ({
 								setState('choices', { choices, question, resolve, visible: true });
 							};
 						},
-						clear(goingBack, keep, keepCharacters, keepAudio) {
+						clear(keep, keepCharacters, keepAudio) {
 							return (resolve) => {
 								setGlobalState('exitPromptShown', false);
 
@@ -381,7 +380,7 @@ const createSolidRenderer = ({
 									/**
 									 * Если происходит переход назад, и слой просит пропустить очистку при переходе назад, то не будем очищать слой
 									 */
-									if (!(goingBack && layer.fn.skipClearOnGoingBack)) {
+									if (!(ctx.meta.goingBack && layer.fn.skipClearOnGoingBack)) {
 										layer.clear();
 										setState('layers', id, undefined);
 									}
@@ -542,7 +541,7 @@ const createSolidRenderer = ({
 								}
 							}
 						},
-						custom(fn, goingBack, resolve) {
+						custom(fn, resolve) {
 							const get: Parameters<CustomHandler>[0] = (id, insert = true) => {
 								const cached = state.layers[id];
 
@@ -560,7 +559,8 @@ const createSolidRenderer = ({
 								 * Function that call the `Clear` defined by the action itself, and then deletes the layer
 								 */
 								const clearManager = () => {
-									clear(), setState('layers', id, undefined);
+									clear();
+									setState('layers', id, undefined);
 								};
 
 								/**
@@ -590,8 +590,10 @@ const createSolidRenderer = ({
 
 							/**
 							 * Wait untill it is resolved
+							 *
+							 * @todo: resolve should be called only once
 							 */
-							const result = fn(get, goingBack, fn.requireUserAction ? resolve : () => {});
+							const result = fn(get, ctx.meta.goingBack, fn.requireUserAction ? resolve : () => {});
 
 							if (!fn.requireUserAction) result ? result.then(resolve) : resolve();
 
@@ -600,8 +602,8 @@ const createSolidRenderer = ({
 						vibrate(pattern) {
 							vibrate(pattern);
 						},
-						text(content, resolve, goingBack) {
-							setState('text', { content, resolve, goingBack });
+						text(content, resolve) {
+							setState('text', { content, resolve });
 						},
 
 						meta: {
@@ -635,7 +637,7 @@ const createSolidRenderer = ({
 						getCharacter(character) {
 							return state.store.characters[character]
 						}
-					} satisfies SolidContext;
+					};
 
 					return ctx;
 				},

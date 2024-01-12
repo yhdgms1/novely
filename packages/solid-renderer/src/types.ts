@@ -46,10 +46,6 @@ interface StateDialog {
    */
   name: string;
   /**
-   * Is goingBack
-   */
-  goingBack: boolean;
-  /**
    * Функция `resolve`
    */
   resolve?: () => void;
@@ -107,10 +103,6 @@ interface StateText {
    * Текст
    */
   content: string;
-  /**
-   * Is goingBack
-   */
-  goingBack: boolean;
   /**
    * Функция `resolve`
    */

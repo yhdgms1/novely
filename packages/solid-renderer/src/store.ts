@@ -13,7 +13,6 @@ const createContextState = () => {
       content: '',
       name: '',
       visible: false,
-      goingBack: false,
     },
     choices: {
       question: '',
@@ -27,7 +26,6 @@ const createContextState = () => {
     },
     text: {
       content: '',
-      goingBack: false,
     },
     layers: {},
 

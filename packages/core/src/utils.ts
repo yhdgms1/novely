@@ -497,7 +497,7 @@ const createQueueProcessor = (queue: [any, any][]) => {
 			 * Такая же оптимизация применяется к фонам и анимированию персонажей, и `preload`.
 			 * Если фон изменится, то нет смысла устанавливать или предзагружать текущий
 			 */
-			const notLatest = next(i).some(([_action]) => action === _action);
+			const notLatest = next(i).some(([_action], i, array) => action === _action);
 
 			if (!notLatest) processedQueue.push([action, meta]);
 		} else {

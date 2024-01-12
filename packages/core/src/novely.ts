@@ -781,7 +781,7 @@ const novely = <
 
 			const run = ctx.dialog(unwrap(content, data), unwrap(name, data), character, emotion);
 
-			run(() => forward(ctx), ctx.meta.goingBack);
+			run(() => forward(ctx));
 		},
 		function({ ctx }, [fn]) {
 			const result = fn(ctx.meta.restoring, ctx.meta.goingBack);
@@ -875,7 +875,6 @@ const novely = <
 			 * Call the actual `clear`
 			 */
 			const run = ctx.clear(
-				ctx.meta.goingBack,
 				keep || EMPTY_SET,
 				characters || EMPTY_SET,
 				audio || { music: EMPTY_SET, sounds: EMPTY_SET }
@@ -916,7 +915,7 @@ const novely = <
 			/**
 			 * No-op used there because using push will make an infinite loop
 			 */
-			ctx.clear(ctx.meta.goingBack, EMPTY_SET, EMPTY_SET, { music: EMPTY_SET, sounds: EMPTY_SET })(noop);
+			ctx.clear(EMPTY_SET, EMPTY_SET, { music: EMPTY_SET, sounds: EMPTY_SET })(noop);
 
 			/**
 			 * Go to the main menu
@@ -937,7 +936,7 @@ const novely = <
 			});
 		},
 		custom({ ctx }, [handler]) {
-			const result = ctx.custom(handler, ctx.meta.goingBack, () => {
+			const result = ctx.custom(handler, () => {
 				if (!ctx.meta.restoring && handler.requireUserAction && !ctx.meta.preview) enmemory(ctx), interactivity(true);
 				if (!ctx.meta.restoring) push(ctx);
 			});
@@ -1010,7 +1009,7 @@ const novely = <
 				throw new Error(`Action Text was called with empty string or array`)
 			}
 
-			ctx.text(string, () => forward(ctx), ctx.meta.goingBack);
+			ctx.text(string, () => forward(ctx));
 		},
 		exit({ ctx, data }) {
 			if (ctx.meta.restoring) return;

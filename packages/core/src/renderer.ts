@@ -82,7 +82,7 @@ type Renderer = {
 			name: string,
 			character?: string,
 			emotion?: string,
-		) => (resolve: () => void, goingBack: boolean) => void;
+		) => (resolve: () => void) => void;
 		choices: (
 			question: string,
 			choices: ([string, ValidAction[]] | [string, ValidAction[], () => boolean])[],
@@ -93,7 +93,6 @@ type Renderer = {
 			setup?: Parameters<DefaultActionProxyProvider['input']>[2],
 		) => (resolve: () => void) => void;
 		clear: (
-			goingBack: boolean,
 			keep: Set<keyof DefaultActionProxyProvider>,
 			keepCharacters: Set<string>,
 			keepAudio: {
@@ -103,10 +102,9 @@ type Renderer = {
 		) => (resolve: () => void) => void;
 		custom: (
 			fn: Parameters<DefaultActionProxyProvider['custom']>[0],
-			goingBack: boolean,
 			push: () => void,
 		) => Thenable<void>;
-		text: (str: string, resolve: () => void, goingBack: boolean) => void;
+		text: (str: string, resolve: () => void) => void;
 		vibrate: (pattern: VibratePattern) => void;
 		audio: {
 			voice: (source: string) => void;
@@ -121,8 +119,7 @@ type Renderer = {
 			 */
 			destroy: () => void;
 			/**
-			 * Start
-			 * @todo: more descriptive
+			 * Initialize audio service, attach events, etc
 			 */
 			start: () => void;
 		};

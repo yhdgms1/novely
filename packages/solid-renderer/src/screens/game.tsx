@@ -216,7 +216,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 										: data.t(DialogWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
 							}}
 							content={props.state.dialog.content}
-							ignore={skipTypewriterWhenGoingBack && props.state.dialog.goingBack}
+							ignore={skipTypewriterWhenGoingBack && context.meta.goingBack}
 							speed={speed()}
 							ended={onWriterEnd(DialogWriter.clear)}
 						/>
@@ -340,7 +340,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 								: data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
 					}}
 					content={props.state.text.content}
-					ignore={skipTypewriterWhenGoingBack && props.state.text.goingBack}
+					ignore={skipTypewriterWhenGoingBack && context.meta.goingBack}
 					speed={speed()}
 					ended={onWriterEnd(TextWriter.clear)}
 				/>
