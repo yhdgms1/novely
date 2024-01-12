@@ -49,7 +49,7 @@ type Data = Record<
 
 const show = (id: Id, setup: Setup) => {
 	const handler: CustomHandler = async (get) => {
-		const { data: dataChannel, root, element, clear } = get('rive', true);
+		const { data: dataChannel, root, element, clear } = get(true);
 
 		const data = dataChannel() as unknown as Data;
 
@@ -137,13 +137,14 @@ const show = (id: Id, setup: Setup) => {
 	handler.id = 'rive-control-' + id;
 	handler.callOnlyLatest = true;
 	handler.skipClearOnGoingBack = true;
+	handler.key = 'rive-' + id;
 
 	return ['custom', handler] as unknown as ['custom', [CustomHandler]];
 };
 
 const animate = (id: Id, name: string) => {
 	const handler: CustomHandler = async (get) => {
-		const { data: dataChannel } = get('rive', true);
+		const { data: dataChannel } = get(true);
 
 		const data = dataChannel() as unknown as Data;
 
@@ -167,13 +168,14 @@ const animate = (id: Id, name: string) => {
 	handler.id = 'rive-change-' + id;
 	handler.callOnlyLatest = true;
 	handler.skipClearOnGoingBack = true;
+	handler.key = 'rive-' + id;
 
 	return ['custom', handler] as unknown as ['custom', [CustomHandler]];
 };
 
 const hide = (id: Id) => {
 	const handler: CustomHandler = async (get) => {
-		const { data: dataChannel } = get('rive', true);
+		const { data: dataChannel } = get(true);
 
 		const data = dataChannel() as unknown as Data;
 
@@ -195,13 +197,14 @@ const hide = (id: Id) => {
 	handler.id = 'rive-control-' + id;
 	handler.callOnlyLatest = true;
 	handler.skipClearOnGoingBack = true;
+	handler.key = 'rive-' + id;
 
 	return ['custom', handler] as unknown as ['custom', [CustomHandler]];
 };
 
 const remove = (id: Id) => {
 	const handler: CustomHandler = async (get) => {
-		const { data: dataChannel } = get('rive', true);
+		const { data: dataChannel } = get(true);
 
 		const data = dataChannel() as unknown as Data;
 
@@ -222,6 +225,7 @@ const remove = (id: Id) => {
 	handler.id = 'rive-control-' + id;
 	handler.callOnlyLatest = true;
 	handler.skipClearOnGoingBack = true;
+	handler.key = 'rive-' + id;
 
 	return ['custom', handler] as unknown as ['custom', [CustomHandler]];
 };

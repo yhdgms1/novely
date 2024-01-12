@@ -34,8 +34,8 @@ document.head.append(
 );
 
 const video = ({ controls, close, loop, url }: VideoParameters): CustomHandler => {
-	const handler: CustomHandler = (get, _, resolve) => {
-		const { element, delete: remove } = get('n-video');
+	const handler: CustomHandler = (get, _) => {
+		const { element, delete: remove } = get(true);
 
 		element!.classList.add('novely-video--container');
 
@@ -54,29 +54,33 @@ const video = ({ controls, close, loop, url }: VideoParameters): CustomHandler =
 			className: 'novely-video--button',
 		});
 
-		const closeHandler = () => {
-			video.removeEventListener('ended', closeHandler);
-			button.removeEventListener('click', closeHandler);
-
-			remove(), resolve();
-		};
-
-		/**
-		 * Video closes automatically if `close` is provided
-		 */
-		if (close) video.addEventListener('ended', closeHandler, { once: true });
-		/**
-		 * Button closes video anyway
-		 */
-		button.addEventListener('click', closeHandler, { once: true });
-
 		element!.append(video, button);
+
+		return new Promise((resolve) => {
+			const closeHandler = () => {
+				video.removeEventListener('ended', closeHandler);
+				button.removeEventListener('click', closeHandler);
+
+				remove(), resolve();
+			};
+
+			/**
+			 * Video closes automatically if `close` is provided
+			 */
+			if (close) video.addEventListener('ended', closeHandler, { once: true });
+
+			/**
+			 * Button closes video anyway
+			 */
+			button.addEventListener('click', closeHandler, { once: true });
+		})
 	};
 
 	/**
 	 * Make the Novely wait until we click on the video or it ends
 	 */
 	handler.requireUserAction = true;
+	handler.key = 'n-video';
 
 	return handler;
 };

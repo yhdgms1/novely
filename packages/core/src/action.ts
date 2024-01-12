@@ -58,11 +58,7 @@ type CustomHandlerGetResult = {
 	clear: (fn: () => void) => void;
 };
 
-type CustomHandlerFunction = (
-	get: (id: string, insert?: boolean) => CustomHandlerGetResult,
-	goingBack: boolean,
-	resolve: () => void,
-) => Thenable<void>;
+type CustomHandlerFunction = (get: (insert?: boolean) => CustomHandlerGetResult, goingBack: boolean) => Thenable<void>;
 
 type CustomHandler = CustomHandlerFunction & {
 	callOnlyLatest?: boolean;
@@ -70,6 +66,8 @@ type CustomHandler = CustomHandlerFunction & {
 	skipClearOnGoingBack?: boolean;
 
 	id?: string | symbol;
+
+	key: string;
 };
 
 interface ActionInputOnInputMeta {

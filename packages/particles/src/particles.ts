@@ -31,7 +31,7 @@ const particles = (options: ParticlesOptions): CustomHandler => {
 			loaded = true;
 		}
 
-		const layer = get('particles');
+		const layer = get();
 
 		/**
 		 * Remove previous instance
@@ -79,13 +79,14 @@ const particles = (options: ParticlesOptions): CustomHandler => {
 
 	handler.callOnlyLatest = handler.skipClearOnGoingBack = true;
 	handler.id = ID;
+	handler.key = 'particles';
 
 	return handler;
 };
 
 const hide = () => {
 	const handler: CustomHandler = (get) => {
-		const layer = get('particles');
+		const layer = get();
 
 		/**
 		 * Get the instance
@@ -105,6 +106,7 @@ const hide = () => {
 
 	handler.callOnlyLatest = true;
 	handler.id = ID;
+	handler.key = 'particles';
 
 	return handler;
 };

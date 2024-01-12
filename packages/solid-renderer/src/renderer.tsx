@@ -542,8 +542,8 @@ const createSolidRenderer = ({
 							}
 						},
 						custom(fn, resolve) {
-							const get: Parameters<CustomHandler>[0] = (id, insert = true) => {
-								const cached = state.layers[id];
+							const get: Parameters<CustomHandler>[0] = (insert = true) => {
+								const cached = state.layers[fn.key];
 
 								if (cached) {
 									return cached.value;
@@ -560,15 +560,15 @@ const createSolidRenderer = ({
 								 */
 								const clearManager = () => {
 									clear();
-									setState('layers', id, undefined);
+									setState('layers', fn.key, undefined);
 								};
 
 								/**
 								 * When no need to insert - just do not create it.
 								 */
-								const element = insert ? ((<div id={id} />) as HTMLDivElement) : null;
+								const element = insert ? ((<div id={fn.key} />) as HTMLDivElement) : null;
 
-								setState('layers', id, {
+								setState('layers', fn.key, {
 									fn,
 									dom: element,
 									clear: clearManager,
@@ -585,17 +585,12 @@ const createSolidRenderer = ({
 									},
 								});
 
-								return state.layers[id]!.value;
+								return state.layers[fn.key]!.value;
 							};
 
-							/**
-							 * Wait untill it is resolved
-							 *
-							 * @todo: resolve should be called only once
-							 */
-							const result = fn(get, ctx.meta.goingBack, fn.requireUserAction ? resolve : () => {});
+							const result = fn(get, ctx.meta.goingBack);
 
-							if (!fn.requireUserAction) result ? result.then(resolve) : resolve();
+							result ? result.then(resolve) : resolve();
 
 							return result;
 						},

@@ -937,8 +937,14 @@ const novely = <
 		},
 		custom({ ctx }, [handler]) {
 			const result = ctx.custom(handler, () => {
-				if (!ctx.meta.restoring && handler.requireUserAction && !ctx.meta.preview) enmemory(ctx), interactivity(true);
-				if (!ctx.meta.restoring) push(ctx);
+				if (ctx.meta.restoring) return;
+
+				if (handler.requireUserAction && !ctx.meta.preview) {
+					enmemory(ctx);
+					interactivity(true);
+				}
+
+				push(ctx);
 			});
 
 			return result;
@@ -960,7 +966,7 @@ const novely = <
 			}
 
 			const handler: CustomHandler = (get) => {
-				const { clear } = get('@@internal-animate-character', false);
+				const { clear } = get(false);
 				const char = renderer.getContext(MAIN_CONTEXT_KEY).getCharacter(character);
 
 				/**
@@ -993,6 +999,8 @@ const novely = <
 					clearTimeout(timeoutId);
 				});
 			};
+
+			handler.key = '@@internal-animate-character';
 
 			/**
 			 * `callOnlyLatest` property will not have any effect, because `custom` is called directly
