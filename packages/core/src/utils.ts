@@ -298,7 +298,7 @@ const getOppositeAction = (action: 'showCharacter' | 'playSound' | 'playMusic' |
 	return MAP[action as keyof typeof MAP];
 }
 
-const getActionsFromPath = (story: Story, path: Path) => {
+const getActionsFromPath = (story: Story, path: Path, raw: boolean = false) => {
 	/**
 	 * Current item in the story
 	 */
@@ -374,18 +374,26 @@ const getActionsFromPath = (story: Story, path: Path) => {
 					};
 
 					/**
+					 * In case we want pure data then just add it
+					 */
+					if (raw) {
+						push();
+						continue;
+					}
+
+					/**
 					 * Экшены, для закрытия которых пользователь должен с ними взаимодействовать
 					 * Также в эту группу входят экшены, которые не должны быть вызваны при восстановлении
 					 */
 					if (isSkippedDuringRestore(action) || isUserRequiredAction(action, meta)) {
 						if (index === max && i === val) {
 							push();
-						} else {
-							continue;
 						}
-					}
 
-					push();
+						continue;
+					} else {
+						push();
+					}
 				}
 			}
 
@@ -405,9 +413,7 @@ const getActionsFromPath = (story: Story, path: Path) => {
 		}
 	}
 
-	return {
-		queue
-	}
+	return queue;
 }
 
 const createQueueProcessor = (queue: [any, any][]) => {
@@ -497,9 +503,11 @@ const createQueueProcessor = (queue: [any, any][]) => {
 			 * Такая же оптимизация применяется к фонам и анимированию персонажей, и `preload`.
 			 * Если фон изменится, то нет смысла устанавливать или предзагружать текущий
 			 */
-			const notLatest = next(i).some(([_action], i, array) => action === _action);
+			const skip = next(i).some(([_action], i, array) => action === _action);
 
-			if (!notLatest) processedQueue.push([action, meta]);
+			if (skip) continue;
+
+			processedQueue.push([action, meta]);
 		} else {
 			processedQueue.push([action, meta]);
 		}

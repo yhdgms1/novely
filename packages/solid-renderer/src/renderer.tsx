@@ -447,6 +447,71 @@ const createSolidRenderer = ({
 								input.dispatchEvent(new InputEvent('input', { bubbles: true }));
 							};
 						},
+						custom(fn, resolve) {
+							const get: Parameters<CustomHandler>[0] = (insert = true) => {
+								const cached = state.layers[fn.key];
+
+								if (cached) {
+									return cached.value;
+								}
+
+								/**
+								 * `Clear` function
+								 */
+								let clear = () => {};
+								let store = {};
+
+								/**
+								 * Function that call the `Clear` defined by the action itself, and then deletes the layer
+								 */
+								const clearManager = () => {
+									clear();
+									setState('layers', fn.key, undefined);
+								};
+
+								/**
+								 * When no need to insert - just do not create it.
+								 */
+								const element = insert ? ((<div id={fn.key} />) as HTMLDivElement) : null;
+
+								setState('layers', fn.key, {
+									fn,
+									dom: element,
+									clear: clearManager,
+									value: {
+										root,
+										element,
+										delete: clearManager,
+										data(data) {
+											return data ? (store = data) : store;
+										},
+										clear(cb) {
+											clear = cb;
+										},
+									},
+								});
+
+								return state.layers[fn.key]!.value;
+							};
+
+							const result = fn(get, ctx.meta.goingBack);
+
+							result ? result.then(resolve) : resolve();
+
+							return result;
+						},
+						clearCustom(fn) {
+							const data = state.layers[fn.key];
+
+							if (data) data.clear();
+						},
+						vibrate(pattern) {
+							vibrate(pattern);
+						},
+						text(content, resolve) {
+							setState('text', { content, resolve });
+						},
+
 						audio: {
 							music(src, method, loop = method === 'music') {
 								const resource = getHowl(ctx, method, src, loop);
@@ -540,65 +605,6 @@ const createSolidRenderer = ({
 									document.removeEventListener('visibilitychange', ctx.store.audio.onDocumentVisibilityChangeListener);
 								}
 							}
-						},
-						custom(fn, resolve) {
-							const get: Parameters<CustomHandler>[0] = (insert = true) => {
-								const cached = state.layers[fn.key];
-
-								if (cached) {
-									return cached.value;
-								}
-
-								/**
-								 * `Clear` function
-								 */
-								let clear = () => {};
-								let store = {};
-
-								/**
-								 * Function that call the `Clear` defined by the action itself, and then deletes the layer
-								 */
-								const clearManager = () => {
-									clear();
-									setState('layers', fn.key, undefined);
-								};
-
-								/**
-								 * When no need to insert - just do not create it.
-								 */
-								const element = insert ? ((<div id={fn.key} />) as HTMLDivElement) : null;
-
-								setState('layers', fn.key, {
-									fn,
-									dom: element,
-									clear: clearManager,
-									value: {
-										root,
-										element,
-										delete: clearManager,
-										data(data) {
-											return data ? (store = data) : store;
-										},
-										clear(cb) {
-											clear = cb;
-										},
-									},
-								});
-
-								return state.layers[fn.key]!.value;
-							};
-
-							const result = fn(get, ctx.meta.goingBack);
-
-							result ? result.then(resolve) : resolve();
-
-							return result;
-						},
-						vibrate(pattern) {
-							vibrate(pattern);
-						},
-						text(content, resolve) {
-							setState('text', { content, resolve });
 						},
 
 						meta: {

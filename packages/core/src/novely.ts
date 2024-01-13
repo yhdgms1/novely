@@ -520,20 +520,52 @@ const novely = <
 
 		context.meta.restoring = true;
 
-		const [path] = stack.value = latest;
-		const { queue } = getActionsFromPath(story, path);
+		const previous = stack.previous;
 
-		/**
-		 * Run these exactly before the main loop.
-		 */
+		const [path] = stack.value = latest;
+
 		renderer.ui.showScreen('game');
 
-		/**
-		 * @todo: Using stack.previous find out what `custom` action that was called in that previous is missing now in current, and then call the clear method
-		 * Problem is actions store their stuff inside the `get` method by `id` which is unknown before we call function and we should not call it really
-		 */
+		const queue = getActionsFromPath(story, path);
 		const processor = createQueueProcessor(queue);
 		const { keep, characters, audio } = processor.getKeep();
+
+		if (previous) {
+			const prevQueue = getActionsFromPath(story, previous[0], true);
+			const currQueue = getActionsFromPath(story, path, true);
+
+			for (let i = prevQueue.length - 1; i > currQueue.length; i--) {
+				const element = prevQueue[i];
+
+				/**
+				 * Just in case 🤷
+				 */
+				if (isAction(element)) {
+					const [action, props] = element as ValidAction;
+
+					/**
+					 * Imagine array of actions like
+					 *
+					 * [
+					 *  ['dialog', ...props]
+					 *  ['dialog', ...props]
+					 *  ['custom', function]
+					 * ]
+					 *
+					 * When player goes back array changes to
+					 *
+					 * [
+					 *  ['dialog', ...props]
+					 * ]
+					 *
+					 * We catch these custom actions and call their clear methods so there is no side effects from future in the past
+					 */
+					if (action === 'custom') {
+						context.clearCustom(props[0]);
+					}
+				}
+			}
+		}
 
 		match('clear', [keep, characters, audio], {
 			ctx: context,
@@ -655,7 +687,7 @@ const novely = <
 	 * Execute save in context at `name`
 	 */
 	const preview = async ([path, data]: Save, name: string) => {
-		const { queue } = getActionsFromPath(story, path);
+		const queue = getActionsFromPath(story, path);
 		const ctx = renderer.getContext(name);
 
 		/**
@@ -1164,8 +1196,8 @@ const novely = <
 	};
 
 	const render = (ctx: Context) => {
-		const referred = refer();
 		const stack = useStack(ctx);
+		const referred = refer(stack.value[0]);
 
 		if (isAction(referred)) {
 			const [action, ...props] = referred;

@@ -104,6 +104,9 @@ type Renderer = {
 			fn: Parameters<DefaultActionProxyProvider['custom']>[0],
 			push: () => void,
 		) => Thenable<void>;
+		clearCustom: (
+			fn: Parameters<DefaultActionProxyProvider['custom']>[0],
+		) => void;
 		text: (str: string, resolve: () => void) => void;
 		vibrate: (pattern: VibratePattern) => void;
 		audio: {
