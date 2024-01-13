@@ -51,29 +51,29 @@ const Saves: VoidComponent = () => {
 
 								const stringType = t(type === 'auto' ? 'Automatic' : 'Manual');
 
-								const KEY = `save-${date}-${type}`;
-								const ctx = useContextState(KEY);
+								// 😼
+								// // const KEY = `save-${date}-${type}`;
+								// // const ctx = useContextState(KEY);
 
-								// const game = <Game
-								// 	controls='inside'
-								// 	skipTypewriterWhenGoingBack={true}
+								// // const game = <Game
+								// // 	controls='inside'
+								// // 	skipTypewriterWhenGoingBack={true}
 
-								// 	state={ctx.state}
-								// 	setState={ctx.setState}
+								// // 	state={ctx.state}
+								// // 	setState={ctx.setState}
 
-								// 	context={getContext(KEY)}
-								// 	store={{}}
-								// />;
+								// // 	context={getContext(KEY)}
+								// // 	store={getContext(KEY).store}
 
-								options.preview(save, KEY).then(() => {
-									// console.log({...useContextState(KEY).state})
-								})
+								// // 	isPreview={true}
+								// // />;
 
-								// todo: and also pass goingBack and preview to custom and function actions
+								// // todo: function to destroy context and do not forget about novely's stack context
+								// // options.preview(save, KEY).then(() => {})
+								// // todo: and also pass goingBack and preview to custom and function actions
 
 								return (
 									<li class="saves__list-item">
-
 										<button
 											type="button"
 											class="button saves__button-load"

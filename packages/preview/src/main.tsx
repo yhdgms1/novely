@@ -273,7 +273,7 @@ engine.script({
 		}),
 		action.input(
 			{
-				en: `Enter you'r age`,
+				en: 'Enter youʼr age',
 				ru: 'Введите ваш возраст',
 			},
 			({ input, error }) => {

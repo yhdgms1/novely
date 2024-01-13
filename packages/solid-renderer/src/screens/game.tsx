@@ -20,6 +20,8 @@ interface GameProps {
 
 	controls: 'inside' | 'outside';
 	skipTypewriterWhenGoingBack: boolean;
+
+	isPreview?: boolean;
 }
 
 const Game: VoidComponent<GameProps> = (props) => {
@@ -133,7 +135,12 @@ const Game: VoidComponent<GameProps> = (props) => {
 	});
 
 	return (
-		<div class="root game" style={background()}>
+		<div
+			style={background()}
+			classList={{
+				'root game': !props.isPreview
+			}}
+		>
 			<div
 				data-characters={true}
 				class="characters"
@@ -216,7 +223,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 										: data.t(DialogWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
 							}}
 							content={props.state.dialog.content}
-							ignore={skipTypewriterWhenGoingBack && context.meta.goingBack}
+							ignore={(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview)}
 							speed={speed()}
 							ended={onWriterEnd(DialogWriter.clear)}
 						/>
@@ -224,7 +231,10 @@ const Game: VoidComponent<GameProps> = (props) => {
 				</div>
 			</div>
 
-			<Modal isOpen={() => props.state.choices.visible} trapFocus={() => !data.globalState.exitPromptShown}>
+			<Modal
+				isOpen={() => props.state.choices.visible}
+				trapFocus={() => !props.isPreview && !data.globalState.exitPromptShown}
+			>
 				<div class="dialog-container">
 					<span class="dialog-fix" aria-hidden="true">
 						&#8203;
@@ -258,7 +268,10 @@ const Game: VoidComponent<GameProps> = (props) => {
 				</div>
 			</Modal>
 
-			<Modal isOpen={() => props.state.input.visible} trapFocus={() => !data.globalState.exitPromptShown}>
+			<Modal
+				isOpen={() => props.state.input.visible}
+				trapFocus={() => !props.isPreview && !data.globalState.exitPromptShown}
+			>
 				<div class="dialog-container">
 					<span class="dialog-fix" aria-hidden="true">
 						&#8203;
@@ -285,7 +298,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 			<Modal
 				isOpen={() => data.globalState.exitPromptShown}
-				trapFocus={() => data.globalState.exitPromptShown}
+				trapFocus={() => !props.isPreview && data.globalState.exitPromptShown}
 			>
 				<div class="dialog-container">
 					<span class="dialog-fix" aria-hidden="true">
@@ -293,7 +306,9 @@ const Game: VoidComponent<GameProps> = (props) => {
 					</span>
 					<div class="dialog-backdrop" />
 					<div class="dialog-panel exit-dialog-panel">
-						<span class="dialog-panel-label">{data.t('ExitDialogWarning')}</span>
+						<span class="dialog-panel-label">
+							{data.t('ExitDialogWarning')}
+						</span>
 						<div class="exit-dialog-panel-buttons">
 							<button
 								type="button"
@@ -340,66 +355,68 @@ const Game: VoidComponent<GameProps> = (props) => {
 								: data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
 					}}
 					content={props.state.text.content}
-					ignore={skipTypewriterWhenGoingBack && context.meta.goingBack}
+					ignore={(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview)}
 					speed={speed()}
 					ended={onWriterEnd(TextWriter.clear)}
 				/>
 			</div>
 
-			<div class="control-panel">
-				<Show when={data.media.hyperWide()}>
-					<Show when={!controlPanelMenuExpanded()}>
-						<button
-							type="button"
-							class="button control-panel__button"
-							title={data.t('OpenMenu')}
-							aria-controls={controlPanelMenuID}
-							aria-expanded={controlPanelMenuExpanded()}
-							onClick={() => {
-								setControlPanelMenuExpanded((prev) => !prev);
-							}}
-						>
-							<Icon children={Icon.Menu()} />
-						</button>
+			<Show when={!props.isPreview}>
+				<div class="control-panel">
+					<Show when={data.media.hyperWide()}>
+						<Show when={!controlPanelMenuExpanded()}>
+							<button
+								type="button"
+								class="button control-panel__button"
+								title={data.t('OpenMenu')}
+								aria-controls={controlPanelMenuID}
+								aria-expanded={controlPanelMenuExpanded()}
+								onClick={() => {
+									setControlPanelMenuExpanded((prev) => !prev);
+								}}
+							>
+								<Icon children={Icon.Menu()} />
+							</button>
+						</Show>
 					</Show>
-				</Show>
 
-				<Show when={data.media.hyperWide() && controlPanelMenuExpanded() && !data.globalState.exitPromptShown}>
-					<span class="control-panel-container-fix" aria-hidden="true">
-						&#8203;
-					</span>
-					<div class="control-panel-container-backdrop" />
-				</Show>
+					<Show when={data.media.hyperWide() && controlPanelMenuExpanded() && !data.globalState.exitPromptShown}>
+						<span class="control-panel-container-fix" aria-hidden="true">
+							&#8203;
+						</span>
+						<div class="control-panel-container-backdrop" />
+					</Show>
 
-				<div
-					role="menubar"
-					id={controlPanelMenuID}
-					class="control-panel-container"
-					classList={{
-						'control-panel-container--center': controls === 'inside',
-						'control-panel-container--wide-closed': data.media.hyperWide() && !controlPanelMenuExpanded(),
-						'control-panel-container--wide-open': data.media.hyperWide() && controlPanelMenuExpanded(),
-					}}
-					ref={(element) => {
-						clickOutside(element, () => {
-							if (untrack(data.media.hyperWide) && untrack(controlPanelMenuExpanded)) {
+					<div
+						role="menubar"
+						id={controlPanelMenuID}
+						class="control-panel-container"
+						classList={{
+							'control-panel-container--center': controls === 'inside',
+							'control-panel-container--wide-closed': data.media.hyperWide() && !controlPanelMenuExpanded(),
+							'control-panel-container--wide-open': data.media.hyperWide() && controlPanelMenuExpanded(),
+						}}
+						ref={(element) => {
+							clickOutside(element, () => {
+								if (untrack(data.media.hyperWide) && untrack(controlPanelMenuExpanded)) {
+									setControlPanelMenuExpanded(false);
+								}
+							});
+						}}
+					>
+						<ControlPanelButtons
+							openSettings={() => {
+								data.setGlobalState('screen', 'settings');
+							}}
+							closeDropdown={() => {
 								setControlPanelMenuExpanded(false);
-							}
-						});
-					}}
-				>
-					<ControlPanelButtons
-						openSettings={() => {
-							data.setGlobalState('screen', 'settings');
-						}}
-						closeDropdown={() => {
-							setControlPanelMenuExpanded(false);
-						}}
-						auto={auto}
-						setAuto={setAuto}
-					/>
+							}}
+							auto={auto}
+							setAuto={setAuto}
+						/>
+					</div>
 				</div>
-			</div>
+			</Show>
 		</div>
 	);
 };
