@@ -55,6 +55,7 @@ import { localStorageStorage } from './storage';
 import pLimit from 'p-limit';
 
 import { DEV } from 'esm-env';
+import { STACK_MAP } from './shared';
 
 interface NovelyInit<
 	Languages extends string,
@@ -711,6 +712,10 @@ const novely = <
 		});
 	}
 
+	const removeContext = (name: string) => {
+		STACK_MAP.delete(name);
+	}
+
 	const renderer = createRenderer({
 		mainContextKey: MAIN_CONTEXT_KEY,
 
@@ -723,6 +728,7 @@ const novely = <
 		back,
 		t,
 		preview,
+		removeContext,
 		languages,
 		$,
 		$$,
@@ -793,7 +799,7 @@ const novely = <
 			const name = (() => {
 				const c = character;
 				const cs = characters;
-				const lang = $.get().meta[0];
+				const [lang] = $.get().meta;
 
 				if (c && c in cs) {
 					const block = cs[c].name;
@@ -939,19 +945,11 @@ const novely = <
 		end({ ctx }) {
 			if (ctx.meta.preview) return;
 
-			/**
-			 * Clear the Scene
-			 */
 			ctx.vibrate(0);
-			/**
-			 * No-op used there because using push will make an infinite loop
-			 */
 			ctx.clear(EMPTY_SET, EMPTY_SET, { music: EMPTY_SET, sounds: EMPTY_SET })(noop);
 
-			/**
-			 * Go to the main menu
-			 */
 			renderer.ui.showScreen('mainmenu');
+
 			/**
 			 * Reset interactive value
 			 */
@@ -996,14 +994,15 @@ const novely = <
 				throw new Error('Attempt to use AnimateCharacter with unacceptable timeout. It should be finite and greater than zero')
 			}
 
+			if (ctx.meta.preview) return;
+
 			const handler: CustomHandler = (get) => {
 				const { clear } = get(false);
-				const char = renderer.getContext(MAIN_CONTEXT_KEY).getCharacter(character);
+				const char = ctx.getCharacter(character);
 
 				/**
 				 * Character is not defined, maybe, `animateCharacter` was called before `showCharacter` OR character was not just loaded yet
 				 */
-
 				if (!char) return;
 
 				const target = char.canvas;

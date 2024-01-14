@@ -71,11 +71,9 @@ const Save: VoidComponent<SaveProps> = (props) => {
 
     if (!contentDocument) return;
 
-    // todo: function to destroy novely's stack context
-
     contentDocument.head.insertAdjacentHTML(
       'beforeend',
-      `<style>${stylesheet()}</style><style>:root { font-size: 30%; }</style>`
+      `<style>:root { font-size: 30%; background: black; }</style><style>${stylesheet()}</style>`
     );
 
     contentDocument.body.addEventListener('click', onIframeClick);
@@ -113,6 +111,7 @@ const Save: VoidComponent<SaveProps> = (props) => {
     }
 
     removeContext(KEY);
+    options.removeContext(KEY)
   });
 
   const removeSave = (date: number) => {
@@ -142,7 +141,7 @@ const Save: VoidComponent<SaveProps> = (props) => {
         type="reset"
         class="button saves__button-reset"
         aria-label={t('DeleteASaveFrom') + ' ' + stringDate()}
-        onClick={[removeSave, date]}
+        onClick={[removeSave, timestamp]}
       >
         <span>{t('Remove')}</span>
       </button>

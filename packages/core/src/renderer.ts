@@ -180,6 +180,8 @@ type RendererInit = {
 	mainContextKey: string;
 
 	preview: (save: Save, name: string) => Promise<void>;
+
+	removeContext: (name: string) => void;
 };
 
 export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context };

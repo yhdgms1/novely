@@ -1,5 +1,6 @@
-import { type VoidComponent, type Accessor, type Setter, Show } from 'solid-js';
+import type { VoidComponent, Accessor, Setter } from 'solid-js';
 
+import { Show } from 'solid-js';
 import { useData } from '$context';
 import { Icon } from '$components';
 
