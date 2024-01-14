@@ -31,6 +31,7 @@ interface DataContext {
 	characters: Record<string, Character>;
 
 	getContext: (name: string) => SolidContext;
+	removeContext: (name: string) => void;
 }
 
 const Context = createContext<DataContext>();
@@ -50,6 +51,7 @@ interface ProviderProps {
 	characters: Record<string, Character>;
 
 	getContext: (name: string) => SolidContext;
+	removeContext: (name: string) => void;
 }
 
 const Provider: FlowComponent<ProviderProps> = (props) => {
@@ -84,7 +86,8 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
 
 		characters: props.characters,
 
-		getContext: props.getContext
+		getContext: props.getContext,
+		removeContext: props.removeContext
 	};
 
 	return (

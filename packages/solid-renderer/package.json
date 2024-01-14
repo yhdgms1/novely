@@ -23,6 +23,7 @@
 		"@novely/core": "*",
 		"@novely/typewriter": "*",
 		"howler": "^2.2.4",
+		"retrieved": "^0.1.0",
 		"solid-js": "1.8.5"
 	},
 	"peerDependencies": {

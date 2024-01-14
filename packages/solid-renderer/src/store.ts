@@ -3,7 +3,15 @@ import type { SetStoreFunction } from 'solid-js/store';
 
 import { createStore } from 'solid-js/store';
 
-const atContextStateMap = new Map<string, { state: AtContextState, setState: SetStoreFunction<AtContextState> }>();
+const atContextStateMap = new Map<
+  string,
+  {
+    state: AtContextState,
+    setState: SetStoreFunction<AtContextState>,
+
+    remove: () => void;
+  }
+>();
 
 const createContextState = () => {
   const [state, setState] = createStore<AtContextState>({
@@ -61,7 +69,17 @@ const useContextState = (name: string) => {
     return cached;
   }
 
-  const contextState = createContextState();
+  const remove = () => {
+    atContextStateMap.delete(name);
+  }
+
+  const { state, setState } = createContextState();
+
+  const contextState = {
+    state,
+    setState,
+    remove
+  }
 
   atContextStateMap.set(name, contextState);
 

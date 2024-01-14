@@ -146,6 +146,8 @@ type Renderer = {
 
 		getCharacter: (character: string) => CharacterHandle | undefined;
 	}
+
+	removeContext: (context: string) => void;
 };
 
 type Context = ReturnType<Renderer['getContext']>;

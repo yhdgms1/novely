@@ -65,17 +65,20 @@
 }
 
 .saves__list-item {
-	padding: 1rem;
-	background-color: var(--novely-saves-list-item-background-color, #f4f0fb);
+	background-color: var(--novely-saves-list-item-background-color, #ffe9f3);
+
+	padding: 0.375rem;
+
 	display: flex;
+	gap: 0.375rem;
 	flex-wrap: wrap;
 }
 
-.saves__list-item__preview {
-	aspect-ratio: 4 / 3;
-	transform-origin: top left;
+.saves__list-item__iframe {
+	width: 100%;
 
-	pointer-events: none;
+	border: none;
+	aspect-ratio: 4 / 3;
 }
 
 @media (max-aspect-ratio: 0.8) {

@@ -150,6 +150,7 @@ const createSolidRenderer = ({
 					characters={characters}
 
 					getContext={renderer.getContext}
+					removeContext={renderer.removeContext}
 				>
 					<Switch>
 						<Match when={globalState.screen === 'game'}>
@@ -650,6 +651,10 @@ const createSolidRenderer = ({
 					CTX_MAP.set(name, ctx);
 
 					return ctx;
+				},
+				removeContext(name) {
+					CTX_MAP.delete(name);
+					useContextState(name).remove();
 				},
 				ui: {
 					showScreen(name) {
