@@ -7,10 +7,6 @@
 	touch-action: auto !important;
 }
 
-.saves__button-load__type {
-	margin-left: 1rem;
-}
-
 @media (max-aspect-ratio: 0.8) {
 	.saves__button {
 		min-width: 80%;

@@ -71,9 +71,14 @@ const Save: VoidComponent<SaveProps> = (props) => {
 
     if (!contentDocument) return;
 
+    /**
+     * - Set black background
+     * - Lower font size so because of `rem` everything will get smaller
+     * - Disable pointer events so it looks static
+     */
     contentDocument.head.insertAdjacentHTML(
       'beforeend',
-      `<style>:root { font-size: 30%; background: black; }</style><style>${stylesheet()}</style>`
+      `<style>:root { font-size: 30%; background: black; } *:not(html, body) { pointer-events: none; }</style><style>${stylesheet()}</style>`
     );
 
     contentDocument.body.addEventListener('click', onIframeClick);
@@ -106,7 +111,7 @@ const Save: VoidComponent<SaveProps> = (props) => {
       const { contentDocument } = iframeElement;
 
       if (contentDocument) {
-        contentDocument.body.removeEventListener('click', onIframeClick);
+        contentDocument.body.addEventListener('click', onIframeClick);
       }
     }
 
@@ -125,16 +130,17 @@ const Save: VoidComponent<SaveProps> = (props) => {
   return (
     <li class="saves__list-item">
       <iframe
+        loading="lazy"
         role="button"
-        tabindex="0"
+        tabindex="-1"
         class="saves__list-item__iframe"
         aria-label={t('LoadASaveFrom') + ' ' + stringDate()}
         ref={setIframe}
       />
 
-      <div>
-        <span>{stringDate()}</span>
-        <span class="saves__button-load__type">{stringType}</span>
+      <div class="saves__list-item__description">
+        <div>{stringDate()}</div>
+        <div>{stringType}</div>
       </div>
 
       <button

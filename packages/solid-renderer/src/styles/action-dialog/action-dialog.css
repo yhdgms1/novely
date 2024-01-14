@@ -87,6 +87,10 @@
 	text-shadow: 0.063rem 0.063rem 0 black, -0.063rem -0.063rem 0 black, 0.063rem -0.063rem 0 black, -0.063rem 0.063rem 0 black;
 }
 
+.action-dialog-content--disable-shadow {
+	text-shadow: none;
+}
+
 /**
  * className cannot be applied to these elements
  */

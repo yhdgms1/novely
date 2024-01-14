@@ -74,6 +74,13 @@
 	flex-wrap: wrap;
 }
 
+.saves__list-item__description {
+	width: 100%;
+
+	display: flex;
+	flex-direction: column;
+}
+
 .saves__list-item__iframe {
 	width: 100%;
 

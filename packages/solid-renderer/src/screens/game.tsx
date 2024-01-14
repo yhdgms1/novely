@@ -217,7 +217,12 @@ const Game: VoidComponent<GameProps> = (props) => {
 							}}
 						</Show>
 					</div>
-					<div class="action-dialog-content">
+					<div
+						classList={{
+							"action-dialog-content": true,
+							"action-dialog-content--disable-shadow": props.isPreview
+						}}
+					>
 						<DialogWriter.Typewriter
 							attributes={{
 								title:
