@@ -19,7 +19,7 @@
 
 	background: var(--novely-fullscreen-background-color, rgba(0, 0, 0, 0.3));
 
-	text-shadow: var(--novely-fullscreen-text-shadow, 2px 2px 4px rgba(0, 0, 0, 0.5));
+	text-shadow: var(--novely-fullscreen-text-shadow, 0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.5));
 	color: var(--novely-fullscreen-text-color, white);
 }
 

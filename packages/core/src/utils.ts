@@ -579,6 +579,7 @@ const createUseStackFunction = (renderer: Renderer) => {
 			},
 			clear() {
 				stack.length = 0;
+				stack.length = 1;
 			}
 		}
 	}

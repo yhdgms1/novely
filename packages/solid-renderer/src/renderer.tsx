@@ -182,6 +182,8 @@ const createSolidRenderer = ({
 		);
 	};
 
+	const CTX_MAP = new Map<string, SolidContext>();
+
 	return {
 		emitter,
 
@@ -191,10 +193,16 @@ const createSolidRenderer = ({
 
 			renderer = {
 				getContext(name) {
+					const cached = CTX_MAP.get(name);
+
+					if (cached) return cached;
+
 					const { state, setState } = useContextState(name);
 
 					const ctx: SolidContext = {
 						id: name,
+						root: root,
+
 						background(background) {
 							currentBackground = background;
 
@@ -448,6 +456,8 @@ const createSolidRenderer = ({
 							};
 						},
 						custom(fn, resolve) {
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
 							const get: Parameters<CustomHandler>[0] = (insert = true) => {
 								const cached = state.layers[fn.key];
 
@@ -469,23 +479,20 @@ const createSolidRenderer = ({
 									setState('layers', fn.key, undefined);
 								};
 
-								/**
-								 * When no need to insert - just do not create it.
-								 */
-								const element = insert ? ((<div id={fn.key} />) as HTMLDivElement) : null;
+								const element = insert ? ((<div data-id={fn.key} />) as HTMLDivElement) : null;
 
 								setState('layers', fn.key, {
 									fn,
 									dom: element,
 									clear: clearManager,
 									value: {
-										root,
+										root: ctx.root,
 										element,
 										delete: clearManager,
-										data(data) {
+										data(data: any) {
 											return data ? (store = data) : store;
 										},
-										clear(cb) {
+										clear(cb: () => void) {
 											clear = cb;
 										},
 									},
@@ -494,7 +501,7 @@ const createSolidRenderer = ({
 								return state.layers[fn.key]!.value;
 							};
 
-							const result = fn(get, ctx.meta.goingBack);
+							const result = fn(get, ctx.meta.goingBack, ctx.meta.preview);
 
 							result ? result.then(resolve) : resolve();
 
@@ -639,6 +646,8 @@ const createSolidRenderer = ({
 							return state.store.characters[character]
 						}
 					};
+
+					CTX_MAP.set(name, ctx);
 
 					return ctx;
 				},

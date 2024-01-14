@@ -15,7 +15,7 @@
 	max-width: 80vw;
 	min-width: 30vw;
 	max-height: 60vh;
-	border-radius: 13px;
+	border-radius: 0.81rem;
 	box-shadow:
 		0 21rem 87rem 0 rgba(42, 44, 58, 0.15),
 		11.737rem 22.074rem 32rem 0 rgba(129, 165, 238, 0.1);
@@ -27,7 +27,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border-radius: 7.5px;
+	border-radius: 0.469rem;
 	border: none;
 	color: #fff;
 	background-color: #7047eb;

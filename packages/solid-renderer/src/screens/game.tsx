@@ -22,6 +22,7 @@ interface GameProps {
 	skipTypewriterWhenGoingBack: boolean;
 
 	isPreview?: boolean;
+	className?: string;
 }
 
 const Game: VoidComponent<GameProps> = (props) => {
@@ -137,8 +138,10 @@ const Game: VoidComponent<GameProps> = (props) => {
 	return (
 		<div
 			style={background()}
+			class={props.className}
 			classList={{
-				'root game': !props.isPreview
+				'root': true,
+				'game': true
 			}}
 		>
 			<div

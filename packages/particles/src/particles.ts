@@ -1,4 +1,4 @@
-import type { SingleOrMultiple, RecursivePartial, IOptions, Container } from 'tsparticles-engine';
+import type { RecursivePartial, IOptions, Container } from 'tsparticles-engine';
 import type { CustomHandler } from '@novely/core';
 
 import { tsParticles } from 'tsparticles-engine';
@@ -8,18 +8,27 @@ let loaded = false;
 
 const ID = Symbol();
 
-type SingleParticlesOptions = RecursivePartial<IOptions>;
-type ParticlesOptions = SingleOrMultiple<SingleParticlesOptions>;
+type ParticlesOptions = RecursivePartial<IOptions>;
 
-const withDefault = (options: SingleParticlesOptions) => {
+const withDefault = (options: ParticlesOptions) => {
 	options.autoPlay ||= true;
 	options.fullScreen ||= { enable: true, zIndex: 2 };
 
 	return options;
 };
 
+const createUniqId = (() => {
+	let c = 0;
+
+	return () => {
+		return `np-${c++}`;
+	}
+})();
+
 const particles = (options: ParticlesOptions): CustomHandler => {
-	const handler: CustomHandler = async (get, goingBack) => {
+	const handler: CustomHandler = async (get, goingBack, preview) => {
+		if (preview) return;
+
 		if (!loaded) {
 			/**
 			 * Load `tsParticles` in case it's not loaded
@@ -31,7 +40,7 @@ const particles = (options: ParticlesOptions): CustomHandler => {
 			loaded = true;
 		}
 
-		const layer = get();
+		const layer = get(true);
 
 		/**
 		 * Remove previous instance
@@ -66,10 +75,12 @@ const particles = (options: ParticlesOptions): CustomHandler => {
 		if (optionsEqual && Boolean(data.instance)) return;
 		if (optionsEqual && goingBack) return;
 
-		const instance = await tsParticles.load(
-			'particles',
-			Array.isArray(options) ? options.map(withDefault) : withDefault(options),
-		);
+		const id = createUniqId();
+
+		/**
+		 * Use element
+		 */
+		const instance = await tsParticles.set(id, layer.element, withDefault(options))
 
 		/**
 		 * Set the instance
@@ -85,8 +96,10 @@ const particles = (options: ParticlesOptions): CustomHandler => {
 };
 
 const hide = () => {
-	const handler: CustomHandler = (get) => {
-		const layer = get();
+	const handler: CustomHandler = (get, _, preview) => {
+		if (preview) return;
+
+		const layer = get(true);
 
 		/**
 		 * Get the instance

@@ -119,6 +119,20 @@ const vibrate = (pattern: VibratePattern) => {
 	}
 }
 
+const getDocumentStyles = () => {
+	let css = ''
+
+	for (const styleSheet of Array.from(document.styleSheets)) {
+		if (!styleSheet.href || styleSheet.href.startsWith(location.origin)) {
+			for (const { cssText } of Array.from(styleSheet.cssRules)) {
+				css += cssText
+			}
+		}
+	}
+
+	return css;
+}
+
 export {
 	isCSSImage,
 	canvasDrawImages,
@@ -131,5 +145,6 @@ export {
 	findLast,
 	simple,
 	vibrationPossible,
-	vibrate
+	vibrate,
+	getDocumentStyles
 };

@@ -13,9 +13,11 @@
 	width: 100%;
 	height: 80%;
 
-	padding: 0 1rem;
+	padding: var(--novely-saves-list-border-width, .875rem) 1rem;
 
 	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(auto-fit, minmax(22vmin, 30%));
 	align-content: flex-start;
 	justify-content: center;
 
@@ -24,30 +26,27 @@
 	overflow-y: scroll;
 	overflow-x: hidden;
 
-	padding-inline-start: 0;
-	padding-inline-end: 0;
-
 	margin-block-start: 0;
 	margin-block-end: 0;
 
 	touch-action: auto !important;
 
-	border-radius: var(--novely-saves-list-border-radius, 14px);
+	border-radius: var(--novely-saves-list-border-radius, .875rem);
 	background-color: var(--novely-saves-list-background-color, #ffffff57);
 }
 
 .saves__list::-webkit-scrollbar {
-	width: 14px;
+	width: var(--novely-saves-list-border-width, .875rem);
 }
 
 .saves__list::-webkit-scrollbar-track {
 	background-color: var(--novely-scrollbar-track-bg-color, #ffe9f3);
-	border-radius: var(--novely-scrollbar-track-border-radius, 7px);
+	border-radius: var(--novely-scrollbar-track-border-radius, 0.438rem);
 }
 
 .saves__list::-webkit-scrollbar-thumb {
 	background-color: var(--novely-scrollbar-thumb-bg-color, #ffc7df);
-	border-radius: var(--novely-scrollbar-thumb-border-radius, 7px);
+	border-radius: var(--novely-scrollbar-thumb-border-radius, 0.438rem);
 }
 
 .saves__list::-webkit-scrollbar-thumb:hover {
@@ -66,12 +65,23 @@
 }
 
 .saves__list-item {
+	padding: 1rem;
+	background-color: var(--novely-saves-list-item-background-color, #f4f0fb);
 	display: flex;
+	flex-wrap: wrap;
+}
+
+.saves__list-item__preview {
+	aspect-ratio: 4 / 3;
+	transform-origin: top left;
+
+	pointer-events: none;
 }
 
 @media (max-aspect-ratio: 0.8) {
 	.saves__list {
 		height: 100%;
+		grid-template-columns: 1fr;
 	}
 
 	.saves__list-container {
@@ -89,18 +99,18 @@
 	}
 
 	.saves__list {
-		border-radius: var(--novely-saves-list-border-radius, 7px);
+		border-radius: var(--novely-saves-list-border-radius, 0.438rem);
 	}
 
 	.saves__list::-webkit-scrollbar {
-		width: 7px;
+		width: 0.438rem;
 	}
 
 	.saves__list::-webkit-scrollbar-track {
-		border-radius: var(--novely-scrollbar-track-border-radius, 3.5px);
+		border-radius: var(--novely-scrollbar-track-border-radius, 0.22rem);
 	}
 
 	.saves__list::-webkit-scrollbar-thumb {
-		border-radius: var(--novely-scrollbar-thumb-border-radius, 3.5px);
+		border-radius: var(--novely-scrollbar-thumb-border-radius, 0.22rem);
 	}
 }

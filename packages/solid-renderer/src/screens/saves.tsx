@@ -1,10 +1,16 @@
 import type { VoidComponent } from 'solid-js';
 
 import { Show, For } from 'solid-js';
-import { capitalize } from '$utils';
+import { capitalize, getDocumentStyles } from '$utils';
 import { useData } from '$context';
 import { useContextState } from '../store';
 import { Game } from './game';
+
+/**
+ * When year changes page reload will be needed to render correctly but no one will notice
+ */
+const CURRENT_DATE = new Date();
+const CURRENT_YEAR = CURRENT_DATE.getFullYear();
 
 const Saves: VoidComponent = () => {
 	const { t, storeData, storeDataUpdate, options, setGlobalState, getContext } = useData();
@@ -30,19 +36,31 @@ const Saves: VoidComponent = () => {
 			<div class="saves__list-container">
 				<Show
 					when={saves().length > 0}
-					fallback={<div class="saves__list saves__list--empty">{t('NoSaves')}</div>}
+					fallback={
+						<div class="saves__list saves__list--empty">
+							{t('NoSaves')}
+						</div>
+					}
 				>
 					<ol class="saves__list">
 						<For each={saves()}>
 							{(save) => {
-								const [date, type] = save[2];
+								const iframe = document.createElement('iframe');
+
+								iframe.src = 'about:blank';
+
+								const [timestamp, type] = save[2];
+								const date = new Date(timestamp);
+
+								const year = date.getFullYear();
 
 								const stringDate = capitalize(
-									new Date(date).toLocaleDateString(language(), {
+									date.toLocaleDateString(language(), {
+										year: year === CURRENT_YEAR ? undefined : 'numeric',
 										weekday: 'long',
-										year: 'numeric',
 										month: 'long',
 										day: 'numeric',
+										dayPeriod: 'narrow',
 										hour: 'numeric',
 										minute: 'numeric',
 										second: 'numeric',
@@ -52,29 +70,56 @@ const Saves: VoidComponent = () => {
 								const stringType = t(type === 'auto' ? 'Automatic' : 'Manual');
 
 								// 😼
-								// // const KEY = `save-${date}-${type}`;
-								// // const ctx = useContextState(KEY);
+								const KEY = `save-${date}-${type}`;
+								const ctx = useContextState(KEY);
 
-								// // const game = <Game
-								// // 	controls='inside'
-								// // 	skipTypewriterWhenGoingBack={true}
+								// todo: function to destroy context and do not forget about novely's stack context
+								// todo: and also pass goingBack and preview to custom and function actions
 
-								// // 	state={ctx.state}
-								// // 	setState={ctx.setState}
+								const game = <Game
+									className='saves__list-item__preview'
 
-								// // 	context={getContext(KEY)}
-								// // 	store={getContext(KEY).store}
+									controls='inside'
+									skipTypewriterWhenGoingBack={true}
 
-								// // 	isPreview={true}
-								// // />;
+									state={ctx.state}
+									setState={ctx.setState}
 
-								// // todo: function to destroy context and do not forget about novely's stack context
-								// // options.preview(save, KEY).then(() => {})
-								// // todo: and also pass goingBack and preview to custom and function actions
+									context={getContext(KEY)}
+									store={getContext(KEY).store}
+
+									isPreview={true}
+								/>
+
+								const i = iframe as unknown as HTMLIFrameElement;
+
+								i.addEventListener('load', () => {
+									const doc = i.contentDocument;
+
+									if (!doc) return;
+
+									const css = getDocumentStyles();
+
+									getContext(KEY).root = doc.body;
+
+									options.preview(save, KEY).then(() => {
+										doc.head.innerHTML += `<style>${css}</style><style>:root { font-size: 25%; }</style>`
+										doc.body.appendChild(game as unknown as HTMLElement)
+									})
+								})
 
 								return (
-									<li class="saves__list-item">
-										<button
+									<li
+										class="saves__list-item"
+									>
+										<div>
+											{iframe}
+
+										</div>
+										<div>
+											<span>{stringDate}</span>
+										</div>
+										{/* <button
 											type="button"
 											class="button saves__button-load"
 											aria-label={t('LoadASaveFrom') + ' ' + stringDate}
@@ -90,7 +135,7 @@ const Saves: VoidComponent = () => {
 											onClick={[removeSave, date]}
 										>
 											<span>{t('Remove')}</span>
-										</button>
+										</button> */}
 									</li>
 								);
 							}}

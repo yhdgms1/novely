@@ -582,6 +582,7 @@ const novely = <
 		});
 
 		context.meta.restoring = context.meta.restoring = false;
+
 		render(context);
 	};
 
@@ -701,9 +702,7 @@ const novely = <
 		await processor.run((action, props) => {
 			if (AUDIO_ACTIONS.has(action as any)) return;
 			if (action === 'vibrate') return;
-			if (action === 'end' || action === 'custom') return;
-
-			// todo: virtual root and etc in custom actions
+			if (action === 'end') return;
 
 			return match(action, props, {
 				ctx,
@@ -816,7 +815,7 @@ const novely = <
 			run(() => forward(ctx));
 		},
 		function({ ctx }, [fn]) {
-			const result = fn(ctx.meta.restoring, ctx.meta.goingBack);
+			const result = fn(ctx.meta.restoring, ctx.meta.goingBack, ctx.meta.preview);
 
 			if (!ctx.meta.restoring) {
 				result ? result.then(() => push(ctx)) : push(ctx);

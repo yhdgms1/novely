@@ -75,6 +75,9 @@ type Renderer = {
 	getContext: (context: string) => {
 		id: string;
 
+		get root(): HTMLElement;
+		set root(value: HTMLElement);
+
 		character: (character: string) => CharacterHandle;
 		background: (background: string | BackgroundImage) => void;
 		dialog: (
