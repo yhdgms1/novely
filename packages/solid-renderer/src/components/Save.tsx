@@ -111,7 +111,7 @@ const Save: VoidComponent<SaveProps> = (props) => {
       const { contentDocument } = iframeElement;
 
       if (contentDocument) {
-        contentDocument.body.addEventListener('click', onIframeClick);
+        contentDocument.body.removeEventListener('click', onIframeClick);
       }
     }
 
