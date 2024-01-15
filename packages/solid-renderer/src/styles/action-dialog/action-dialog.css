@@ -32,15 +32,15 @@
 
 	color: var(--novely-dialog-color, #ffffff);
 
-	border: var(--novely-dialog-border-width, 3px) solid var(--novely-dialog-border-color, #ffffff);
-	border-radius: var(--novely-dialog-border-radius, 14px);
-	box-shadow: 1px 1px 4px var(--novely-dialog-box-shadow-color, #00000072);
+	border: var(--novely-dialog-border-width, 0.18rem) solid var(--novely-dialog-border-color, #ffffff);
+	border-radius: var(--novely-dialog-border-radius, .875rem);
+	box-shadow: 0.063rem 0.063rem 0.25rem var(--novely-dialog-box-shadow-color, #00000072);
 
 	/* prettier-ignore */
 	background-image: var(--novely-dialog-background-image, radial-gradient(#d6608998 20%, transparent 20%), radial-gradient(#d6608998 20%, transparent 20%));
 	background-color: var(--novely-dialog-background-color, #f092b4d8);
-	background-position: var(--novely-dialog-background-position, 0 0, 50px 50px);
-	background-size: var(--novely-dialog-background-size, 100px 100px);
+	background-position: var(--novely-dialog-background-position, 0 0, 3.125rem 3.125rem);
+	background-size: var(--novely-dialog-background-size, 6.25rem 6.25rem);
 
 	display: flex;
 	flex-wrap: nowrap;
@@ -65,13 +65,13 @@
 	line-height: 1.2;
 
 	background: #ffffff;
-	border-radius: 7px 7px 0 0;
+	border-radius: 0.438rem 0.438rem 0 0;
 
 	width: -moz-fit-content;
 	width: fit-content;
 	margin-left: 5vmin;
 
-	box-shadow: 1px 1px 3px #00000042;
+	box-shadow: 0.063rem 0.063rem 0.18rem #00000042;
 }
 
 .action-dialog-content {
@@ -84,7 +84,11 @@
 	word-break: break-word;
 
 	/* prettier-ignore */
-	text-shadow: 1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
+	text-shadow: 0.063rem 0.063rem 0 black, -0.063rem -0.063rem 0 black, 0.063rem -0.063rem 0 black, -0.063rem 0.063rem 0 black;
+}
+
+.action-dialog-content--disable-shadow {
+	text-shadow: none;
 }
 
 /**
@@ -115,7 +119,7 @@
 	}
 
 	.action-dialog-container {
-		border-radius: var(--novely-dialog-border-radius, 14px 14px 0 0);
+		border-radius: var(--novely-dialog-border-radius, .875rem .875rem 0 0);
 	}
 
 	.action-dialog-content {

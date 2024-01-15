@@ -4,31 +4,29 @@ import type {
 	Character,
 	CustomHandler,
 	AudioHandle,
+	CharacterHandle,
 } from '@novely/core';
 import type {
-	State,
   StateScreen,
   StateScreens,
   StateMainmenuItem,
   SolidRendererStore,
   CreateSolidRendererOptions,
-	EmitterEventsMap
+	EmitterEventsMap,
+	SolidContext
 } from './types';
 import type { JSX } from 'solid-js';
 
 import { Switch, Match, createEffect } from 'solid-js';
-import { createStore } from 'solid-js/store';
 import { render } from 'solid-js/web';
 import { Howl } from 'howler';
 
 import { createEmitter } from './emitter';
-import { canvasDrawImages, createImage, escape, toMedia, findLast, createCanVibrate } from '$utils';
+import { canvasDrawImages, createImage, escape, toMedia, findLast, vibrate } from '$utils';
 import { Provider } from '$context';
 import { Game, MainMenu, Saves, Settings, Loading, CustomScreen } from '$screens';
-
-
-
-const canVibrate = createCanVibrate();
+import { createGlobalState, useContextState } from './store';
+import { produce } from 'solid-js/store';
 
 const createSolidRenderer = ({
 	fullscreen = false,
@@ -38,50 +36,7 @@ const createSolidRenderer = ({
 	target = document.body,
 }: CreateSolidRendererOptions = {}) => {
 	const emitter = createEmitter<EmitterEventsMap>();
-
-	const [state, setState] = createStore<State>({
-		background: '',
-		characters: {},
-		dialog: {
-			content: '',
-			name: '',
-			visible: false,
-			goingBack: false,
-		},
-		choices: {
-			question: '',
-			visible: false,
-			choices: [],
-		},
-		input: {
-			question: '',
-			error: '',
-			visible: false,
-		},
-		text: {
-			content: '',
-			goingBack: false,
-		},
-		layers: {},
-		screens: {},
-		mainmenu: {
-			items: [],
-		},
-		screen: 'mainmenu',
-		exitPromptShown: false,
-	});
-
-	const store: SolidRendererStore = {
-		characters: {},
-
-		audio: {
-			music: {},
-			sound: {},
-			voices: {},
-
-			resumeList: []
-		}
-	};
+	const [globalState, setGlobalState] = createGlobalState();
 
 	const getVolume = (type: 'music' | 'sound' | 'voice') => {
 		const TYPE_META_MAP = {
@@ -93,18 +48,32 @@ const createSolidRenderer = ({
 		return options.$.get().meta[TYPE_META_MAP[type]];
 	}
 
-	const getHowl = (type: 'music' | 'sound' | 'voice', src: string, loop: boolean) => {
+	const getHowl = (ctx: SolidContext, type: 'music' | 'sound' | 'voice', src: string, loop: boolean) => {
 		const kind = type === 'voice' ? 'voices' : type;
+		const cached = ctx.store.audio[kind][src];
 
-		return store.audio[kind][src] ||= new Howl({
+		if (cached) return cached;
+
+		const howl = new Howl({
 			src,
 			volume: getVolume(type),
 			loop
 		});
+
+		ctx.setStore((store) => store.audio[kind][src] = howl);
+
+		return howl;
 	}
 
 	let characters!: Record<string, Character>;
-	let renderer!: Renderer;
+
+	let renderer!: Omit<Renderer, 'getContext'> & {
+		/**
+		 * Context in which `store` is not an `unknown`
+		 */
+		getContext(name: string): SolidContext;
+	};
+
 	let options: RendererInit;
 
 	let root!: HTMLElement;
@@ -114,11 +83,10 @@ const createSolidRenderer = ({
 	let unmount: (() => void) | undefined | void;
 
 	const Novely = () => {
+		const ctx = renderer.getContext(options.mainContextKey);
+
 		createEffect(() => {
-			/**
-			 * Access `screen` outside of if statement
-			 */
-			const screen = state.screen;
+			const screen = globalState.screen;
 
 			if (fullscreen && document.fullscreenEnabled) {
 				/**
@@ -136,13 +104,16 @@ const createSolidRenderer = ({
 			}
 
 			if (screen !== 'game' && screen !== 'settings' && screen !== 'loading') {
-				renderer.audio.destroy();
+				ctx.audio.destroy();
 			}
 
 			emitter.emit('screen:change', screen)
 		});
 
 		options.$.subscribe(() => {
+			const ctx = renderer.getContext(options.mainContextKey);
+			const store = ctx.store;
+
 			for (const type of ['music', 'sound', 'voice'] as const) {
 				const volume = getVolume(type);
 
@@ -166,459 +137,534 @@ const createSolidRenderer = ({
 
 		return (
 			<div ref={root as HTMLDivElement}>
-				<Provider storeData={options.$} coreData={options.$$} options={options} renderer={renderer} emitter={emitter}>
+				<Provider
+					globalState={globalState}
+					setGlobalState={setGlobalState}
+
+					storeData={options.$}
+					coreData={options.$$}
+					options={options}
+					renderer={renderer}
+					emitter={emitter}
+
+					characters={characters}
+
+					getContext={renderer.getContext}
+					removeContext={renderer.removeContext}
+				>
 					<Switch>
-						<Match when={state.screen === 'game'}>
+						<Match when={globalState.screen === 'game'}>
 							<Game
-								state={state}
-								setState={/* @once */ setState}
-								store={/* @once */ store}
-								characters={/* @once */ characters}
-								renderer={/* @once */ renderer}
+								state={useContextState(options.mainContextKey).state}
+								setState={/* @once */ useContextState(options.mainContextKey).setState}
+								store={/* @once */ renderer.getContext(options.mainContextKey).store}
+								context={/* @once */ renderer.getContext(options.mainContextKey)}
 								controls={/* @once */ controls}
 								skipTypewriterWhenGoingBack={/* @once */ skipTypewriterWhenGoingBack}
 							/>
 						</Match>
-						<Match when={state.screen === 'mainmenu'}>
-							<MainMenu state={state} setState={/* @once */ setState} />
+						<Match when={globalState.screen === 'mainmenu'}>
+							<MainMenu />
 						</Match>
-						<Match when={state.screen === 'saves'}>
-							<Saves setState={/* @once */ setState} />
+						<Match when={globalState.screen === 'saves'}>
+							<Saves />
 						</Match>
-						<Match when={state.screen === 'settings'}>
-							<Settings setState={/* @once */ setState} useNativeLanguageNames={useNativeLanguageNames} />
+						<Match when={globalState.screen === 'settings'}>
+							<Settings useNativeLanguageNames={/* @once */ useNativeLanguageNames} />
 						</Match>
-						<Match when={state.screen === 'loading'}>
+						<Match when={globalState.screen === 'loading'}>
 							<Loading />
 						</Match>
 					</Switch>
 
-					<CustomScreen name={state.screen} state={state} setState={/* @once */ setState} />
+					<CustomScreen name={globalState.screen} />
 				</Provider>
 			</div>
 		);
 	};
 
+	const CTX_MAP = new Map<string, SolidContext>();
+
 	return {
 		emitter,
+
 		renderer(init: RendererInit): Renderer {
-			(options = init), (characters = init.characters);
+			options = init;
+			characters = init.characters;
 
 			renderer = {
-				background(background) {
-					currentBackground = background;
+				getContext(name) {
+					const cached = CTX_MAP.get(name);
 
-					if (typeof background === 'string') {
-						setState('background', background);
+					if (cached) return cached;
 
-						return;
-					}
+					const { state, setState } = useContextState(name);
 
-					/**
-					 * Change `portrait` to (orientation: portrait)
-					 * Same for `landscape`
-					 */
-					for (const [key, value] of Object.entries(background)) {
-						delete background[key];
+					const ctx: SolidContext = {
+						id: name,
+						root: root,
 
-						background[toMedia(key)] = value;
-					}
+						background(background) {
+							currentBackground = background;
 
-					const mediaQueries = Object.keys(background).map((media) => matchMedia(media));
+							if (typeof background === 'string') {
+								setState('background', background);
 
-					/**
-					 * @todo: We can throttle that function, but should we?
-					 */
-					const handle = () => {
-						if (currentBackground !== background) {
-							for (const mq of mediaQueries) {
-								mq.onchange = null;
+								return;
 							}
-
-							return;
-						}
-
-						/**
-						 * Using ponyfill here because `Array.prototype.findLast` has not enough support
-						 * @see https://caniuse.com/?search=findLast
-						 */
-						const last = findLast(mediaQueries, ({ matches }) => matches);
-						const bg = last ? background[last.media] : '';
-
-						setState('background', bg);
-					};
-
-					for (const mq of mediaQueries) {
-						mq.onchange = handle;
-					}
-
-					handle();
-				},
-				character(character) {
-					if (store.characters[character]) return store.characters[character];
-
-					const canvas = (<canvas data-character={character} />) as HTMLCanvasElement;
-					const ctx = canvas.getContext('2d')!;
-
-					const render = (images: HTMLImageElement[]) => {
-						return () => {
-							canvasDrawImages(canvas, ctx, images);
-						};
-					};
-
-					return (store.characters[character] = {
-						canvas,
-						ctx,
-						emotions: {},
-						withEmotion(emotion) {
-							const stored = this.emotions[emotion];
-
-							if (stored) {
-								return render(Object.values(stored));
-							}
-
-							const characterEmotion = characters[character].emotions[emotion];
-							const emotionData = (unknown => Array.isArray(unknown) ? unknown : [unknown])(characterEmotion);
-
-							this.emotions[emotion] = emotionData.map(src => createImage(src));
-
-							return render(this.emotions[emotion]);
-						},
-						append(className, style) {
-							clearTimeout(state.characters[character]?.timeoutId);
 
 							/**
-							 * Set style and show
+							 * Change `portrait` to (orientation: portrait)
+							 * Same for `landscape`
 							 */
-							setState('characters', character, { style, visible: true });
+							for (const [key, value] of Object.entries(background)) {
+								delete background[key];
 
-							const { canvas: element } = store.characters[character];
+								background[toMedia(key)] = value;
+							}
+
+							const mediaQueries = Object.keys(background).map((media) => matchMedia(media));
 
 							/**
-							 * Remove className directly
+							 * @todo: We can throttle that function, but should we?
 							 */
-							element.className = '';
-
-							if (className) {
-								/**
-								 * Trigger reflow
-								 */
-								void element.offsetHeight;
-								/**
-								 * Set className directly
-								 */
-								element.className = className;
-							}
-						},
-						remove(className, style, duration) {
-							return (resolve, restoring) => {
-								if (restoring) {
-									/**
-									 * Ignore remove animations, because it is not shown anyway
-									 */
-									setState('characters', character, { visible: false });
-									resolve();
+							const handle = () => {
+								if (currentBackground !== background) {
+									for (const mq of mediaQueries) {
+										mq.onchange = null;
+									}
 
 									return;
 								}
 
-								const timeoutId = setTimeout(() => {
-									setState('characters', character, { visible: false });
-									resolve();
-								}, duration);
-
 								/**
-								 * Set className directly
+								 * Using ponyfill here because `Array.prototype.findLast` has not enough support
+								 * @see https://caniuse.com/?search=findLast
 								 */
-								if (className) {
-									store.characters[character].canvas.className = className as string;
-								}
+								const last = findLast(mediaQueries, ({ matches }) => matches);
+								const bg = last ? background[last.media] : '';
 
-								setState('characters', character, { style, timeoutId });
+								setState('background', bg);
+							};
+
+							for (const mq of mediaQueries) {
+								mq.onchange = handle;
+							}
+
+							handle();
+						},
+						character(character) {
+							const chars = this.store.characters;
+
+							if (chars[character]) {
+								return chars[character];
+							}
+
+							const canvas = (<canvas data-character={character} />) as HTMLCanvasElement;
+							const canvasContext = canvas.getContext('2d')!;
+
+							const characterHandle = {
+								canvas,
+								ctx: canvasContext,
+								emotions: {},
+								emotion(emotion, shouldRender) {
+									const stored = this.emotions[emotion];
+
+									if (!stored) {
+										const characterEmotion = characters[character].emotions[emotion];
+										const emotionData = (unknown => Array.isArray(unknown) ? unknown : [unknown])(characterEmotion);
+
+										this.emotions[emotion] = emotionData.map(src => createImage(src));
+									}
+
+									if (shouldRender) {
+										canvasDrawImages(canvas, canvasContext, this.emotions[emotion]);
+									}
+								},
+								append(className, style) {
+									clearTimeout(state.characters[character]?.timeoutId);
+
+									/**
+									 * Set style and show
+									 */
+									setState('characters', character, { style, visible: true });
+
+									const { canvas: element } = chars[character];
+
+									/**
+									 * Remove className directly
+									 */
+									element.className = '';
+
+									if (className) {
+										/**
+										 * Trigger reflow
+										 */
+										void element.offsetHeight;
+										/**
+										 * Set className directly
+										 */
+										element.className = className;
+									}
+								},
+								remove(className, style, duration, restoring) {
+									return new Promise((resolve) => {
+										if (restoring) {
+											/**
+											 * Ignore remove animations, because it is not shown anyway
+											 */
+											setState('characters', character, { visible: false });
+											resolve();
+
+											return;
+										}
+
+										const timeoutId = setTimeout(() => {
+											setState('characters', character, { visible: false });
+											resolve();
+										}, duration);
+
+										/**
+										 * Set className directly
+										 */
+										if (className) {
+											chars[character].canvas.className = className as string;
+										}
+
+										setState('characters', character, { style, timeoutId });
+									})
+								},
+							} satisfies CharacterHandle;
+
+							this.setStore((store) => store.characters[character] = characterHandle)
+
+							return characterHandle;
+						},
+						dialog(content, name, character, emotion) {
+							return (resolve) => {
+								setState('dialog', () => ({
+									content,
+									name,
+									character,
+									emotion,
+									visible: true,
+									resolve,
+								}));
 							};
 						},
-					});
-				},
-				dialog(content, name, character, emotion) {
-					return (resolve, goingBack) => {
-						setState('dialog', () => ({
-							content,
-							name,
-							character,
-							emotion,
-							visible: true,
-							resolve,
-							goingBack,
-						}));
-					};
-				},
-				choices(question, choices) {
-					return (resolve) => {
-						setState('choices', { choices, question, resolve, visible: true });
-					};
-				},
-				clear(goingBack, keep, keepCharacters) {
-					return (resolve) => {
-						setState('exitPromptShown', false);
+						choices(question, choices) {
+							return (resolve) => {
+								setState('choices', { choices, question, resolve, visible: true });
+							};
+						},
+						clear(keep, keepCharacters, keepAudio) {
+							return (resolve) => {
+								setGlobalState('exitPromptShown', false);
 
-						if (!keep.has('showBackground')) setState('background', '#000');
-						if (!keep.has('choice'))
-							setState('choices', {
-								choices: [],
-								visible: false,
-								resolve: undefined,
-								question: '',
-							});
-						if (!keep.has('input'))
-							setState('input', {
-								element: undefined,
-								question: '',
-								visible: false,
-								error: '',
-							});
-						if (!keep.has('dialog')) setState('dialog', { visible: false, content: '', name: '' });
-						if (!keep.has('text')) setState('text', { content: '' });
+								if (!keep.has('showBackground')) setState('background', '#000');
+								if (!keep.has('choice'))
+									setState('choices', {
+										choices: [],
+										visible: false,
+										resolve: undefined,
+										question: '',
+									});
+								if (!keep.has('input'))
+									setState('input', {
+										element: undefined,
+										question: '',
+										visible: false,
+										error: '',
+									});
+								if (!keep.has('dialog')) setState('dialog', { visible: false, content: '', name: '' });
+								if (!keep.has('text')) setState('text', { content: '' });
 
-						for (const character of Object.keys(state.characters)) {
-							if (!keepCharacters.has(character)) setState('characters', character, { visible: false });
-						}
+								for (const character of Object.keys(state.characters)) {
+									if (!keepCharacters.has(character)) setState('characters', character, { visible: false });
+								}
 
-						for (const [id, layer] of Object.entries(state.layers)) {
-							if (!layer) continue;
+								for (const [id, layer] of Object.entries(state.layers)) {
+									if (!layer) continue;
 
-							/**
-							 * Если происходит переход назад, и слой просит пропустить очистку при переходе назад, то не будем очищать слой
-							 */
-							if (!(goingBack && layer.fn.skipClearOnGoingBack)) {
-								layer.clear(), setState('layers', id, undefined);
-							}
-						}
+									/**
+									 * Если происходит переход назад, и слой просит пропустить очистку при переходе назад, то не будем очищать слой
+									 */
+									if (!(ctx.meta.goingBack && layer.fn.skipClearOnGoingBack)) {
+										layer.clear();
+										setState('layers', id, undefined);
+									}
+								}
 
-						resolve();
-					};
-				},
-				input(question, onInput, setup) {
-					return (resolve) => {
-						const error = (value: string) => {
-							setState('input', { error: value });
-						};
+								ctx.audio.voiceStop();
 
-						const onInputHandler: JSX.EventHandlerUnion<HTMLInputElement, InputEvent> = (event) => {
-							let value: string | undefined;
+								const musics = Object.entries(ctx.store.audio.music).filter(([name]) => !keepAudio.music.has(name)).map(([_, h]) => h);
+								const sounds = Object.entries(ctx.store.audio.sound).filter(([name]) => !keepAudio.sounds.has(name)).map(([_, h]) => h);
 
-							onInput({
-								input,
-								event,
-								error,
-								get value() {
-									if (value) return value;
-									return (value = escape(input.value));
-								},
-							});
-						};
+								for (const music of [...musics, ...sounds]) {
+									if (!music) continue;
 
-						const input = (
-							<input type="text" name="novely-input" required autocomplete="off" onInput={onInputHandler} />
-						) as HTMLInputElement;
+									music.stop();
+								}
 
-						if (setup) {
-							setup(input, (callback) => {
-								setState('input', { cleanup: callback });
-							});
-						}
+								resolve();
+							};
+						},
+						input(question, onInput, setup) {
+							return (resolve) => {
+								const error = (value: string) => {
+									setState('input', { error: value });
+								};
 
-						setState('input', {
-							element: input,
-							question,
-							visible: true,
-							resolve,
-						});
+								const onInputHandler: JSX.EventHandlerUnion<HTMLInputElement, InputEvent> = (event) => {
+									let value: string | undefined;
 
-						/**
-						 * Initially run the fake input event to handle errors & etc
-						 */
-						input.dispatchEvent(new InputEvent('input', { bubbles: true }));
-					};
-				},
-				audio: {
-					music(src, method, loop = method === 'music') {
-						const resource = getHowl(method, src, loop);
+									onInput({
+										input,
+										event,
+										error,
+										get value() {
+											if (value) return value;
+											return (value = escape(input.value));
+										},
+									});
+								};
 
-						/**
-						 * Update
-						 */
-						resource.loop(loop);
+								const jsx = <input
+									type="text"
+									name="novely-input"
+									required
+									autocomplete="off"
+									onInput={onInputHandler}
+								/>;
 
-						this.start();
+								const input = jsx as HTMLInputElement;
 
-						return {
-							pause() {
-								resource.fade(getVolume(method), 0, 300);
-								resource.once('fade', resource.pause);
+								if (setup) {
+									setup(input, (callback) => setState('input', { cleanup: callback }));
+								}
+
+								setState('input', {
+									element: input,
+									question,
+									visible: true,
+									resolve,
+								});
+
+								/**
+								 * Initially run the fake input event to handle errors & etc
+								 */
+								input.dispatchEvent(new InputEvent('input', { bubbles: true }));
+							};
+						},
+						custom(fn, resolve) {
+							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							// @ts-ignore
+							const get: Parameters<CustomHandler>[0] = (insert = true) => {
+								const cached = state.layers[fn.key];
+
+								if (cached) {
+									return cached.value;
+								}
+
+								/**
+								 * `Clear` function
+								 */
+								let clear = () => {};
+								let store = {};
+
+								/**
+								 * Function that call the `Clear` defined by the action itself, and then deletes the layer
+								 */
+								const clearManager = () => {
+									clear();
+									setState('layers', fn.key, undefined);
+								};
+
+								const element = insert ? ((<div data-id={fn.key} />) as HTMLDivElement) : null;
+
+								setState('layers', fn.key, {
+									fn,
+									dom: element,
+									clear: clearManager,
+									value: {
+										root: ctx.root,
+										element,
+										delete: clearManager,
+										data(data: any) {
+											return data ? (store = data) : store;
+										},
+										clear(cb: () => void) {
+											clear = cb;
+										},
+									},
+								});
+
+								return state.layers[fn.key]!.value;
+							};
+
+							const result = fn(get, ctx.meta.goingBack, ctx.meta.preview);
+
+							result ? result.then(resolve) : resolve();
+
+							return result;
+						},
+						clearCustom(fn) {
+							const data = state.layers[fn.key];
+
+							if (data) data.clear();
+						},
+						vibrate(pattern) {
+							vibrate(pattern);
+						},
+						text(content, resolve) {
+							setState('text', { content, resolve });
+						},
+
+						audio: {
+							music(src, method, loop = method === 'music') {
+								const resource = getHowl(ctx, method, src, loop);
+
+								/**
+								 * Update
+								 */
+								resource.loop(loop);
+
+								this.start();
+
+								return {
+									pause() {
+										resource.fade(getVolume(method), 0, 300);
+										resource.once('fade', resource.pause);
+									},
+									play() {
+										if (resource.playing()) return;
+
+										resource.play();
+										resource.fade(0, getVolume(method), 300);
+									},
+									stop() {
+										resource.fade(getVolume(method), 0, 300);
+										resource.once('fade', resource.stop);
+									},
+								} satisfies AudioHandle;
 							},
-							play() {
+							voice(source) {
+								this.start();
+								this.voiceStop();
+
+								const resource = ctx.store.audio.voice = getHowl(ctx, 'voice', source, false);
+
+								resource.once('end', () => {
+									ctx.setStore(store => store.audio.voice = undefined)
+								});
+
 								resource.play();
-								resource.fade(0, getVolume(method), 300);
 							},
-							stop() {
-								resource.fade(getVolume(method), 0, 300);
-								resource.once('fade', resource.stop);
+							voiceStop() {
+								ctx.store.audio.voice?.stop();
 							},
-						} satisfies AudioHandle;
-					},
-					voice(source) {
-						this.start();
-						this.voiceStop();
+							start() {
+								if (!ctx.store.audio.onDocumentVisibilityChangeListener) {
+									const onDocumentVisibilityChange = () => {
+										if (document.visibilityState === 'hidden') {
+											for (const howl of Object.values(ctx.store.audio.music)) {
+												if (howl && howl.playing()) {
+													ctx.setStore(store => store.audio.resumeList.push(howl))
+													howl.pause();
+												}
+											}
 
-						const resource = store.audio.voice = getHowl('voice', source, false);
+											const currentVoice = ctx.store.audio.voice;
 
-						resource.once('end', () => {
-							store.audio.voice = undefined;
-						});
+											if (currentVoice && currentVoice.playing()) {
+												ctx.setStore(store => store.audio.resumeList.push(currentVoice))
+												currentVoice.pause();
+											}
 
-						resource.play();
-					},
-					voiceStop() {
-						const currentVoice = store.audio.voice;
+										} else {
+											for (const howl of ctx.store.audio.resumeList) {
+												howl.play();
+											}
 
-						if (currentVoice) {
-							currentVoice.stop();
-
-							/**
-							 * @todo: is this really necessary?
-							 */
-							store.audio.resumeList = store.audio.resumeList.filter(howl => howl !== currentVoice);
-						}
-					},
-					start() {
-						if (!store.audio.onDocumentVisibilityChangeListener) {
-							const onDocumentVisibilityChange = () => {
-								if (document.visibilityState === 'hidden') {
-									for (const howl of Object.values(store.audio.music)) {
-										if (howl && howl.playing()) {
-											store.audio.resumeList.push(howl);
-											howl.pause();
+											ctx.setStore(store => store.audio.resumeList = []);
 										}
 									}
 
-									const currentVoice = store.audio.voice;
+									ctx.setStore(store => store.audio.onDocumentVisibilityChangeListener = onDocumentVisibilityChange)
+									document.addEventListener('visibilitychange', onDocumentVisibilityChange)
+								}
+							},
+							clear() {
+								const musics = Object.values(ctx.store.audio.music);
+								const sounds = Object.values(ctx.store.audio.sound);
 
-									if (currentVoice && currentVoice.playing()) {
-										store.audio.resumeList.push(currentVoice);
-										currentVoice.pause();
-									}
+								for (const music of [...musics, ...sounds]) {
+									if (!music) continue;
 
-								} else {
-									for (const howl of store.audio.resumeList) {
-										howl.play();
-									}
+									music.stop();
+								}
 
-									store.audio.resumeList = [];
+								this.voiceStop();
+							},
+							destroy() {
+								this.clear();
+
+								if (ctx.store.audio.onDocumentVisibilityChangeListener) {
+									document.removeEventListener('visibilitychange', ctx.store.audio.onDocumentVisibilityChangeListener);
 								}
 							}
+						},
 
-							document.addEventListener('visibilitychange', store.audio.onDocumentVisibilityChangeListener = onDocumentVisibilityChange)
-						}
-					},
-					clear() {
-						const musics = Object.values(store.audio.music);
-						const sounds = Object.values(store.audio.sound);
-
-						for (const music of [...musics, ...sounds]) {
-							if (!music) continue;
-
-							music.stop();
-						}
-
-						this.voiceStop();
-					},
-					destroy() {
-						this.clear();
-
-						if (store.audio.onDocumentVisibilityChangeListener) {
-							document.removeEventListener('visibilitychange', store.audio.onDocumentVisibilityChangeListener);
-						}
-					}
-				},
-				custom(fn, goingBack, resolve) {
-					const get: Parameters<CustomHandler>[0] = (id, insert = true) => {
-						/**
-						 * Get `chched` value
-						 */
-						const cached = state.layers[id];
-
-						/**
-						 * Return it
-						 */
-						if (cached) return cached.value;
-
-						/**
-						 * `Clear` function
-						 */
-						let clear = () => {};
-						let store = {};
-
-						/**
-						 * Function that call the `Clear` defined by the action itself, and then deletes the layer
-						 */
-						const clearManager = () => {
-							clear(), setState('layers', id, undefined);
-						};
-
-						/**
-						 * When no need to insert - just do not create it.
-						 */
-						const element = insert ? ((<div id={id} />) as HTMLDivElement) : null;
-
-						setState('layers', id, {
-							fn,
-							dom: element,
-							clear: clearManager,
-							value: {
-								root,
-								element,
-								delete: clearManager,
-								data(data) {
-									return data ? (store = data) : store;
-								},
-								clear(cb) {
-									clear = cb;
-								},
+						meta: {
+							get restoring() {
+								return state.meta.restoring;
 							},
-						});
+							set restoring(value: boolean) {
+								setState('meta', { restoring: value })
+							},
 
-						return state.layers[id]!.value;
+							get preview() {
+								return state.meta.preview;
+							},
+							set preview(value: boolean) {
+								setState('meta', { preview: value })
+							},
+
+							get goingBack() {
+								return state.meta.goingBack;
+							},
+							set goingBack(value: boolean) {
+								setState('meta', { goingBack: value })
+							}
+						},
+
+						store: state.store,
+						setStore: (fn) => {
+							setState('store', produce(fn))
+						},
+
+						getCharacter(character) {
+							return state.store.characters[character]
+						}
 					};
 
-					/**
-					 * Wait untill it is resolved
-					 */
-					const result = fn(get, goingBack, fn.requireUserAction ? resolve : () => {});
+					CTX_MAP.set(name, ctx);
 
-					if (!fn.requireUserAction) result ? result.then(resolve) : resolve();
-
-					return result;
+					return ctx;
 				},
-				vibrate(pattern) {
-					try {
-						if (canVibrate() && 'vibrate' in navigator) {
-							navigator.vibrate(pattern);
-						}
-					} catch {}
+				removeContext(name) {
+					CTX_MAP.delete(name);
+					useContextState(name).remove();
 				},
-				text(content, resolve, goingBack) {
-					setState('text', { content, resolve, goingBack });
-				},
-				store,
 				ui: {
 					showScreen(name) {
-						setState('screen', name);
+						setGlobalState('screen', name);
 					},
 					getScreen() {
-						return state.screen;
+						return globalState.screen;
 					},
 					showExitPrompt() {
-						setState('exitPromptShown', true);
+						setGlobalState('exitPromptShown', true);
 					},
 					start() {
 						unmount?.();
@@ -666,7 +712,8 @@ const createSolidRenderer = ({
 						if (getVolume(type) === 0) return Promise.resolve()
 
 						return new Promise((resolve) => {
-							const howl = getHowl(type, source, false)
+							// todo: there should be another way
+							const howl = getHowl(renderer.getContext(options.mainContextKey), type, source, false)
 
 							if (howl.state() === 'loaded') {
 								resolve();
@@ -683,13 +730,13 @@ const createSolidRenderer = ({
 			return renderer;
 		},
 		registerScreen(name: string, screen: StateScreen) {
-			setState('screens', name, () => screen);
+			setGlobalState('screens', name, () => screen);
 		},
 		registerMainmenuItem(fn: StateMainmenuItem) {
-			setState('mainmenu', 'items', (prev) => [...prev, fn]);
+			setGlobalState('mainmenu', 'items', (prev) => [...prev, fn]);
 		},
 	};
 };
 
 export { createSolidRenderer, Howl };
-export type { State, StateScreen, StateScreens, SolidRendererStore };
+export type { StateScreen, StateScreens, SolidRendererStore };

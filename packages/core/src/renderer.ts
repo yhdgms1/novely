@@ -8,13 +8,14 @@ interface CharacterHandle {
 	canvas: HTMLCanvasElement;
 	ctx: CanvasRenderingContext2D;
 
-	withEmotion: (emotion: string) => () => void;
+	emotion: (emotion: string, render: boolean) => void;
 	append: (className?: string, style?: string, restoring?: boolean) => void;
 	remove: (
 		className?: string,
 		style?: string,
 		duration?: number,
-	) => (resolve: () => void, restoring: boolean) => void;
+		restoring?: boolean
+	) => Promise<void>;
 
 	emotions: Record<string, HTMLImageElement[]>;
 }
@@ -25,59 +26,7 @@ type AudioHandle = {
 	play: () => void;
 }
 
-interface RendererStore {
-	characters: Record<string, CharacterHandle>;
-}
-
 type Renderer = {
-	character: (character: string) => CharacterHandle;
-	background: (background: string | BackgroundImage) => void;
-	dialog: (
-		content: string,
-		name: string,
-		character?: string,
-		emotion?: string,
-	) => (resolve: () => void, goingBack: boolean) => void;
-	choices: (
-		question: string,
-		choices: ([string, ValidAction[]] | [string, ValidAction[], () => boolean])[],
-	) => (resolve: (selected: number) => void) => void;
-	input: (
-		question: string,
-		onInput: Parameters<DefaultActionProxyProvider['input']>[1],
-		setup?: Parameters<DefaultActionProxyProvider['input']>[2],
-	) => (resolve: () => void) => void;
-	audio: {
-		voice: (source: string) => void;
-		voiceStop: () => void;
-		music: (source: string, method: 'music' | 'sound', loop?: boolean) => AudioHandle;
-		/**
-		 * Stop all sounds
-		 */
-		clear: () => void;
-		/**
-		 * Destroy
-		 */
-		destroy: () => void;
-		/**
-		 * Start
-		 * @todo: more descriptive
-		 */
-		start: () => void;
-	};
-	clear: (
-		goingBack: boolean,
-		keep: Set<keyof DefaultActionProxyProvider>,
-		keepCharacters: Set<string>,
-	) => (resolve: () => void) => void;
-	custom: (
-		fn: Parameters<DefaultActionProxyProvider['custom']>[0],
-		goingBack: boolean,
-		push: () => void,
-	) => Thenable<void>;
-	text: (str: string, resolve: () => void, goingBack: boolean) => void;
-	vibrate: (pattern: VibratePattern) => void;
-
 	misc: {
 		/**
 		 * Function to preload images async and await for all images to load or fail
@@ -98,8 +47,6 @@ type Renderer = {
 		 */
 		preloadAudioBlocking: (type: 'music', source: string) => Promise<void>;
 	};
-
-	store: RendererStore;
 
 	ui: {
 		/**
@@ -124,7 +71,86 @@ type Renderer = {
 			unmount(): void;
 		};
 	};
+
+	getContext: (context: string) => {
+		id: string;
+
+		get root(): HTMLElement;
+		set root(value: HTMLElement);
+
+		character: (character: string) => CharacterHandle;
+		background: (background: string | BackgroundImage) => void;
+		dialog: (
+			content: string,
+			name: string,
+			character?: string,
+			emotion?: string,
+		) => (resolve: () => void) => void;
+		choices: (
+			question: string,
+			choices: ([string, ValidAction[]] | [string, ValidAction[], () => boolean])[],
+		) => (resolve: (selected: number) => void) => void;
+		input: (
+			question: string,
+			onInput: Parameters<DefaultActionProxyProvider['input']>[1],
+			setup?: Parameters<DefaultActionProxyProvider['input']>[2],
+		) => (resolve: () => void) => void;
+		clear: (
+			keep: Set<keyof DefaultActionProxyProvider>,
+			keepCharacters: Set<string>,
+			keepAudio: {
+				music: Set<string>,
+				sounds: Set<string>
+			}
+		) => (resolve: () => void) => void;
+		custom: (
+			fn: Parameters<DefaultActionProxyProvider['custom']>[0],
+			push: () => void,
+		) => Thenable<void>;
+		clearCustom: (
+			fn: Parameters<DefaultActionProxyProvider['custom']>[0],
+		) => void;
+		text: (str: string, resolve: () => void) => void;
+		vibrate: (pattern: VibratePattern) => void;
+		audio: {
+			voice: (source: string) => void;
+			voiceStop: () => void;
+			music: (source: string, method: 'music' | 'sound', loop?: boolean) => AudioHandle;
+			/**
+			 * Stop all sounds
+			 */
+			clear: () => void;
+			/**
+			 * Destroy
+			 */
+			destroy: () => void;
+			/**
+			 * Initialize audio service, attach events, etc
+			 */
+			start: () => void;
+		};
+
+		meta: {
+			get restoring(): boolean;
+			set restoring(value: boolean);
+
+			get preview(): boolean;
+			set preview(value: boolean);
+
+			get goingBack(): boolean;
+			set goingBack(value: boolean);
+		}
+
+		store: unknown;
+		setStore: unknown;
+
+		getCharacter: (character: string) => CharacterHandle | undefined;
+	}
+
+	removeContext: (context: string) => void;
 };
+
+type Context = ReturnType<Renderer['getContext']>;
 
 type RendererInit = {
 	characters: Record<string, Character>;
@@ -134,7 +160,6 @@ type RendererInit = {
 	newGame: () => void;
 	exit: (force?: boolean) => void;
 	back: () => Promise<void>;
-	stack: Stack;
 	languages: string[];
 
 	/**
@@ -149,6 +174,14 @@ type RendererInit = {
 	 * Store that used to communicate between renderer and core
 	 */
 	$$: Stored<CoreData>;
+	/**
+	 * There is different context, and the main one which is used for game
+	 */
+	mainContextKey: string;
+
+	preview: (save: Save, name: string) => Promise<void>;
+
+	removeContext: (name: string) => void;
 };
 
-export type { CharacterHandle, AudioHandle, RendererStore, Renderer, RendererInit };
+export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context };

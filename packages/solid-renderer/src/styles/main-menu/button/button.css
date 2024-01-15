@@ -3,8 +3,8 @@
 
 	display: grid;
 	grid-template-rows: 1fr;
-	/* Icon is exactly 24 pixels wide */
-	grid-template-columns: calc(100% - 24px) 24px;
+	/* Icon is exactly 24 pixels wide which is 1.5 rem */
+	grid-template-columns: calc(100% - 1.5rem) 1.5rem;
 	align-content: space-around;
 	justify-items: center;
 }

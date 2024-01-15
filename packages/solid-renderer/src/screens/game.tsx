@@ -1,8 +1,8 @@
-import type { Renderer, Character as CharacterType } from '@novely/core';
+import type { Renderer } from '@novely/core';
 import type { VoidComponent } from 'solid-js';
-import type { JSX } from 'solid-js';
 import type { SetStoreFunction } from 'solid-js/store';
-import type { State, SolidRendererStore } from '../renderer';
+import type { SolidRendererStore } from '../renderer';
+import type { AtContextState } from '../types'
 
 import { createSignal, untrack, For, Show, createUniqueId, createEffect } from 'solid-js';
 import { Character, DialogName, Modal, Icon, ControlPanelButtons, createTypewriter } from '$components';
@@ -11,15 +11,18 @@ import { useData } from '$context';
 import { canvasDrawImages, url, isCSSImage, onKey } from '$utils';
 
 interface GameProps {
-	state: State;
-	setState: SetStoreFunction<State>;
+	state: AtContextState;
+	setState: SetStoreFunction<AtContextState>;
+
+	context: ReturnType<Renderer['getContext']>;
 
 	store: SolidRendererStore;
-	characters: Record<string, CharacterType>;
-	renderer: Renderer;
 
 	controls: 'inside' | 'outside';
 	skipTypewriterWhenGoingBack: boolean;
+
+	isPreview?: boolean;
+	className?: string;
 }
 
 const Game: VoidComponent<GameProps> = (props) => {
@@ -28,7 +31,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 	/**
 	 * Can be destructured because these are passed without getters
 	 */
-	const { setState, characters, store, renderer, controls, skipTypewriterWhenGoingBack } = props;
+	const { setState, store, context, controls, skipTypewriterWhenGoingBack } = props;
 
 	const background = () => {
 		const is = isCSSImage(props.state.background);
@@ -36,7 +39,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 		return {
 			'background-image': is ? url(props.state.background) : '',
 			'background-color': is ? undefined : props.state.background,
-		} as Partial<JSX.CSSProperties>;
+		}
 	};
 
 	const [auto, setAuto] = createSignal(false);
@@ -44,7 +47,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 	const onChoicesButtonClick = ([disabled, i]: [boolean, number]) => {
 		if (disabled) return;
 
-		const resolve = props.state.choices.resolve;
+		const resolve = props.state.choices.resolve!;
 
 		setState('choices', {
 			choices: [],
@@ -52,7 +55,8 @@ const Game: VoidComponent<GameProps> = (props) => {
 			resolve: undefined,
 			question: '',
 		});
-		resolve?.(i);
+
+		resolve(i);
 	};
 
 	const onInputButtonClick = () => {
@@ -132,7 +136,14 @@ const Game: VoidComponent<GameProps> = (props) => {
 	});
 
 	return (
-		<div class="root game" style={background()}>
+		<div
+			style={background()}
+			class={props.className}
+			classList={{
+				'root': true,
+				'game': true
+			}}
+		>
 			<div
 				data-characters={true}
 				class="characters"
@@ -164,7 +175,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				<DialogName
 					character={props.state.dialog.character}
 					name={props.state.dialog.name}
-					characters={characters}
+					characters={data.characters}
 				/>
 				<div
 					class="action-dialog-container"
@@ -189,11 +200,11 @@ const Game: VoidComponent<GameProps> = (props) => {
 								/**
 								 * Если эмоция ещё не загружена - загрузим её
 								 */
-								if (!store['characters'][character] || !store['characters'][character]['emotions'][emotion]) {
-									renderer.character(character).withEmotion(emotion);
+								if (!store.characters[character] || !store.characters[character].emotions[emotion]) {
+									context.character(character).emotion(emotion, false);
 								}
 
-								const image = store['characters'][character]['emotions'][emotion];
+								const image = store.characters[character].emotions[emotion];
 
 								/**
 								 * Если элемент - картинка, не будем выполнять лишнюю отрисовку на `canvas`
@@ -206,7 +217,12 @@ const Game: VoidComponent<GameProps> = (props) => {
 							}}
 						</Show>
 					</div>
-					<div class="action-dialog-content">
+					<div
+						classList={{
+							"action-dialog-content": true,
+							"action-dialog-content--disable-shadow": props.isPreview
+						}}
+					>
 						<DialogWriter.Typewriter
 							attributes={{
 								title:
@@ -215,7 +231,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 										: data.t(DialogWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
 							}}
 							content={props.state.dialog.content}
-							ignore={skipTypewriterWhenGoingBack && props.state.dialog.goingBack}
+							ignore={(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview)}
 							speed={speed()}
 							ended={onWriterEnd(DialogWriter.clear)}
 						/>
@@ -223,7 +239,10 @@ const Game: VoidComponent<GameProps> = (props) => {
 				</div>
 			</div>
 
-			<Modal isOpen={() => props.state.choices.visible} trapFocus={() => !props.state.exitPromptShown}>
+			<Modal
+				isOpen={() => props.state.choices.visible}
+				trapFocus={() => !props.isPreview && !data.globalState.exitPromptShown}
+			>
 				<div class="dialog-container">
 					<span class="dialog-fix" aria-hidden="true">
 						&#8203;
@@ -237,7 +256,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 							{props.state.choices.question || <>&#8197;</>}
 						</span>
 						<For each={props.state.choices.choices}>
-							{([text, , active], i) => {
+							{([text, _actions, active], i) => {
 								const disabled = active ? !active() : false;
 								const index = i();
 
@@ -257,7 +276,10 @@ const Game: VoidComponent<GameProps> = (props) => {
 				</div>
 			</Modal>
 
-			<Modal isOpen={() => props.state.input.visible} trapFocus={() => !props.state.exitPromptShown}>
+			<Modal
+				isOpen={() => props.state.input.visible}
+				trapFocus={() => !props.isPreview && !data.globalState.exitPromptShown}
+			>
 				<div class="dialog-container">
 					<span class="dialog-fix" aria-hidden="true">
 						&#8203;
@@ -282,20 +304,25 @@ const Game: VoidComponent<GameProps> = (props) => {
 				</div>
 			</Modal>
 
-			<Modal isOpen={() => props.state.exitPromptShown} trapFocus={() => props.state.exitPromptShown}>
+			<Modal
+				isOpen={() => data.globalState.exitPromptShown}
+				trapFocus={() => !props.isPreview && data.globalState.exitPromptShown}
+			>
 				<div class="dialog-container">
 					<span class="dialog-fix" aria-hidden="true">
 						&#8203;
 					</span>
 					<div class="dialog-backdrop" />
 					<div class="dialog-panel exit-dialog-panel">
-						<span class="dialog-panel-label">{data.t('ExitDialogWarning')}</span>
+						<span class="dialog-panel-label">
+							{data.t('ExitDialogWarning')}
+						</span>
 						<div class="exit-dialog-panel-buttons">
 							<button
 								type="button"
 								class="button"
 								onClick={() => {
-									setState('exitPromptShown', false);
+									data.setGlobalState('exitPromptShown', false);
 								}}
 							>
 								{data.t('ExitDialogBack')}
@@ -336,66 +363,68 @@ const Game: VoidComponent<GameProps> = (props) => {
 								: data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
 					}}
 					content={props.state.text.content}
-					ignore={skipTypewriterWhenGoingBack && props.state.text.goingBack}
+					ignore={(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview)}
 					speed={speed()}
 					ended={onWriterEnd(TextWriter.clear)}
 				/>
 			</div>
 
-			<div class="control-panel">
-				<Show when={data.media.hyperWide()}>
-					<Show when={!controlPanelMenuExpanded()}>
-						<button
-							type="button"
-							class="button control-panel__button"
-							title={data.t('OpenMenu')}
-							aria-controls={controlPanelMenuID}
-							aria-expanded={controlPanelMenuExpanded()}
-							onClick={() => {
-								setControlPanelMenuExpanded((prev) => !prev);
-							}}
-						>
-							<Icon children={Icon.Menu()} />
-						</button>
+			<Show when={!props.isPreview}>
+				<div class="control-panel">
+					<Show when={data.media.hyperWide()}>
+						<Show when={!controlPanelMenuExpanded()}>
+							<button
+								type="button"
+								class="button control-panel__button"
+								title={data.t('OpenMenu')}
+								aria-controls={controlPanelMenuID}
+								aria-expanded={controlPanelMenuExpanded()}
+								onClick={() => {
+									setControlPanelMenuExpanded((prev) => !prev);
+								}}
+							>
+								<Icon children={Icon.Menu()} />
+							</button>
+						</Show>
 					</Show>
-				</Show>
 
-				<Show when={data.media.hyperWide() && controlPanelMenuExpanded() && !props.state.exitPromptShown}>
-					<span class="control-panel-container-fix" aria-hidden="true">
-						&#8203;
-					</span>
-					<div class="control-panel-container-backdrop" />
-				</Show>
+					<Show when={data.media.hyperWide() && controlPanelMenuExpanded() && !data.globalState.exitPromptShown}>
+						<span class="control-panel-container-fix" aria-hidden="true">
+							&#8203;
+						</span>
+						<div class="control-panel-container-backdrop" />
+					</Show>
 
-				<div
-					role="menubar"
-					id={controlPanelMenuID}
-					class="control-panel-container"
-					classList={{
-						'control-panel-container--center': controls === 'inside',
-						'control-panel-container--wide-closed': data.media.hyperWide() && !controlPanelMenuExpanded(),
-						'control-panel-container--wide-open': data.media.hyperWide() && controlPanelMenuExpanded(),
-					}}
-					ref={(element) => {
-						clickOutside(element, () => {
-							if (untrack(data.media.hyperWide) && untrack(controlPanelMenuExpanded)) {
+					<div
+						role="menubar"
+						id={controlPanelMenuID}
+						class="control-panel-container"
+						classList={{
+							'control-panel-container--center': controls === 'inside',
+							'control-panel-container--wide-closed': data.media.hyperWide() && !controlPanelMenuExpanded(),
+							'control-panel-container--wide-open': data.media.hyperWide() && controlPanelMenuExpanded(),
+						}}
+						ref={(element) => {
+							clickOutside(element, () => {
+								if (untrack(data.media.hyperWide) && untrack(controlPanelMenuExpanded)) {
+									setControlPanelMenuExpanded(false);
+								}
+							});
+						}}
+					>
+						<ControlPanelButtons
+							openSettings={() => {
+								data.setGlobalState('screen', 'settings');
+							}}
+							closeDropdown={() => {
 								setControlPanelMenuExpanded(false);
-							}
-						});
-					}}
-				>
-					<ControlPanelButtons
-						openSettings={() => {
-							props.setState('screen', 'settings');
-						}}
-						closeDropdown={() => {
-							setControlPanelMenuExpanded(false);
-						}}
-						auto={auto}
-						setAuto={setAuto}
-					/>
+							}}
+							auto={auto}
+							setAuto={setAuto}
+						/>
+					</div>
 				</div>
-			</div>
+			</Show>
 		</div>
 	);
 };

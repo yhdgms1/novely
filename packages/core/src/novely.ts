@@ -17,8 +17,9 @@ import type {
 	Migration,
 	ActionFN,
 	CoreData,
+	Path
 } from './types';
-import type { Renderer, RendererInit } from './renderer';
+import type { Context, Renderer, RendererInit } from './renderer';
 import type { TranslationActions, Pluralization } from './translation';
 import type { BaseTranslationStrings } from './translations';
 import {
@@ -40,19 +41,21 @@ import {
 	noop,
 	flattenStory,
 	isExitImpossible,
-	processQueue,
-	getActionsFromPath
+	getActionsFromPath,
+	createUseStackFunction,
+	createQueueProcessor
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
 import { deepmerge } from '@novely/deepmerge';
 import { klona } from 'klona/json';
-import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED } from './constants';
+import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, MAIN_CONTEXT_KEY, AUDIO_ACTIONS } from './constants';
 import { replace as replaceT9N } from './translation';
 import { localStorageStorage } from './storage';
 import pLimit from 'p-limit';
 
 import { DEV } from 'esm-env';
+import { STACK_MAP } from './shared';
 
 interface NovelyInit<
 	Languages extends string,
@@ -285,6 +288,8 @@ const novely = <
 	function state(value: DeepPartial<StateScheme> | ((prev: StateScheme) => StateScheme)): void;
 	function state(): StateScheme;
 	function state(value?: DeepPartial<StateScheme> | ((prev: StateScheme) => StateScheme)): StateScheme | void {
+		const stack = useStack(MAIN_CONTEXT_KEY);
+
 		if (!value) return stack.value[1] as StateScheme | void;
 
 		const prev = stack.value[1];
@@ -302,26 +307,6 @@ const novely = <
 			state,
 			[intime(Date.now()), 'auto'],
 		] as Save;
-	};
-
-	const createStack = (current: Save, stack = [current]) => {
-		return {
-			get value() {
-				return stack.at(-1)!;
-			},
-			set value(value: Save) {
-				stack[stack.length - 1] = value;
-			},
-			back() {
-				if (stack.length > 1) stack.pop(), (goingBack = true);
-			},
-			push(value: Save) {
-				stack.push(value);
-			},
-			clear() {
-				stack = [getDefaultSave(klona(defaultState))];
-			},
-		};
 	};
 
 	const getLanguageWithoutParameters = () => {
@@ -398,7 +383,7 @@ const novely = <
 		/**
 		 * Yay
 		 */
-		$.update(() => stored);
+		$.set(stored);
 	};
 
 	/**
@@ -408,7 +393,6 @@ const novely = <
 	storageDelay.then(getStoredData);
 
 	const initial = getDefaultSave(klona(defaultState));
-	const stack = createStack(initial);
 
 	/**
 	 * Try to save data when page is switched
@@ -432,6 +416,10 @@ const novely = <
 		 */
 		if (!autosaves && type === 'auto') return;
 
+		/**
+		 * Saves only possible in main context, so there is no reason for context to be used here
+		 */
+		const stack = useStack(MAIN_CONTEXT_KEY);
 		const current = klona(stack.value);
 
 		$.update((prev) => {
@@ -495,16 +483,16 @@ const novely = <
 	};
 
 	/**
-	 * Set's the save
+	 * Set's the save and restores onto it
 	 */
-	const set = (save: Save) => {
+	const set = (save: Save, ctx?: Context) => {
+		const stack = useStack(ctx || renderer.getContext(MAIN_CONTEXT_KEY));
+
 		stack.value = save;
 
 		return restore(save);
 	};
 
-	let restoring = false;
-	let goingBack = false;
 	let interacted = 0;
 
 	/**
@@ -519,35 +507,91 @@ const novely = <
 		 * When there is no game, then make a new game
 		 */
 		if (!latest) {
-			$.update(() => ({
+			$.set({
 				saves: [initial],
 				data: klona(defaultData) as Data,
 				meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED, 1, 1, 1],
-			}));
+			});
 
 			latest = klona(initial);
 		}
 
-		(restoring = true), (stack.value = latest);
+		const context = renderer.getContext(MAIN_CONTEXT_KEY);
+		const stack = useStack(context);
 
-		const [path] = stack.value;
-		const { keep, queue } = getActionsFromPath(story, path);
+		context.meta.restoring = true;
 
-		/**
-		 * Run these exactly before the main loop.
-		 */
+		const previous = stack.previous;
+
+		const [path] = stack.value = latest;
+
 		renderer.ui.showScreen('game');
-		/**
-		 * Provide the `keep` in there
-		 */
-		match('clear', [keep, characters]);
 
-		await processQueue(queue, match);
+		const queue = getActionsFromPath(story, path);
+		const processor = createQueueProcessor(queue);
+		const { keep, characters, audio } = processor.getKeep();
 
-		(restoring = goingBack = false), render();
+		if (previous) {
+			const prevQueue = getActionsFromPath(story, previous[0], true);
+			const currQueue = getActionsFromPath(story, path, true);
+
+			for (let i = prevQueue.length - 1; i > currQueue.length; i--) {
+				const element = prevQueue[i];
+
+				/**
+				 * Just in case 🤷
+				 */
+				if (isAction(element)) {
+					const [action, props] = element as ValidAction;
+
+					/**
+					 * Imagine array of actions like
+					 *
+					 * [
+					 *  ['dialog', ...props]
+					 *  ['dialog', ...props]
+					 *  ['custom', function]
+					 * ]
+					 *
+					 * When player goes back array changes to
+					 *
+					 * [
+					 *  ['dialog', ...props]
+					 * ]
+					 *
+					 * We catch these custom actions and call their clear methods so there is no side effects from future in the past
+					 */
+					if (action === 'custom') {
+						context.clearCustom(props[0]);
+					}
+				}
+			}
+		}
+
+		match('clear', [keep, characters, audio], {
+			ctx: context,
+			data: latest[1]
+		});
+
+		await processor.run((action, props) => {
+			if (!latest) return;
+
+			return match(action, props, {
+				ctx: context,
+				data: latest[1]
+			});
+		});
+
+		context.meta.restoring = context.meta.restoring = false;
+
+		render(context);
 	};
 
-	const refer = (path = stack.value[0]) => {
+	const refer = (path?: Path) => {
+		if (!path) {
+			path = useStack(MAIN_CONTEXT_KEY).value[0]
+		}
+
 		let current: any = story;
 		let precurrent: any = story;
 
@@ -586,11 +630,17 @@ const novely = <
 			return;
 		}
 
+		/**
+		 * Exit only possible in main context
+		 */
+		const ctx = renderer.getContext(MAIN_CONTEXT_KEY);
+
+		const stack = useStack(ctx);
 		const current = stack.value;
 
 		stack.clear();
 		renderer.ui.showScreen('mainmenu');
-		renderer.audio.destroy();
+		ctx.audio.destroy();
 
 		/**
 		 * First two save elements and it's type
@@ -619,15 +669,56 @@ const novely = <
 		times.clear();
 	};
 
-	const back = () => {
-		return stack.back(), restore(stack.value);
+
+	const back = async () => {
+		/**
+		 * Back also happens in main context only
+		 */
+		const stack = useStack(MAIN_CONTEXT_KEY);
+
+		stack.back();
+
+		await restore(stack.value);
 	};
 
 	const t = (key: BaseTranslationStrings, lang: string | Languages) => {
 		return translation[lang as Languages].internal[key];
 	};
 
+	/**
+	 * Execute save in context at `name`
+	 */
+	const preview = async ([path, data]: Save, name: string) => {
+		const queue = getActionsFromPath(story, path);
+		const ctx = renderer.getContext(name);
+
+		/**
+		 * Enter restoring mode in action
+		 */
+		ctx.meta.restoring = true;
+		ctx.meta.preview = true;
+
+		const processor = createQueueProcessor(queue);
+
+		await processor.run((action, props) => {
+			if (AUDIO_ACTIONS.has(action as any)) return;
+			if (action === 'vibrate') return;
+			if (action === 'end') return;
+
+			return match(action, props, {
+				ctx,
+				data,
+			});
+		});
+	}
+
+	const removeContext = (name: string) => {
+		STACK_MAP.delete(name);
+	}
+
 	const renderer = createRenderer({
+		mainContextKey: MAIN_CONTEXT_KEY,
+
 		characters,
 		set,
 		restore,
@@ -636,69 +727,79 @@ const novely = <
 		exit,
 		back,
 		t,
-		stack,
+		preview,
+		removeContext,
 		languages,
 		$,
 		$$,
 	});
 
+	const useStack = createUseStackFunction(renderer);
+
+	/**
+	 * Initiate
+	 */
+	useStack(MAIN_CONTEXT_KEY).push(initial);
+
 	renderer.ui.start();
 
-	const match = matchAction({
-		wait([time]) {
-			if (!restoring) setTimeout(push, isFunction(time) ? time() : time);
+	const match = matchAction(renderer.getContext, {
+		wait({ ctx }, [time]) {
+			if (!ctx.meta.restoring) setTimeout(push, isFunction(time) ? time() : time);
 		},
-		showBackground([background]) {
-			renderer.background(background);
-			push();
+		showBackground({ ctx }, [background]) {
+			ctx.background(background);
+			push(ctx);
 		},
-		playMusic([source]) {
-			renderer.audio.music(source, 'music', true).play();
-			push();
+		playMusic({ ctx }, [source]) {
+			ctx.audio.music(source, 'music', true).play();
+			push(ctx);
 		},
-		stopMusic([source]) {
-			renderer.audio.music(source, 'music').stop();
-			push();
+		stopMusic({ ctx }, [source]) {
+			ctx.audio.music(source, 'music').stop();
+			push(ctx);
 		},
-		playSound([source, loop]) {
-			renderer.audio.music(source, 'sound', loop || false).play();
-			push();
+		playSound({ ctx }, [source, loop]) {
+			ctx.audio.music(source, 'sound', loop || false).play();
+			push(ctx);
 		},
-		stopSound([source]) {
-			renderer.audio.music(source, 'sound').stop();
-			push();
+		stopSound({ ctx }, [source]) {
+			ctx.audio.music(source, 'sound').stop();
+			push(ctx);
 		},
-		voice([source]) {
-			renderer.audio.voice(source);
-			push();
+		voice({ ctx }, [source]) {
+			ctx.audio.voice(source);
+			push(ctx);
 		},
-		stopVoice() {
-			renderer.audio.voiceStop();
-			push();
+		stopVoice({ ctx }) {
+			ctx.audio.voiceStop();
+			push(ctx);
 		},
-		showCharacter([character, emotion, className, style]) {
+		showCharacter({ ctx }, [character, emotion, className, style]) {
 			if (DEV && !characters[character].emotions[emotion]) {
 				throw new Error(`Attempt to show character "${character}" with unknown emotion "${emotion}"`)
 			}
 
-			const handle = renderer.character(character);
+			const handle = ctx.character(character);
 
-			handle.append(className, style, restoring);
-			handle.withEmotion(emotion)();
+			handle.append(className, style, ctx.meta.restoring);
+			handle.emotion(emotion, true);
 
-			push();
+			push(ctx);
 		},
-		hideCharacter([character, className, style, duration]) {
-			renderer.character(character).remove(className, style, duration)(push, restoring);
+		hideCharacter({ ctx }, [character, className, style, duration]) {
+			ctx.character(character).remove(className, style, duration, ctx.meta.restoring).then(() => {
+				push(ctx);
+			})
 		},
-		dialog([character, content, emotion]) {
+		dialog({ ctx, data }, [character, content, emotion]) {
 			/**
 			 * Person name
 			 */
 			const name = (() => {
 				const c = character;
 				const cs = characters;
-				const lang = $.get().meta[0];
+				const [lang] = $.get().meta;
 
 				if (c && c in cs) {
 					const block = cs[c].name;
@@ -715,20 +816,20 @@ const novely = <
 				return c || '';
 			})();
 
-			const run = renderer.dialog(unwrap(content), unwrap(name), character, emotion);
+			const run = ctx.dialog(unwrap(content, data), unwrap(name, data), character, emotion);
 
-			run(forward, goingBack);
+			run(() => forward(ctx));
 		},
-		function([fn]) {
-			const result = fn(restoring, goingBack);
+		function({ ctx }, [fn]) {
+			const result = fn(ctx.meta.restoring, ctx.meta.goingBack, ctx.meta.preview);
 
-			if (!restoring) {
-				result ? result.then(push) : push();
+			if (!ctx.meta.restoring) {
+				result ? result.then(() => push(ctx)) : push(ctx);
 			}
 
 			return result;
 		},
-		choice([question, ...choices]) {
+		choice({ ctx, data }, [question, ...choices]) {
 			const isWithoutQuestion = Array.isArray(question);
 
 			if (isWithoutQuestion) {
@@ -747,17 +848,21 @@ const novely = <
 					console.warn(`Choice children should not be empty, either add content there or make item not selectable`)
 				}
 
-				return [unwrap(content), action, visible] as [string, ValidAction[], () => boolean];
+				return [unwrap(content, data), action, visible] as [string, ValidAction[], () => boolean];
 			});
 
 			if (DEV && unwrapped.length === 0) {
 				throw new Error(`Running choice without variants to choose from, look at how to use Choice action properly [https://novely.pages.dev/guide/actions/choice#usage]`)
 			}
 
-			const run = renderer.choices(unwrap(question), unwrapped);
+			const run = ctx.choices(unwrap(question, data), unwrapped);
 
 			run((selected) => {
-				enmemory();
+				if (!ctx.meta.preview) {
+					enmemory(ctx);
+				}
+
+				const stack = useStack(ctx);
 
 				/**
 				 * If there is a question, then `index` should be shifted by `1`
@@ -769,11 +874,11 @@ const novely = <
 				}
 
 				stack.value[0].push(['choice', selected + offset], [null, 0]);
-				render();
+				render(ctx);
 				interactivity(true);
 			});
 		},
-		jump([scene]) {
+		jump({ ctx, data }, [scene]) {
 			if (DEV && !story[scene]) {
 				throw new Error(`Attempt to jump to unknown scene "${scene}"`)
 			}
@@ -781,6 +886,8 @@ const novely = <
 			if (DEV && story[scene].length === 0) {
 				throw new Error(`Attempt to jump to empty scene "${scene}"`)
 			}
+
+			const stack = useStack(ctx);
 
 			/**
 			 * `-1` index is used here because `clear` will run `next` that will increase index to `0`
@@ -790,26 +897,34 @@ const novely = <
 				[null, -1],
 			];
 
-			match('clear', []);
+			match('clear', [], {
+				ctx,
+				data,
+			});
 		},
-		clear([keep, characters]) {
+		clear({ ctx }, [keep, characters, audio]) {
 			/**
 			 * Remove vibration
 			 */
-			renderer.vibrate(0);
+			ctx.vibrate(0);
+
 			/**
 			 * Call the actual `clear`
 			 */
-			renderer.clear(goingBack, keep || EMPTY_SET, characters || EMPTY_SET)(push);
+			const run = ctx.clear(
+				keep || EMPTY_SET,
+				characters || EMPTY_SET,
+				audio || { music: EMPTY_SET, sounds: EMPTY_SET }
+			);
 
-			renderer.audio.clear();
+			run(() => push(ctx));
 		},
-		condition([condition, variants]) {
+		condition({ ctx }, [condition, variants]) {
 			if (DEV && Object.values(variants).length === 0) {
 				throw new Error(`Attempt to use Condition action with empty variants object`)
 			}
 
-			if (!restoring) {
+			if (!ctx.meta.restoring) {
 				const val = String(condition());
 
 				if (DEV && !variants[val]) {
@@ -820,25 +935,21 @@ const novely = <
 					throw new Error(`Attempt to go to empty variant "${val}"`)
 				}
 
+				const stack = useStack(MAIN_CONTEXT_KEY);
+
 				stack.value[0].push(['condition', val], [null, 0]);
 
-				render();
+				render(ctx);
 			}
 		},
-		end() {
-			/**
-			 * Clear the Scene
-			 */
-			renderer.vibrate(0);
-			/**
-			 * No-op used there because using push will make an infinite loop
-			 */
-			renderer.clear(goingBack, EMPTY_SET, EMPTY_SET)(noop);
+		end({ ctx }) {
+			if (ctx.meta.preview) return;
 
-			/**
-			 * Go to the main menu
-			 */
+			ctx.vibrate(0);
+			ctx.clear(EMPTY_SET, EMPTY_SET, { music: EMPTY_SET, sounds: EMPTY_SET })(noop);
+
 			renderer.ui.showScreen('mainmenu');
+
 			/**
 			 * Reset interactive value
 			 */
@@ -848,25 +959,33 @@ const novely = <
 			 */
 			times.clear();
 		},
-		input([question, onInput, setup]) {
-			renderer.input(unwrap(question), onInput, setup)(forward);
+		input({ ctx, data }, [question, onInput, setup]) {
+			ctx.input(unwrap(question, data), onInput, setup)(() => {
+				forward(ctx)
+			});
 		},
-		custom([handler]) {
-			const result = renderer.custom(handler, goingBack, () => {
-				if (!restoring && handler.requireUserAction) enmemory(), interactivity(true);
-				if (!restoring) push();
+		custom({ ctx }, [handler]) {
+			const result = ctx.custom(handler, () => {
+				if (ctx.meta.restoring) return;
+
+				if (handler.requireUserAction && !ctx.meta.preview) {
+					enmemory(ctx);
+					interactivity(true);
+				}
+
+				push(ctx);
 			});
 
 			return result;
 		},
-		vibrate(pattern) {
-			renderer.vibrate(pattern);
-			push();
+		vibrate({ ctx }, pattern) {
+			ctx.vibrate(pattern);
+			push(ctx);
 		},
-		next() {
-			push();
+		next({ ctx }) {
+			push(ctx);
 		},
-		animateCharacter([character, timeout, ...classes]) {
+		animateCharacter({ ctx, data }, [character, timeout, ...classes]) {
 			if (DEV && classes.length === 0) {
 				throw new Error('Attempt to use AnimateCharacter without classes. Classes should be provided [https://novely.pages.dev/guide/actions/animateCharacter.html]')
 			}
@@ -875,14 +994,15 @@ const novely = <
 				throw new Error('Attempt to use AnimateCharacter with unacceptable timeout. It should be finite and greater than zero')
 			}
 
+			if (ctx.meta.preview) return;
+
 			const handler: CustomHandler = (get) => {
-				const { clear } = get('@@internal-animate-character', false);
-				const char = renderer.store.characters[character];
+				const { clear } = get(false);
+				const char = ctx.getCharacter(character);
 
 				/**
 				 * Character is not defined, maybe, `animateCharacter` was called before `showCharacter` OR character was not just loaded yet
 				 */
-
 				if (!char) return;
 
 				const target = char.canvas;
@@ -910,22 +1030,29 @@ const novely = <
 				});
 			};
 
+			handler.key = '@@internal-animate-character';
+
 			/**
 			 * `callOnlyLatest` property will not have any effect, because `custom` is called directly
 			 */
-			match('custom', [handler]);
+			match('custom', [handler], {
+				ctx,
+				data,
+			});
 		},
-		text(text) {
-			const string = text.map((content) => unwrap(content)).join(' ');
+		text({ ctx, data }, text) {
+			const string = text.map((content) => unwrap(content, data)).join(' ');
 
 			if (DEV && string.length === 0) {
 				throw new Error(`Action Text was called with empty string or array`)
 			}
 
-			renderer.text(string, forward, goingBack);
+			ctx.text(string, () => forward(ctx));
 		},
-		exit() {
-			if (restoring) return;
+		exit({ ctx, data }) {
+			if (ctx.meta.restoring) return;
+
+			const stack = useStack(ctx);
 
 			const path = stack.value[0];
 			const last = path.at(-1);
@@ -947,7 +1074,10 @@ const novely = <
 				const referred = refer(path);
 
 				if (isAction(referred) && isSkippedDuringRestore(referred[0])) {
-					match('end', []);
+					match('end', [], {
+						ctx,
+						data,
+					});
 				}
 
 				return;
@@ -1002,19 +1132,19 @@ const novely = <
 				break;
 			}
 
-			render();
+			render(ctx);
 		},
-		preload([source]) {
-			if (!goingBack && !restoring && !PRELOADED_ASSETS.has(source)) {
+		preload({ ctx }, [source]) {
+			if (!ctx.meta.goingBack && !ctx.meta.restoring && !PRELOADED_ASSETS.has(source)) {
 				/**
 				 * Make image load
 				 */
 				PRELOADED_ASSETS.add(renderer.misc.preloadImage(source));
 			}
 
-			push();
+			push(ctx);
 		},
-		block([scene]) {
+		block({ ctx }, [scene]) {
 			if (DEV && !story[scene]) {
 				throw new Error(`Attempt to call Block action with unknown scene "${scene}"`)
 			}
@@ -1023,16 +1153,20 @@ const novely = <
 				throw new Error(`Attempt to call Block action with empty scene "${scene}"`)
 			}
 
-			if (!restoring) {
+			if (!ctx.meta.restoring) {
+				const stack = useStack(ctx);
+
 				stack.value[0].push(['block', scene], [null, 0]);
 
-				render();
+				render(ctx);
 			}
 		},
 	});
 
-	const enmemory = () => {
-		if (restoring) return;
+	const enmemory = (ctx: Context) => {
+		if (ctx.meta.restoring) return;
+
+		const stack = useStack(ctx);
 
 		const current = klona(stack.value);
 
@@ -1043,7 +1177,8 @@ const novely = <
 		save(true, 'auto');
 	};
 
-	const next = () => {
+	const next = (ctx: Context) => {
+		const stack = useStack(ctx);
 		const path = stack.value[0];
 
 		/**
@@ -1058,26 +1193,33 @@ const novely = <
 		}
 	};
 
-	const render = () => {
-		const referred = refer();
+	const render = (ctx: Context) => {
+		const stack = useStack(ctx);
+		const referred = refer(stack.value[0]);
 
 		if (isAction(referred)) {
 			const [action, ...props] = referred;
 
-			match(action, props);
+			match(action, props, {
+				ctx,
+				data: stack.value[1]
+			});
 		} else {
-			match('exit', []);
+			match('exit', [], {
+				ctx,
+				data: stack.value[1]
+			});
 		}
 	};
 
-	const push = () => {
-		if (!restoring) next(), render();
+	const push = (ctx: Context) => {
+		if (!ctx.meta.restoring) next(ctx), render(ctx);
 	};
 
-	const forward = () => {
-		enmemory();
-		push();
-		interactivity(true);
+	const forward = (ctx: Context) => {
+		if (!ctx.meta.preview) enmemory(ctx);
+		push(ctx);
+		if (!ctx.meta.preview) interactivity(true);
 	};
 
 	const interactivity = (value = false) => {
@@ -1094,13 +1236,13 @@ const novely = <
 	 * unwrap('Hello, {{name}}');
 	 * ```
 	 */
-	const unwrap = (content: Unwrappable<Languages>, global = false) => {
+	const unwrap = (content: Unwrappable<Languages>, values?: Data) => {
 		const {
 			data,
 			meta: [lang],
 		} = $.get();
 
-		const obj = global ? data : state();
+		const obj = values ? values : data;
 		const cnt = isFunction(content)
 			? content()
 			: typeof content === 'string'
@@ -1157,7 +1299,7 @@ const novely = <
 		 * Unwraps translatable content to a string value
 		 */
 		unwrap(content: Exclude<Unwrappable<Languages>, Record<string, string>> | Record<Languages, string>) {
-			return unwrap(content, true);
+			return unwrap(content, $.get().data);
 		},
 	};
 };

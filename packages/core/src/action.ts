@@ -38,7 +38,7 @@ type CustomHandlerGetResultDataFunction = {
 	(data?: Record<string, unknown>): Record<string, unknown>;
 };
 
-type CustomHandlerGetResult = {
+type CustomHandlerGetResult<I extends boolean> = {
 	delete: () => void;
 	/**
 	 * Данные
@@ -47,7 +47,7 @@ type CustomHandlerGetResult = {
 	/**
 	 * Элемент слоя
 	 */
-	element: HTMLDivElement | null;
+	element: I extends true ? HTMLDivElement : null;
 	/**
 	 * Корневой элемент Novely
 	 */
@@ -58,11 +58,7 @@ type CustomHandlerGetResult = {
 	clear: (fn: () => void) => void;
 };
 
-type CustomHandlerFunction = (
-	get: (id: string, insert?: boolean) => CustomHandlerGetResult,
-	goingBack: boolean,
-	resolve: () => void,
-) => Thenable<void>;
+type CustomHandlerFunction = (get: <I extends boolean>(insert?: I) => CustomHandlerGetResult<I>, goingBack: boolean, preview: boolean) => Thenable<void>;
 
 type CustomHandler = CustomHandlerFunction & {
 	callOnlyLatest?: boolean;
@@ -70,6 +66,8 @@ type CustomHandler = CustomHandlerFunction & {
 	skipClearOnGoingBack?: boolean;
 
 	id?: string | symbol;
+
+	key: string;
 };
 
 interface ActionInputOnInputMeta {
@@ -113,7 +111,14 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 		): ValidAction;
 	};
 
-	clear: (keep?: Set<keyof DefaultActionProxyProvider>, keepCharacters?: Set<string>) => ValidAction;
+	clear: (
+		keep?: Set<keyof DefaultActionProxyProvider>,
+		keepCharacters?: Set<string>,
+		keepAudio?: {
+			music: Set<string>,
+			sounds: Set<string>
+		}
+	) => ValidAction;
 
 	condition: <T extends string | true | false>(
 		condition: () => T,
@@ -177,7 +182,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 
 	wait: (time: FunctionableValue<number>) => ValidAction;
 
-	function: (fn: (restoring: boolean, goingBack: boolean) => Thenable<void>) => ValidAction;
+	function: (fn: (restoring: boolean, goingBack: boolean, preview: boolean) => Thenable<void>) => ValidAction;
 
 	input: (
 		question: Unwrappable<Languages>,

@@ -75,6 +75,22 @@ type CoreData = {
 	dataLoaded: boolean;
 };
 
+type UseStackFunctionReturnType = {
+	/**
+	 * Save that was after current value before `back` was used
+	 */
+	get previous(): Save | undefined;
+
+	value: Save;
+	back(): void;
+	push(value: Save): void;
+	clear(): void;
+};
+
+type StackHolder = Save[] & {
+	previous: Save | undefined
+}
+
 export type {
 	Thenable,
 	PathItem,
@@ -93,4 +109,6 @@ export type {
 	ActionFN,
 	NonEmptyRecord,
 	CoreData,
+	UseStackFunctionReturnType,
+	StackHolder
 };

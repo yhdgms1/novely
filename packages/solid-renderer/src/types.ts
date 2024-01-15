@@ -1,9 +1,10 @@
 import type {
-  RendererStore,
   ValidAction,
   CustomHandler,
   CustomHandlerGetResult,
+  CharacterHandle,
   NovelyScreen,
+  Context,
 } from '@novely/core';
 import type { JSX } from 'solid-js';
 import type { MountableElement } from 'solid-js/web';
@@ -44,10 +45,6 @@ interface StateDialog {
    * Имя персонажа
    */
   name: string;
-  /**
-   * Is goingBack
-   */
-  goingBack: boolean;
   /**
    * Функция `resolve`
    */
@@ -107,10 +104,6 @@ interface StateText {
    */
   content: string;
   /**
-   * Is goingBack
-   */
-  goingBack: boolean;
-  /**
    * Функция `resolve`
    */
   resolve?: () => void;
@@ -119,7 +112,7 @@ interface StateText {
 type StateLayers = Record<
   string,
   | {
-    value: CustomHandlerGetResult;
+    value: CustomHandlerGetResult<boolean>;
     fn: CustomHandler;
     clear: () => void;
     dom: null | HTMLDivElement;
@@ -139,26 +132,40 @@ type PossibleScreen = NovelyScreen | (string & Record<never, never>);
 type StateMainmenuItem = (goto: (name: PossibleScreen) => void) => JSX.ButtonHTMLAttributes<HTMLButtonElement>;
 type StateMainmenuItems = StateMainmenuItem[];
 
-interface State {
+type StateMeta = {
+  restoring: boolean
+  preview: boolean
+  goingBack: boolean
+}
+
+type AtContextState = {
   background: string;
   characters: Record<string, StateCharacter>;
   dialog: StateDialog;
   choices: StateChoices;
   input: StateInput;
   layers: StateLayers;
+  text: StateText;
+
+  meta: StateMeta;
+
+  store: SolidRendererStore;
+}
+
+type GlobalState = {
   screens: StateScreens;
   mainmenu: {
     items: StateMainmenuItems;
   };
-  text: StateText;
   screen: PossibleScreen;
-
   exitPromptShown: boolean;
 }
 
-interface SolidRendererStore extends RendererStore {
+type SolidRendererStore = {
   dialogRef?: HTMLParagraphElement;
   textRef?: HTMLParagraphElement;
+
+  characters: Record<string, CharacterHandle>;
 
   audio: {
     music: Partial<Record<string, Howl>>
@@ -173,7 +180,7 @@ interface SolidRendererStore extends RendererStore {
   }
 }
 
-interface CreateSolidRendererOptions {
+type CreateSolidRendererOptions = {
   /**
    * Enter fullscreen mode when opening a game, exit when opening main-menu
    * @default false
@@ -205,10 +212,15 @@ type EmitterEventsMap = {
   'screen:change': PossibleScreen | 'loading',
 };
 
+type SolidContext = Omit<Context, 'store' | 'setStore'> & {
+  store: SolidRendererStore;
+  setStore: (fn: (value: SolidRendererStore) => void) => void;
+}
 
 export type {
   EmitterEventsMap,
-  State,
+  AtContextState,
+  GlobalState,
   StateCharacter,
   StateChoices,
   StateDialog,
@@ -221,5 +233,6 @@ export type {
   StateMainmenuItem,
   StateMainmenuItems,
   SolidRendererStore,
-  CreateSolidRendererOptions
+  CreateSolidRendererOptions,
+  SolidContext
 }

@@ -98,19 +98,40 @@ const simple = <T extends unknown[], R>(fn: (...args: T) => R) => {
 	};
 };
 
-const createCanVibrate = () => {
-	let canVibrate = false;
+const vibrationPossible = (() => {
+	let can = false;
 
 	const onPointerDown = () => {
-		canVibrate = true;
-
+		can = true;
 		document.removeEventListener('pointerdown', onPointerDown);
 	};
 
 	document.addEventListener('pointerdown', onPointerDown);
 
-	return () => canVibrate;
-};
+	return () => can;
+})();
+
+const vibrate = (pattern: VibratePattern) => {
+	if (vibrationPossible() && 'vibrate' in navigator) {
+		try {
+			navigator.vibrate(pattern);
+		} catch {}
+	}
+}
+
+const getDocumentStyles = () => {
+	let css = ''
+
+	for (const styleSheet of Array.from(document.styleSheets)) {
+		if (!styleSheet.href || styleSheet.href.startsWith(location.origin)) {
+			for (const { cssText } of Array.from(styleSheet.cssRules)) {
+				css += cssText
+			}
+		}
+	}
+
+	return css;
+}
 
 export {
 	isCSSImage,
@@ -123,5 +144,7 @@ export {
 	toMedia,
 	findLast,
 	simple,
-	createCanVibrate,
+	vibrationPossible,
+	vibrate,
+	getDocumentStyles
 };

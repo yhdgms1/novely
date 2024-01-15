@@ -2,9 +2,9 @@ import { engine } from './engine'
 
 import outdoor from './assets/outdoor.png'
 
-const { withStory, action: a, state } = engine
+const { script, action: a, state } = engine
 
-withStory({
+script({
 	start: [
 		a.showBackground('#000000'),
 		a.text(

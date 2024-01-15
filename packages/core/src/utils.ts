@@ -1,21 +1,42 @@
-import type { ActionProxyProvider, CustomHandler, Story, ValidAction, GetActionParameters } from './action';
+import type { ActionProxyProvider, DefaultActionProxyProvider, CustomHandler, Story, ValidAction, GetActionParameters } from './action';
 import type { Character } from './character';
-import type { Thenable, Path, PathItem } from './types';
+import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder } from './types';
+import type { Context, Renderer } from './renderer';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE } from './constants';
+import { STACK_MAP } from './shared';
+
+type MatchActionParams = {
+	data: Record<string, unknown>
+	ctx: Context
+}
 
 type MatchActionMap = {
-	[Key in keyof ActionProxyProvider<Record<string, Character>, string>]: (
-		data: Parameters<ActionProxyProvider<Record<string, Character>, string>[Key]>,
-	) => void;
+	[Key in keyof DefaultActionProxyProvider]: (params: MatchActionParams, data: Parameters<DefaultActionProxyProvider[Key]>) => void;
 };
 
 type MatchActionMapComplete = Omit<MatchActionMap, 'custom'> & {
-	custom: (value: [handler: CustomHandler]) => Thenable<void>;
+	custom: (params: MatchActionParams, value: [handler: CustomHandler]) => Thenable<void>;
 };
 
-const matchAction = <M extends MatchActionMapComplete>(values: M) => {
-	return (action: keyof MatchActionMap, props: any) => {
-		return values[action](props);
+type MatchActionParameters = {
+	/**
+	 * Name of context or context
+	 */
+	ctx: string | Context;
+	/**
+	 * Data from the save
+	 */
+	data: Record<string, unknown>;
+}
+
+const matchAction = <M extends MatchActionMapComplete>(getContext: (name: string) => Context, values: M) => {
+	return (action: keyof MatchActionMapComplete, props: any, { ctx, data }: MatchActionParameters) => {
+		const context = typeof ctx === 'string' ? getContext(ctx) : ctx;
+
+		return values[action]({
+			ctx: context,
+			data,
+		}, props);
 	};
 };
 
@@ -277,7 +298,7 @@ const getOppositeAction = (action: 'showCharacter' | 'playSound' | 'playMusic' |
 	return MAP[action as keyof typeof MAP];
 }
 
-const getActionsFromPath = (story: Story, path: Path) => {
+const getActionsFromPath = (story: Story, path: Path, raw: boolean = false) => {
 	/**
 	 * Current item in the story
 	 */
@@ -307,8 +328,6 @@ const getActionsFromPath = (story: Story, path: Path) => {
 	}, 0);
 
 	const queue = [] as [any, any][];
-	const keep = new Set();
-	const characters = new Set();
 	const blocks = [];
 
 	for (const [type, val] of path) {
@@ -351,14 +370,16 @@ const getActionsFromPath = (story: Story, path: Path) => {
 					 * Add item to queue and action to keep
 					 */
 					const push = () => {
-						keep.add(action);
 						queue.push([action, meta]);
 					};
 
 					/**
-					 * Do not remove characters that will be here anyways
+					 * In case we want pure data then just add it
 					 */
-					if (action === 'showCharacter') characters.add(meta[0]);
+					if (raw) {
+						push();
+						continue;
+					}
 
 					/**
 					 * Экшены, для закрытия которых пользователь должен с ними взаимодействовать
@@ -367,12 +388,12 @@ const getActionsFromPath = (story: Story, path: Path) => {
 					if (isSkippedDuringRestore(action) || isUserRequiredAction(action, meta)) {
 						if (index === max && i === val) {
 							push();
-						} else {
-							continue;
 						}
-					}
 
-					push();
+						continue;
+					} else {
+						push();
+					}
 				}
 			}
 
@@ -392,19 +413,31 @@ const getActionsFromPath = (story: Story, path: Path) => {
 		}
 	}
 
-	return {
-		keep,
-		queue
-	}
+	return queue;
 }
 
-const processQueue = async (queue: [any, any][], match: (action: keyof ActionProxyProvider<Record<string, Character>, string>, props: any) => Thenable<void>) => {
+const createQueueProcessor = (queue: [any, any][]) => {
+	const processedQueue: [any, any][] = [];
+
+	const keep = new Set();
+	const characters = new Set();
+	const audio = {
+		music: new Set(),
+		sound: new Set()
+	};
+
 	/**
 	 * Get the next actions array.
 	 */
 	const next = (i: number) => queue.slice(i + 1);
 
-	for await (const [i, [action, meta]] of queue.entries()) {
+	for (const [i, [action, meta]] of queue.entries()) {
+		/**
+		 * Keep actually does not keep any actions, clear method only works with things like `dialog` which can blink and etc
+		 * So it's just easies to add everything in there
+		 */
+		keep.add(action);
+
 		if (action === 'function' || action === 'custom') {
 			/**
 			 * When `callOnlyLatest` is `true`
@@ -431,20 +464,7 @@ const processQueue = async (queue: [any, any][], match: (action: keyof ActionPro
 				if (notLatest) continue;
 			}
 
-			/**
-			 * Action can return Promise.
-			 */
-			const result = match(action, meta);
-
-			/**
-			 * Should wait until it resolved
-			 */
-			if (isPromise(result)) {
-				/**
-				 * Await it!
-				 */
-				await result;
-			}
+			processedQueue.push([action, meta]);
 		} else if (action === 'showCharacter' || action === 'playSound' || action === 'playMusic' || action === 'voice') {
 			const closing = getOppositeAction(action);
 
@@ -460,7 +480,18 @@ const processQueue = async (queue: [any, any][], match: (action: keyof ActionPro
 
 			if (skip) continue;
 
-			match(action, meta);
+			/**
+			 * Actually, we do not need check above to add there things to keep because if something was hidden already we could not keep it visible
+			 */
+			if (action === 'showCharacter') {
+				characters.add(meta[0])
+			} else if (action === 'playMusic') {
+				audio.music.add(meta[0])
+			} else if (action === 'playSound') {
+				audio.sound.add(meta[0])
+			}
+
+			processedQueue.push([action, meta]);
 		} else if (action === 'showBackground' || action === 'animateCharacter' || action === 'preload') {
 			/**
 			 * @todo: Также сравнивать персонажей в animateCharacter. Чтобы не просто последний запускался, а последний для персонажа.
@@ -472,15 +503,88 @@ const processQueue = async (queue: [any, any][], match: (action: keyof ActionPro
 			 * Такая же оптимизация применяется к фонам и анимированию персонажей, и `preload`.
 			 * Если фон изменится, то нет смысла устанавливать или предзагружать текущий
 			 */
-			const notLatest = next(i).some(([_action]) => action === _action);
+			const skip = next(i).some(([_action], i, array) => action === _action);
 
-			if (notLatest) continue;
+			if (skip) continue;
 
-			match(action, meta);
+			processedQueue.push([action, meta]);
 		} else {
-			match(action, meta);
+			processedQueue.push([action, meta]);
 		}
 	}
+
+	const run = async (match: (action: keyof ActionProxyProvider<Record<string, Character>, string>, props: any) => Thenable<void>) => {
+		for await (const [action, meta] of processedQueue) {
+			const result = match(action, meta);
+
+			if (isPromise(result)) {
+				await result;
+			}
+		}
+
+		processedQueue.length = 0;
+	}
+
+	const getKeep = () => {
+		return {
+			keep,
+			characters,
+			audio
+		}
+	}
+
+	return {
+		run,
+		getKeep
+	}
+}
+
+const getStack = (ctx: Context) => {
+	const { id } = ctx;
+	const cached = STACK_MAP.get(id);
+
+	if (cached) return cached;
+
+	const stack = [] as unknown as StackHolder;
+
+	STACK_MAP.set(id, stack);
+
+	return stack;
+}
+
+const createUseStackFunction = (renderer: Renderer) => {
+	const useStack = (context: Context | string): UseStackFunctionReturnType => {
+		const ctx = typeof context === 'string' ? renderer.getContext(context) : context;
+		const stack = getStack(ctx);
+
+		return {
+			get previous() {
+				return stack.previous;
+			},
+			get value() {
+				return stack.at(-1)!;
+			},
+			set value(value) {
+				stack[stack.length - 1] = value;
+			},
+
+			back() {
+				if (stack.length > 1) {
+					stack.previous = stack.pop();
+					ctx.meta.goingBack = true;
+				}
+			},
+			push(value: Save) {
+				stack.push(value);
+			},
+			clear() {
+				stack.length = 0;
+				stack.length = 1;
+			}
+		}
+	}
+
+	return useStack;
 }
 
 export {
@@ -510,5 +614,7 @@ export {
 	isExitImpossible,
 	getOppositeAction,
 	getActionsFromPath,
-	processQueue
+	createQueueProcessor,
+	getStack,
+	createUseStackFunction
 };

@@ -14,7 +14,7 @@
 }
 
 .control-panel-container--center:not(.control-panel-container--wide-open) {
-	bottom: calc(var(--novely-dialog-border-width, 3px) + 0.4rem);
+	bottom: calc(var(--novely-dialog-border-width, 0.18rem) + 0.4rem);
 
 	position: fixed;
 
