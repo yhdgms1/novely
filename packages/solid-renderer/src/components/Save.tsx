@@ -78,7 +78,7 @@ const Save: VoidComponent<SaveProps> = (props) => {
      */
     contentDocument.head.insertAdjacentHTML(
       'beforeend',
-      `<style>:root { font-size: 30%; background: black; cursor: pointer; } *:not(html, body) { pointer-events: none; }</style><style>${stylesheet()}</style>`
+      `<style>:root { font-size: 30%; background: black; cursor: pointer; } *:not(html, body) { pointer-events: none; animation-play-state: paused; }</style><style>${stylesheet()}</style>`
     );
 
     contentDocument.body.addEventListener('click', onIframeClick);
