@@ -11,12 +11,16 @@ Action that lets you define custom actions
 ## Usage
 
 ```ts
-const action: CustomHandler = (get, goingBack, resolve) => {
+const action: CustomHandler = (get, goingBack, preview) => {
   /**
-   * @param id The `id` to store the action data, and also the `id` of a Node if it is inserted into the DOM
+   * Preview is an environment in the saves page
+   */
+  if (preview) return;
+
+  /**
    * @param insert Insert the Node to DOM or not. Not needed when you'r action does not render something
    */
-  const layer = get("notification", true);
+  const layer = get(true);
 
   /**
    * Root Novely Node
@@ -56,8 +60,13 @@ const action: CustomHandler = (get, goingBack, resolve) => {
     // Player pressed the `Back` button
   }
 
-  layer.element.onclick = resolve;
 };
+
+//! Important // [!code warning]
+/**
+ * Key under which data from `get` function will be stored
+ */
+action.key = 'notifications';
 
 /**
  * This is used to know which action is which
@@ -69,7 +78,7 @@ action.id = Symbol('notification');
  * When restoring game action would be called lots of times and lots of notifications will be shown
  * But `callOnlyLatest` will make novely call only latest action of that type.
  *
- * Currently, the check is make using `action.id` OR `fn1.toString() === fn2.toString()`
+ * The check is make using `action.id` OR `fn1 === fn2` OR `fn1.toString() === fn2.toString()`
  */
 action.callOnlyLatest = true;
 

@@ -6,7 +6,7 @@ Runs the function
 
 | Name |                      Type                       | Optional | Description |
 | :--: | :---------------------------------------------: | :------: | :---------: |
-|  fn  | <code>(restoring: boolean, goingBack: boolean) => Thenable<void\></code> |    ❌    |  Function   |
+|  fn  | <code>(restoring: boolean, goingBack: boolean, preview: boolean) => Thenable<void\></code> |    ❌    |  Function   |
 
 ## Usage
 
@@ -16,11 +16,11 @@ engine.script({
     engine.action.function(async () => {
       console.log("got here");
     }),
-    engine.action.function((restoring, goingBack) => {
-      console.log(restoring, goingBack)
+    engine.action.function((restoring, goingBack, preview) => {
+      console.log(restoring, goingBack, preview)
     }),
-    engine.action.function((restoring, goingBack) => {
-      if (restoring || goingBack) return;
+    engine.action.function((restoring, goingBack, preview) => {
+      if (restoring || goingBack || preview) return;
 
       return new Promise((resolve) => {
         /**

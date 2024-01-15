@@ -66,6 +66,7 @@ export default defineConfig({
               { text: "HideCharacter", link: "/guide/actions/hideCharacter" },
               { text: "Wait", link: "/guide/actions/wait" },
               { text: "Vibrate", link: "/guide/actions/vibrate" },
+              { text: "Text", link: "/guide/actions/text" },
               { text: "Next", link: "/guide/actions/next" },
               { text: "Exit", link: "/guide/actions/exit" },
               { text: "Custom", link: "/guide/actions/custom" },
@@ -76,7 +77,6 @@ export default defineConfig({
             text: "Another Actions",
             items: [
               { text: "Summary", link: "/guide/another-actions/summary" },
-              { text: "Video", link: "/guide/another-actions/video" },
               { text: "Particles", link: "/guide/another-actions/particles" },
             ],
             collapsed: true,
