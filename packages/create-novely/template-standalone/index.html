@@ -76,11 +76,11 @@
 			};
 
 			// Now you can access `window.novely`
-			const { action: a, state, withStory } = window.novely;
+			const { action: a, state, script } = window.novely;
 
 			// Write you'r story here
 			// Game will start only after this function will be ran
-			withStory({
+			script({
 				start: [
 					a.showBackground('#000000'),
 					a.text('You open your eyes in a beautiful place and see a girl next to you.'),

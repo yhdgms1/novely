@@ -2,7 +2,7 @@ import { engine } from './engine'
 
 import outdoor from './assets/outdoor.png'
 
-const { withStory, action: a, state } = engine
+const { script, action: a, state } = engine
 
 const story = {
 	start: [
@@ -42,4 +42,4 @@ const story = {
 /**
  * Setup story
  */
-withStory(story)
+script(story)
