@@ -305,7 +305,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 			</Modal>
 
 			<Modal
-				isOpen={() => data.globalState.exitPromptShown}
+				isOpen={() => data.globalState.exitPromptShown && !props.isPreview}
 				trapFocus={() => !props.isPreview && data.globalState.exitPromptShown}
 			>
 				<div class="dialog-container">
