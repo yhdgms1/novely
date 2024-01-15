@@ -268,17 +268,17 @@ const createSolidRenderer = ({
 								ctx: canvasContext,
 								emotions: {},
 								emotion(emotion, shouldRender) {
-									const stored = this.emotions[emotion];
+									let stored = this.emotions[emotion];
 
 									if (!stored) {
 										const characterEmotion = characters[character].emotions[emotion];
 										const emotionData = (unknown => Array.isArray(unknown) ? unknown : [unknown])(characterEmotion);
 
-										this.emotions[emotion] = emotionData.map(src => createImage(src));
+										stored = this.emotions[emotion] = emotionData.map(src => createImage(src));
 									}
 
-									if (shouldRender) {
-										canvasDrawImages(canvas, canvasContext, this.emotions[emotion]);
+									if (shouldRender && stored) {
+										canvasDrawImages(canvas, canvasContext, stored);
 									}
 								},
 								append(className, style) {
@@ -397,8 +397,8 @@ const createSolidRenderer = ({
 
 								ctx.audio.voiceStop();
 
-								const musics = Object.entries(ctx.store.audio.music).filter(([name]) => !keepAudio.music.has(name)).map(([_, h]) => h);
-								const sounds = Object.entries(ctx.store.audio.sound).filter(([name]) => !keepAudio.sounds.has(name)).map(([_, h]) => h);
+								const musics = Object.entries(ctx.store.audio.music).filter(([name]) => keepAudio.music && !keepAudio.music.has(name)).map(([_, h]) => h);
+								const sounds = Object.entries(ctx.store.audio.sound).filter(([name]) => keepAudio.sounds && !keepAudio.sounds.has(name)).map(([_, h]) => h);
 
 								for (const music of [...musics, ...sounds]) {
 									if (!music) continue;
