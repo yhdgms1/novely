@@ -112,7 +112,7 @@ interface StateText {
 type StateLayers = Record<
   string,
   | {
-    value: CustomHandlerGetResult;
+    value: CustomHandlerGetResult<boolean>;
     fn: CustomHandler;
     clear: () => void;
     dom: null | HTMLDivElement;
