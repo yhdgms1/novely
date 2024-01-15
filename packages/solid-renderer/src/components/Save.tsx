@@ -78,16 +78,16 @@ const Save: VoidComponent<SaveProps> = (props) => {
      */
     contentDocument.head.insertAdjacentHTML(
       'beforeend',
-      `<style>:root { font-size: 30%; background: black; cursor: pointer; } *:not(html, body) { pointer-events: none; animation-play-state: paused; }</style><style>${stylesheet()}</style>`
+      `<style>:root { font-size: 30%; background: black; cursor: pointer; } *:not(html, body) { pointer-events: none; } *, *::before, *::after { animation-play-state: paused !important; }</style><style>${stylesheet()}</style>`
     );
 
     contentDocument.body.addEventListener('click', onIframeClick);
 
     context.root = contentDocument.body;
 
-    options.preview(props.save, KEY).then(() => {
-      contentDocument.body.appendChild(game as HTMLElement);
-    });
+    contentDocument.body.appendChild(game as HTMLElement);
+
+    options.preview(props.save, KEY);
   }
 
   createEffect(() => {
