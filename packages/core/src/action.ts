@@ -18,7 +18,7 @@ type ValidAction =
 	| ['animateCharacter', [string, number, ...string[]]]
 	| ['wait', [FunctionableValue<number>]]
 	| ['function', [() => Thenable<void>]]
-	| ['input', [string, (meta: ActionInputOnInputMeta) => void, ActionInputSetup?]]
+	| ['input', [string, (meta: ActionInputOnInputMeta<string>) => void, ActionInputSetup?]]
 	| ['custom', [CustomHandler]]
 	| ['vibrate', [...number[]]]
 	| ['next', []]
@@ -70,7 +70,7 @@ type CustomHandler = CustomHandlerFunction & {
 	key: string;
 };
 
-interface ActionInputOnInputMeta {
+interface ActionInputOnInputMeta<L extends string> {
 	/**
 	 * Input Element itself
 	 */
@@ -88,6 +88,10 @@ interface ActionInputOnInputMeta {
 	 * Sanitized `input.value`
 	 */
 	value: string;
+	/**
+	 * Language
+	 */
+	lang: L;
 }
 
 type ActionInputSetup = (input: HTMLInputElement, cleanup: (cb: () => void) => void) => void;
@@ -186,7 +190,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 
 	input: (
 		question: Unwrappable<Languages>,
-		onInput: (meta: ActionInputOnInputMeta) => void,
+		onInput: (meta: ActionInputOnInputMeta<Languages>) => void,
 		setup?: ActionInputSetup,
 	) => ValidAction;
 

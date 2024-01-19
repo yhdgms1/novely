@@ -94,7 +94,7 @@ type Renderer = {
 		) => void;
 		input: (
 			question: string,
-			onInput: (meta: ActionInputOnInputMeta) => void,
+			onInput: (meta: ActionInputOnInputMeta<string>) => void,
 			setup: ActionInputSetup,
 			resolve: () => void
 		) => void;

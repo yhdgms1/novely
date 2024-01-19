@@ -412,6 +412,7 @@ const createSolidRenderer = ({
 								let value: string | undefined;
 
 								onInput({
+									lang: options.$.get().meta[0],
 									input,
 									event,
 									error,
