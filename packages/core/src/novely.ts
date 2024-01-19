@@ -816,9 +816,13 @@ const novely = <
 				return c || '';
 			})();
 
-			const run = ctx.dialog(unwrap(content, data), unwrap(name, data), character, emotion);
-
-			run(() => forward(ctx));
+			ctx.dialog(
+				unwrap(content, data),
+				unwrap(name, data),
+				character,
+				emotion,
+				() => forward(ctx)
+			);
 		},
 		function({ ctx }, [fn]) {
 			const result = fn(ctx.meta.restoring, ctx.meta.goingBack, ctx.meta.preview);
@@ -843,7 +847,7 @@ const novely = <
 				question = '';
 			}
 
-			const unwrapped = choices.map(([content, action, visible]) => {
+			const unwrappedChoices = choices.map(([content, action, visible]) => {
 				if (DEV && action.length === 0 && (!visible || visible())) {
 					console.warn(`Choice children should not be empty, either add content there or make item not selectable`)
 				}
@@ -851,13 +855,11 @@ const novely = <
 				return [unwrap(content, data), action, visible] as [string, ValidAction[], () => boolean];
 			});
 
-			if (DEV && unwrapped.length === 0) {
+			if (DEV && unwrappedChoices.length === 0) {
 				throw new Error(`Running choice without variants to choose from, look at how to use Choice action properly [https://novely.pages.dev/guide/actions/choice#usage]`)
 			}
 
-			const run = ctx.choices(unwrap(question, data), unwrapped);
-
-			run((selected) => {
+			ctx.choices(unwrap(question, data), unwrappedChoices, (selected) => {
 				if (!ctx.meta.preview) {
 					enmemory(ctx);
 				}
@@ -869,7 +871,7 @@ const novely = <
 				 */
 				const offset = isWithoutQuestion ? 0 : 1;
 
-				if (DEV && !unwrapped[selected + offset]) {
+				if (DEV && !unwrappedChoices[selected + offset]) {
 					throw new Error('Choice children is empty, either add content there or make item not selectable')
 				}
 
@@ -911,13 +913,12 @@ const novely = <
 			/**
 			 * Call the actual `clear`
 			 */
-			const run = ctx.clear(
+			ctx.clear(
 				keep || EMPTY_SET,
 				characters || EMPTY_SET,
-				audio || { music: EMPTY_SET, sounds: EMPTY_SET }
+				audio || { music: EMPTY_SET, sounds: EMPTY_SET },
+				() => push(ctx)
 			);
-
-			run(() => push(ctx));
 		},
 		condition({ ctx }, [condition, variants]) {
 			if (DEV && Object.values(variants).length === 0) {
@@ -946,7 +947,7 @@ const novely = <
 			if (ctx.meta.preview) return;
 
 			ctx.vibrate(0);
-			ctx.clear(EMPTY_SET, EMPTY_SET, { music: EMPTY_SET, sounds: EMPTY_SET })(noop);
+			ctx.clear(EMPTY_SET, EMPTY_SET, { music: EMPTY_SET, sounds: EMPTY_SET }, noop);
 
 			renderer.ui.showScreen('mainmenu');
 
@@ -960,9 +961,12 @@ const novely = <
 			times.clear();
 		},
 		input({ ctx, data }, [question, onInput, setup]) {
-			ctx.input(unwrap(question, data), onInput, setup)(() => {
-				forward(ctx)
-			});
+			ctx.input(
+				unwrap(question, data),
+				onInput,
+				setup || noop,
+				() => forward(ctx)
+			);
 		},
 		custom({ ctx }, [handler]) {
 			const result = ctx.custom(handler, () => {

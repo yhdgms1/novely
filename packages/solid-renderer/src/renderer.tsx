@@ -336,125 +336,113 @@ const createSolidRenderer = ({
 								},
 							} satisfies CharacterHandle;
 
-							this.setStore((store) => store.characters[character] = characterHandle)
+							ctx.setStore((store) => store.characters[character] = characterHandle)
 
 							return characterHandle;
 						},
-						dialog(content, name, character, emotion) {
-							return (resolve) => {
-								setState('dialog', () => ({
-									content,
-									name,
-									character,
-									emotion,
-									visible: true,
-									resolve,
-								}));
-							};
+						dialog(content, name, character, emotion, resolve) {
+							setState('dialog', {
+								content,
+								name,
+								character,
+								emotion,
+								visible: true,
+								resolve,
+							});
 						},
-						choices(question, choices) {
-							return (resolve) => {
-								setState('choices', { choices, question, resolve, visible: true });
-							};
+						choices(question, choices, resolve) {
+							setState('choices', { choices, question, resolve, visible: true });
 						},
-						clear(keep, keepCharacters, keepAudio) {
-							return (resolve) => {
-								setGlobalState('exitPromptShown', false);
+						clear(keep, keepCharacters, keepAudio, resolve) {
+							setGlobalState('exitPromptShown', false);
 
-								if (!keep.has('showBackground')) setState('background', '#000');
-								if (!keep.has('choice'))
-									setState('choices', {
-										choices: [],
-										visible: false,
-										resolve: undefined,
-										question: '',
-									});
-								if (!keep.has('input'))
-									setState('input', {
-										element: undefined,
-										question: '',
-										visible: false,
-										error: '',
-									});
-								if (!keep.has('dialog')) setState('dialog', { visible: false, content: '', name: '' });
-								if (!keep.has('text')) setState('text', { content: '' });
-
-								for (const character of Object.keys(state.characters)) {
-									if (!keepCharacters.has(character)) setState('characters', character, { visible: false });
-								}
-
-								for (const [id, layer] of Object.entries(state.layers)) {
-									if (!layer) continue;
-
-									/**
-									 * Если происходит переход назад, и слой просит пропустить очистку при переходе назад, то не будем очищать слой
-									 */
-									if (!(ctx.meta.goingBack && layer.fn.skipClearOnGoingBack)) {
-										layer.clear();
-										setState('layers', id, undefined);
-									}
-								}
-
-								ctx.audio.voiceStop();
-
-								const musics = Object.entries(ctx.store.audio.music).filter(([name]) => keepAudio.music && !keepAudio.music.has(name)).map(([_, h]) => h);
-								const sounds = Object.entries(ctx.store.audio.sound).filter(([name]) => keepAudio.sounds && !keepAudio.sounds.has(name)).map(([_, h]) => h);
-
-								for (const music of [...musics, ...sounds]) {
-									if (!music) continue;
-
-									music.stop();
-								}
-
-								resolve();
-							};
-						},
-						input(question, onInput, setup) {
-							return (resolve) => {
-								const error = (value: string) => {
-									setState('input', { error: value });
-								};
-
-								const onInputHandler: JSX.EventHandlerUnion<HTMLInputElement, InputEvent> = (event) => {
-									let value: string | undefined;
-
-									onInput({
-										input,
-										event,
-										error,
-										get value() {
-											if (value) return value;
-											return (value = escape(input.value));
-										},
-									});
-								};
-
-								const jsx = <input
-									type="text"
-									name="novely-input"
-									required
-									autocomplete="off"
-									onInput={onInputHandler}
-								/>;
-
-								const input = jsx as HTMLInputElement;
-
-								if (setup) {
-									setup(input, (callback) => setState('input', { cleanup: callback }));
-								}
-
-								setState('input', {
-									element: input,
-									question,
-									visible: true,
-									resolve,
+							if (!keep.has('showBackground')) setState('background', '#000');
+							if (!keep.has('choice'))
+								setState('choices', {
+									choices: [],
+									visible: false,
+									resolve: undefined,
+									question: '',
 								});
+							if (!keep.has('input'))
+								setState('input', {
+									element: undefined,
+									question: '',
+									visible: false,
+									error: '',
+								});
+							if (!keep.has('dialog')) setState('dialog', { visible: false, content: '', name: '' });
+							if (!keep.has('text')) setState('text', { content: '' });
+
+							for (const character of Object.keys(state.characters)) {
+								if (!keepCharacters.has(character)) setState('characters', character, { visible: false });
+							}
+
+							for (const [id, layer] of Object.entries(state.layers)) {
+								if (!layer) continue;
 
 								/**
-								 * Initially run the fake input event to handle errors & etc
+								 * Если происходит переход назад, и слой просит пропустить очистку при переходе назад, то не будем очищать слой
 								 */
-								input.dispatchEvent(new InputEvent('input', { bubbles: true }));
+								if (!(ctx.meta.goingBack && layer.fn.skipClearOnGoingBack)) {
+									layer.clear();
+									setState('layers', id, undefined);
+								}
+							}
+
+							ctx.audio.voiceStop();
+
+							const musics = Object.entries(ctx.store.audio.music).filter(([name]) => keepAudio.music && !keepAudio.music.has(name)).map(([_, h]) => h);
+							const sounds = Object.entries(ctx.store.audio.sound).filter(([name]) => keepAudio.sounds && !keepAudio.sounds.has(name)).map(([_, h]) => h);
+
+							for (const music of [...musics, ...sounds]) {
+								if (!music) continue;
+
+								music.stop();
+							}
+
+							resolve();
+						},
+						input(question, onInput, setup, resolve) {
+							const error = (value: string) => {
+								setState('input', { error: value });
 							};
+
+							const onInputHandler: JSX.EventHandlerUnion<HTMLInputElement, InputEvent> = (event) => {
+								let value: string | undefined;
+
+								onInput({
+									input,
+									event,
+									error,
+									get value() {
+										if (value) return value;
+										return (value = escape(input.value));
+									},
+								});
+							};
+
+							const input = <input
+								type="text"
+								name="novely-input"
+								required
+								autocomplete="off"
+								onInput={onInputHandler}
+							/> as HTMLInputElement;
+
+							setup(input, (callback) => setState('input', { cleanup: callback }));
+
+							setState('input', {
+								element: input,
+								question,
+								visible: true,
+								resolve,
+							});
+
+							/**
+							 * Initially run the fake input event to handle errors & etc
+							 */
+							input.dispatchEvent(new InputEvent('input', { bubbles: true }));
 						},
 						custom(fn, resolve) {
 							// eslint-disable-next-line @typescript-eslint/ban-ts-comment

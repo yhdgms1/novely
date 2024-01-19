@@ -1,6 +1,6 @@
-import type { BackgroundImage, DefaultActionProxyProvider, ValidAction } from './action';
+import type { ActionInputSetup, ActionInputOnInputMeta, BackgroundImage, DefaultActionProxyProvider, ValidAction } from './action';
 import type { Character } from './character';
-import type { CoreData, NovelyScreen, Save, Stack, StorageData, Thenable } from './types';
+import type { CoreData, NovelyScreen, Save, StorageData, Thenable } from './types';
 import type { BaseTranslationStrings } from './translations';
 import type { Stored } from './store';
 
@@ -83,26 +83,30 @@ type Renderer = {
 		dialog: (
 			content: string,
 			name: string,
-			character?: string,
-			emotion?: string,
-		) => (resolve: () => void) => void;
+			character: string | undefined,
+			emotion: string | undefined,
+			resolve: () => void
+		) => void;
 		choices: (
 			question: string,
 			choices: ([string, ValidAction[]] | [string, ValidAction[], () => boolean])[],
-		) => (resolve: (selected: number) => void) => void;
+			resolve: (selected: number) => void
+		) => void;
 		input: (
 			question: string,
-			onInput: Parameters<DefaultActionProxyProvider['input']>[1],
-			setup?: Parameters<DefaultActionProxyProvider['input']>[2],
-		) => (resolve: () => void) => void;
+			onInput: (meta: ActionInputOnInputMeta) => void,
+			setup: ActionInputSetup,
+			resolve: () => void
+		) => void;
 		clear: (
 			keep: Set<keyof DefaultActionProxyProvider>,
 			keepCharacters: Set<string>,
 			keepAudio: {
 				music: Set<string>,
 				sounds: Set<string>
-			}
-		) => (resolve: () => void) => void;
+			},
+			resolve: () => void
+		) => void;
 		custom: (
 			fn: Parameters<DefaultActionProxyProvider['custom']>[0],
 			push: () => void,
@@ -110,8 +114,10 @@ type Renderer = {
 		clearCustom: (
 			fn: Parameters<DefaultActionProxyProvider['custom']>[0],
 		) => void;
+
 		text: (str: string, resolve: () => void) => void;
 		vibrate: (pattern: VibratePattern) => void;
+
 		audio: {
 			voice: (source: string) => void;
 			voiceStop: () => void;

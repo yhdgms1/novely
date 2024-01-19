@@ -5,7 +5,7 @@ type ValidAction =
 	| ['choice', [number]]
 	| ['clear', [Set<keyof DefaultActionProxyProvider>?, Set<string>?]]
 	| ['condition', [() => boolean, Record<string, ValidAction[]>]]
-	| ['dialog', [string | undefined, Unwrappable<string>, string?]]
+	| ['dialog', [string | undefined, Unwrappable<string>, string | undefined]]
 	| ['end', []]
 	| ['showBackground', [string | NonEmptyRecord<BackgroundImage>]]
 	| ['playMusic', [string]]
@@ -221,4 +221,5 @@ export type {
 	FunctionableValue,
 	ActionInputOnInputMeta,
 	BackgroundImage,
+	ActionInputSetup
 };
