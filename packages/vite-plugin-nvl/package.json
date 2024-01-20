@@ -17,11 +17,11 @@
 	"devDependencies": {
 		"tsup": "^8.0.0",
 		"typescript": "^5.2.2",
-		"vite": "^5.0.0"
+		"vite": "^4.5.2"
 	},
 	"peerDependencies": {
 		"@novely/core": "latest",
-		"vite": "^5.0.0"
+		"vite": "^4.5.2"
 	},
 	"license": "ISC",
 	"bugs": {
