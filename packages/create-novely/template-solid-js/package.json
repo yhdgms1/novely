@@ -16,6 +16,6 @@
 	},
 	"devDependencies": {
 		"@novely/vite-plugin-nvl": "latest",
-		"vite": "~5.0.7"
+		"vite": "~4.5.2"
 	}
 }
