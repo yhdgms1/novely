@@ -2,9 +2,9 @@ import type {
 	Renderer,
 	RendererInit,
 	Character,
-	CustomHandler,
 	AudioHandle,
 	CharacterHandle,
+	CustomHandlerFunctionGetFn,
 } from '@novely/core';
 import type {
   StateScreen,
@@ -446,9 +446,8 @@ const createSolidRenderer = ({
 							input.dispatchEvent(new InputEvent('input', { bubbles: true }));
 						},
 						custom(fn, resolve) {
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
-							const get: Parameters<CustomHandler>[0] = (insert = true) => {
+							// @ts-expect-error I don't understand
+							const get: CustomHandlerFunctionGetFn = (insert = true) => {
 								const cached = state.layers[fn.key];
 
 								if (cached) {
@@ -491,7 +490,14 @@ const createSolidRenderer = ({
 								return state.layers[fn.key]!.value;
 							};
 
-							const result = fn(get, ctx.meta.goingBack, ctx.meta.preview);
+							const result = fn({
+								get,
+
+								goingBack: ctx.meta.goingBack,
+								preview: ctx.meta.preview,
+
+								lang: options.$.get().meta[0]
+							});
 
 							result ? result.then(resolve) : resolve();
 

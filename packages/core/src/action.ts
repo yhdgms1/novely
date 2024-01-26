@@ -58,7 +58,18 @@ type CustomHandlerGetResult<I extends boolean> = {
 	clear: (fn: () => void) => void;
 };
 
-type CustomHandlerFunction = (get: <I extends boolean>(insert?: I) => CustomHandlerGetResult<I>, goingBack: boolean, preview: boolean) => Thenable<void>;
+type CustomHandlerFunctionGetFn = <I extends boolean = true>(insert?: I) => CustomHandlerGetResult<I>;
+
+type CustomHandlerFunctionParameters = {
+	get: CustomHandlerFunctionGetFn;
+
+	goingBack: boolean;
+	preview: boolean;
+
+	lang: string;
+}
+
+type CustomHandlerFunction = (parameters: CustomHandlerFunctionParameters) => Thenable<void>;
 
 type CustomHandler = CustomHandlerFunction & {
 	callOnlyLatest?: boolean;
@@ -225,5 +236,7 @@ export type {
 	FunctionableValue,
 	ActionInputOnInputMeta,
 	BackgroundImage,
-	ActionInputSetup
+	ActionInputSetup,
+	CustomHandlerFunctionGetFn,
+	CustomHandlerFunctionParameters
 };

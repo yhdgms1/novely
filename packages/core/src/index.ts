@@ -9,6 +9,8 @@ export type {
 	CustomHandlerGetResult,
 	CustomHandlerGetResultDataFunction,
 	FunctionableValue,
+	CustomHandlerFunctionGetFn,
+	CustomHandlerFunctionParameters
 } from './action';
 export type { Emotions, Character } from './character';
 export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context } from './renderer';

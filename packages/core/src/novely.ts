@@ -1000,7 +1000,7 @@ const novely = <
 
 			if (ctx.meta.preview) return;
 
-			const handler: CustomHandler = (get) => {
+			const handler: CustomHandler = ({ get }) => {
 				const { clear } = get(false);
 				const char = ctx.getCharacter(character);
 
