@@ -748,6 +748,9 @@ const novely = <
 			if (!ctx.meta.restoring) setTimeout(push, isFunction(time) ? time() : time);
 		},
 		showBackground({ ctx }, [background]) {
+			// todo: test out this condition
+			// if (!ctx.meta.restoring || ctx.meta.goingBack)
+
 			ctx.background(background);
 			push(ctx);
 		},

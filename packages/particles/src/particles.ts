@@ -26,7 +26,7 @@ const createUniqId = (() => {
 })();
 
 const particles = (options: ParticlesOptions): CustomHandler => {
-	const handler: CustomHandler = async (get, goingBack, preview) => {
+	const handler: CustomHandler = async ({ get, goingBack, preview }) => {
 		if (preview) return;
 
 		if (!loaded) {
@@ -96,7 +96,7 @@ const particles = (options: ParticlesOptions): CustomHandler => {
 };
 
 const hide = () => {
-	const handler: CustomHandler = (get, _, preview) => {
+	const handler: CustomHandler = ({ get, preview }) => {
 		if (preview) return;
 
 		const layer = get(true);

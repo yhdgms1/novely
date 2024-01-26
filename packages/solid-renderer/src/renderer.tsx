@@ -22,7 +22,7 @@ import { render } from 'solid-js/web';
 import { Howl } from 'howler';
 
 import { createEmitter } from './emitter';
-import { canvasDrawImages, createImage, escape, toMedia, findLast, vibrate } from '$utils';
+import { canvasDrawImages, createImage, escape, vibrate, useBackground } from '$utils';
 import { Provider } from '$context';
 import { Game, MainMenu, Saves, Settings, Loading, CustomScreen } from '$screens';
 import { createGlobalState, useContextState } from './store';
@@ -77,8 +77,6 @@ const createSolidRenderer = ({
 	let options: RendererInit;
 
 	let root!: HTMLElement;
-
-	let currentBackground: string | Record<string, string>;
 
 	let unmount: (() => void) | undefined | void;
 
@@ -205,7 +203,14 @@ const createSolidRenderer = ({
 						root: root,
 
 						background(background) {
-							currentBackground = background;
+							/**
+							 * I'm not quite sure this should be inside the `state` because this is a function that does action
+							 * And state is about just describing stuff
+							 *
+							 * Also, not really relevent, but there is two contexts at the same `useContextState` and `renderer.getContext`,
+							 * Maybe even more if we cound core's stack context
+							 */
+							state.disposeBackground?.();
 
 							if (typeof background === 'string') {
 								setState('background', background);
@@ -213,45 +218,11 @@ const createSolidRenderer = ({
 								return;
 							}
 
-							/**
-							 * Change `portrait` to (orientation: portrait)
-							 * Same for `landscape`
-							 */
-							for (const [key, value] of Object.entries(background)) {
-								delete background[key];
+							const { dispose } = useBackground(background, (value) => {
+								setState('background', value);
+							})
 
-								background[toMedia(key)] = value;
-							}
-
-							const mediaQueries = Object.keys(background).map((media) => matchMedia(media));
-
-							/**
-							 * @todo: We can throttle that function, but should we?
-							 */
-							const handle = () => {
-								if (currentBackground !== background) {
-									for (const mq of mediaQueries) {
-										mq.onchange = null;
-									}
-
-									return;
-								}
-
-								/**
-								 * Using ponyfill here because `Array.prototype.findLast` has not enough support
-								 * @see https://caniuse.com/?search=findLast
-								 */
-								const last = findLast(mediaQueries, ({ matches }) => matches);
-								const bg = last ? background[last.media] : '';
-
-								setState('background', bg);
-							};
-
-							for (const mq of mediaQueries) {
-								mq.onchange = handle;
-							}
-
-							handle();
+							setState('disposeBackground', () => dispose);
 						},
 						character(character) {
 							const chars = this.store.characters;

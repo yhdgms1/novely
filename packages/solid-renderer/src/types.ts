@@ -139,6 +139,11 @@ type StateMeta = {
 }
 
 type AtContextState = {
+  disposeBackground: undefined | (() => void);
+
+  /**
+   * Background that should be rendered
+   */
   background: string;
   characters: Record<string, StateCharacter>;
   dialog: StateDialog;

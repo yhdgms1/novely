@@ -34,7 +34,7 @@ document.head.append(
 );
 
 const video = ({ controls, close, loop, url }: VideoParameters): CustomHandler => {
-	const handler: CustomHandler = (get, _) => {
+	const handler: CustomHandler = ({ get }) => {
 		const { element, delete: remove } = get(true);
 
 		element!.classList.add('novely-video--container');

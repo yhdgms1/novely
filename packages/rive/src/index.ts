@@ -48,7 +48,7 @@ type Data = Record<
 >;
 
 const show = (id: Id, setup: Setup) => {
-	const handler: CustomHandler = async (get) => {
+	const handler: CustomHandler = async ({ get }) => {
 		const { data: dataChannel, root, element, clear } = get(true);
 
 		const data = dataChannel() as unknown as Data;
@@ -143,7 +143,7 @@ const show = (id: Id, setup: Setup) => {
 };
 
 const animate = (id: Id, name: string) => {
-	const handler: CustomHandler = async (get) => {
+	const handler: CustomHandler = async ({ get }) => {
 		const { data: dataChannel } = get(true);
 
 		const data = dataChannel() as unknown as Data;
@@ -174,7 +174,7 @@ const animate = (id: Id, name: string) => {
 };
 
 const hide = (id: Id) => {
-	const handler: CustomHandler = async (get) => {
+	const handler: CustomHandler = async ({ get }) => {
 		const { data: dataChannel } = get(true);
 
 		const data = dataChannel() as unknown as Data;
@@ -203,7 +203,7 @@ const hide = (id: Id) => {
 };
 
 const remove = (id: Id) => {
-	const handler: CustomHandler = async (get) => {
+	const handler: CustomHandler = async ({ get }) => {
 		const { data: dataChannel } = get(true);
 
 		const data = dataChannel() as unknown as Data;

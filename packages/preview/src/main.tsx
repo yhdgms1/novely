@@ -314,4 +314,19 @@ engine.script({
 	]
 })
 
+false && engine.script({
+	start: [
+		action.showBackground({
+			'portrait': 'red',
+			'landscape': 'green',
+			'all': 'blue'
+		}),
+		action.text({
+			en: 'Click to continue',
+			ru: 'Нажмите, чтобы продолжить'
+		}),
+		action.showBackground('hotpink')
+	]
+})
+
 export {};
