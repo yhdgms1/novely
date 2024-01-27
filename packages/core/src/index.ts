@@ -34,3 +34,30 @@ export { novely } from './novely';
 export { localStorageStorage } from './storage';
 
 export { RU, EN, JP, KK } from './translations';
+
+import {
+	findLast,
+	findLastIndex,
+	throttle,
+	getLanguage,
+	isCSSImage,
+	isFunction,
+	isPromise
+} from './utils'
+
+/**
+ * Certain set of utils used in `@novely/core`
+ *
+ * This is better then making submodule `@novely/core/utils` because it is clearer how bundle is made in browser (iife) version
+ */
+const utils = {
+	findLast,
+	findLastIndex,
+	throttle,
+	getLanguage,
+	isCSSImage,
+	isFunction,
+	isPromise
+}
+
+export { utils }

@@ -130,9 +130,9 @@ const throttle = <Fn extends (...args: any[]) => any>(fn: Fn, ms: number) => {
 	return wrapper as unknown as (...args: Parameters<Fn>) => void;
 };
 
-const findLastIndex = <T>(array: T[], fn: (item: T, next?: T) => boolean) => {
+const findLastIndex = <T>(array: T[], fn: (this: T[], item: T, index: number, array: T[]) => boolean) => {
 	for (let i = array.length - 1; i >= 0; i--) {
-		if (fn(array[i], array[i + 1])) {
+		if (fn.call(array, array[i], i, array)) {
 			return i;
 		}
 	}
@@ -140,7 +140,11 @@ const findLastIndex = <T>(array: T[], fn: (item: T, next?: T) => boolean) => {
 	return -1;
 };
 
-const findLast = <T>(array: T[], fn: (item: T, next?: T) => boolean) => {
+/**
+ * Using this because `Array.prototype.findLast` has not enough support
+ * @see https://caniuse.com/?search=findLast
+ */
+const findLast = <T>(array: T[], fn: (this: T[], item: T, index: number, array: T[]) => boolean) => {
 	return array[findLastIndex(array, fn)];
 }
 
@@ -195,7 +199,9 @@ const createControlledPromise = <T = void>() => {
 };
 
 const findLastPathItemBeforeItemOfType = (path: Path, name: PathItem[0]) => {
-	const index = findLastIndex(path, ([_name, _value], next) => {
+	const index = findLastIndex(path, ([_name, _value], i, array) => {
+		const next = array[i + 1];
+
 		return isNull(_name) && isNumber(_value) && next != null && next[0] === name;
 	});
 

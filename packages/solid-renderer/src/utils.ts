@@ -1,4 +1,7 @@
 import { untrack, batch } from 'solid-js';
+import { utils } from '@novely/core';
+
+const { findLast } = utils;
 
 const capitalize = (str: string) => {
 	return str[0].toUpperCase() + str.slice(1);
@@ -72,20 +75,6 @@ const toMedia = (media: 'portrait' | 'landscape' | (string & Record<never, never
 	}
 
 	return media;
-};
-
-/**
- * Using ponyfill here because `Array.prototype.findLast` has not enough support
- * @see https://caniuse.com/?search=findLast
- */
-const findLast = <T>(array: T[], fn: (item: T) => boolean) => {
-	for (let i = array.length - 1; i >= 0; i--) {
-		if (fn(array[i])) {
-			return array[i];
-		}
-	}
-
-	return;
 };
 
 const simple = <T extends unknown[], R>(fn: (...args: T) => R) => {
@@ -163,6 +152,9 @@ const useBackground = (obj: Record<string, string>, set: (bg: string) => void) =
 
 	let disposed = false;
 
+	/**
+	 * In case this will be immideately disposed `handle` call is put in Promise
+	 */
 	Promise.resolve().then(() => {
 		if (disposed) return;
 
@@ -171,7 +163,7 @@ const useBackground = (obj: Record<string, string>, set: (bg: string) => void) =
 
 	return {
 		/**
-		 * Remove all listeners and etc
+		 * Remove all listeners
 		 */
 		dispose() {
 			for (const mq of mediaQueries) {
