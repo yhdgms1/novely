@@ -137,35 +137,21 @@ const getDocumentStyles = () => {
 	return css;
 }
 
-/**
- * Mutates object
- *
- * Changes `portrait` to `(orientation: portrait)` and same for `landscape`
- */
-const prepareMediaObject = (object: Record<string, string>) => {
-
-	for (const [key, value] of Object.entries(object)) {
-		delete object[key];
-
-		/**
-		 * Todo: Transform object into an array so if in browser (all browsers do that thing) order preserved it will not be lost in that mutating
-		 */
-		object[toMedia(key)] = value;
-	}
-}
-
 const useBackground = (obj: Record<string, string>, set: (bg: string) => void) => {
-	prepareMediaObject(obj);
+	/**
+	 * Changes `portrait` to `(orientation: portrait)` and same for `landscape`
+	 */
+	const backgrounds = Object.fromEntries(Object.entries(obj).map(([key, value]) => [toMedia(key), value]))
 
-	const mediaQueries = Object.keys(obj).map((media) => matchMedia(media));
+	const mediaQueries = Object.keys(backgrounds).map((media) => matchMedia(media));
 	const allMedia = mediaQueries.find(({ media }) => media === 'all');
 
 	const handle = () => {
 		const last = findLast(mediaQueries, ({ matches, media }) => matches && media !== 'all');
 		const bg = last
-			? obj[last.media]
+			? backgrounds[last.media]
 			: allMedia
-				? obj['all']
+				? backgrounds['all']
 				: '';
 
 		set(bg);
@@ -178,9 +164,9 @@ const useBackground = (obj: Record<string, string>, set: (bg: string) => void) =
 	let disposed = false;
 
 	Promise.resolve().then(() => {
-		if (!disposed) {
-			handle();
-		}
+		if (disposed) return;
+
+		handle();
 	})
 
 	return {
