@@ -1,5 +1,6 @@
 import type { BaseTranslationStrings } from '@novely/core';
 
+import * as Novely from '@novely/core';
 import { novely as createNovely, localStorageStorage, EN, RU, KK, JP } from '@novely/core';
 import { createSolidRenderer } from '@novely/solid-renderer';
 import { style } from './styles';
@@ -28,12 +29,21 @@ declare global {
 	}
 }
 
+Object.defineProperty(window, 'Novely', {
+	get() {
+		return Novely;
+	},
+
+	writable: false
+});
+
 window.RU = RU;
 window.EN = EN;
 window.KK = KK;
 window.JP = JP;
 
 let rendererOptions: CreateSolidRendererOptions | undefined;
+let storageKey: string = 'novely-saves';
 
 Object.defineProperty(window, 'rendererOptions', {
 	get() {
@@ -41,6 +51,15 @@ Object.defineProperty(window, 'rendererOptions', {
 	},
 	set(value: CreateSolidRendererOptions) {
 		window.solidRenderer = createSolidRenderer((rendererOptions = value));
+	},
+});
+
+Object.defineProperty(window, 'storageKey', {
+	get() {
+		return storageKey;
+	},
+	set(value: string) {
+		storageKey = value;
 	},
 });
 
@@ -82,7 +101,7 @@ Object.defineProperty(window, 'options', {
 			throw new Error(message);
 		}
 
-		options.storage ||= localStorageStorage({ key: 'novely-saves' });
+		options.storage ||= localStorageStorage({ key: storageKey });
 
 		window.novely = createNovely({
 			...options,
