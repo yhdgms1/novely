@@ -874,7 +874,7 @@ const novely = <
 				 */
 				const offset = isWithoutQuestion ? 0 : 1;
 
-				if (DEV && !unwrappedChoices[selected + offset]) {
+				if (DEV && !unwrappedChoices[selected]) {
 					throw new Error('Choice children is empty, either add content there or make item not selectable')
 				}
 
