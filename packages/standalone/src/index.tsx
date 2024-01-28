@@ -30,10 +30,7 @@ declare global {
 }
 
 Object.defineProperty(window, 'Novely', {
-	get() {
-		return Novely;
-	},
-
+	value: Novely,
 	writable: false
 });
 
