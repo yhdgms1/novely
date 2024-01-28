@@ -1,7 +1,22 @@
 import { untrack, batch } from 'solid-js';
-import { utils } from '@novely/core';
 
-const { findLast } = utils;
+const findLastIndex = <T>(array: T[], fn: (this: T[], item: T, index: number, array: T[]) => boolean) => {
+	for (let i = array.length - 1; i >= 0; i--) {
+		if (fn.call(array, array[i], i, array)) {
+			return i;
+		}
+	}
+
+	return -1;
+};
+
+/**
+ * Using this because `Array.prototype.findLast` has not enough support
+ * @see https://caniuse.com/?search=findLast
+ */
+const findLast = <T>(array: T[], fn: (this: T[], item: T, index: number, array: T[]) => boolean) => {
+	return array[findLastIndex(array, fn)];
+}
 
 const capitalize = (str: string) => {
 	return str[0].toUpperCase() + str.slice(1);
@@ -16,7 +31,12 @@ const isCSSImage = (str: string) => {
 const createImage = (src: string) => {
 	const img = document.createElement('img');
 
-	return (img.src = src), (img.crossOrigin = '*'), img;
+	Object.assign(img, {
+		src,
+		crossOrigin: '*'
+	});
+
+	return img;
 };
 
 /**
