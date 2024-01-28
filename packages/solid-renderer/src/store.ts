@@ -15,7 +15,7 @@ const atContextStateMap = new Map<
 
 const createContextState = () => {
   const [state, setState] = createStore<AtContextState>({
-    passedBackground: '',
+    disposeBackground: undefined,
     background: '',
     characters: {},
     dialog: {
