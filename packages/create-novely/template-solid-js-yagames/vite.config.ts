@@ -1,3 +1,4 @@
+import type { UserConfig } from 'vite'
 import { defineConfig } from 'vite'
 import { novelyPlugin } from '@novely/vite-plugin-nvl'
 import pluginSSL from '@vitejs/plugin-basic-ssl'
@@ -29,9 +30,6 @@ export default defineConfig(({ mode }) => {
 			cssCodeSplit: false,
 			target: ['chrome75', 'safari13'],
 		},
-		server: {
-			https: dev,
-		},
 		esbuild: {
 			charset: 'utf8',
 		},
@@ -39,5 +37,5 @@ export default defineConfig(({ mode }) => {
 		 * Relative path is required
 		 */
 		base: './',
-	}
+	} satisfies UserConfig;
 })

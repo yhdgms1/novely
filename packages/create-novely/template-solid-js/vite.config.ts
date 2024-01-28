@@ -1,3 +1,4 @@
+import type { UserConfig } from 'vite'
 import { defineConfig } from 'vite'
 import { novelyPlugin } from '@novely/vite-plugin-nvl'
 
@@ -29,5 +30,5 @@ export default defineConfig(() => {
 		 * Games is hosted on different resources, sometimes relative path is required
 		 */
 		base: './',
-	}
+	} satisfies UserConfig;
 })

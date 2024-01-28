@@ -51,7 +51,7 @@ async function main() {
 	if (!isEmpty(directory)) {
 		const dir = directory === '.' ? 'Current directory' : `Target directory "${directory}"`;
 
-		return console.error(`${dir} is 'not empty'. Operation cancelled.`);
+		return console.error(`${dir} is not empty. Operation cancelled.`);
 	}
 
 	fs.mkdirSync(directory, { recursive: true });
@@ -103,6 +103,10 @@ function isEmpty(path: string) {
 }
 
 function editFile(file: string, callback: (content: string) => string) {
+	if (!fs.existsSync(file)) {
+		return;
+	}
+
 	const content = fs.readFileSync(file, 'utf-8');
 	fs.writeFileSync(file, callback(content), 'utf-8');
 }
