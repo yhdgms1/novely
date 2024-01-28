@@ -15,7 +15,10 @@ type NovelyParameters = Omit<Parameters<typeof createNovely>[0], 't9n' | 'render
 
 declare global {
 	interface Window {
+		Novely: typeof import('@novely/core');
+
 		rendererOptions: CreateSolidRendererOptions;
+		storageKey: string;
 
 		RU: Record<BaseTranslationStrings, string>;
 		EN: Record<BaseTranslationStrings, string>;
