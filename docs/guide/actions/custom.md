@@ -8,10 +8,59 @@ Action that lets you define custom actions
 | :-----: | :-----------: | :------: | :-----------: |
 | handler | CustomHandler |    ❌    | Custom Action |
 
+```ts
+type CustomHandlerGetResultDataFunction = {
+	(data?: Record<string, unknown>): Record<string, unknown>;
+};
+
+type CustomHandlerGetResult<I extends boolean> = {
+	delete: () => void;
+	/**
+	 * Get or set data
+	 */
+	data: CustomHandlerGetResultDataFunction;
+	/**
+	 * <div data-id={string}></div> element if `I` is true
+	 */
+	element: I extends true ? HTMLDivElement : null;
+	/**
+	 * Root Novely's element
+	 */
+	root: HTMLElement;
+	/**
+	 * Set's clear function (this is called when action should be cleared)
+	 */
+	clear: (fn: () => void) => void;
+};
+
+type CustomHandlerFunctionGetFn = <I extends boolean = true>(insert?: I) => CustomHandlerGetResult<I>;
+
+type CustomHandlerFunctionParameters = {
+	get: CustomHandlerFunctionGetFn;
+
+	goingBack: boolean;
+	preview: boolean;
+
+	lang: string;
+}
+
+type CustomHandlerFunction = (parameters: CustomHandlerFunctionParameters) => Thenable<void>;
+
+type CustomHandler = CustomHandlerFunction & {
+	callOnlyLatest?: boolean;
+	requireUserAction?: boolean;
+	skipClearOnGoingBack?: boolean;
+
+	id?: string | symbol;
+
+	key: string;
+};
+```
+
 ## Usage
 
 ```ts
-const action: CustomHandler = (get, goingBack, preview) => {
+const action: CustomHandler = ({ get, goingBack, preview, lang }) => {
   /**
    * Preview is an environment in the saves page
    */
@@ -60,6 +109,9 @@ const action: CustomHandler = (get, goingBack, preview) => {
     // Player pressed the `Back` button
   }
 
+  if (lang === 'RU_ru') {
+    console.log('Russian detected')
+  }
 };
 
 //! Important // [!code warning]
