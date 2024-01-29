@@ -1023,16 +1023,14 @@ const novely = <
 
 				target.classList.add(...classNames);
 
-				const timeoutId = setTimeout(() => {
+				const removeClassNames = () => {
 					target.classList.remove(...classNames);
-				}, timeout);
+				}
+
+				const timeoutId = setTimeout(removeClassNames, timeout);
 
 				clear(() => {
-					target.classList.remove(...classNames);
-
-					/**
-					 * Clear timeout, because when you will game re-runs some callback might remove classes from character
-					 */
+					removeClassNames();
 					clearTimeout(timeoutId);
 				});
 			};
