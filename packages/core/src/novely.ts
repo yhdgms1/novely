@@ -22,6 +22,7 @@ import type {
 import type { Context, Renderer, RendererInit } from './renderer';
 import type { TranslationActions, Pluralization } from './translation';
 import type { BaseTranslationStrings } from './translations';
+import type { MatchActionInit } from './utils';
 import {
 	matchAction,
 	isNumber,
@@ -394,14 +395,16 @@ const novely = <
 
 	const initial = getDefaultSave(klona(defaultState));
 
-	/**
-	 * Try to save data when page is switched
-	 */
-	addEventListener('visibilitychange', () => {
+	const onVisibilityChange = () => {
 		if (document.visibilityState === 'hidden') {
 			throttledEmergencyOnStorageDataChange();
 		}
-	});
+	}
+
+	/**
+	 * Try to save data when page is switched
+	 */
+	addEventListener('visibilitychange', onVisibilityChange);
 
 	/**
 	 * Try to save data when page is going to be unloaded
@@ -496,7 +499,7 @@ const novely = <
 	let interacted = 0;
 
 	/**
-	 * Restore
+	 * Restore save or if none is passed then look for latest save, if there is no saves will create a new save
 	 */
 	const restore = async (save?: Save) => {
 		if (!$$.get().dataLoaded) return;
@@ -669,7 +672,6 @@ const novely = <
 		times.clear();
 	};
 
-
 	const back = async () => {
 		/**
 		 * Back also happens in main context only
@@ -741,44 +743,93 @@ const novely = <
 	 */
 	useStack(MAIN_CONTEXT_KEY).push(initial);
 
-	renderer.ui.start();
+	const UIInstance = renderer.ui.start();
 
-	const match = matchAction(renderer.getContext, {
-		wait({ ctx }, [time]) {
-			if (!ctx.meta.restoring) setTimeout(push, isFunction(time) ? time() : time);
+	const enmemory = (ctx: Context) => {
+		if (ctx.meta.restoring) return;
+
+		const stack = useStack(ctx);
+
+		const current = klona(stack.value);
+
+		current[2][1] = 'auto';
+
+		stack.push(current);
+
+		save(true, 'auto');
+	};
+
+	const next = (ctx: Context) => {
+		const stack = useStack(ctx);
+		const path = stack.value[0];
+
+		/**
+		 * Last path element
+		 */
+		const last = path.at(-1);
+
+		if (last && (isNull(last[0]) || last[0] === 'jump') && isNumber(last[1])) {
+			last[1]++;
+		} else {
+			path.push([null, 0]);
+		}
+	};
+
+	const matchActionInit = {
+		getContext: renderer.getContext,
+		push(ctx) {
+			if (ctx.meta.restoring) return;
+
+			next(ctx);
+			render(ctx);
 		},
-		showBackground({ ctx }, [background]) {
-			// todo: test out this condition
-			// if (!ctx.meta.restoring || ctx.meta.goingBack)
+		forward(ctx) {
+			/**
+			 * There should be way to determine when it's better to enmemory before push and when after
+			 */
+			if (!ctx.meta.preview) enmemory(ctx);
 
+			matchActionInit.push(ctx);
+
+			if (!ctx.meta.preview) interactivity(true);
+		},
+	} satisfies MatchActionInit;
+
+	const match = matchAction(matchActionInit, {
+		wait({ ctx, push }, [time]) {
+			if (ctx.meta.restoring) return;
+
+			setTimeout(push, isFunction(time) ? time() : time);
+		},
+		showBackground({ ctx, push }, [background]) {
 			ctx.background(background);
-			push(ctx);
+			push();
 		},
-		playMusic({ ctx }, [source]) {
+		playMusic({ ctx, push }, [source]) {
 			ctx.audio.music(source, 'music', true).play();
-			push(ctx);
+			push();
 		},
-		stopMusic({ ctx }, [source]) {
+		stopMusic({ ctx, push }, [source]) {
 			ctx.audio.music(source, 'music').stop();
-			push(ctx);
+			push();
 		},
-		playSound({ ctx }, [source, loop]) {
+		playSound({ ctx, push }, [source, loop]) {
 			ctx.audio.music(source, 'sound', loop || false).play();
-			push(ctx);
+			push();
 		},
-		stopSound({ ctx }, [source]) {
+		stopSound({ ctx, push }, [source]) {
 			ctx.audio.music(source, 'sound').stop();
-			push(ctx);
+			push();
 		},
-		voice({ ctx }, [source]) {
+		voice({ ctx, push }, [source]) {
 			ctx.audio.voice(source);
-			push(ctx);
+			push();
 		},
-		stopVoice({ ctx }) {
+		stopVoice({ ctx, push }) {
 			ctx.audio.voiceStop();
-			push(ctx);
+			push();
 		},
-		showCharacter({ ctx }, [character, emotion, className, style]) {
+		showCharacter({ ctx, push }, [character, emotion, className, style]) {
 			if (DEV && !characters[character].emotions[emotion]) {
 				throw new Error(`Attempt to show character "${character}" with unknown emotion "${emotion}"`)
 			}
@@ -788,14 +839,12 @@ const novely = <
 			handle.append(className, style, ctx.meta.restoring);
 			handle.emotion(emotion, true);
 
-			push(ctx);
+			push();
 		},
-		hideCharacter({ ctx }, [character, className, style, duration]) {
-			ctx.character(character).remove(className, style, duration, ctx.meta.restoring).then(() => {
-				push(ctx);
-			})
+		hideCharacter({ ctx, push }, [character, className, style, duration]) {
+			ctx.character(character).remove(className, style, duration, ctx.meta.restoring).then(push)
 		},
-		dialog({ ctx, data }, [character, content, emotion]) {
+		dialog({ ctx, data, forward }, [character, content, emotion]) {
 			/**
 			 * Person name
 			 */
@@ -824,14 +873,14 @@ const novely = <
 				unwrap(name, data),
 				character,
 				emotion,
-				() => forward(ctx)
+				forward
 			);
 		},
-		function({ ctx }, [fn]) {
+		function({ ctx, push }, [fn]) {
 			const result = fn(ctx.meta.restoring, ctx.meta.goingBack, ctx.meta.preview);
 
 			if (!ctx.meta.restoring) {
-				result ? result.then(() => push(ctx)) : push(ctx);
+				result ? result.then(push) : push();
 			}
 
 			return result;
@@ -907,7 +956,7 @@ const novely = <
 				data,
 			});
 		},
-		clear({ ctx }, [keep, characters, audio]) {
+		clear({ ctx, push }, [keep, characters, audio]) {
 			/**
 			 * Remove vibration
 			 */
@@ -920,7 +969,7 @@ const novely = <
 				keep || EMPTY_SET,
 				characters || EMPTY_SET,
 				audio || { music: EMPTY_SET, sounds: EMPTY_SET },
-				() => push(ctx)
+				push
 			);
 		},
 		condition({ ctx }, [condition, variants]) {
@@ -963,15 +1012,15 @@ const novely = <
 			 */
 			times.clear();
 		},
-		input({ ctx, data }, [question, onInput, setup]) {
+		input({ ctx, data, forward }, [question, onInput, setup]) {
 			ctx.input(
 				unwrap(question, data),
 				onInput,
 				setup || noop,
-				() => forward(ctx)
+				forward
 			);
 		},
-		custom({ ctx }, [handler]) {
+		custom({ ctx, push }, [handler]) {
 			const result = ctx.custom(handler, () => {
 				if (ctx.meta.restoring) return;
 
@@ -980,17 +1029,17 @@ const novely = <
 					interactivity(true);
 				}
 
-				push(ctx);
+				push();
 			});
 
 			return result;
 		},
-		vibrate({ ctx }, pattern) {
+		vibrate({ ctx, push }, pattern) {
 			ctx.vibrate(pattern);
-			push(ctx);
+			push();
 		},
-		next({ ctx }) {
-			push(ctx);
+		next({ ctx, push }) {
+			push();
 		},
 		animateCharacter({ ctx, data }, [character, timeout, ...classes]) {
 			if (DEV && classes.length === 0) {
@@ -1045,14 +1094,14 @@ const novely = <
 				data,
 			});
 		},
-		text({ ctx, data }, text) {
+		text({ ctx, data, forward }, text) {
 			const string = text.map((content) => unwrap(content, data)).join(' ');
 
 			if (DEV && string.length === 0) {
 				throw new Error(`Action Text was called with empty string or array`)
 			}
 
-			ctx.text(string, () => forward(ctx));
+			ctx.text(string, forward);
 		},
 		exit({ ctx, data }) {
 			if (ctx.meta.restoring) return;
@@ -1139,7 +1188,7 @@ const novely = <
 
 			render(ctx);
 		},
-		preload({ ctx }, [source]) {
+		preload({ ctx, push }, [source]) {
 			if (!ctx.meta.goingBack && !ctx.meta.restoring && !PRELOADED_ASSETS.has(source)) {
 				/**
 				 * Make image load
@@ -1147,7 +1196,7 @@ const novely = <
 				PRELOADED_ASSETS.add(renderer.misc.preloadImage(source));
 			}
 
-			push(ctx);
+			push();
 		},
 		block({ ctx }, [scene]) {
 			if (DEV && !story[scene]) {
@@ -1168,36 +1217,6 @@ const novely = <
 		},
 	});
 
-	const enmemory = (ctx: Context) => {
-		if (ctx.meta.restoring) return;
-
-		const stack = useStack(ctx);
-
-		const current = klona(stack.value);
-
-		current[2][1] = 'auto';
-
-		stack.push(current);
-
-		save(true, 'auto');
-	};
-
-	const next = (ctx: Context) => {
-		const stack = useStack(ctx);
-		const path = stack.value[0];
-
-		/**
-		 * Last path element
-		 */
-		const last = path.at(-1);
-
-		if (last && (isNull(last[0]) || last[0] === 'jump') && isNumber(last[1])) {
-			last[1]++;
-		} else {
-			path.push([null, 0]);
-		}
-	};
-
 	const render = (ctx: Context) => {
 		const stack = useStack(ctx);
 		const referred = refer(stack.value[0]);
@@ -1215,16 +1234,6 @@ const novely = <
 				data: stack.value[1]
 			});
 		}
-	};
-
-	const push = (ctx: Context) => {
-		if (!ctx.meta.restoring) next(ctx), render(ctx);
-	};
-
-	const forward = (ctx: Context) => {
-		if (!ctx.meta.preview) enmemory(ctx);
-		push(ctx);
-		if (!ctx.meta.preview) interactivity(true);
 	};
 
 	const interactivity = (value = false) => {
@@ -1306,6 +1315,18 @@ const novely = <
 		unwrap(content: Exclude<Unwrappable<Languages>, Record<string, string>> | Record<Languages, string>) {
 			return unwrap(content, $.get().data);
 		},
+		/**
+		 * Cancel data loading, hide UI, ignore page change events
+		 * Data updates still will work in case Novely already was loaded
+		 */
+		destroy() {
+			dataLoaded.cancel();
+
+			UIInstance.unmount();
+
+			removeEventListener('visibilitychange', onVisibilityChange);
+			removeEventListener('beforeunload', throttledEmergencyOnStorageDataChange);
+		}
 	};
 };
 

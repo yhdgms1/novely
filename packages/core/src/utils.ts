@@ -7,7 +7,10 @@ import { STACK_MAP } from './shared';
 
 type MatchActionParams = {
 	data: Record<string, unknown>
-	ctx: Context
+	ctx: Context;
+
+	push: () => void;
+	forward: () => void;
 }
 
 type MatchActionMap = {
@@ -29,13 +32,27 @@ type MatchActionParameters = {
 	data: Record<string, unknown>;
 }
 
-const matchAction = <M extends MatchActionMapComplete>(getContext: (name: string) => Context, values: M) => {
+type MatchActionInit = {
+	push: (ctx: Context) => void;
+	forward: (ctx: Context) => void;
+
+	getContext: (name: string) => Context
+}
+
+const matchAction = <M extends MatchActionMapComplete>({ getContext, push, forward }: MatchActionInit, values: M) => {
 	return (action: keyof MatchActionMapComplete, props: any, { ctx, data }: MatchActionParameters) => {
 		const context = typeof ctx === 'string' ? getContext(ctx) : ctx;
 
 		return values[action]({
 			ctx: context,
 			data,
+
+			push() {
+				push(context)
+			},
+			forward() {
+				forward(context)
+			}
 		}, props);
 	};
 };
@@ -624,3 +641,5 @@ export {
 	getStack,
 	createUseStackFunction
 };
+
+export type { MatchActionInit }
