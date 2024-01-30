@@ -645,9 +645,6 @@ const novely = <
 		renderer.ui.showScreen('mainmenu');
 		ctx.audio.destroy();
 
-		/**
-		 * First two save elements and it's type
-		 */
 		const [time, type] = current[2];
 
 		/**
@@ -775,7 +772,7 @@ const novely = <
 		}
 	};
 
-	const matchActionInit = {
+	const matchActionInit: MatchActionInit = {
 		getContext: renderer.getContext,
 		push(ctx) {
 			if (ctx.meta.restoring) return;
@@ -793,7 +790,7 @@ const novely = <
 
 			if (!ctx.meta.preview) interactivity(true);
 		},
-	} satisfies MatchActionInit;
+	};
 
 	const match = matchAction(matchActionInit, {
 		wait({ ctx, push }, [time]) {

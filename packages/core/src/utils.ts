@@ -48,9 +48,13 @@ const matchAction = <M extends MatchActionMapComplete>({ getContext, push, forwa
 			data,
 
 			push() {
+				if (context.meta.preview) return;
+
 				push(context)
 			},
 			forward() {
+				if (context.meta.preview) return;
+
 				forward(context)
 			}
 		}, props);

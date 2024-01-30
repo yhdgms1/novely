@@ -21,7 +21,7 @@ interface StateCharacter {
   /**
    * `id` для `setTimeout`, который отвечает за `duration` в `hideCharacter`
    */
-  timeoutId: number;
+  timeoutId: ReturnType<typeof setTimeout>;
 }
 
 interface StateDialog {
