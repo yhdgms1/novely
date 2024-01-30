@@ -585,7 +585,7 @@ const novely = <
 			});
 		});
 
-		context.meta.restoring = context.meta.restoring = false;
+		context.meta.restoring = context.meta.goingBack = false;
 
 		render(context);
 	};
