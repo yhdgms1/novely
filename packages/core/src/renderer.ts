@@ -17,6 +17,8 @@ interface CharacterHandle {
 		restoring?: boolean
 	) => Promise<void>;
 
+	animate: (timeout: number, classes: string[]) => void;
+
 	emotions: Record<string, HTMLImageElement[]>;
 }
 
@@ -149,8 +151,6 @@ type Renderer = {
 
 		store: unknown;
 		setStore: unknown;
-
-		getCharacter: (character: string) => CharacterHandle | undefined;
 	}
 
 	removeContext: (context: string) => void;

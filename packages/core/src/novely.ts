@@ -1035,10 +1035,10 @@ const novely = <
 			ctx.vibrate(pattern);
 			push();
 		},
-		next({ ctx, push }) {
+		next({ push }) {
 			push();
 		},
-		animateCharacter({ ctx, data }, [character, timeout, ...classes]) {
+		animateCharacter({ ctx, push }, [character, timeout, ...classes]) {
 			if (DEV && classes.length === 0) {
 				throw new Error('Attempt to use AnimateCharacter without classes. Classes should be provided [https://novely.pages.dev/guide/actions/animateCharacter.html]')
 			}
@@ -1049,47 +1049,9 @@ const novely = <
 
 			if (ctx.meta.preview) return;
 
-			const handler: CustomHandler = ({ get }) => {
-				const { clear } = get(false);
-				const char = ctx.getCharacter(character);
+			ctx.character(character).animate(timeout, classes);
 
-				/**
-				 * Character is not defined, maybe, `animateCharacter` was called before `showCharacter` OR character was not just loaded yet
-				 */
-				if (!char) return;
-
-				const target = char.canvas;
-
-				/**
-				 * Character is not found
-				 */
-				if (!target) return;
-
-				const classNames = classes.filter((className) => !target.classList.contains(className));
-
-				target.classList.add(...classNames);
-
-				const removeClassNames = () => {
-					target.classList.remove(...classNames);
-				}
-
-				const timeoutId = setTimeout(removeClassNames, timeout);
-
-				clear(() => {
-					removeClassNames();
-					clearTimeout(timeoutId);
-				});
-			};
-
-			handler.key = '@@internal-animate-character';
-
-			/**
-			 * `callOnlyLatest` property will not have any effect, because `custom` is called directly
-			 */
-			match('custom', [handler], {
-				ctx,
-				data,
-			});
+			push();
 		},
 		text({ ctx, data, forward }, text) {
 			const string = text.map((content) => unwrap(content, data)).join(' ');

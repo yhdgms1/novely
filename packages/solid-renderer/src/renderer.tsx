@@ -5,6 +5,7 @@ import type {
 	AudioHandle,
 	CharacterHandle,
 	CustomHandlerFunctionGetFn,
+	CustomHandler
 } from '@novely/core';
 import type {
   StateScreen,
@@ -305,6 +306,43 @@ const createSolidRenderer = ({
 										setState('characters', character, { style, timeoutId });
 									})
 								},
+								animate(timeout, classes) {
+									/**
+									 * Using custom action it is easier to make this action
+									 */
+									const handler: CustomHandler = ({ get }) => {
+										const { clear } = get(false);
+
+										const target = this.canvas;
+
+										/**
+										 * Character is not found
+										 */
+										if (!target) return;
+
+										const classNames = classes.filter((className) => !target.classList.contains(className));
+
+										target.classList.add(...classNames);
+
+										const removeClassNames = () => {
+											target.classList.remove(...classNames);
+										}
+
+										const timeoutId = setTimeout(removeClassNames, timeout);
+
+										clear(() => {
+											removeClassNames();
+											clearTimeout(timeoutId);
+										});
+									};
+
+									/**
+									 * `callOnlyLatest` property will not have any effect, because `custom` is called directly
+									 */
+									handler.key = '@@internal-animate-character';
+
+									ctx.custom(handler, () => {});
+								}
 							} satisfies CharacterHandle;
 
 							ctx.setStore((store) => store.characters[character] = characterHandle)
@@ -608,10 +646,6 @@ const createSolidRenderer = ({
 						setStore: (fn) => {
 							setState('store', produce(fn))
 						},
-
-						getCharacter(character) {
-							return state.store.characters[character]
-						}
 					};
 
 					CTX_MAP.set(name, ctx);
