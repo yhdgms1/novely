@@ -507,16 +507,19 @@ const novely = <
 		let latest = save || $.get().saves.at(-1);
 
 		/**
-		 * When there is no game, then make a new game
+		 * When there is no save, make a new save
 		 */
 		if (!latest) {
-			$.set({
-				saves: [initial],
-				data: klona(defaultData) as Data,
-				meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED, 1, 1, 1],
-			});
+			latest = klona(initial)
 
-			latest = klona(initial);
+			$.update((prev) => {
+				/**
+				 * `latest` will be not undefined because this callback called immediately
+				 */
+				prev.saves.push(latest!);
+
+				return prev
+			})
 		}
 
 		const context = renderer.getContext(MAIN_CONTEXT_KEY);
@@ -562,7 +565,9 @@ const novely = <
 					 *  ['dialog', ...props]
 					 * ]
 					 *
-					 * We catch these custom actions and call their clear methods so there is no side effects from future in the past
+					 * We catch these custom actions that are gone and
+					 * call their clear methods so there is no side effects
+					 * from future in the past
 					 */
 					if (action === 'custom') {
 						context.clearCustom(props[0]);
