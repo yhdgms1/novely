@@ -614,6 +614,10 @@ const createUseStackFunction = (renderer: Renderer) => {
 	return useStack;
 }
 
+const mapSet = <T, K>(set: Set<T>, fn: (value: T, index: number, array: T[]) => K): K[] => {
+	return [...set].map(fn);
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -643,7 +647,8 @@ export {
 	getActionsFromPath,
 	createQueueProcessor,
 	getStack,
-	createUseStackFunction
+	createUseStackFunction,
+	mapSet
 };
 
 export type { MatchActionInit }

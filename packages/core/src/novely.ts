@@ -44,7 +44,8 @@ import {
 	isExitImpossible,
 	getActionsFromPath,
 	createUseStackFunction,
-	createQueueProcessor
+	createQueueProcessor,
+	mapSet
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
@@ -127,6 +128,11 @@ interface NovelyInit<
 	 */
 	throttleTimeout?: number;
 	/**
+	 * Limits how many assets can be downloaded parallelly
+	 * @default 30
+	 */
+	parallelAssetsDownloadLimit?: number;
+	/**
 	 * Custom language detector
 	 * @param languages Supported languages aka `languages: []` in the config
 	 * @example ```ts
@@ -177,8 +183,10 @@ const novely = <
 	overrideLanguage = false,
 	askBeforeExit = true,
 	preloadAssets = 'lazy',
+	parallelAssetsDownloadLimit = 15
 }: NovelyInit<Languages, Characters, StateScheme, DataScheme>) => {
 	const limitScript = pLimit(1);
+	const limitAssetsDownload = pLimit(parallelAssetsDownloadLimit);
 
 	const story: Story = {};
 
@@ -210,7 +218,19 @@ const novely = <
 		if (preloadAssets === 'blocking' && ASSETS_TO_PRELOAD.size > 0) {
 			renderer.ui.showScreen('loading');
 
-			await renderer.misc.preloadImagesBlocking(ASSETS_TO_PRELOAD);
+			// @todo: limit (and also preload) audio
+
+			const list = mapSet(ASSETS_TO_PRELOAD, (asset) => {
+				return limitAssetsDownload(() => renderer.misc.preloadImageBlocking(asset))
+			});
+
+			/**
+			 * `allSettled` is used because even if error happens game should run
+			 *
+			 * Ideally, there could be a notification for player, maybe developer could be also notified
+			 * But I don't think it's really needed
+			 */
+			await Promise.allSettled(list);
 		}
 
 		const screen = renderer.ui.getScreen();

@@ -31,16 +31,17 @@ type AudioHandle = {
 type Renderer = {
 	misc: {
 		/**
-		 * Function to preload images async and await for all images to load or fail
-		 * @param images Set of images to load
-		 */
-		preloadImagesBlocking: (images: Set<string>) => Promise<PromiseSettledResult<unknown>[]>;
-		/**
 		 * Function to preload image sync
 		 * @param image Image URL
 		 * @returns Image URL
 		 */
 		preloadImage: <T extends string>(image: T) => T;
+		/**
+		 * Function to preload image async
+		 * @param image Image URL
+		 * @returns Promise
+		 */
+		preloadImageBlocking: (image: string) => Promise<void>;
 
 		/**
 		 * Function to preload audio

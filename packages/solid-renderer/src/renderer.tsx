@@ -680,30 +680,21 @@ const createSolidRenderer = ({
 					},
 				},
 				misc: {
-					preloadImagesBlocking: (images) => {
-						return Promise.allSettled(
-							[...images].map((src) => {
-								const img = document.createElement('img');
-
-								img.src = src;
-
-								return new Promise<unknown>((resolve, reject) => {
-									/**
-									 * Image is already loaded
-									 */
-									if (img.complete && img.naturalHeight !== 0) {
-										resolve(void 0);
-									}
-
-									img.addEventListener('load', resolve);
-									img.addEventListener('abort', reject);
-									img.addEventListener('error', reject);
-								});
-							}),
-						);
-					},
 					preloadImage: (image) => {
 						return (document.createElement('img').src = image);
+					},
+					preloadImageBlocking: (image) => {
+						const img = createImage(image);
+
+						return new Promise<any>((resolve) => {
+							if (img.complete && img.naturalHeight !== 0) {
+								resolve(void 0);
+							}
+
+							img.addEventListener('load', resolve);
+							img.addEventListener('abort', resolve);
+							img.addEventListener('error', resolve);
+						});
 					},
 					preloadAudioBlocking: (type, source) => {
 						/**
