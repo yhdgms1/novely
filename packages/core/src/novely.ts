@@ -163,7 +163,7 @@ interface NovelyInit<
 	/**
 	 * Fetching function
 	 */
-	fetch: typeof fetch
+	fetch?: typeof fetch
 }
 
 const novely = <
