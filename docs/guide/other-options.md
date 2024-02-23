@@ -136,3 +136,18 @@ Before game starts Novely will download all the backgrounds and user expressions
 #### Lazy
 
 Default mode. Nothing will be loaded before. Backgrounds and etc will be loaded when used. You still can preload some assets by using [preload](/guide/actions/preload) action
+
+### Fetch
+
+```ts
+const engine = novely({
+  ...,
+  fetch: (...args) => {
+    console.log(`Fetching with args: ` args);
+
+    return window.fetch(...args);
+  }
+})
+```
+
+Novely uses `fetch` in some places, if you want to override fetch function you can pass it here

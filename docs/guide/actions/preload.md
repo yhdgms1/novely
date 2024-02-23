@@ -1,6 +1,6 @@
 # Preload
 
-Preload assets so they will not be loading on player's eyes
+Preload assets so they will not be loading on player's eyes. Works only with image assets
 
 ## Parameters
 

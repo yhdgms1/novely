@@ -27,19 +27,16 @@ const engine = novely({
         /**
          * But also an object, which contains the head, and body parts of a character
          */
-        horny: {
+        angry: [
           /**
-           * Head in this example is `horny`
+           * Head in this example is `angry`
            */
-          head: "./naruto-horny__head.png",
+          "./naruto-angry__head.png",
           /**
            * But body uses regular (there is no 'horny' or any other thing) texture
            */
-          body: {
-            left: "./naruto__body-left.png",
-            right: "./naruto__body-left.png",
-          },
-        },
+          "./naruto__body.png"
+        ],
       },
     },
     Sakura: {
