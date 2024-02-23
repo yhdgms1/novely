@@ -696,16 +696,18 @@ const createSolidRenderer = ({
 							img.addEventListener('error', resolve);
 						});
 					},
-					preloadAudioBlocking: (type, source) => {
-						/**
-						 * It's unlikely that we really need to pre-load this audio.
-						 */
-						if (getVolume(type) === 0) return Promise.resolve()
-
+					preloadAudioBlocking: (src) => {
 						return new Promise((resolve) => {
-							// todo: there should be another way
-							const howl = getHowl(renderer.getContext(options.mainContextKey), type, source, false)
+							/**
+							 * Howler automatically caches loaded sounds so this is enough
+							 */
+							const howl = new Howl({
+								src,
+							});
 
+							/**
+							 * @todo: can this happen?
+							 */
 							if (howl.state() === 'loaded') {
 								resolve();
 								return;

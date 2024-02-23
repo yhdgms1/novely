@@ -4,7 +4,6 @@ import type {
 	Story,
 	ValidAction,
 	Unwrappable,
-	CustomHandler,
 } from './action';
 import type { Storage } from './storage';
 import type {
@@ -15,7 +14,6 @@ import type {
 	DeepPartial,
 	NovelyScreen,
 	Migration,
-	ActionFN,
 	CoreData,
 	Path
 } from './types';
@@ -28,7 +26,6 @@ import {
 	isNumber,
 	isNull,
 	isEmpty,
-	isCSSImage,
 	getLanguage as defaultGetLanguage,
 	throttle,
 	isFunction,
@@ -45,13 +42,17 @@ import {
 	getActionsFromPath,
 	createUseStackFunction,
 	createQueueProcessor,
-	mapSet
+	mapSet,
+	isAudioAction,
+	isString,
+	isImageAsset,
+	getResourseType
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
 import { deepmerge } from '@novely/deepmerge';
 import { klona } from 'klona/json';
-import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, MAIN_CONTEXT_KEY, AUDIO_ACTIONS } from './constants';
+import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, MAIN_CONTEXT_KEY } from './constants';
 import { replace as replaceT9N } from './translation';
 import { localStorageStorage } from './storage';
 import pLimit from 'p-limit';
@@ -129,7 +130,7 @@ interface NovelyInit<
 	throttleTimeout?: number;
 	/**
 	 * Limits how many assets can be downloaded parallelly
-	 * @default 30
+	 * @default 15
 	 */
 	parallelAssetsDownloadLimit?: number;
 	/**
@@ -159,6 +160,10 @@ interface NovelyInit<
 	 * @default "lazy"
 	 */
 	preloadAssets?: 'lazy' | 'blocking';
+	/**
+	 * Fetching function
+	 */
+	fetch: typeof fetch
 }
 
 const novely = <
@@ -183,8 +188,14 @@ const novely = <
 	overrideLanguage = false,
 	askBeforeExit = true,
 	preloadAssets = 'lazy',
-	parallelAssetsDownloadLimit = 15
+	parallelAssetsDownloadLimit = 15,
+	fetch: request = fetch
 }: NovelyInit<Languages, Characters, StateScheme, DataScheme>) => {
+	/**
+	 * Local type declaration to not repeat code
+	 */
+	type Actions = ActionProxyProvider<Characters, Languages>;
+
 	const limitScript = pLimit(1);
 	const limitAssetsDownload = pLimit(parallelAssetsDownloadLimit);
 
@@ -218,10 +229,24 @@ const novely = <
 		if (preloadAssets === 'blocking' && ASSETS_TO_PRELOAD.size > 0) {
 			renderer.ui.showScreen('loading');
 
-			// @todo: limit (and also preload) audio
+			const { preloadAudioBlocking, preloadImageBlocking } = renderer.misc;
 
 			const list = mapSet(ASSETS_TO_PRELOAD, (asset) => {
-				return limitAssetsDownload(() => renderer.misc.preloadImageBlocking(asset))
+				return limitAssetsDownload(async () => {
+					const type = await getResourseType(request, asset);
+
+					switch (type) {
+						case 'audio': {
+							await preloadAudioBlocking(asset);
+							break;
+						}
+
+						case 'image': {
+							await preloadImageBlocking(asset);
+							break;
+						}
+					}
+				})
 			});
 
 			/**
@@ -274,21 +299,41 @@ const novely = <
 		return limitScript(() => scriptBase(part));
 	}
 
-	const action = new Proxy({} as ActionProxyProvider<Characters, Languages>, {
-		get(_, prop) {
-			return (...props: Parameters<ActionFN>) => {
+	const action = new Proxy({} as Actions, {
+		get<Action extends keyof Actions>(_: unknown, action: Action) {
+			return (...props: Parameters<Actions[Action]>) => {
 				if (preloadAssets === 'blocking') {
+					if (action === 'showBackground') {
+						/**
+						 * There are two types of showBackground currently
+						 *
+						 * Parameter is a `string`
+						 * Parameter is a `Record<'CSS Media', string>`
+						 */
+						if (isImageAsset(props[0])) {
+							ASSETS_TO_PRELOAD.add(props[0]);
+						}
+
+						if (props[0] && typeof props[0] === 'object') {
+							for (const value of Object.values(props[0])) {
+								if (!isImageAsset(value)) continue;
+
+								ASSETS_TO_PRELOAD.add(value);
+							}
+						}
+					}
+
 					/**
-					 * Load backgrounds
+					 * Here "stop" action also matches condition, but because `ASSETS_TO_PRELOAD` is a Set, there is no problem
 					 */
-					if (prop === 'showBackground' && typeof props[0] === 'string' && isCSSImage(props[0])) {
-						ASSETS_TO_PRELOAD.add(props[0]);
+					if (isAudioAction(action) && isString(props[0])) {
+						ASSETS_TO_PRELOAD.add(props[0])
 					}
 
 					/**
 					 * Load characters
 					 */
-					if (prop === 'showCharacter' && typeof props[0] === 'string' && typeof props[1] === 'string') {
+					if (action === 'showCharacter' && isString(props[0]) && isString(props[1])) {
 						const images = characters[props[0]].emotions[props[1]];
 
 						if (Array.isArray(images)) {
@@ -301,7 +346,7 @@ const novely = <
 					}
 				}
 
-				return [prop, ...props];
+				return [action, ...props];
 			};
 		},
 	});
@@ -725,7 +770,7 @@ const novely = <
 		const processor = createQueueProcessor(queue);
 
 		await processor.run((action, props) => {
-			if (AUDIO_ACTIONS.has(action as any)) return;
+			if (isAudioAction(action)) return;
 			if (action === 'vibrate') return;
 			if (action === 'end') return;
 

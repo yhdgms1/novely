@@ -1,5 +1,4 @@
-import type { ActionProxyProvider } from './action';
-import type { Character } from './character';
+import type { DefaultActionProxyProvider } from './action';
 
 type Thenable<T> = T | Promise<T>;
 
@@ -64,10 +63,7 @@ type DeepPartial<T> = unknown extends T
 	    }
 	  : T;
 
-type ActionFN = ActionProxyProvider<Record<string, Character>, string>[keyof ActionProxyProvider<
-	Record<string, Character>,
-	string
->];
+type ActionFN = DefaultActionProxyProvider[keyof DefaultActionProxyProvider];
 
 type NonEmptyRecord<T extends Record<PropertyKey, unknown>> = keyof T extends never ? never : T;
 

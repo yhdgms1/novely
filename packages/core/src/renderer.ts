@@ -45,10 +45,9 @@ type Renderer = {
 
 		/**
 		 * Function to preload audio
-		 * @param type kind of audio
 		 * @param source <url> pointing to the audio
 		 */
-		preloadAudioBlocking: (type: 'music', source: string) => Promise<void>;
+		preloadAudioBlocking: (source: string) => Promise<void>;
 	};
 
 	ui: {

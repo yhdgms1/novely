@@ -2,8 +2,10 @@ import type { ActionProxyProvider, DefaultActionProxyProvider, CustomHandler, St
 import type { Character } from './character';
 import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder } from './types';
 import type { Context, Renderer } from './renderer';
-import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE } from './constants';
+import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE, AUDIO_ACTIONS, HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from './constants';
 import { STACK_MAP } from './shared';
+
+import { DEV } from 'esm-env';
 
 type MatchActionParams = {
 	data: Record<string, unknown>
@@ -242,6 +244,10 @@ const isBlockExitStatement = (
 const isSkippedDuringRestore = (item: unknown): item is 'vibrate' | 'dialog' | 'input' | 'choice' | 'text' => {
 	return SKIPPED_DURING_RESTORE.has(item as any);
 };
+
+const isAudioAction = (action: unknown): action is   'playMusic' | 'stopMusic' | 'playSound' | 'stopSound' | 'voice' | 'stopVoice' => {
+	return AUDIO_ACTIONS.has(action as any);
+}
 
 const noop = () => {};
 
@@ -618,6 +624,74 @@ const mapSet = <T, K>(set: Set<T>, fn: (value: T, index: number, array: T[]) => 
 	return [...set].map(fn);
 }
 
+const isImageAsset = (asset: unknown): asset is string => {
+	return isString(asset) && isCSSImage(asset)
+}
+
+const getUrlFileExtension = (address: string) => {
+	try {
+		const { pathname } = new URL(address, location.href);
+
+		/**
+		 * By using pathname we remove search params from URL, but some things are still preserved
+		 *
+		 * Imagine pathname like `image.png!private:1230`
+		 * Yes, very unlikely to happen, but it is possible
+		 */
+		return pathname.split('.').at(-1)!.split('!')[0].split(':')[0];
+	} catch (error) {
+		if (DEV) {
+			console.error(new Error(`Could not construct URL "${address}".`, { cause: error }))
+		}
+
+		return ''
+	}
+}
+
+const fetchContentType = async (request: typeof fetch, url: string) => {
+	try {
+		const response = await request(url, {
+			method: 'HEAD'
+		});
+
+		return response.headers.get('Content-Type') || '';
+	} catch (error) {
+		if (DEV) {
+			console.error(new Error(`Failed to fetch file at "${url}"`, { cause: error }))
+		}
+
+		return '';
+	}
+}
+
+const getResourseType = async (request: typeof fetch, url: string) => {
+	const extension = getUrlFileExtension(url);
+
+	if (HOWLER_SUPPORTED_FILE_FORMATS.has(extension as any)) {
+		return 'audio'
+	}
+
+	if (SUPPORTED_IMAGE_FILE_FORMATS.has(extension as any)) {
+		return 'image'
+	}
+
+	/**
+	 * If checks above didn't worked we will fetch content type
+	 * This might not work because of CORS
+	 */
+	const contentType = await fetchContentType(request, url);
+
+	if (contentType.includes('audio')) {
+		return 'audio'
+	}
+
+	if (contentType.includes('image')) {
+		return 'image'
+	}
+
+	return 'other'
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -640,6 +714,7 @@ export {
 	isSkippedDuringRestore,
 	noop,
 	isAction,
+	isAudioAction,
 	flattenStory,
 	once,
 	isExitImpossible,
@@ -648,7 +723,10 @@ export {
 	createQueueProcessor,
 	getStack,
 	createUseStackFunction,
-	mapSet
+	mapSet,
+	isImageAsset,
+	getUrlFileExtension,
+	getResourseType
 };
 
 export type { MatchActionInit }
