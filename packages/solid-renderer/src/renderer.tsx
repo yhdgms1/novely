@@ -28,6 +28,7 @@ import { Provider } from '$context';
 import { Game, MainMenu, Saves, Settings, Loading, CustomScreen } from '$screens';
 import { createGlobalState, useContextState } from './store';
 import { produce } from 'solid-js/store';
+import { PRELOADED_IMAGE_MAP } from './shared';
 
 const createSolidRenderer = ({
 	fullscreen = false,
@@ -246,7 +247,9 @@ const createSolidRenderer = ({
 										const characterEmotion = characters[character].emotions[emotion];
 										const emotionData = (unknown => Array.isArray(unknown) ? unknown : [unknown])(characterEmotion);
 
-										stored = this.emotions[emotion] = emotionData.map(src => createImage(src));
+										stored = this.emotions[emotion] = emotionData.map(src => {
+											return PRELOADED_IMAGE_MAP.get(src) || createImage(src);
+										});
 									}
 
 									if (shouldRender && stored) {
@@ -687,13 +690,18 @@ const createSolidRenderer = ({
 						const img = createImage(image);
 
 						return new Promise<any>((resolve) => {
-							if (img.complete && img.naturalHeight !== 0) {
-								resolve(void 0);
+							const done = () => {
+								PRELOADED_IMAGE_MAP.set(image, img);
+								resolve(1);
 							}
 
-							img.addEventListener('load', resolve);
-							img.addEventListener('abort', resolve);
-							img.addEventListener('error', resolve);
+							if (img.complete && img.naturalHeight !== 0) {
+								done()
+							}
+
+							img.addEventListener('load', done);
+							img.addEventListener('abort', done);
+							img.addEventListener('error', done);
 						});
 					},
 					preloadAudioBlocking: (src) => {
