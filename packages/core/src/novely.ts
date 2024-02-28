@@ -414,16 +414,16 @@ const novely = <
 			stored = migration(stored) as StorageData;
 		}
 
-		/**
-		 * Default `localStorageStorage` returns empty array
-		 */
-		stored.meta[1] ||= DEFAULT_TYPEWRITER_SPEED;
-
 		if (overrideLanguage) {
 			stored.meta[0] = getLanguageWithoutParameters();
 		} else {
 			stored.meta[0] ||= getLanguageWithoutParameters();
 		}
+
+		/**
+		 * Default `localStorageStorage` returns empty array
+		 */
+		stored.meta[1] ||= DEFAULT_TYPEWRITER_SPEED;
 
 		/**
 		 * Sound Volumes
