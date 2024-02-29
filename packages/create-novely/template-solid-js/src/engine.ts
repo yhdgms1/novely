@@ -7,7 +7,6 @@ const { renderer } = createSolidRenderer()
 
 const engine = novely({
 	renderer,
-	languages: ['en'],
 	storage: localStorageStorage({ key: 'my-game' }),
 	translation: {
 		en: {

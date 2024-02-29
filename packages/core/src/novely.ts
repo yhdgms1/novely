@@ -67,10 +67,6 @@ interface NovelyInit<
 	DataScheme extends Data,
 > {
 	/**
-	 * An array of languages supported by the game.
-	 */
-	languages: Languages[];
-	/**
 	 * An object containing the characters in the game.
 	 */
 	characters: Characters;
@@ -178,7 +174,6 @@ const novely = <
 	renderer: createRenderer,
 	initialScreen = 'mainmenu',
 	translation,
-	languages,
 	state: defaultState,
 	data: defaultData,
 	autosaves = true,
@@ -195,6 +190,8 @@ const novely = <
 	 * Local type declaration to not repeat code
 	 */
 	type Actions = ActionProxyProvider<Characters, Languages>;
+
+	const languages = Object.keys(translation) as Languages[];
 
 	const limitScript = pLimit(1);
 	const limitAssetsDownload = pLimit(parallelAssetsDownloadLimit);

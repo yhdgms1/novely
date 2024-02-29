@@ -13,12 +13,12 @@ const { renderer } = createSolidRenderer({
 
 const engine = novely({
 	renderer,
-	languages: ['en'], // Для поддержки русского языка добавить сюда 'ru'
 	storage: games,
 	translation: {
 		en: {
 			internal: EN,
 		},
+		// Для поддержки русского языка раскомментировать
 		// ru: {
 		// 	internal: RU
 		// }

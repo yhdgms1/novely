@@ -26,8 +26,8 @@ const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidR
 });
 
 const engine = novely({
-	languages: ['ru', 'en'],
 	renderer,
+
 	characters: {
 		Lily: {
 			name: {
