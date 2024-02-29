@@ -414,10 +414,8 @@ const novely = <
 			stored = migration(stored) as StorageData;
 		}
 
-		if (overrideLanguage) {
+		if (overrideLanguage || !stored.meta[0]) {
 			stored.meta[0] = getLanguageWithoutParameters();
-		} else {
-			stored.meta[0] ||= getLanguageWithoutParameters();
 		}
 
 		/**
