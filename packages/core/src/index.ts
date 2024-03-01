@@ -24,7 +24,10 @@ export type {
 	Lang,
 	NovelyScreen,
 	CoreData,
-	Save
+	Save,
+	NovelyInit,
+	StackHolder,
+	Stack
 } from './types';
 export type { Stored } from './store';
 export type { BaseTranslationStrings } from './translations';

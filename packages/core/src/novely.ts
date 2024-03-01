@@ -5,7 +5,6 @@ import type {
 	ValidAction,
 	Unwrappable,
 } from './action';
-import type { Storage } from './storage';
 import type {
 	Save,
 	State,
@@ -13,12 +12,11 @@ import type {
 	StorageData,
 	DeepPartial,
 	NovelyScreen,
-	Migration,
 	CoreData,
-	Path
+	Path,
+	NovelyInit
 } from './types';
-import type { Context, Renderer, RendererInit } from './renderer';
-import type { TranslationActions, Pluralization } from './translation';
+import type { Context } from './renderer';
 import type { BaseTranslationStrings } from './translations';
 import type { MatchActionInit } from './utils';
 import {
@@ -59,108 +57,6 @@ import pLimit from 'p-limit';
 
 import { DEV } from 'esm-env';
 import { STACK_MAP } from './shared';
-
-interface NovelyInit<
-	Languages extends string,
-	Characters extends Record<string, Character<Languages>>,
-	StateScheme extends State,
-	DataScheme extends Data,
-> {
-	/**
-	 * An object containing the characters in the game.
-	 */
-	characters: Characters;
-	/**
-	 * An object that provides access to the game's storage system.
-	 * @default localStorage // at key `novely-game-storage`
-	 */
-	storage?: Storage;
-	/**
-	 * Delay loading data until Promise is resolved
-	 */
-	storageDelay?: Promise<void>;
-	/**
-	 * A function that returns a Renderer object used to display the game's content
-	 */
-	renderer: (characters: RendererInit) => Renderer;
-	/**
-	 * An optional property that specifies the initial screen to display when the game starts
-	 */
-	initialScreen?: NovelyScreen;
-	/**
-	 * An object containing the translation functions used in the game
-	 */
-	translation: Record<
-		Languages,
-		{
-			internal: Record<BaseTranslationStrings, string>;
-			/**
-			 * IETF BCP 47 language tag
-			 */
-			tag?: string;
-			plural?: Record<string, Pluralization>;
-			actions?: TranslationActions;
-		}
-	>;
-	/**
-	 * Initial state value
-	 */
-	state?: StateScheme;
-	/**
-	 * Initial data value
-	 */
-	data?: DataScheme;
-	/**
-	 * Enable autosaves or disable
-	 * @default true
-	 */
-	autosaves?: boolean;
-	/**
-	 * Migration from old saves to newer
-	 */
-	migrations?: Migration[];
-	/**
-	 * For saves Novely uses `throttle` function. This might be needed if you want to control frequency of saves to the storage
-	 * @default 799
-	 */
-	throttleTimeout?: number;
-	/**
-	 * Limits how many assets can be downloaded parallelly
-	 * @default 15
-	 */
-	parallelAssetsDownloadLimit?: number;
-	/**
-	 * Custom language detector
-	 * @param languages Supported languages aka `languages: []` in the config
-	 * @example ```ts
-	 * novely({
-	 * 		getLanguage(languages, original) {
-	 * 				if (!sdk) return original(languages);
-	 * 				return sdk.environment.i18n.lang // i.e. custom language from some sdk
-	 * 		}
-	 * })
-	 * ```
-	 */
-	getLanguage?: (languages: string[], original: typeof defaultGetLanguage) => string;
-	/**
-	 * Ignores saved language, and uses `getLanguage` to get it on every engine start
-	 * @default false
-	 */
-	overrideLanguage?: boolean;
-	/**
-	 * Show a prompt before exiting a game
-	 * @default true
-	 */
-	askBeforeExit?: boolean;
-	/**
-	 * @default "lazy"
-	 */
-	preloadAssets?: 'lazy' | 'blocking';
-	/**
-	 * Fetching function
-	 */
-	fetch?: typeof fetch
-}
 
 const novely = <
 	Languages extends string,
