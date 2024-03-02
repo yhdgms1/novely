@@ -21,7 +21,6 @@ const { renderer } = createSolidRenderer();
 
 const engine = novely({
   renderer: renderer,
-  languages: ["en"],
   translation: {
     en: {
       internal: EN

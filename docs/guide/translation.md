@@ -1,8 +1,12 @@
 # Translation
 
-## UI Translations
+Novely could be translated to different, even to imaginary languages. So how does this works?
 
-The UI translation has the following scheme:
+First of all, there is internal translation that is used to translate UI parts such as buttons in the main menu.
+
+## Internal translation
+
+The internal translation has the following scheme:
 
 ```ts
 interface InterfaceTranslation {
@@ -44,9 +48,41 @@ const custom = {
 };
 ```
 
+The only thing you should do is to pass it to the `internal` key as follows:
+
+```ts{4}
+const engine = novely({
+  translation: {
+    en: {
+      internal: EN
+    }
+  }
+})
+```
+
+## Variables
+
+When you have done setting up translation you can use variables!
+
+Whenever you have called a `state` function to save some state, and in any text action used two pairs of curly braces with path in between you will get it work!
+
+```ts
+engine.script({
+  start: [
+    engine.action.function(() => {
+      engine.state({ user: { name: 'Alexei' }, respected: true })
+    }),
+    engine.action.dialog(
+      'Character',
+      'You can say that {{user.name}} is respected and that is {{respected}} '
+    )
+  ]
+})
+```
+
 ## Pluralization
 
-Pluralization is configured as follows
+What is pluralization? It is a process of changing nouns from singular to plural form.
 
 ```ts{8-17}
 translation: {

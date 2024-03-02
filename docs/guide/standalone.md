@@ -50,7 +50,6 @@ Also, you should not change the sequence
     // This is novely core options. You must omit renderer and translation here.
     // Also, you can ignore setting 'storage'
     window.options = {
-      languages: ['ru'],
       characters: {}
     };
 

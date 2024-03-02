@@ -8,7 +8,6 @@ Let's create a character:
 const engine = novely({
   renderer,
   translation,
-  languages: ["en", "ru"],
   characters: {
     Naruto: {
       /**

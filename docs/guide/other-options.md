@@ -67,10 +67,18 @@ Whenever player plays the game, the data changes. It might be auto save, or a se
 const sdk = MyGamePlatformSDK();
 
 const engine = novely({
-  ...
-  languages: ['en', 'kk'],
+  ...,
+  translation: {
+    en: {
+      internal: EN
+    },
+    kk: {
+      internal: KK
+    }
+  },
   getLanguage(languages) {
-    console.log(languages) // ['en', 'kk']
+    // ['en', 'kk'] <- This is taken from `translation` option above
+    console.log(languages)
 
     // Example usage
     if (languages.includes(sdk.environment.i18n.lang)) {
