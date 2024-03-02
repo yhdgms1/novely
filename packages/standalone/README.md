@@ -21,7 +21,6 @@
 			};
 
 			window.options = {
-				languages: ['en'],
 				characters: {},
 			};
 
