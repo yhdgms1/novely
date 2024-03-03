@@ -236,6 +236,12 @@ interface NovelyInit<
 	 * Fetching function
 	 */
 	fetch?: typeof fetch
+	/**
+	 * When page is going to be unloaded will call `storage.set` method
+	 * If 'prod' is passed enable only in production env.
+	 * @default true
+	 */
+	saveOnUnload: boolean | 'prod';
 }
 
 export type {

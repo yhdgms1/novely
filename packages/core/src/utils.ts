@@ -214,8 +214,7 @@ const createControlledPromise = <T = void>() => {
 			};
 		});
 
-		// @ts-expect-error Types does not match and this is expected
-		object.promise = promise;
+		object.promise = promise as ControlledPromise<T>;
 	};
 
 	return init(), object;
@@ -729,4 +728,4 @@ export {
 	getResourseType
 };
 
-export type { MatchActionInit }
+export type { MatchActionInit, ControlledPromise }

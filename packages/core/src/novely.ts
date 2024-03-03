@@ -18,7 +18,7 @@ import type {
 } from './types';
 import type { Context } from './renderer';
 import type { BaseTranslationStrings } from './translations';
-import type { MatchActionInit } from './utils';
+import type { ControlledPromise, MatchActionInit } from './utils';
 import {
 	matchAction,
 	isNumber,
@@ -80,7 +80,8 @@ const novely = <
 	askBeforeExit = true,
 	preloadAssets = 'lazy',
 	parallelAssetsDownloadLimit = 15,
-	fetch: request = fetch
+	fetch: request = fetch,
+	saveOnUnload = true
 }: NovelyInit<Languages, Characters, StateScheme, DataScheme>) => {
 	/**
 	 * Local type declaration to not repeat code
@@ -291,13 +292,36 @@ const novely = <
 		dataLoaded: false
 	});
 
+	const onDataLoadedPromise = ({ cancelled }: Awaited<ControlledPromise<void>>) => {
+		/**
+		 * Promise cancelled? Re-subscribe
+		 */
+		if (cancelled) {
+			dataLoaded.promise.then(onDataLoadedPromise);
+			return;
+		}
+
+		/**
+		 * When promise is resolved data is marked loaded
+		 */
+		coreData.update((data) => {
+			data.dataLoaded = true;
+
+			return data;
+		})
+	};
+
+	dataLoaded.promise.then(onDataLoadedPromise);
+
 	const onStorageDataChange = (value: StorageData) => {
 		if (coreData.get().dataLoaded) storage.set(value);
 	};
 
 	const throttledOnStorageDataChange = throttle(onStorageDataChange, throttleTimeout);
 	const throttledEmergencyOnStorageDataChange = throttle(() => {
-		onStorageDataChange($.get());
+		if (saveOnUnload === true || saveOnUnload === 'prod' && !DEV) {
+			onStorageDataChange($.get());
+		}
 	}, 10);
 
 	$.subscribe(throttledOnStorageDataChange);
@@ -336,7 +360,6 @@ const novely = <
 		/**
 		 * Now the next store updates will entail saving via storage.set
 		 */
-		coreData.update((prev) => ((prev.dataLoaded = true), prev));
 		dataLoaded.resolve();
 
 		/**
@@ -360,13 +383,9 @@ const novely = <
 	}
 
 	/**
-	 * Try to save data when page is switched
+	 * Try to save data when page is switched OR is going to be unloaded
 	 */
 	addEventListener('visibilitychange', onVisibilityChange);
-
-	/**
-	 * Try to save data when page is going to be unloaded
-	 */
 	addEventListener('beforeunload', throttledEmergencyOnStorageDataChange);
 
 	const save = (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
