@@ -135,6 +135,9 @@ const createSolidRenderer = ({
 			}
 		});
 
+		const rendererContextMain = renderer.getContext(options.mainContextKey);
+		const stateContextMain = useContextState(options.mainContextKey);
+
 		return (
 			<div ref={root as HTMLDivElement}>
 				<Provider
@@ -155,10 +158,10 @@ const createSolidRenderer = ({
 					<Switch>
 						<Match when={globalState.screen === 'game'}>
 							<Game
-								state={useContextState(options.mainContextKey).state}
-								setState={/* @once */ useContextState(options.mainContextKey).setState}
-								store={/* @once */ renderer.getContext(options.mainContextKey).store}
-								context={/* @once */ renderer.getContext(options.mainContextKey)}
+								state={stateContextMain.state}
+								setState={/* @once */ stateContextMain.setState}
+								store={/* @once */ rendererContextMain.store}
+								context={/* @once */ rendererContextMain}
 								controls={/* @once */ controls}
 								skipTypewriterWhenGoingBack={/* @once */ skipTypewriterWhenGoingBack}
 							/>

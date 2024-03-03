@@ -268,6 +268,10 @@ const novely = <
 		] as Save;
 	};
 
+	/**
+	 * Calls `getLanguage` and passes needed arguments
+	 * @returns language
+	 */
 	const getLanguageWithoutParameters = () => {
 		return getLanguage(languages, defaultGetLanguage);
 	};
@@ -282,15 +286,13 @@ const novely = <
 		meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED, 1, 1, 1],
 	};
 
-	const coreData: CoreData = {
-		dataLoaded: false,
-	};
-
 	const $ = store(initialData);
-	const $$ = store(coreData);
+	const coreData = store<CoreData>({
+		dataLoaded: false
+	});
 
 	const onStorageDataChange = (value: StorageData) => {
-		if ($$.get().dataLoaded) storage.set(value);
+		if (coreData.get().dataLoaded) storage.set(value);
 	};
 
 	const throttledOnStorageDataChange = throttle(onStorageDataChange, throttleTimeout);
@@ -334,7 +336,7 @@ const novely = <
 		/**
 		 * Now the next store updates will entail saving via storage.set
 		 */
-		$$.update((prev) => ((prev.dataLoaded = true), prev));
+		coreData.update((prev) => ((prev.dataLoaded = true), prev));
 		dataLoaded.resolve();
 
 		/**
@@ -368,7 +370,7 @@ const novely = <
 	addEventListener('beforeunload', throttledEmergencyOnStorageDataChange);
 
 	const save = (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
-		if (!$$.get().dataLoaded) return;
+		if (!coreData.get().dataLoaded) return;
 
 		/**
 		 * When autosaves diabled just return
@@ -425,7 +427,7 @@ const novely = <
 	};
 
 	const newGame = () => {
-		if (!$$.get().dataLoaded) return;
+		if (!coreData.get().dataLoaded) return;
 
 		const save = getDefaultSave(klona(defaultState));
 
@@ -458,7 +460,7 @@ const novely = <
 	 * Restore save or if none is passed then look for latest save, if there is no saves will create a new save
 	 */
 	const restore = async (save?: Save) => {
-		if (!$$.get().dataLoaded) return;
+		if (!coreData.get().dataLoaded) return;
 
 		let latest = save || $.get().saves.at(-1);
 
@@ -691,7 +693,7 @@ const novely = <
 		removeContext,
 		languages,
 		$,
-		$$,
+		$$: coreData,
 	});
 
 	const useStack = createUseStackFunction(renderer);

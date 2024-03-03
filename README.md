@@ -21,7 +21,7 @@ import { createSolidRenderer } from '@novely/solid-renderer';
 import { novely, EN } from '@novely/core';
 
 const engine = novely({
-  renderer: createSolidRender().renderer,
+  renderer: createSolidRenderer().renderer,
   translation: {
     internal: EN
   },
