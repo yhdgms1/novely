@@ -241,7 +241,12 @@ interface NovelyInit<
 	 * If 'prod' is passed enable only in production env.
 	 * @default true
 	 */
-	saveOnUnload: boolean | 'prod';
+	saveOnUnload?: boolean | 'prod';
+}
+
+type StateFunction<S extends State> = {
+	(value: DeepPartial<S> | ((prev: S) => S)): void;
+	(value: never): S;
 }
 
 export type {
@@ -264,5 +269,6 @@ export type {
 	CoreData,
 	UseStackFunctionReturnType,
 	StackHolder,
-	NovelyInit
+	NovelyInit,
+	StateFunction
 };

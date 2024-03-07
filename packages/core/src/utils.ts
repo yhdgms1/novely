@@ -1,6 +1,6 @@
 import type { ActionProxyProvider, DefaultActionProxyProvider, CustomHandler, Story, ValidAction, GetActionParameters } from './action';
 import type { Character } from './character';
-import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder } from './types';
+import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, State } from './types';
 import type { Context, Renderer } from './renderer';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE, AUDIO_ACTIONS, HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from './constants';
 import { STACK_MAP } from './shared';
@@ -38,7 +38,7 @@ type MatchActionInit = {
 	push: (ctx: Context) => void;
 	forward: (ctx: Context) => void;
 
-	getContext: (name: string) => Context
+	getContext: (name: string) => Context;
 }
 
 const matchAction = <M extends MatchActionMapComplete>({ getContext, push, forward }: MatchActionInit, values: M) => {
@@ -545,7 +545,7 @@ const createQueueProcessor = (queue: [any, any][]) => {
 		}
 	}
 
-	const run = async (match: (action: keyof ActionProxyProvider<Record<string, Character>, string>, props: any) => Thenable<void>) => {
+	const run = async (match: (action: keyof ActionProxyProvider<Record<string, Character>, string, State>, props: any) => Thenable<void>) => {
 		for await (const [action, meta] of processedQueue) {
 			const result = match(action, meta);
 
@@ -728,4 +728,4 @@ export {
 	getResourseType
 };
 
-export type { MatchActionInit, ControlledPromise }
+export type { MatchActionInit, ControlledPromise, MatchActionMapComplete }

@@ -14,11 +14,12 @@ import type {
 	NovelyScreen,
 	CoreData,
 	Path,
-	NovelyInit
+	NovelyInit,
+	StateFunction
 } from './types';
 import type { Context } from './renderer';
 import type { BaseTranslationStrings } from './translations';
-import type { ControlledPromise, MatchActionInit } from './utils';
+import type { ControlledPromise, MatchActionInit, MatchActionMapComplete } from './utils';
 import {
 	matchAction,
 	isNumber,
@@ -86,7 +87,7 @@ const novely = <
 	/**
 	 * Local type declaration to not repeat code
 	 */
-	type Actions = ActionProxyProvider<Characters, Languages>;
+	type Actions = ActionProxyProvider<Characters, Languages, StateScheme>;
 
 	const languages = Object.keys(translation) as Languages[];
 
@@ -466,7 +467,7 @@ const novely = <
 	 * Set's the save and restores onto it
 	 */
 	const set = (save: Save, ctx?: Context) => {
-		const stack = useStack(ctx || renderer.getContext(MAIN_CONTEXT_KEY));
+		const stack = useStack(ctx || MAIN_CONTEXT_KEY);
 
 		stack.value = save;
 
@@ -491,7 +492,7 @@ const novely = <
 
 			$.update((prev) => {
 				/**
-				 * `latest` will be not undefined because this callback called immediately
+				 * `latest` will be not undefined because this callback called immediately and variable is not changed
 				 */
 				prev.saves.push(latest!);
 
@@ -572,11 +573,7 @@ const novely = <
 		render(context);
 	};
 
-	const refer = (path?: Path) => {
-		if (!path) {
-			path = useStack(MAIN_CONTEXT_KEY).value[0]
-		}
-
+	const refer = (path: Path) => {
 		let current: any = story;
 		let precurrent: any = story;
 
@@ -603,7 +600,13 @@ const novely = <
 			}
 		}
 
-		return current;
+		/**
+		 * @todo: replace this ugly thing in whole code base
+		 */
+		return current as [
+			keyof MatchActionMapComplete,
+			...Parameters<MatchActionMapComplete[keyof MatchActionMapComplete]>,
+		]
 	};
 
 	/**
@@ -697,6 +700,27 @@ const novely = <
 		STACK_MAP.delete(name);
 	}
 
+	const getStateFunction = (context: string) => {
+		const stack = useStack(context);
+
+		// @ts-expect-error I don't understand that error
+		const state: StateFunction<StateScheme> = (value) => {
+			if (!value) {
+				return stack.value[1] as StateScheme | void;
+			}
+
+			const prev = stack.value[1];
+			const val = isFunction(value) ? value(prev as StateScheme) : deepmerge(prev, value);
+
+			stack.value[1] = val as StateScheme;
+		}
+
+		/**
+		 * Widen type here
+		 */
+		return state as StateFunction<State>;
+	}
+
 	const renderer = createRenderer({
 		mainContextKey: MAIN_CONTEXT_KEY,
 
@@ -710,6 +734,7 @@ const novely = <
 		t,
 		preview,
 		removeContext,
+		getStateFunction,
 		languages,
 		$,
 		$$: coreData,
@@ -771,7 +796,7 @@ const novely = <
 			matchActionInit.push(ctx);
 
 			if (!ctx.meta.preview) interactivity(true);
-		},
+		}
 	};
 
 	const match = matchAction(matchActionInit, {

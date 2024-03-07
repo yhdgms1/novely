@@ -431,6 +431,7 @@ const createSolidRenderer = ({
 									input,
 									event,
 									error,
+									state: init.getStateFunction(name),
 									get value() {
 										if (value) return value;
 										return (value = escape(input.value));

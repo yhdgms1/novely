@@ -1,5 +1,5 @@
 import type { Character } from './character';
-import type { Thenable, NonEmptyRecord } from './types';
+import type { Thenable, NonEmptyRecord, StateFunction, State } from './types';
 
 type ValidAction =
 	| ['choice', [number]]
@@ -18,7 +18,7 @@ type ValidAction =
 	| ['animateCharacter', [string, number, ...string[]]]
 	| ['wait', [FunctionableValue<number>]]
 	| ['function', [() => Thenable<void>]]
-	| ['input', [string, (meta: ActionInputOnInputMeta<string>) => void, ActionInputSetup?]]
+	| ['input', [string, (meta: ActionInputOnInputMeta<string, State>) => void, ActionInputSetup?]]
 	| ['custom', [CustomHandler]]
 	| ['vibrate', [...number[]]]
 	| ['next', []]
@@ -81,7 +81,7 @@ type CustomHandler = CustomHandlerFunction & {
 	key: string;
 };
 
-interface ActionInputOnInputMeta<L extends string> {
+interface ActionInputOnInputMeta<L extends string, S extends State> {
 	/**
 	 * Input Element itself
 	 */
@@ -103,13 +103,17 @@ interface ActionInputOnInputMeta<L extends string> {
 	 * Language
 	 */
 	lang: L;
+	/**
+	 * State function
+	 */
+	state: StateFunction<S>;
 }
 
 type ActionInputSetup = (input: HTMLInputElement, cleanup: (cb: () => void) => void) => void;
 
 type BackgroundImage = Partial<Record<'portrait' | 'landscape' | 'all', string>> & Record<string, string>;
 
-type ActionProxyProvider<Characters extends Record<string, Character>, Languages extends string> = {
+type ActionProxyProvider<Characters extends Record<string, Character>, Languages extends string, S extends State> = {
 	choice: {
 		(
 			...choices: (
@@ -201,7 +205,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 
 	input: (
 		question: Unwrappable<Languages>,
-		onInput: (meta: ActionInputOnInputMeta<Languages>) => void,
+		onInput: (meta: ActionInputOnInputMeta<Languages, S>) => void,
 		setup?: ActionInputSetup,
 	) => ValidAction;
 
@@ -218,7 +222,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 	block: (scene: string) => ValidAction;
 };
 
-type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>, string>;
+type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>, string, State>;
 type GetActionParameters<T extends Capitalize<keyof DefaultActionProxyProvider>> = Parameters<
 	DefaultActionProxyProvider[Uncapitalize<T>]
 >;

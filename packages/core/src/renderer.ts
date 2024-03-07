@@ -1,6 +1,6 @@
 import type { ActionInputSetup, ActionInputOnInputMeta, BackgroundImage, DefaultActionProxyProvider, ValidAction } from './action';
 import type { Character } from './character';
-import type { CoreData, NovelyScreen, Save, StorageData, Thenable } from './types';
+import type { CoreData, NovelyScreen, Save, State, StateFunction, StorageData, Thenable } from './types';
 import type { BaseTranslationStrings } from './translations';
 import type { Stored } from './store';
 
@@ -96,7 +96,7 @@ type Renderer = {
 		) => void;
 		input: (
 			question: string,
-			onInput: (meta: ActionInputOnInputMeta<string>) => void,
+			onInput: (meta: ActionInputOnInputMeta<string, State>) => void,
 			setup: ActionInputSetup,
 			resolve: () => void
 		) => void;
@@ -188,6 +188,8 @@ type RendererInit = {
 	preview: (save: Save, name: string) => Promise<void>;
 
 	removeContext: (name: string) => void;
+
+	getStateFunction: (context: string) => StateFunction<State>;
 };
 
 export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context };
