@@ -27,7 +27,12 @@ const Saves: VoidComponent = () => {
 						</div>
 					}
 				>
-					<ol class="saves__list">
+					<ol
+						class="saves__list"
+						classList={{
+							'saves__list-few': saves().length < 3
+						}}
+					>
 						<For each={saves()}>
 							{save => (
 								<Save

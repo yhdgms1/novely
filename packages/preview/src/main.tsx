@@ -110,7 +110,7 @@ false && engine.script({
 	]
 })
 
-false && engine.script({
+engine.script({
 	'block:adv': [
 		action.condition(() => true, {
 			true: [

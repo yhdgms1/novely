@@ -35,6 +35,10 @@
 	background-color: var(--novely-saves-list-background-color, #ffffff57);
 }
 
+.saves__list-few {
+	justify-content: flex-start;
+}
+
 .saves__list::-webkit-scrollbar {
 	width: var(--novely-saves-list-border-width, .875rem);
 }
