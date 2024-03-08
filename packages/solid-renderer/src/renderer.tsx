@@ -512,7 +512,9 @@ const createSolidRenderer = ({
 								goingBack: ctx.meta.goingBack,
 								preview: ctx.meta.preview,
 
-								lang: options.$.get().meta[0]
+								lang: options.$.get().meta[0],
+
+								state: init.getStateFunction(name)
 							});
 
 							result ? result.then(resolve) : resolve();

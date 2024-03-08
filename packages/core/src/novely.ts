@@ -271,7 +271,7 @@ const novely = <
 	};
 
 	/**
-	 * Calls `getLanguage` and passes needed arguments
+	 * Calls `getLanguage`, passes needed arguments
 	 * @returns language
 	 */
 	const getLanguageWithoutParameters = () => {
@@ -700,19 +700,19 @@ const novely = <
 		STACK_MAP.delete(name);
 	}
 
-	const getStateFunction = (context: string) => {
+	const getStateFunction = (context: string | Context) => {
 		const stack = useStack(context);
 
 		// @ts-expect-error I don't understand that error
 		const state: StateFunction<StateScheme> = (value) => {
 			if (!value) {
-				return stack.value[1] as StateScheme | void;
+				return stack.value[1];
 			}
 
 			const prev = stack.value[1];
 			const val = isFunction(value) ? value(prev as StateScheme) : deepmerge(prev, value);
 
-			stack.value[1] = val as StateScheme;
+			stack.value[1] = val;
 		}
 
 		/**
@@ -881,7 +881,15 @@ const novely = <
 			);
 		},
 		function({ ctx, push }, [fn]) {
-			const result = fn(ctx.meta.restoring, ctx.meta.goingBack, ctx.meta.preview);
+			const { restoring, goingBack, preview } = ctx.meta;
+
+			const result = fn({
+				lang: $.get().meta[0],
+				goingBack,
+				restoring,
+				preview,
+				state: getStateFunction(ctx)
+			});
 
 			if (!ctx.meta.restoring) {
 				result ? result.then(push) : push();
@@ -904,11 +912,16 @@ const novely = <
 			}
 
 			const unwrappedChoices = choices.map(([content, action, visible]) => {
-				if (DEV && action.length === 0 && (!visible || visible())) {
+				const shown = !visible || visible({
+					lang: $.get().meta[0],
+					state: getStateFunction(ctx)()
+				});
+
+				if (DEV && action.length === 0 && !shown) {
 					console.warn(`Choice children should not be empty, either add content there or make item not selectable`)
 				}
 
-				return [unwrap(content, data), action, visible] as [string, ValidAction[], () => boolean];
+				return [unwrap(content, data), action, shown] as [string, ValidAction[], boolean?];
 			});
 
 			if (DEV && unwrappedChoices.length === 0) {

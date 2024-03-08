@@ -71,14 +71,6 @@ const engine = novely({
 		age: 0,
 	},
 
-	data: {
-		achievements: {
-			money: false,
-			love: false,
-			cars: false,
-		},
-	},
-
 	autosaves: true,
 
 	initialScreen: 'mainmenu',
@@ -98,92 +90,7 @@ const engine = novely({
 	],
 });
 
-const { action, state, data, unwrap } = engine;
-
-registerScreen('achievements', () => {
-	return {
-		mount() {
-			return (
-				<div class="root saves">
-					<div class="saves__column">
-						<button type="button" class="button saves__button" data-novely-goto="mainmenu">
-							{unwrap({
-								en: 'Exit',
-								ru: 'Выйти',
-							})}
-						</button>
-					</div>
-					<div class="saves__list-container">
-						<table>
-							<caption>
-								{unwrap({
-									en: 'Youʼr achievements',
-									ru: 'Твои достижения',
-								})}
-							</caption>
-							<thead>
-								<tr>
-									<th scope="col">
-										{unwrap({
-											en: 'Money',
-											ru: 'Деньги',
-										})}
-									</th>
-									<th scope="col">
-										{unwrap({
-											en: 'Love',
-											ru: 'Любовь',
-										})}
-									</th>
-									<th scope="col">
-										{unwrap({
-											en: 'Cars',
-											ru: 'Тачки',
-										})}
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td>
-										{unwrap({
-											en: data().achievements.money ? 'Yes' : 'No',
-											ru: data().achievements.money ? 'Да' : 'Нет',
-										})}
-									</td>
-									<td>
-										{unwrap({
-											en: data().achievements.love ? 'Yes' : 'No',
-											ru: data().achievements.love ? 'Да' : 'Нет',
-										})}
-									</td>
-									<td>
-										{unwrap({
-											en: data().achievements.cars ? 'Yes' : 'No',
-											ru: data().achievements.cars ? 'Да' : 'Нет',
-										})}
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-			);
-		},
-	};
-});
-
-// registerMainmenuItem((goto) => ({
-// 	type: 'button',
-// 	class: 'button main-menu__button',
-// 	textContent: unwrap({
-// 		en: 'Achievements',
-// 		ru: 'Достижения',
-// 	}),
-// 	onClick: () => {
-// 		goto('achievements');
-// 	},
-// }));
+const { action } = engine;
 
 false && engine.script({
 	start: [
@@ -235,6 +142,25 @@ engine.script({
 			en: 'Hii~',
 			ru: 'Привет',
 		}),
+		action.choice(
+			'Tesxt',
+			[
+				'Yes',
+				[
+					action.end()
+				]
+			],
+			[
+				'No',
+				[
+					action.end()
+				],
+				({ state, lang }) => {
+					console.log(state, lang)
+					return false
+				}
+			]
+		),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.dialog('Lily', {
 			en: 'Iʼm going to tell you about the Novely engine',
@@ -276,7 +202,7 @@ engine.script({
 				en: 'Enter youʼr age',
 				ru: 'Введите ваш возраст',
 			},
-			({ input, error }) => {
+			({ input, error, state }) => {
 				error(input.validationMessage);
 				state({ age: input.valueAsNumber });
 			},

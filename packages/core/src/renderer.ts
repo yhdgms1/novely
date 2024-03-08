@@ -91,7 +91,7 @@ type Renderer = {
 		) => void;
 		choices: (
 			question: string,
-			choices: ([string, ValidAction[]] | [string, ValidAction[], () => boolean])[],
+			choices: [name: string, actions: ValidAction[], active?: boolean][],
 			resolve: (selected: number) => void
 		) => void;
 		input: (

@@ -19,7 +19,7 @@ type ValidAction =
 	| ['wait', [FunctionableValue<number>]]
 	| ['function', [() => Thenable<void>]]
 	| ['input', [string, (meta: ActionInputOnInputMeta<string, State>) => void, ActionInputSetup?]]
-	| ['custom', [CustomHandler]]
+	| ['custom', [CustomHandler<string, State>]]
 	| ['vibrate', [...number[]]]
 	| ['next', []]
 	| ['text', [...string[]]]
@@ -60,18 +60,19 @@ type CustomHandlerGetResult<I extends boolean> = {
 
 type CustomHandlerFunctionGetFn = <I extends boolean = true>(insert?: I) => CustomHandlerGetResult<I>;
 
-type CustomHandlerFunctionParameters = {
+type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 	get: CustomHandlerFunctionGetFn;
+	state: StateFunction<S>;
 
 	goingBack: boolean;
 	preview: boolean;
 
-	lang: string;
+	lang: L;
 }
 
-type CustomHandlerFunction = (parameters: CustomHandlerFunctionParameters) => Thenable<void>;
+type CustomHandlerFunction<L extends string, S extends State> = (parameters: CustomHandlerFunctionParameters<L, S>) => Thenable<void>;
 
-type CustomHandler = CustomHandlerFunction & {
+type CustomHandler<L extends string = string, S extends State = State> = CustomHandlerFunction<L, S> & {
 	callOnlyLatest?: boolean;
 	requireUserAction?: boolean;
 	skipClearOnGoingBack?: boolean;
@@ -109,24 +110,47 @@ interface ActionInputOnInputMeta<L extends string, S extends State> {
 	state: StateFunction<S>;
 }
 
+type FunctionActionProps<L extends string, S extends State> = {
+	restoring: boolean;
+	goingBack: boolean;
+	preview: boolean;
+	/**
+	 * Language
+	 */
+	lang: L;
+	/**
+	 * State function
+	 */
+	state: StateFunction<S>;
+}
+
+type ChoiceCheckFunctionProps<L extends string, S extends State> = {
+	/**
+	 * Language
+	 */
+	lang: L;
+	/**
+	 * State
+	 */
+	state: S;
+}
+
+type ChoiceCheckFunction<L extends string, S extends State> = {
+	(props: ChoiceCheckFunctionProps<L, S>): boolean;
+}
+
+type FunctionAction<L extends string, S extends State> = (props: FunctionActionProps<L, S>) => Thenable<void>;
+
 type ActionInputSetup = (input: HTMLInputElement, cleanup: (cb: () => void) => void) => void;
 
 type BackgroundImage = Partial<Record<'portrait' | 'landscape' | 'all', string>> & Record<string, string>;
 
 type ActionProxyProvider<Characters extends Record<string, Character>, Languages extends string, S extends State> = {
 	choice: {
-		(
-			...choices: (
-				| [Unwrappable<Languages>, ValidAction[]]
-				| [Unwrappable<Languages>, ValidAction[], () => boolean]
-			)[]
-		): ValidAction;
+		(...choices: [name: Unwrappable<Languages>, actions: ValidAction[], active?: ChoiceCheckFunction<Languages, S>][]): ValidAction;
 		(
 			question: Unwrappable<Languages>,
-			...choices: (
-				| [Unwrappable<Languages>, ValidAction[]]
-				| [Unwrappable<Languages>, ValidAction[], () => boolean]
-			)[]
+			...choices: [name: Unwrappable<Languages>, actions: ValidAction[], active?: ChoiceCheckFunction<Languages, S>][]
 		): ValidAction;
 	};
 
@@ -201,7 +225,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 
 	wait: (time: FunctionableValue<number>) => ValidAction;
 
-	function: (fn: (restoring: boolean, goingBack: boolean, preview: boolean) => Thenable<void>) => ValidAction;
+	function: (fn: FunctionAction<Languages, S>) => ValidAction;
 
 	input: (
 		question: Unwrappable<Languages>,
@@ -209,7 +233,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 		setup?: ActionInputSetup,
 	) => ValidAction;
 
-	custom: (handler: CustomHandler) => ValidAction;
+	custom: (handler: CustomHandler<Languages, S> | CustomHandler) => ValidAction;
 
 	vibrate: (...pattern: number[]) => ValidAction;
 

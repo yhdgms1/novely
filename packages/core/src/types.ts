@@ -246,7 +246,7 @@ interface NovelyInit<
 
 type StateFunction<S extends State> = {
 	(value: DeepPartial<S> | ((prev: S) => S)): void;
-	(value: never): S;
+	(): S;
 }
 
 export type {
