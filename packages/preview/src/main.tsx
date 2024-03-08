@@ -90,7 +90,7 @@ const engine = novely({
 	],
 });
 
-const { action } = engine;
+const { action, state } = engine;
 
 false && engine.script({
 	start: [
@@ -110,7 +110,7 @@ false && engine.script({
 	]
 })
 
-engine.script({
+false && engine.script({
 	'block:adv': [
 		action.condition(() => true, {
 			true: [

@@ -879,8 +879,8 @@ const novely = <
 			})();
 
 			ctx.dialog(
-				unwrap(ctx, content, data),
-				unwrap(ctx, name, data),
+				unwrap(content, data),
+				unwrap(name, data),
 				character,
 				emotion,
 				forward
@@ -927,14 +927,14 @@ const novely = <
 					console.warn(`Choice children should not be empty, either add content there or make item not selectable`)
 				}
 
-				return [unwrap(ctx, content, data), action, shown] as [string, ValidAction[], boolean?];
+				return [unwrap(content, data), action, shown] as [string, ValidAction[], boolean?];
 			});
 
 			if (DEV && unwrappedChoices.length === 0) {
 				throw new Error(`Running choice without variants to choose from, look at how to use Choice action properly [https://novely.pages.dev/guide/actions/choice#usage]`)
 			}
 
-			ctx.choices(unwrap(ctx, question, data), unwrappedChoices, (selected) => {
+			ctx.choices(unwrap(question, data), unwrappedChoices, (selected) => {
 				if (!ctx.meta.preview) {
 					enmemory(ctx);
 				}
@@ -1037,7 +1037,7 @@ const novely = <
 		},
 		input({ ctx, data, forward }, [question, onInput, setup]) {
 			ctx.input(
-				unwrap(ctx, question, data),
+				unwrap(question, data),
 				onInput,
 				setup || noop,
 				forward
@@ -1080,7 +1080,7 @@ const novely = <
 			push();
 		},
 		text({ ctx, data, forward }, text) {
-			const string = text.map((content) => unwrap(ctx, content, data)).join(' ');
+			const string = text.map((content) => unwrap(content, data)).join(' ');
 
 			if (DEV && string.length === 0) {
 				throw new Error(`Action Text was called with empty string or array`)
@@ -1228,22 +1228,20 @@ const novely = <
 	/**
 	 * @todo: better name
 	 */
-	const unwrap = (ctx: Context | null, content: TextContent<Languages, StateScheme>, values?: Data) => {
+	const unwrap = (content: TextContent<Languages, StateScheme>, values?: Data) => {
 		const {
 			data,
 			meta: [lang],
 		} = $.get();
 
-		const state = (ctx ? getStateAtCtx(ctx) : {}) as StateScheme;
-
 		const obj = values || data;
 		const cnt = isFunction(content)
-			? content(state)
+			? content(values as StateScheme)
 			: typeof content === 'string'
 				? content
 				: content[lang as Languages];
 
-		const str = flattenAllowedContent(isFunction(cnt) ? cnt(state) : cnt, state);
+		const str = flattenAllowedContent(isFunction(cnt) ? cnt(values as StateScheme) : cnt, state);
 
 		const t = translation[lang as Languages];
 		const pluralRules = (t.plural || t.actions) && new Intl.PluralRules(t.tag || lang);
@@ -1300,7 +1298,7 @@ const novely = <
 		 * ```
 		 */
 		unwrap(content: Exclude<TextContent<Languages, Record<never, never>>, Record<string, string>> | Record<Languages, string>) {
-			return unwrap(null, content, $.get().data);
+			return unwrap(content, $.get().data);
 		},
 		/**
 		 * Cancel data loading, hide UI, ignore page change events
