@@ -246,19 +246,6 @@ const novely = <
 		},
 	});
 
-	function state(value: DeepPartial<StateScheme> | ((prev: StateScheme) => StateScheme)): void;
-	function state(): StateScheme;
-	function state(value?: DeepPartial<StateScheme> | ((prev: StateScheme) => StateScheme)): StateScheme | void {
-		const stack = useStack(MAIN_CONTEXT_KEY);
-
-		if (!value) return stack.value[1] as StateScheme | void;
-
-		const prev = stack.value[1];
-		const val = isFunction(value) ? value(prev as StateScheme) : deepmerge(prev, value);
-
-		stack.value[1] = val as StateScheme;
-	}
-
 	const getDefaultSave = (state = {}) => {
 		return [
 			[
@@ -877,8 +864,8 @@ const novely = <
 			})();
 
 			ctx.dialog(
-				unwrap(content, data),
-				unwrap(name, data),
+				templateReplace(content, data),
+				templateReplace(name, data),
 				character,
 				emotion,
 				forward
@@ -915,7 +902,7 @@ const novely = <
 				question = '';
 			}
 
-			const unwrappedChoices = choices.map(([content, action, visible]) => {
+			const transformedChoices = choices.map(([content, action, visible]) => {
 				const shown = !visible || visible({
 					lang: $.get().meta[0],
 					state: getStateAtCtx(ctx)
@@ -925,14 +912,14 @@ const novely = <
 					console.warn(`Choice children should not be empty, either add content there or make item not selectable`)
 				}
 
-				return [unwrap(content, data), action, shown] as [string, ValidAction[], boolean?];
+				return [templateReplace(content, data), action, shown] as [string, ValidAction[], boolean?];
 			});
 
-			if (DEV && unwrappedChoices.length === 0) {
+			if (DEV && transformedChoices.length === 0) {
 				throw new Error(`Running choice without variants to choose from, look at how to use Choice action properly [https://novely.pages.dev/guide/actions/choice#usage]`)
 			}
 
-			ctx.choices(unwrap(question, data), unwrappedChoices, (selected) => {
+			ctx.choices(templateReplace(question, data), transformedChoices, (selected) => {
 				if (!ctx.meta.preview) {
 					enmemory(ctx);
 				}
@@ -944,7 +931,7 @@ const novely = <
 				 */
 				const offset = isWithoutQuestion ? 0 : 1;
 
-				if (DEV && !unwrappedChoices[selected]) {
+				if (DEV && !transformedChoices[selected]) {
 					throw new Error('Choice children is empty, either add content there or make item not selectable')
 				}
 
@@ -1035,7 +1022,7 @@ const novely = <
 		},
 		input({ ctx, data, forward }, [question, onInput, setup]) {
 			ctx.input(
-				unwrap(question, data),
+				templateReplace(question, data),
 				onInput,
 				setup || noop,
 				forward
@@ -1078,7 +1065,7 @@ const novely = <
 			push();
 		},
 		text({ ctx, data, forward }, text) {
-			const string = text.map((content) => unwrap(content, data)).join(' ');
+			const string = text.map((content) => templateReplace(content, data)).join(' ');
 
 			if (DEV && string.length === 0) {
 				throw new Error(`Action Text was called with empty string or array`)
@@ -1224,22 +1211,27 @@ const novely = <
 	};
 
 	/**
-	 * @todo: better name
+	 * Basically replaces content inside of {{braces}}.
 	 */
-	const unwrap = (content: TextContent<Languages, StateScheme>, values?: Data) => {
+	const templateReplace = (content: TextContent<Languages, Data>, values?: Data) => {
 		const {
 			data,
 			meta: [lang],
 		} = $.get();
 
+		// `values` or else global data
 		const obj = values || data;
+		// string or function value
 		const cnt = isFunction(content)
-			? content(values as StateScheme)
+			? content(obj)
 			: typeof content === 'string'
 				? content
 				: content[lang as Languages];
 
-		const str = flattenAllowedContent(isFunction(cnt) ? cnt(values as StateScheme) : cnt, state);
+		const str = flattenAllowedContent(
+			isFunction(cnt) ? cnt(obj) : cnt,
+			obj as State
+		);
 
 		const t = translation[lang as Languages];
 		const pluralRules = (t.plural || t.actions) && new Intl.PluralRules(t.tag || lang);
@@ -1278,25 +1270,33 @@ const novely = <
 		 */
 		action,
 		/**
-		 * State that belongs to games
+		 * @deprecated Will be removed BUT replaced with state passed into actions as a parameter
 		 */
-		state,
+		state: getStateFunction(MAIN_CONTEXT_KEY),
 		/**
 		 * Unlike `state`, stored at global scope instead and shared between games
 		 */
 		data,
 		/**
-		 * Unwraps translatable content to a string value
-		 *
-		 * @example ```
-		 * unwrap({ en: 'Hello', ru: 'Привет' });
-		 * unwrap({ en: () => data().ad_viewed ? 'Diamond Hat' : 'Diamond Hat (Watch Adv)' })
-		 * unwrap(() => `Today is ${new Date()}`)
-		 * unwrap('Hello, {{name}}');
-		 * ```
+		 * @deprecated Renamed into `templateReplace`
 		 */
 		unwrap(content: Exclude<TextContent<Languages, Record<never, never>>, Record<string, string>> | Record<Languages, string>) {
-			return unwrap(content, $.get().data);
+			return templateReplace(content, $.get().data);
+		},
+		/**
+		 * Replaces content inside {{braces}} with using global data
+		 * @example
+		 * ```ts
+		 * data({ name: 'Alexei' })
+		 *
+		 * templateReplace('{{name}} is our hero')
+		 * templateReplace({
+		 *  en: (data) => 'Hello, ' + data.name
+		 * })
+		 * ```
+		 */
+		templateReplace(content: TextContent<Languages, Data>) {
+			return templateReplace(content)
 		},
 		/**
 		 * Cancel data loading, hide UI, ignore page change events

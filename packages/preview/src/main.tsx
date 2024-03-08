@@ -90,7 +90,7 @@ const engine = novely({
 	],
 });
 
-const { action, state } = engine;
+const { action } = engine;
 
 false && engine.script({
 	start: [
