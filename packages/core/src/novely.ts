@@ -3,7 +3,7 @@ import type {
 	ActionProxyProvider,
 	Story,
 	ValidAction,
-	Unwrappable,
+	TextContent,
 } from './action';
 import type {
 	Save,
@@ -52,7 +52,7 @@ import { store } from './store';
 import { deepmerge } from '@novely/deepmerge';
 import { klona } from 'klona/json';
 import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, MAIN_CONTEXT_KEY } from './constants';
-import { replace as replaceT9N } from './translation';
+import { replace as replaceTranslation, flattenAllowedContent } from './translation';
 import { localStorageStorage } from './storage';
 import pLimit from 'p-limit';
 
@@ -700,17 +700,23 @@ const novely = <
 		STACK_MAP.delete(name);
 	}
 
+	const getStateAtCtx = (context: string | Context) => {
+		return useStack(context).value[1];
+	}
+
 	const getStateFunction = (context: string | Context) => {
 		const stack = useStack(context);
 
 		// @ts-expect-error I don't understand that error
-		const state: StateFunction<StateScheme> = (value) => {
+		const state: StateFunction<State> = (value) => {
+			const _state = getStateAtCtx(context);
+
 			if (!value) {
-				return stack.value[1];
+				return _state;
 			}
 
-			const prev = stack.value[1];
-			const val = isFunction(value) ? value(prev as StateScheme) : deepmerge(prev, value);
+			const prev = _state;
+			const val = isFunction(value) ? value(prev) : deepmerge(prev, value);
 
 			stack.value[1] = val;
 		}
@@ -873,8 +879,8 @@ const novely = <
 			})();
 
 			ctx.dialog(
-				unwrap(content, data),
-				unwrap(name, data),
+				unwrap(ctx, content, data),
+				unwrap(ctx, name, data),
 				character,
 				emotion,
 				forward
@@ -904,7 +910,7 @@ const novely = <
 				/**
 				 * Первый элемент может быть как строкой, так и элементов выбора
 				 */
-				choices.unshift(question as unknown as [Unwrappable<Languages>, ValidAction[], () => boolean]);
+				choices.unshift(question as unknown as [TextContent<Languages, State>, ValidAction[], () => boolean]);
 				/**
 				 * Значит, текст не требуется
 				 */
@@ -914,21 +920,21 @@ const novely = <
 			const unwrappedChoices = choices.map(([content, action, visible]) => {
 				const shown = !visible || visible({
 					lang: $.get().meta[0],
-					state: getStateFunction(ctx)()
+					state: getStateAtCtx(ctx)
 				});
 
 				if (DEV && action.length === 0 && !shown) {
 					console.warn(`Choice children should not be empty, either add content there or make item not selectable`)
 				}
 
-				return [unwrap(content, data), action, shown] as [string, ValidAction[], boolean?];
+				return [unwrap(ctx, content, data), action, shown] as [string, ValidAction[], boolean?];
 			});
 
 			if (DEV && unwrappedChoices.length === 0) {
 				throw new Error(`Running choice without variants to choose from, look at how to use Choice action properly [https://novely.pages.dev/guide/actions/choice#usage]`)
 			}
 
-			ctx.choices(unwrap(question, data), unwrappedChoices, (selected) => {
+			ctx.choices(unwrap(ctx, question, data), unwrappedChoices, (selected) => {
 				if (!ctx.meta.preview) {
 					enmemory(ctx);
 				}
@@ -1031,7 +1037,7 @@ const novely = <
 		},
 		input({ ctx, data, forward }, [question, onInput, setup]) {
 			ctx.input(
-				unwrap(question, data),
+				unwrap(ctx, question, data),
 				onInput,
 				setup || noop,
 				forward
@@ -1074,7 +1080,7 @@ const novely = <
 			push();
 		},
 		text({ ctx, data, forward }, text) {
-			const string = text.map((content) => unwrap(content, data)).join(' ');
+			const string = text.map((content) => unwrap(ctx, content, data)).join(' ');
 
 			if (DEV && string.length === 0) {
 				throw new Error(`Action Text was called with empty string or array`)
@@ -1220,40 +1226,35 @@ const novely = <
 	};
 
 	/**
-	 * Unwraps translatable content to string
-	 *
-	 * @example ```
-	 * unwrap({ en: 'Hello', ru: 'Привет' });
-	 * unwrap({ en: () => data().ad_viewed ? 'Diamond Hat' : 'Diamond Hat (Watch Adv)' })
-	 * unwrap(() => `Today is ${new Date()}`)
-	 * unwrap('Hello, {{name}}');
-	 * ```
+	 * @todo: better name
 	 */
-	const unwrap = (content: Unwrappable<Languages>, values?: Data) => {
+	const unwrap = (ctx: Context | null, content: TextContent<Languages, StateScheme>, values?: Data) => {
 		const {
 			data,
 			meta: [lang],
 		} = $.get();
 
-		const obj = values ? values : data;
+		const state = (ctx ? getStateAtCtx(ctx) : {}) as StateScheme;
+
+		const obj = values || data;
 		const cnt = isFunction(content)
-			? content()
+			? content(state)
 			: typeof content === 'string'
 				? content
 				: content[lang as Languages];
 
-		const str = isFunction(cnt) ? cnt() : cnt;
+		const str = flattenAllowedContent(isFunction(cnt) ? cnt(state) : cnt, state);
 
-		const trans = translation[lang as Languages];
+		const t = translation[lang as Languages];
+		const pluralRules = (t.plural || t.actions) && new Intl.PluralRules(t.tag || lang);
 
-		if (trans.actions || trans.plural) {
-			/**
-			 * Should kinda work, but creating PluralRules each time is not really efficient
-			 */
-			return replaceT9N(str, obj, trans.plural, trans.actions, new Intl.PluralRules(trans.tag || lang));
-		}
-
-		return replaceT9N(str, obj);
+		return replaceTranslation(
+			str,
+			obj,
+			t.plural,
+			t.actions,
+			pluralRules
+		);
 	};
 
 	function data(value: DeepPartial<DataScheme> | ((prev: DataScheme) => DataScheme)): void;
@@ -1290,9 +1291,16 @@ const novely = <
 		data,
 		/**
 		 * Unwraps translatable content to a string value
+		 *
+		 * @example ```
+		 * unwrap({ en: 'Hello', ru: 'Привет' });
+		 * unwrap({ en: () => data().ad_viewed ? 'Diamond Hat' : 'Diamond Hat (Watch Adv)' })
+		 * unwrap(() => `Today is ${new Date()}`)
+		 * unwrap('Hello, {{name}}');
+		 * ```
 		 */
-		unwrap(content: Exclude<Unwrappable<Languages>, Record<string, string>> | Record<Languages, string>) {
-			return unwrap(content, $.get().data);
+		unwrap(content: Exclude<TextContent<Languages, Record<never, never>>, Record<string, string>> | Record<Languages, string>) {
+			return unwrap(null, content, $.get().data);
 		},
 		/**
 		 * Cancel data loading, hide UI, ignore page change events

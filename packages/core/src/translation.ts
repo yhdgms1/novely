@@ -1,6 +1,8 @@
+import { State } from "./types";
+
 type PluralType = Intl.LDMLPluralRule;
 type Pluralization = Partial<Record<PluralType, string>>;
-type AllowedContent = string | (() => string | string[]) | string[] | (string | (() => string | string[]))[];
+type AllowedContent = string | ((state: State) => string | string[]) | string[] | (string | ((state: State) => string | string[]))[];
 type TranslationActions = Partial<Record<string, (str: string) => string>>;
 
 const RGX = /{{(.*?)}}/g;
@@ -23,29 +25,29 @@ const split = (input: string, delimeters: string[]) => {
 };
 
 /**
- * Unwraps any allowed content into string
+ * Turns any allowed content into string
  * @param c Content
  */
-const unwrap = (c: AllowedContent): string => {
+const flattenAllowedContent = (c: AllowedContent, state: State): string => {
 	if (Array.isArray(c)) {
-		return c.map((item) => unwrap(item)).join('<br>');
+		return c.map((item) => flattenAllowedContent(item, state)).join('<br>');
 	}
 
 	if (typeof c === 'function') {
-		return unwrap(c());
+		return flattenAllowedContent(c(state), state);
 	}
 
 	return c;
 };
 
 const replace = (
-	str: AllowedContent,
+	str: string,
 	obj: Record<string, unknown>,
 	pluralization?: Record<string, Pluralization>,
 	actions?: TranslationActions,
 	pr?: Intl.PluralRules,
 ) => {
-	return unwrap(str).replaceAll(RGX, (x: any, key: string, y: any) => {
+	return str.replaceAll(RGX, (x: any, key: string, y: any) => {
 		x = 0;
 		y = obj;
 
@@ -71,5 +73,5 @@ const replace = (
 	});
 };
 
-export { unwrap, replace };
+export { flattenAllowedContent, replace };
 export type { AllowedContent, PluralType, Pluralization, TranslationActions };

@@ -142,25 +142,6 @@ engine.script({
 			en: 'Hii~',
 			ru: 'Привет',
 		}),
-		action.choice(
-			'Tesxt',
-			[
-				'Yes',
-				[
-					action.end()
-				]
-			],
-			[
-				'No',
-				[
-					action.end()
-				],
-				({ state, lang }) => {
-					console.log(state, lang)
-					return false
-				}
-			]
-		),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.dialog('Lily', {
 			en: 'Iʼm going to tell you about the Novely engine',

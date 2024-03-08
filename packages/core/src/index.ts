@@ -4,7 +4,7 @@ export type {
 	ActionProxyProvider,
 	DefaultActionProxyProvider,
 	GetActionParameters,
-	Unwrappable,
+	TextContent,
 	CustomHandler,
 	CustomHandlerGetResult,
 	CustomHandlerGetResultDataFunction,
