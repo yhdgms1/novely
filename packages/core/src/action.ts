@@ -164,7 +164,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 	) => ValidAction;
 
 	condition: <T extends string | true | false>(
-		condition: () => T,
+		condition: (state: S) => T,
 		variants: Record<T extends true ? 'true' : T extends false ? 'false' : T, ValidAction[]>,
 	) => ValidAction;
 
@@ -223,7 +223,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 
 	animateCharacter: (character: keyof Characters, timeout: number, ...classes: string[]) => ValidAction;
 
-	wait: (time: FunctionableValue<number>) => ValidAction;
+	wait: (time: number | ((state: State) => number)) => ValidAction;
 
 	function: (fn: FunctionAction<Languages, S>) => ValidAction;
 

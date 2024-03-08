@@ -707,8 +707,7 @@ const novely = <
 	const getStateFunction = (context: string | Context) => {
 		const stack = useStack(context);
 
-		// @ts-expect-error I don't understand that error
-		const state: StateFunction<State> = (value) => {
+		const state = ((value) => {
 			const _state = getStateAtCtx(context);
 
 			if (!value) {
@@ -719,12 +718,11 @@ const novely = <
 			const val = isFunction(value) ? value(prev) : deepmerge(prev, value);
 
 			stack.value[1] = val;
-		}
 
-		/**
-		 * Widen type here
-		 */
-		return state as StateFunction<State>;
+			return undefined;
+		}) as StateFunction<State>;
+
+		return state;
 	}
 
 	const renderer = createRenderer({
@@ -809,7 +807,7 @@ const novely = <
 		wait({ ctx, push }, [time]) {
 			if (ctx.meta.restoring) return;
 
-			setTimeout(push, isFunction(time) ? time() : time);
+			setTimeout(push, isFunction(time) ? time(getStateAtCtx(ctx)) : time);
 		},
 		showBackground({ ctx, push }, [background]) {
 			ctx.background(background);
@@ -1001,7 +999,7 @@ const novely = <
 			}
 
 			if (!ctx.meta.restoring) {
-				const val = String(condition());
+				const val = String(condition(getStateAtCtx(ctx)));
 
 				if (DEV && !variants[val]) {
 					throw new Error(`Attempt to go to unknown variant "${val}"`)
