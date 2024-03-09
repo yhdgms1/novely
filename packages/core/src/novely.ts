@@ -1295,8 +1295,8 @@ const novely = <
 		 * })
 		 * ```
 		 */
-		templateReplace(content: TextContent<Languages, Data>) {
-			return templateReplace(content)
+		templateReplace(content: TextContent<Languages, DataScheme>) {
+			return templateReplace(content as TextContent<Languages, Data>)
 		},
 		/**
 		 * Cancel data loading, hide UI, ignore page change events
