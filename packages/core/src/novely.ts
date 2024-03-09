@@ -1256,29 +1256,47 @@ const novely = <
 		);
 	};
 
-	function data(value: DeepPartial<DataScheme> | ((prev: DataScheme) => DataScheme)): void;
-	function data(): DataScheme;
-	function data(value?: DeepPartial<DataScheme> | ((prev: DataScheme) => DataScheme)): DataScheme | void {
-		if (!value) return $.get().data as DataScheme | void;
+	const data = ((value) => {
+		const _data = $.get().data;
 
-		const prev = $.get().data;
-		// @ts-expect-error Ignore
-		const val = isFunction(value) ? value(prev as DataScheme) : deepmerge(prev, value);
+		if (!value) return _data;
+
+		const val = isFunction(value) ? value(_data) : deepmerge(_data, value as DataScheme);
 
 		$.update((prev) => {
 			prev.data = val;
 
 			return prev;
-		});
-	}
+		})
+
+		return undefined;
+	}) as StateFunction<DataScheme>;
 
 	return {
 		/**
 		 * Function to set game script
+		 *
+		 * @example
+		 * ```ts
+		 * engine.script({
+		 *   start: [
+		 *     action.function(() => {})
+		 *   ]
+		 * })
+		 * ```
 		 */
 		script,
 		/**
-		 * Function to get actions
+		 * Get actions
+		 *
+		 * @example
+		 * ```ts
+		 * engine.script({
+		 *   start: [
+		 *     action.function(() => {})
+		 *   ]
+		 * })
+		 * ```
 		 */
 		action,
 		/**
@@ -1286,14 +1304,27 @@ const novely = <
 		 */
 		state: getStateFunction(MAIN_CONTEXT_KEY),
 		/**
-		 * Unlike `state`, stored at global scope instead and shared between games
+		 * Store data between games
+		 *
+		 * @example
+		 * ```ts
+		 * engine.script({
+		 *   start: [
+		 *     action.function(() => {
+		 *       // Paid content should be purchased only once
+		 *       // So it will be available in any save
+		 *       data({ paid_content_purchased: true })
+		 *     })
+		 *   ]
+		 * })
+		 * ```
 		 */
 		data,
 		/**
 		 * @deprecated Renamed into `templateReplace`
 		 */
-		unwrap(content: Exclude<TextContent<Languages, Record<never, never>>, Record<string, string>> | Record<Languages, string>) {
-			return templateReplace(content, $.get().data);
+		unwrap(content: TextContent<Languages, DataScheme>) {
+			return templateReplace(content as TextContent<Languages, Data>);
 		},
 		/**
 		 * Replaces content inside {{braces}} with using global data
