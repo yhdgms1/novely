@@ -6,6 +6,7 @@ type ValidAction =
 	| ['clear', [Set<keyof DefaultActionProxyProvider>?, Set<string>?]]
 	| ['condition', [() => boolean, Record<string, ValidAction[]>]]
 	| ['dialog', [string | undefined, TextContent<string, State>, string | undefined]]
+	| ['say', [string, TextContent<string, State>]]
 	| ['end', []]
 	| ['showBackground', [string | NonEmptyRecord<BackgroundImage>]]
 	| ['playMusic', [string]]
@@ -172,13 +173,15 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 
 	dialog: {
 		<C extends keyof Characters>(
-			person: C,
+			character: C,
 			content: TextContent<Languages, S>,
 			emotion?: keyof Characters[C]['emotions'],
 		): ValidAction;
-		(person: undefined, content: TextContent<Languages, S>, emotion?: undefined): ValidAction;
-		(person: string, content: TextContent<Languages, S>, emotion?: undefined): ValidAction;
+		(character: undefined, content: TextContent<Languages, S>, emotion?: undefined): ValidAction;
+		(character: string, content: TextContent<Languages, S>, emotion?: undefined): ValidAction;
 	};
+
+	say: (character: keyof Characters, content: TextContent<Languages, S>) => ValidAction;
 
 	end: () => ValidAction;
 

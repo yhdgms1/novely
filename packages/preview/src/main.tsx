@@ -39,6 +39,14 @@ const engine = novely({
 				ok: lily_ok,
 			},
 		},
+		You: {
+			name: {
+				ru: 'Ты',
+				en: 'You'
+			},
+			color: '#000000',
+			emotions: {}
+		}
 	},
 
 	translation: {
@@ -100,13 +108,13 @@ false && engine.script({
 		action.showCharacter('Lily', 'ok'),
 		action.voice(voice1),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog('Lily', 'Ну привет, мальчик-неудачник'),
+		action.say('Lily', 'Ну привет, мальчик-неудачник'),
 		action.voice(voice2),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog('Lily', 'Как же ты ничтожен...'),
+		action.say('Lily', 'Как же ты ничтожен...'),
 		action.voice(voice3),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog('Lily', 'Потому что ты не достоин!'),
+		action.say('Lily', 'Потому что ты не достоин!'),
 	]
 })
 
@@ -138,43 +146,43 @@ engine.script({
 		// 	});
 		// }),
 		// animate('car', 'curves'),
-		action.dialog('Lily', {
+		action.say('Lily', {
 			en: 'Hii~',
 			ru: 'Привет',
 		}),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog('Lily', {
+		action.say('Lily', {
 			en: 'Iʼm going to tell you about the Novely engine',
 			ru: 'Я расскажу тебе про движок Novely',
 		}),
 		// animate('car', 'bounce'),
-		action.dialog('You', {
+		action.say('You', {
 			en: 'Great, something new. What kind of features does it offer?',
 			ru: 'Отлично, что-то новое. Какие возможности он дает?',
 		}),
 		// animate('car', 'idle'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog('Lily', {
+		action.say('Lily', {
 			en: 'Novely has many features: multi-language support, TypeScript support, and it is open source, multi-platform and lightweight.',
 			ru: 'У Novely есть много преимуществ: поддержка нескольких языков, типизация на TypeScript, открытый исходный код, мультплатформенность и легковесность.',
 		}),
 		// remove('car'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog('Lily', {
+		action.say('Lily', {
 			en: 'As a result, it can be used to create interactive stories and short stories with a minimum of effort.',
 			ru: 'В итоге с его помощью можно создавать интерактивные истории и новеллы с минимумом усилий.',
 		}),
-		action.dialog('You', {
+		action.say('You', {
 			en: 'Sounds promising. How easy is it to use?',
 			ru: 'Звучит многообещающе. Насколько просто им пользоваться?',
 		}),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog('Lily', {
+		action.say('Lily', {
 			en: "The Novely API is very simple and intuitive, so even a little programming experience is enough to start creating visual novels. And once you've studied the documentation, you'll get the hang of it!",
 			ru: 'API Novely очень простой и интуитивный, так что даже небольшой опыт в программировании подойдёт чтобы начать создавать визуальные новеллы. А уж после изучения документации всё получится!',
 		}),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog('Lily', {
+		action.say('Lily', {
 			en: 'By the way, how old are you?',
 			ru: 'Кстати, сколько тебе лет?',
 		}),
@@ -194,7 +202,7 @@ engine.script({
 			},
 		),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.dialog('Lily', {
+		action.say('Lily', {
 			en: "Ah, {{age}} {{age@years}} old? It's a wonderful age",
 			ru: 'Ох, {{age}} {{age@years}}? Это прекрасный возраст',
 		}),
@@ -214,7 +222,7 @@ engine.script({
 engine.script({
 	another: [
 		action.showBackground(outdoor),
-		action.dialog('Lily', {
+		action.say('Lily', {
 			en: 'Part 2 Comes',
 			ru: 'Часть 2'
 		}),

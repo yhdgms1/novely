@@ -882,6 +882,16 @@ const novely = <
 				forward
 			);
 		},
+		say({ ctx, data }, [character, content]) {
+			if (DEV && !characters[character]) {
+				throw new Error(`Attempt to call Say action with unknown character "${character}"`);
+			}
+
+			match('dialog', [character, content], {
+				ctx,
+				data
+			});
+		},
 		function({ ctx, push }, [fn]) {
 			const { restoring, goingBack, preview } = ctx.meta;
 
