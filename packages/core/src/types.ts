@@ -29,20 +29,30 @@ type SaveType = 'manual' | 'auto';
 
 type SaveMeta = [date: SaveDate, type: SaveType];
 
-type Save = [path: Path, state: State, meta: SaveMeta];
+type Save<S extends State = State> = [
+	path: Path,
+	state: S,
+	meta: SaveMeta
+];
 
 type Lang = string;
 type TypewriterSpeed = 'Slow' | 'Medium' | 'Fast' | 'Auto' | (string & Record<never, never>);
 type SoundVolume = number;
 
-type StorageMeta = [lang: Lang, typewriter_speed: TypewriterSpeed, music_volume: SoundVolume, sound_volume: SoundVolume, voice_volume: SoundVolume];
+type StorageMeta<L extends string = string> = [
+	lang: L,
+	typewriter_speed: TypewriterSpeed,
+	music_volume: SoundVolume,
+	sound_volume: SoundVolume,
+	voice_volume: SoundVolume
+];
 
 type Migration = (save: unknown) => unknown;
 
-type StorageData = {
+type StorageData<L extends string = string, D extends Data = Data> = {
 	saves: Save[];
-	data: Data;
-	meta: StorageMeta;
+	data: D;
+	meta: StorageMeta<L>;
 };
 
 type Stack = {

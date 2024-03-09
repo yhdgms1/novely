@@ -17,6 +17,7 @@ import type {
 	NovelyInit,
 	StateFunction
 } from './types';
+import type { Stored } from './store';
 import type { Context } from './renderer';
 import type { BaseTranslationStrings } from './translations';
 import type { ControlledPromise, MatchActionInit, MatchActionMapComplete } from './utils';
@@ -262,16 +263,29 @@ const novely = <
 	 * @returns language
 	 */
 	const getLanguageWithoutParameters = () => {
-		return getLanguage(languages, defaultGetLanguage);
+		const language = getLanguage(languages, defaultGetLanguage);
+
+		/**
+		 * This is valid language
+		 */
+		if (languages.includes(language as Languages)) {
+			return language as Languages;
+		}
+
+		if (DEV) {
+			throw new Error(`Attempt to use unsupported language "${language}". Supported languages: ${languages.join(', ')}.`)
+		}
+
+		throw 0;
 	};
 
 	/**
 	 * 1) Novely rendered using the `initialData`, but you can't start new game or `load` an empty one - this is scary, imagine losing your progress
 	 * 2) Actual stored data is loaded, language and etc is changed
 	 */
-	const initialData: StorageData = {
+	const initialData: StorageData<Languages, DataScheme> = {
 		saves: [],
-		data: klona(defaultData) as Data,
+		data: klona(defaultData),
 		meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED, 1, 1, 1],
 	};
 
@@ -350,10 +364,7 @@ const novely = <
 		 */
 		dataLoaded.resolve();
 
-		/**
-		 * Yay
-		 */
-		$.set(stored);
+		$.set(stored as StorageData<Languages, DataScheme>);
 	};
 
 	/**
@@ -727,7 +738,7 @@ const novely = <
 		removeContext,
 		getStateFunction,
 		languages,
-		$,
+		$: $ as unknown as Stored<StorageData>,
 		$$: coreData,
 	});
 
@@ -1251,6 +1262,7 @@ const novely = <
 		if (!value) return $.get().data as DataScheme | void;
 
 		const prev = $.get().data;
+		// @ts-expect-error Ignore
 		const val = isFunction(value) ? value(prev as DataScheme) : deepmerge(prev, value);
 
 		$.update((prev) => {
