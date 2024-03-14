@@ -1,4 +1,4 @@
-import type { DefaultActionProxyProvider } from './action';
+import type { DefaultActionProxy } from './action';
 import type { Storage } from './storage';
 import type { TranslationActions, Pluralization } from './translation';
 import type { Renderer, RendererInit } from './renderer';
@@ -79,7 +79,7 @@ type DeepPartial<T> = unknown extends T
 	    }
 	  : T;
 
-type ActionFN = DefaultActionProxyProvider[keyof DefaultActionProxyProvider];
+type ActionFN = DefaultActionProxy[keyof DefaultActionProxy];
 
 type NonEmptyRecord<T extends Record<PropertyKey, unknown>> = keyof T extends never ? never : T;
 

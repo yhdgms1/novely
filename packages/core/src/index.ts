@@ -1,8 +1,8 @@
 export type {
 	ValidAction,
 	Story,
-	ActionProxyProvider,
-	DefaultActionProxyProvider,
+	ActionProxy,
+	DefaultActionProxy,
 	GetActionParameters,
 	TextContent,
 	CustomHandler,

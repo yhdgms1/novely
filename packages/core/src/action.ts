@@ -2,31 +2,31 @@ import type { Character } from './character';
 import type { Thenable, NonEmptyRecord, StateFunction, State } from './types';
 
 type ValidAction =
-	| ['choice', [number]]
-	| ['clear', [Set<keyof DefaultActionProxyProvider>?, Set<string>?]]
-	| ['condition', [() => boolean, Record<string, ValidAction[]>]]
-	| ['dialog', [string | undefined, TextContent<string, State>, string | undefined]]
-	| ['say', [string, TextContent<string, State>]]
-	| ['end', []]
-	| ['showBackground', [string | NonEmptyRecord<BackgroundImage>]]
-	| ['playMusic', [string]]
-	| ['stopMusic', [string]]
-	| ['voice', [string]]
+	| ['choice', number]
+	| ['clear', Set<keyof DefaultActionProxy>?, Set<string>?]
+	| ['condition', () => boolean, Record<string, ValidAction[]>]
+	| ['dialog', string | undefined, TextContent<string, State>, string | undefined]
+	| ['say', string, TextContent<string, State>]
+	| ['end', ]
+	| ['showBackground', string | NonEmptyRecord<BackgroundImage>]
+	| ['playMusic', string]
+	| ['stopMusic', string]
+	| ['voice', string]
 	| ['stopVoice', []]
-	| ['jump', [string]]
-	| ['showCharacter', [string, keyof Character['emotions'], string?, string?]]
-	| ['hideCharacter', [string, string?, string?, number?]]
-	| ['animateCharacter', [string, number, ...string[]]]
-	| ['wait', [FunctionableValue<number>]]
-	| ['function', [() => Thenable<void>]]
-	| ['input', [string, (meta: ActionInputOnInputMeta<string, State>) => void, ActionInputSetup?]]
-	| ['custom', [CustomHandler<string, State>]]
-	| ['vibrate', [...number[]]]
-	| ['next', []]
-	| ['text', [...string[]]]
-	| ['exit', []]
-	| ['preload', [string]]
-	| ['block', [string]]
+	| ['jump', string]
+	| ['showCharacter', string, keyof Character['emotions'], string?, string?]
+	| ['hideCharacter', string, string?, string?, number?]
+	| ['animateCharacter', string, number, ...string[]]
+	| ['wait', FunctionableValue<number>]
+	| ['function', () => Thenable<void>]
+	| ['input', string, (meta: ActionInputOnInputMeta<string, State>) => void, ActionInputSetup?]
+	| ['custom', CustomHandler<string, State>]
+	| ['vibrate', ...number[]]
+	| ['next']
+	| ['text', ...string[]]
+	| ['exit']
+	| ['preload', string]
+	| ['block', string]
 	| ValidAction[];
 
 type Story = Record<string, ValidAction[]>;
@@ -146,7 +146,7 @@ type ActionInputSetup = (input: HTMLInputElement, cleanup: (cb: () => void) => v
 
 type BackgroundImage = Partial<Record<'portrait' | 'landscape' | 'all', string>> & Record<string, string>;
 
-type ActionProxyProvider<Characters extends Record<string, Character>, Languages extends string, S extends State> = {
+type ActionProxy<Characters extends Record<string, Character>, Languages extends string, S extends State> = {
 	choice: {
 		(...choices: [name: TextContent<Languages, S>, actions: ValidAction[], active?: ChoiceCheckFunction<Languages, S>][]): ValidAction;
 		(
@@ -156,7 +156,7 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 	};
 
 	clear: (
-		keep?: Set<keyof DefaultActionProxyProvider>,
+		keep?: Set<keyof DefaultActionProxy>,
 		keepCharacters?: Set<string>,
 		keepAudio?: {
 			music: Set<string>,
@@ -249,16 +249,16 @@ type ActionProxyProvider<Characters extends Record<string, Character>, Languages
 	block: (scene: string) => ValidAction;
 };
 
-type DefaultActionProxyProvider = ActionProxyProvider<Record<string, Character>, string, State>;
-type GetActionParameters<T extends Capitalize<keyof DefaultActionProxyProvider>> = Parameters<
-	DefaultActionProxyProvider[Uncapitalize<T>]
+type DefaultActionProxy = ActionProxy<Record<string, Character>, string, State>;
+type GetActionParameters<T extends Capitalize<keyof DefaultActionProxy>> = Parameters<
+	DefaultActionProxy[Uncapitalize<T>]
 >;
 
 export type {
 	ValidAction,
 	Story,
-	ActionProxyProvider,
-	DefaultActionProxyProvider,
+	ActionProxy,
+	DefaultActionProxy,
 	GetActionParameters,
 	TextContent,
 	CustomHandler,

@@ -1,4 +1,4 @@
-import type { ActionInputSetup, ActionInputOnInputMeta, BackgroundImage, DefaultActionProxyProvider, ValidAction } from './action';
+import type { ActionInputSetup, ActionInputOnInputMeta, BackgroundImage, DefaultActionProxy, ValidAction } from './action';
 import type { Character } from './character';
 import type { CoreData, NovelyScreen, Save, State, StateFunction, StorageData, Thenable } from './types';
 import type { BaseTranslationStrings } from './translations';
@@ -101,7 +101,7 @@ type Renderer = {
 			resolve: () => void
 		) => void;
 		clear: (
-			keep: Set<keyof DefaultActionProxyProvider>,
+			keep: Set<keyof DefaultActionProxy>,
 			keepCharacters: Set<string>,
 			keepAudio: {
 				music: Set<string>,
@@ -110,11 +110,11 @@ type Renderer = {
 			resolve: () => void
 		) => void;
 		custom: (
-			fn: Parameters<DefaultActionProxyProvider['custom']>[0],
+			fn: Parameters<DefaultActionProxy['custom']>[0],
 			push: () => void,
 		) => Thenable<void>;
 		clearCustom: (
-			fn: Parameters<DefaultActionProxyProvider['custom']>[0],
+			fn: Parameters<DefaultActionProxy['custom']>[0],
 		) => void;
 
 		text: (str: string, resolve: () => void) => void;

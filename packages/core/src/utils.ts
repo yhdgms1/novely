@@ -1,4 +1,4 @@
-import type { ActionProxyProvider, DefaultActionProxyProvider, CustomHandler, Story, ValidAction, GetActionParameters } from './action';
+import type { ActionProxy, DefaultActionProxy, CustomHandler, Story, ValidAction, GetActionParameters } from './action';
 import type { Character } from './character';
 import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, State } from './types';
 import type { Context, Renderer } from './renderer';
@@ -16,7 +16,7 @@ type MatchActionParams = {
 }
 
 type MatchActionMap = {
-	[Key in keyof DefaultActionProxyProvider]: (params: MatchActionParams, data: Parameters<DefaultActionProxyProvider[Key]>) => void;
+	[Key in keyof DefaultActionProxy]: (params: MatchActionParams, data: Parameters<DefaultActionProxy[Key]>) => void;
 };
 
 type MatchActionMapComplete = Omit<MatchActionMap, 'custom'> & {
@@ -95,11 +95,8 @@ const isCSSImage = (str: string) => {
 
 const str = String;
 
-const isUserRequiredAction = (
-	action: keyof MatchActionMapComplete,
-	meta: Parameters<MatchActionMapComplete[keyof MatchActionMapComplete]>,
-) => {
-	return action === 'custom' && meta[0] && (meta[0] as unknown as CustomHandler).requireUserAction;
+const isUserRequiredAction = ([action, ...meta]: ValidAction) => {
+	return Boolean(action === 'custom' && meta[0] && (meta[0] as unknown as CustomHandler).requireUserAction);
 };
 
 const getLanguage = (languages: string[]) => {
@@ -250,12 +247,7 @@ const isAudioAction = (action: unknown): action is   'playMusic' | 'stopMusic' |
 
 const noop = () => {};
 
-const isAction = (
-	element: unknown,
-): element is [
-	keyof MatchActionMapComplete,
-	...Parameters<MatchActionMapComplete[keyof MatchActionMapComplete]>,
-] => {
+const isAction = (element: unknown,): element is ValidAction => {
 	return Array.isArray(element) && isString(element[0]);
 };
 
@@ -417,7 +409,7 @@ const getActionsFromPath = (story: Story, path: Path, raw: boolean = false) => {
 					 * Экшены, для закрытия которых пользователь должен с ними взаимодействовать
 					 * Также в эту группу входят экшены, которые не должны быть вызваны при восстановлении
 					 */
-					if (isSkippedDuringRestore(action) || isUserRequiredAction(action, meta)) {
+					if (isSkippedDuringRestore(action) || isUserRequiredAction(item)) {
 						if (index === max && i === val) {
 							push();
 						}
@@ -545,7 +537,7 @@ const createQueueProcessor = (queue: [any, any][]) => {
 		}
 	}
 
-	const run = async (match: (action: keyof ActionProxyProvider<Record<string, Character>, string, State>, props: any) => Thenable<void>) => {
+	const run = async (match: (action: keyof ActionProxy<Record<string, Character>, string, State>, props: any) => Thenable<void>) => {
 		for await (const [action, meta] of processedQueue) {
 			const result = match(action, meta);
 

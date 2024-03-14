@@ -1,6 +1,6 @@
 import type { Character } from './character';
 import type {
-	ActionProxyProvider,
+	ActionProxy,
 	Story,
 	ValidAction,
 	TextContent,
@@ -10,7 +10,6 @@ import type {
 	State,
 	Data,
 	StorageData,
-	DeepPartial,
 	NovelyScreen,
 	CoreData,
 	Path,
@@ -88,7 +87,7 @@ const novely = <
 	/**
 	 * Local type declaration to not repeat code
 	 */
-	type Actions = ActionProxyProvider<Characters, Languages, StateScheme>;
+	type Actions = ActionProxy<Characters, Languages, StateScheme>;
 
 	const languages = Object.keys(translation) as Languages[];
 
@@ -242,7 +241,7 @@ const novely = <
 					}
 				}
 
-				return [action, ...props];
+				return [action, ...props] as ValidAction;
 			};
 		},
 	});
@@ -523,31 +522,33 @@ const novely = <
 				/**
 				 * Just in case 🤷
 				 */
-				if (isAction(element)) {
-					const [action, props] = element as ValidAction;
+				if (!isAction(element)) {
+					continue
+				}
 
-					/**
-					 * Imagine array of actions like
-					 *
-					 * [
-					 *  ['dialog', ...props]
-					 *  ['dialog', ...props]
-					 *  ['custom', function]
-					 * ]
-					 *
-					 * When player goes back array changes to
-					 *
-					 * [
-					 *  ['dialog', ...props]
-					 * ]
-					 *
-					 * We catch these custom actions that are gone and
-					 * call their clear methods so there is no side effects
-					 * from future in the past
-					 */
-					if (action === 'custom') {
-						context.clearCustom(props[0]);
-					}
+				const [action, fn] = element;
+
+				/**
+				 * Imagine array of actions like
+				 *
+				 * [
+				 *  ['dialog', ...props]
+				 *  ['dialog', ...props]
+				 *  ['custom', function]
+				 * ]
+				 *
+				 * When player goes back array changes to
+				 *
+				 * [
+				 *  ['dialog', ...props]
+				 * ]
+				 *
+				 * We catch these custom actions that are gone and
+				 * call their clear methods so there is no side effects
+				 * from future in the past
+				 */
+				if (action === 'custom') {
+					context.clearCustom(fn);
 				}
 			}
 		}
@@ -598,13 +599,7 @@ const novely = <
 			}
 		}
 
-		/**
-		 * @todo: replace this ugly thing in whole code base
-		 */
-		return current as [
-			keyof MatchActionMapComplete,
-			...Parameters<MatchActionMapComplete[keyof MatchActionMapComplete]>,
-		]
+		return current as Exclude<ValidAction, ValidAction[]>;
 	};
 
 	/**
@@ -765,10 +760,7 @@ const novely = <
 		save(true, 'auto');
 	};
 
-	const next = (ctx: Context) => {
-		const stack = useStack(ctx);
-		const path = stack.value[0];
-
+	const nextPath = (path: Path) => {
 		/**
 		 * Last path element
 		 */
@@ -779,6 +771,15 @@ const novely = <
 		} else {
 			path.push([null, 0]);
 		}
+
+		return path;
+	}
+
+	const next = (ctx: Context) => {
+		const stack = useStack(ctx);
+		const path = stack.value[0];
+
+		nextPath(path);
 	};
 
 	const matchActionInit: MatchActionInit = {
