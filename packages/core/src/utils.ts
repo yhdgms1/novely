@@ -247,7 +247,7 @@ const isAudioAction = (action: unknown): action is   'playMusic' | 'stopMusic' |
 
 const noop = () => {};
 
-const isAction = (element: unknown,): element is ValidAction => {
+const isAction = (element: unknown,): element is Exclude<ValidAction, ValidAction[]> => {
 	return Array.isArray(element) && isString(element[0]);
 };
 
@@ -351,7 +351,7 @@ const getActionsFromPath = (story: Story, path: Path, raw: boolean = false) => {
 		return acc;
 	}, 0);
 
-	const queue = [] as [any, any][];
+	const queue = [] as Exclude<ValidAction, ValidAction[]>[];
 	const blocks = [];
 
 	for (const [type, val] of path) {
@@ -388,13 +388,13 @@ const getActionsFromPath = (story: Story, path: Path, raw: boolean = false) => {
 					 */
 					if (!isAction(item)) continue;
 
-					const [action, ...meta] = item;
+					const [action] = item;
 
 					/**
 					 * Add item to queue and action to keep
 					 */
 					const push = () => {
-						queue.push([action, meta]);
+						queue.push(item);
 					};
 
 					/**
@@ -440,8 +440,8 @@ const getActionsFromPath = (story: Story, path: Path, raw: boolean = false) => {
 	return queue;
 }
 
-const createQueueProcessor = (queue: [any, any][]) => {
-	const processedQueue: [any, any][] = [];
+const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[]) => {
+	const processedQueue: Exclude<ValidAction, ValidAction[]>[] = [];
 
 	const keep = new Set();
 	const characters = new Set();
@@ -455,7 +455,9 @@ const createQueueProcessor = (queue: [any, any][]) => {
 	 */
 	const next = (i: number) => queue.slice(i + 1);
 
-	for (const [i, [action, meta]] of queue.entries()) {
+	for (const [i, item] of queue.entries()) {
+		const [action, ...params] = item;
+
 		/**
 		 * Keep actually does not keep any actions, clear method only works with things like `dialog` which can blink and etc
 		 * So it's just easies to add everything in there
@@ -466,15 +468,15 @@ const createQueueProcessor = (queue: [any, any][]) => {
 			/**
 			 * When `callOnlyLatest` is `true`
 			 */
-			if (action === 'custom' && (meta as GetActionParameters<'Custom'>)[0].callOnlyLatest) {
+			if (action === 'custom' && (params as GetActionParameters<'Custom'>)[0].callOnlyLatest) {
 				/**
 				 * We'll calculate it is `latest` or not
 				 */
-				const notLatest = next(i).some(([, _meta]) => {
-					if (!_meta || !meta) return false;
+				const notLatest = next(i).some(([, func]) => {
+					if (!func) return false;
 
-					const c0 = _meta[0] as unknown as GetActionParameters<'Custom'>[0];
-					const c1 = meta[0] as unknown as GetActionParameters<'Custom'>[0];
+					const c0 = func as CustomHandler;
+					const c1 = params[0] as CustomHandler;
 
 					/**
 					 * Also check for `undefined`
@@ -488,13 +490,14 @@ const createQueueProcessor = (queue: [any, any][]) => {
 				if (notLatest) continue;
 			}
 
-			processedQueue.push([action, meta]);
+			processedQueue.push(item);
 		} else if (action === 'showCharacter' || action === 'playSound' || action === 'playMusic' || action === 'voice') {
 			const closing = getOppositeAction(action);
 
-			const skip = next(i).some(([_action, _meta]) => {
-				if (!_meta || !meta) return false;
-				if (_meta[0] !== meta[0]) return false;
+			const skip = next(i).some(([_action, target]) => {
+				if (target !== params[0]) {
+					return false;
+				}
 
 				/**
 				 * It either will be closed OR same action will be ran again
@@ -508,14 +511,14 @@ const createQueueProcessor = (queue: [any, any][]) => {
 			 * Actually, we do not need check above to add there things to keep because if something was hidden already we could not keep it visible
 			 */
 			if (action === 'showCharacter') {
-				characters.add(meta[0])
+				characters.add(params[0])
 			} else if (action === 'playMusic') {
-				audio.music.add(meta[0])
+				audio.music.add(params[0])
 			} else if (action === 'playSound') {
-				audio.sound.add(meta[0])
+				audio.sound.add(params[0])
 			}
 
-			processedQueue.push([action, meta]);
+			processedQueue.push(item);
 		} else if (action === 'showBackground' || action === 'animateCharacter' || action === 'preload') {
 			/**
 			 * @todo: Также сравнивать персонажей в animateCharacter. Чтобы не просто последний запускался, а последний для персонажа.
@@ -531,15 +534,15 @@ const createQueueProcessor = (queue: [any, any][]) => {
 
 			if (skip) continue;
 
-			processedQueue.push([action, meta]);
+			processedQueue.push(item);
 		} else {
-			processedQueue.push([action, meta]);
+			processedQueue.push(item);
 		}
 	}
 
 	const run = async (match: (action: keyof ActionProxy<Record<string, Character>, string, State>, props: any) => Thenable<void>) => {
-		for await (const [action, meta] of processedQueue) {
-			const result = match(action, meta);
+		for await (const [action, ...params] of processedQueue) {
+			const result = match(action, params);
 
 			if (isPromise(result)) {
 				await result;

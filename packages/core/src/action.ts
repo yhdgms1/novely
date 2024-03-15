@@ -11,6 +11,7 @@ type ValidAction =
 	| ['showBackground', string | NonEmptyRecord<BackgroundImage>]
 	| ['playMusic', string]
 	| ['stopMusic', string]
+	| ['playSound', audio: string, loop?: boolean]
 	| ['voice', string]
 	| ['stopVoice']
 	| ['jump', string]
