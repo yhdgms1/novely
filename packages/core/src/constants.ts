@@ -1,6 +1,6 @@
 import type { TypewriterSpeed } from './types';
 
-const SKIPPED_DURING_RESTORE = new Set(['dialog', 'choice', 'input', 'vibrate', 'text'] as const);
+const SKIPPED_DURING_RESTORE = new Set(['dialog', 'say', 'choice', 'input', 'vibrate', 'text'] as const);
 
 const BLOCK_EXIT_STATEMENTS = new Set(['choice:exit', 'condition:exit', 'block:exit'] as const);
 

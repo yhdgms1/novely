@@ -508,15 +508,17 @@ const novely = <
 
 		renderer.ui.showScreen('game');
 
-		const queue = getActionsFromPath(story, path);
-		const processor = createQueueProcessor(queue);
-		const { keep, characters, audio } = processor.getKeep();
+		const { queue, skip, skipPreserve } = getActionsFromPath(story, path, false);
+		const processor = createQueueProcessor(queue, {
+			skip,
+			skipPreserve
+		});
+		const { keep, characters, audio } = processor.keep;
 
 		if (previous) {
-			const prevQueue = getActionsFromPath(story, previous[0], true);
-			const currQueue = getActionsFromPath(story, path, true);
+			const { queue: prevQueue } = getActionsFromPath(story, previous[0], false);
 
-			for (let i = prevQueue.length - 1; i > currQueue.length; i--) {
+			for (let i = prevQueue.length - 1; i > queue.length; i--) {
 				const element = prevQueue[i];
 
 				/**
@@ -666,7 +668,7 @@ const novely = <
 	 * Execute save in context at `name`
 	 */
 	const preview = async ([path, data]: Save, name: string) => {
-		const queue = getActionsFromPath(story, path);
+		const { queue } = getActionsFromPath(story, path, true);
 		const ctx = renderer.getContext(name);
 
 		/**
@@ -675,7 +677,9 @@ const novely = <
 		ctx.meta.restoring = true;
 		ctx.meta.preview = true;
 
-		const processor = createQueueProcessor(queue);
+		const processor = createQueueProcessor(queue, {
+			skip: new Set,
+		});
 
 		await processor.run((action, props) => {
 			if (isAudioAction(action)) return;

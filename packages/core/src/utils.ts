@@ -322,7 +322,12 @@ const getOppositeAction = (action: 'showCharacter' | 'playSound' | 'playMusic' |
 	return MAP[action as keyof typeof MAP];
 }
 
-const getActionsFromPath = (story: Story, path: Path, raw: boolean = false) => {
+/**
+ * @param story A story object
+ * @param path A path by that actions will be gathered
+ * @param filter true — actions that should be skipped would not be returned
+ */
+const getActionsFromPath = (story: Story, path: Path, filter: boolean) => {
 	/**
 	 * Current item in the story
 	 */
@@ -339,6 +344,15 @@ const getActionsFromPath = (story: Story, path: Path, raw: boolean = false) => {
 	 * Current item of type `[null, int]`
 	 */
 	let index = 0;
+	/**
+	 * Skipped action that should be preserved
+	 * @todo Give a better name
+	 */
+	let skipPreserve: Exclude<ValidAction, ValidAction[]> | undefined = undefined;
+	/**
+	 * Actions that are either considered user action or skipped during restore process
+	 */
+	const skip = new Set<Exclude<ValidAction, ValidAction[]>>()
 
 	/**
 	 * Cound of items of type `[null, int]`
@@ -390,33 +404,21 @@ const getActionsFromPath = (story: Story, path: Path, raw: boolean = false) => {
 
 					const [action] = item;
 
-					/**
-					 * Add item to queue and action to keep
-					 */
-					const push = () => {
-						queue.push(item);
-					};
+					const last = index === max && i === val;
+					const shouldSkip = isSkippedDuringRestore(action) || isUserRequiredAction(item);
 
-					/**
-					 * In case we want pure data then just add it
-					 */
-					if (raw) {
-						push();
-						continue;
+					if (shouldSkip) {
+						skip.add(item);
 					}
 
-					/**
-					 * Экшены, для закрытия которых пользователь должен с ними взаимодействовать
-					 * Также в эту группу входят экшены, которые не должны быть вызваны при восстановлении
-					 */
-					if (isSkippedDuringRestore(action) || isUserRequiredAction(item)) {
-						if (index === max && i === val) {
-							push();
-						}
+					if (shouldSkip && last) {
+						skipPreserve = item;
+					}
 
+					if (filter && shouldSkip && !last) {
 						continue;
 					} else {
-						push();
+						queue.push(item);
 					}
 				}
 			}
@@ -437,10 +439,19 @@ const getActionsFromPath = (story: Story, path: Path, raw: boolean = false) => {
 		}
 	}
 
-	return queue;
+	return {
+		queue,
+		skip,
+		skipPreserve
+	};
 }
 
-const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[]) => {
+type QueueProcessorOptions = {
+	skip: Set<Exclude<ValidAction, ValidAction[]>>;
+	skipPreserve?: Exclude<ValidAction, ValidAction[]> | undefined
+}
+
+const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], options: QueueProcessorOptions) => {
 	const processedQueue: Exclude<ValidAction, ValidAction[]>[] = [];
 
 	const keep = new Set();
@@ -459,10 +470,14 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[]) => {
 		const [action, ...params] = item;
 
 		/**
-		 * Keep actually does not keep any actions, clear method only works with things like `dialog` which can blink and etc
-		 * So it's just easies to add everything in there
+		 * Clear method only works with things like `dialog` which can blink and etc
+		 * So it's just easier to add everything in there
 		 */
 		keep.add(action);
+
+		if (options.skip.has(item) && item !== options.skipPreserve) {
+			continue;
+		}
 
 		if (action === 'function' || action === 'custom') {
 			/**
@@ -478,10 +493,8 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[]) => {
 					const c0 = func as CustomHandler;
 					const c1 = params[0] as CustomHandler;
 
-					/**
-					 * Also check for `undefined`
-					 */
-					const isIdenticalID = c0.id && c1.id && c0.id === c1.id;
+					// Also check for `undefined` so if two id's were undefined it would not be true
+					const isIdenticalID = Boolean(c0.id && c1.id && c0.id === c1.id);
 					const isIdenticalByReference = c0 === c1;
 
 					return isIdenticalID || isIdenticalByReference || str(c0) === str(c1);
@@ -519,18 +532,39 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[]) => {
 			}
 
 			processedQueue.push(item);
-		} else if (action === 'showBackground' || action === 'animateCharacter' || action === 'preload') {
-			/**
-			 * @todo: Также сравнивать персонажей в animateCharacter. Чтобы не просто последний запускался, а последний для персонажа.
-			 * Тем не менее таким образом могут быть лишнии анимации.
-			 * Можно проверить, что одна анимация идёт сразу за другой, а не через, например, dialog
-			 */
+		} else if (action === 'showBackground' || action === 'preload') {
+			const skip = next(i).some(([_action]) => action === _action);
 
+			if (skip) continue;
+
+			processedQueue.push(item);
+		} else if (action === 'animateCharacter') {
 			/**
-			 * Такая же оптимизация применяется к фонам и анимированию персонажей, и `preload`.
-			 * Если фон изменится, то нет смысла устанавливать или предзагружать текущий
+			 * In this example there are two animations that are not separated by anything
+			 * This animations should both run
+			 *
+			 * ['animateCharacter', 'Ivan Danko', 'jump']
+			 * ['animateCharacter', 'Viktor Rostaveli', 'jump']
+			 *
+			 * In this example only one animation should run, because they are separeted by action
+			 * that is declared as user action required.
+			 *
+			 * ['animateCharacter', 'Ivan Danko', 'jump']
+			 * ['dialog', 'Someone', 'Something']
+			 * ['animateCharacter', 'Viktor Rostaveli', 'jump']
 			 */
-			const skip = next(i).some(([_action], i, array) => action === _action);
+			const skip = next(i).some(([_action, character], j, array) => {
+				/**
+				 * Same character will be animated again. Ignore.
+				 */
+				if (action === _action && character === params[0]) {
+					return true;
+				}
+
+				const next = array.slice(j);
+
+				return next.some((item) => options.skip.has(item)) && next.some(([__action, __character]) => action === __action && character == __character)
+			});
 
 			if (skip) continue;
 
@@ -552,17 +586,13 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[]) => {
 		processedQueue.length = 0;
 	}
 
-	const getKeep = () => {
-		return {
+	return {
+		run,
+		keep: {
 			keep,
 			characters,
 			audio
 		}
-	}
-
-	return {
-		run,
-		getKeep
 	}
 }
 
