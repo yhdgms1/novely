@@ -539,20 +539,6 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 
 			processedQueue.push(item);
 		} else if (action === 'animateCharacter') {
-			/**
-			 * In this example there are two animations that are not separated by anything
-			 * This animations should both run
-			 *
-			 * ['animateCharacter', 'Ivan Danko', 'jump']
-			 * ['animateCharacter', 'Viktor Rostaveli', 'jump']
-			 *
-			 * In this example only one animation should run, because they are separeted by action
-			 * that is declared as user action required.
-			 *
-			 * ['animateCharacter', 'Ivan Danko', 'jump']
-			 * ['dialog', 'Someone', 'Something']
-			 * ['animateCharacter', 'Viktor Rostaveli', 'jump']
-			 */
 			const skip = next(i).some(([_action, character], j, array) => {
 				/**
 				 * Same character will be animated again. Ignore.
@@ -563,7 +549,15 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 
 				const next = array.slice(j);
 
-				return next.some((item) => options.skip.has(item)) && next.some(([__action, __character]) => action === __action && character == __character)
+				const characterWillAnimate = next.some(([__action, __character]) => action === __action);
+				const hasBlockingActions = next.some((item) => options.skip.has(item))
+
+				/**
+				 * This is not a best check.
+				 *
+				 * @todo: make two animations for two different characters animate when not separeted by "blocking actions"
+				 */
+				return characterWillAnimate && hasBlockingActions
 			});
 
 			if (skip) continue;
