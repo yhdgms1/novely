@@ -45,7 +45,7 @@ type Context = {
 	) => void;
 	choices: (
 		question: string,
-		choices: [name: string, actions: ValidAction[], active?: boolean][],
+		choices: [name: string, active: boolean][],
 		resolve: (selected: number) => void
 	) => void;
 	input: (

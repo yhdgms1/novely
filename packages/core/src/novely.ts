@@ -938,7 +938,7 @@ const novely = <
 					console.warn(`Choice children should not be empty, either add content there or make item not selectable`)
 				}
 
-				return [templateReplace(content, data), action, shown] as [string, ValidAction[], boolean?];
+				return [templateReplace(content, data),  shown] as [string, boolean];
 			});
 
 			if (DEV && transformedChoices.length === 0) {

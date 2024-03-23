@@ -64,7 +64,7 @@ interface StateChoices {
   /**
    * Выборы
    */
-  choices: [string, ValidAction[], boolean?][];
+  choices: [string, boolean][];
   /**
    * Должен ли отображаться диалог
    */

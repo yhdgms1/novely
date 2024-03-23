@@ -256,7 +256,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 							{props.state.choices.question || <>&#8197;</>}
 						</span>
 						<For each={props.state.choices.choices}>
-							{([text, _actions, active], i) => {
+							{([text, active], i) => {
 								const disabled = !active;
 								const index = i();
 
