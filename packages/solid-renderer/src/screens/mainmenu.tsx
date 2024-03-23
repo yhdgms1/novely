@@ -34,7 +34,7 @@ const MainMenu: VoidComponent = () => {
 				<Icon children={/* @once */ Icon.Settings()} />
 			</button>
 			<Show when={language()} keyed>
-				{/* @todo: button icon */}
+				{/* In case developer needs an icon they could provide it in HTML as a `innerHTML` prop */}
 				{(_) => <For each={globalState.mainmenu.items}>{(item) => <button {...item(goto)} />}</For>}
 			</Show>
 		</div>
