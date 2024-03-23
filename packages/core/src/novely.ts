@@ -288,7 +288,7 @@ const novely = <
 		meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED, 1, 1, 1],
 	};
 
-	const $ = store(initialData);
+	const storageData = store(initialData);
 	const coreData = store<CoreData>({
 		dataLoaded: false
 	});
@@ -321,11 +321,11 @@ const novely = <
 	const throttledOnStorageDataChange = throttle(onStorageDataChange, throttleTimeout);
 	const throttledEmergencyOnStorageDataChange = throttle(() => {
 		if (saveOnUnload === true || saveOnUnload === 'prod' && !DEV) {
-			onStorageDataChange($.get());
+			onStorageDataChange(storageData.get());
 		}
 	}, 10);
 
-	$.subscribe(throttledOnStorageDataChange);
+	storageData.subscribe(throttledOnStorageDataChange);
 
 	const getStoredData = async () => {
 		let stored = await storage.get();
@@ -363,7 +363,7 @@ const novely = <
 		 */
 		dataLoaded.resolve();
 
-		$.set(stored as StorageData<Languages, DataScheme>);
+		storageData.set(stored as StorageData<Languages, DataScheme>);
 	};
 
 	/**
@@ -400,7 +400,7 @@ const novely = <
 		const stack = useStack(MAIN_CONTEXT_KEY);
 		const current = klona(stack.value);
 
-		$.update((prev) => {
+		storageData.update((prev) => {
 			/**
 			 * Find latest save that were created in current session, and check if it is latest in an array
 			 *
@@ -452,7 +452,7 @@ const novely = <
 		 * Initial save is automatic, and should be ignored when autosaves is turned off
 		 */
 		if (autosaves) {
-			$.update((prev) => {
+			storageData.update((prev) => {
 				return prev.saves.push(save), prev;
 			});
 		}
@@ -479,7 +479,7 @@ const novely = <
 	const restore = async (save?: Save) => {
 		if (!coreData.get().dataLoaded) return;
 
-		let latest = save || $.get().saves.at(-1);
+		let latest = save || storageData.get().saves.at(-1);
 
 		/**
 		 * When there is no save, make a new save
@@ -487,7 +487,7 @@ const novely = <
 		if (!latest) {
 			latest = klona(initial)
 
-			$.update((prev) => {
+			storageData.update((prev) => {
 				/**
 				 * `latest` will be not undefined because this callback called immediately and variable is not changed
 				 */
@@ -632,7 +632,7 @@ const novely = <
 		 * Player did not interacted or did it once, so this is probably not-needed save
 		 */
 		if (type === 'auto' && interacted <= 1 && times.has(time)) {
-			$.update((prev) => {
+			storageData.update((prev) => {
 				prev.saves = prev.saves.filter((save) => save !== current);
 
 				return prev;
@@ -737,8 +737,8 @@ const novely = <
 		removeContext,
 		getStateFunction,
 		languages,
-		$: $ as unknown as Stored<StorageData>,
-		$$: coreData,
+		storageData: storageData as unknown as Stored<StorageData<string, Data>>,
+		coreData,
 	});
 
 	const useStack = createUseStackFunction(renderer);
@@ -862,7 +862,7 @@ const novely = <
 			const name = (() => {
 				const c = character;
 				const cs = characters;
-				const [lang] = $.get().meta;
+				const [lang] = storageData.get().meta;
 
 				if (c && c in cs) {
 					const block = cs[c].name;
@@ -901,7 +901,7 @@ const novely = <
 			const { restoring, goingBack, preview } = ctx.meta;
 
 			const result = fn({
-				lang: $.get().meta[0],
+				lang: storageData.get().meta[0],
 				goingBack,
 				restoring,
 				preview,
@@ -930,7 +930,7 @@ const novely = <
 
 			const transformedChoices = choices.map(([content, action, visible]) => {
 				const shown = !visible || visible({
-					lang: $.get().meta[0],
+					lang: storageData.get().meta[0],
 					state: getStateAtCtx(ctx)
 				});
 
@@ -1243,7 +1243,7 @@ const novely = <
 		const {
 			data,
 			meta: [lang],
-		} = $.get();
+		} = storageData.get();
 
 		// `values` or else global data
 		const obj = values || data;
@@ -1272,13 +1272,13 @@ const novely = <
 	};
 
 	const data = ((value) => {
-		const _data = $.get().data;
+		const _data = storageData.get().data;
 
 		if (!value) return _data;
 
 		const val = isFunction(value) ? value(_data) : deepmerge(_data, value as DataScheme);
 
-		$.update((prev) => {
+		storageData.update((prev) => {
 			prev.data = val;
 
 			return prev;

@@ -8,6 +8,8 @@ import type {	getLanguage as defaultGetLanguage } from './utils';
 
 type Thenable<T> = T | Promise<T>;
 
+type NoInfer<T> = [T][T extends any ? 0 : never];
+
 type PathItem =
 	| [null, number | string]
 	| ['jump', string]
@@ -36,7 +38,7 @@ type Save<S extends State = State> = [
 ];
 
 type Lang = string;
-type TypewriterSpeed = 'Slow' | 'Medium' | 'Fast' | 'Auto' | (string & Record<never, never>);
+type TypewriterSpeed = 'Slow' | 'Medium' | 'Fast' | 'Auto';
 type SoundVolume = number;
 
 type StorageMeta<L extends string = string> = [
@@ -114,8 +116,8 @@ type TranslationDescription = {
 }
 
 interface NovelyInit<
-	Languages extends string,
-	Characters extends Record<string, Character<Languages>>,
+	$Language extends Lang,
+	Characters extends Record<string, Character<NoInfer<$Language>>>,
 	StateScheme extends State,
 	DataScheme extends Data,
 > {
@@ -150,7 +152,9 @@ interface NovelyInit<
 	/**
 	 * A function that returns a Renderer object used to display the game's content
 	 */
-	renderer: (characters: RendererInit) => Renderer;
+	renderer: (
+		initializationData: RendererInit
+	) => Renderer;
 	/**
 	 * An optional property that specifies the initial screen to display when the game starts
 	 */
@@ -178,7 +182,7 @@ interface NovelyInit<
 	 * ```
 	 */
 	translation: Record<
-		Languages,
+		$Language,
 		TranslationDescription
 	>;
 	/**
@@ -227,7 +231,7 @@ interface NovelyInit<
 	 * })
 	 * ```
 	 */
-	getLanguage?: (languages: string[], original: typeof defaultGetLanguage) => string;
+	getLanguage?: (languages: NoInfer<$Language>[], original: typeof defaultGetLanguage) => $Language | (string & Record<never, never>);
 	/**
 	 * Ignores saved language, and uses `getLanguage` to get it on every engine start
 	 * @default false

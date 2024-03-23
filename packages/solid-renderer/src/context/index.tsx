@@ -11,8 +11,8 @@ interface DataContext {
 	globalState: GlobalState;
 	setGlobalState: SetStoreFunction<GlobalState>;
 
-	storeData: Accessor<StorageData>;
-	storeDataUpdate: (fn: (prev: StorageData) => StorageData) => void;
+	storageData: Accessor<StorageData>;
+	storageDataUpdate: (fn: (prev: StorageData) => StorageData) => void;
 
 	coreData: Accessor<CoreData>;
 	coreDataUpdate: (fn: (prev: CoreData) => CoreData) => void;
@@ -40,7 +40,7 @@ interface ProviderProps {
 	globalState: GlobalState;
 	setGlobalState: SetStoreFunction<GlobalState>;
 
-	storeData: Stored<StorageData>;
+	storageData: Stored<StorageData>;
 	coreData: Stored<CoreData>;
 
 	options: RendererInit;
@@ -55,15 +55,15 @@ interface ProviderProps {
 }
 
 const Provider: FlowComponent<ProviderProps> = (props) => {
-	const storeData = from(props.storeData) as Accessor<StorageData>;
+	const storageData = from(props.storageData) as Accessor<StorageData>;
 	const coreData = from(props.coreData) as Accessor<CoreData>;
 
 	const value: DataContext = {
 		globalState: props.globalState,
 		setGlobalState: props.setGlobalState,
 
-		storeData: storeData,
-		storeDataUpdate: props.storeData.update,
+		storageData: storageData,
+		storageDataUpdate: props.storageData.update,
 
 		coreData: coreData,
 		coreDataUpdate: props.coreData.update,
@@ -74,7 +74,7 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
 		t(key: BaseTranslationStrings | (string & Record<never, never>)) {
 			return props.options.t(
 				key as BaseTranslationStrings,
-				storeData().meta[0]
+				storageData().meta[0]
 			);
 		},
 
@@ -92,7 +92,7 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
 
 	return (
 		<Context.Provider value={value}>
-			<Show when={storeData()}>{props.children}</Show>
+			<Show when={storageData()}>{props.children}</Show>
 		</Context.Provider>
 	);
 };

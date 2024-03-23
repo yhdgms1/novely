@@ -3,6 +3,7 @@ import type { VoidComponent, JSX } from 'solid-js';
 import { For, createUniqueId } from 'solid-js';
 import { capitalize } from '$utils';
 import { useData } from '$context';
+import { TypewriterSpeed } from '@novely/core';
 
 interface SettingsProps {
 	useNativeLanguageNames: boolean;
@@ -11,10 +12,10 @@ interface SettingsProps {
 const Settings: VoidComponent<SettingsProps> = (props) => {
 	const data = useData();
 
-	const language = () => data.storeData().meta[0];
-	const textSpeed = () => data.storeData().meta[1];
+	const language = () => data.storageData().meta[0];
+	const textSpeed = () => data.storageData().meta[1];
 
-	const volume = (kind: 2 | 3 | 4) => data.storeData().meta[kind];
+	const volume = (kind: 2 | 3 | 4) => data.storageData().meta[kind];
 
 	const getLanguageName = (lang: string): string => {
 		/**
@@ -31,7 +32,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 	};
 
 	const onLanguageSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = ({ currentTarget: { value } }) => {
-		data.storeDataUpdate((prev) => {
+		data.storageDataUpdate((prev) => {
 			prev.meta[0] = value;
 
 			return prev;
@@ -39,14 +40,16 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 	};
 
 	const onSpeedSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = ({ currentTarget: { value } }) => {
-		data.storeDataUpdate((prev) => {
-			return (prev.meta[1] = value), prev;
+		data.storageDataUpdate((prev) => {
+			prev.meta[1] = value as TypewriterSpeed;
+
+			return prev;
 		});
 	};
 
 	const volumeChange = (kind: 2 | 3 | 4) => {
 		const fn: JSX.EventHandlerUnion<HTMLInputElement, Event> = ({ currentTarget: { valueAsNumber } }) => {
-			data.storeDataUpdate((prev) => {
+			data.storageDataUpdate((prev) => {
 				prev.meta[kind] = valueAsNumber;
 
 				return prev;

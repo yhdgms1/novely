@@ -6,8 +6,8 @@ import { simple } from '$utils';
 import { Icon } from '$components';
 
 const MainMenu: VoidComponent = () => {
-	const { t, storeData, coreData, options, globalState, setGlobalState } = useData();
-	const language = () => storeData().meta[0];
+	const { t, storageData, coreData, options, globalState, setGlobalState } = useData();
+	const language = () => storageData().meta[0];
 
 	const goto = simple((screen: NovelyScreen | (string & Record<never, never>)) => {
 		if (!coreData().dataLoaded) return;

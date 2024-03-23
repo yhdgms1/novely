@@ -79,7 +79,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 	const layers = () => Object.values(props.state.layers);
 
-	const speed = () => data.storeData().meta[1];
+	const speed = () => data.storageData().meta[1];
 
 	const onWriterEnd = (cb: () => void) => {
 		return (prm: boolean) => {

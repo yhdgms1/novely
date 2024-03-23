@@ -21,7 +21,7 @@ interface SaveProps {
 }
 
 const Save: VoidComponent<SaveProps> = (props) => {
-  const { t, options, getContext, storeData, storeDataUpdate, removeContext } = useData();
+  const { t, options, getContext, storageData, storageDataUpdate, removeContext } = useData();
   const [iframe, setIframe] = createSignal<HTMLIFrameElement>()
 
   const [timestamp, type] = props.save[2];
@@ -120,8 +120,8 @@ const Save: VoidComponent<SaveProps> = (props) => {
   });
 
   const removeSave = (date: number) => {
-		storeDataUpdate((prev) => {
-			prev.saves = untrack(storeData).saves.filter((save) => save[2][0] !== date);
+		storageDataUpdate((prev) => {
+			prev.saves = untrack(storageData).saves.filter((save) => save[2][0] !== date);
 
 			return prev;
 		});

@@ -6,10 +6,10 @@ import { Save } from '$components';
 
 
 const Saves: VoidComponent = () => {
-	const { t, storeData, setGlobalState } = useData();
+	const { t, storageData, setGlobalState } = useData();
 
-	const saves = () => storeData().saves;
-	const language = () => storeData().meta[0];
+	const saves = () => storageData().saves;
+	const language = () => storageData().meta[0];
 
 	return (
 		<div class="root saves">

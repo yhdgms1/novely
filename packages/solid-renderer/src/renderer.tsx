@@ -5,7 +5,7 @@ import type {
 	AudioHandle,
 	CharacterHandle,
 	CustomHandlerFunctionGetFn,
-	CustomHandler
+	CustomHandler,
 } from '@novely/core';
 import type {
   StateScreen,
@@ -47,7 +47,7 @@ const createSolidRenderer = ({
 			'voice': 4
 		} as const;
 
-		return options.$.get().meta[TYPE_META_MAP[type]];
+		return options.storageData.get().meta[TYPE_META_MAP[type]];
 	}
 
 	const getHowl = (ctx: SolidContext, type: 'music' | 'sound' | 'voice', src: string, loop: boolean) => {
@@ -110,7 +110,7 @@ const createSolidRenderer = ({
 			emitter.emit('screen:change', screen)
 		});
 
-		options.$.subscribe(() => {
+		options.storageData.subscribe(() => {
 			const ctx = renderer.getContext(options.mainContextKey);
 			const store = ctx.store;
 
@@ -144,8 +144,8 @@ const createSolidRenderer = ({
 					globalState={globalState}
 					setGlobalState={setGlobalState}
 
-					storeData={options.$}
-					coreData={options.$$}
+					storageData={options.storageData}
+					coreData={options.coreData}
 					options={options}
 					renderer={renderer}
 					emitter={emitter}
@@ -427,7 +427,7 @@ const createSolidRenderer = ({
 								let value: string | undefined;
 
 								onInput({
-									lang: options.$.get().meta[0],
+									lang: options.storageData.get().meta[0],
 									input,
 									event,
 									error,
@@ -512,7 +512,7 @@ const createSolidRenderer = ({
 								goingBack: ctx.meta.goingBack,
 								preview: ctx.meta.preview,
 
-								lang: options.$.get().meta[0],
+								lang: options.storageData.get().meta[0],
 
 								state: init.getStateFunction(name)
 							});

@@ -27,7 +27,11 @@ export type {
 	Save,
 	NovelyInit,
 	StackHolder,
-	Stack
+	Stack,
+	State,
+	StateFunction,
+	Data,
+	DeepPartial
 } from './types';
 export type { Stored } from './store';
 export type { BaseTranslationStrings } from './translations';
