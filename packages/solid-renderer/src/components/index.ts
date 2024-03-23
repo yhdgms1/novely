@@ -5,3 +5,4 @@ export { Icon } from './Icon';
 export { Modal } from './Modal';
 export { Save } from './Save'
 export { createTypewriter } from './Typewriter';
+export { createRootComponent } from './Root'

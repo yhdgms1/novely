@@ -1,7 +1,6 @@
 import type {
 	Renderer,
 	RendererInit,
-	Character,
 	AudioHandle,
 	CharacterHandle,
 	CustomHandlerFunctionGetFn,
@@ -18,184 +17,65 @@ import type {
 } from './types';
 import type { JSX } from 'solid-js';
 
-import { Switch, Match, createEffect } from 'solid-js';
 import { render } from 'solid-js/web';
 import { Howl } from 'howler';
 
 import { createEmitter } from './emitter';
 import { canvasDrawImages, createImage, escape, vibrate, useBackground } from '$utils';
-import { Provider } from '$context';
-import { Game, MainMenu, Saves, Settings, Loading, CustomScreen } from '$screens';
 import { createGlobalState, useContextState } from './store';
 import { produce } from 'solid-js/store';
 import { PRELOADED_IMAGE_MAP } from './shared';
+import { createRootComponent } from './components/Root';
 
 const createSolidRenderer = ({
 	fullscreen = false,
 	controls = 'outside',
 	skipTypewriterWhenGoingBack = true,
-	useNativeLanguageNames = true,
 	target = document.body,
 }: CreateSolidRendererOptions = {}) => {
 	const emitter = createEmitter<EmitterEventsMap>();
 	const [globalState, setGlobalState] = createGlobalState();
-
-	const getVolume = (type: 'music' | 'sound' | 'voice') => {
-		const TYPE_META_MAP = {
-			'music': 2,
-			'sound': 3,
-			'voice': 4
-		} as const;
-
-		return options.storageData.get().meta[TYPE_META_MAP[type]];
-	}
-
-	const getHowl = (ctx: SolidContext, type: 'music' | 'sound' | 'voice', src: string, loop: boolean) => {
-		const kind = type === 'voice' ? 'voices' : type;
-		const cached = ctx.store.audio[kind][src];
-
-		if (cached) return cached;
-
-		const howl = new Howl({
-			src,
-			volume: getVolume(type),
-			loop
-		});
-
-		ctx.setStore((store) => store.audio[kind][src] = howl);
-
-		return howl;
-	}
-
-	let characters!: Record<string, Character>;
-
-	let renderer!: Omit<Renderer, 'getContext'> & {
-		/**
-		 * Context in which `store` is not an `unknown`
-		 */
-		getContext(name: string): SolidContext;
-	};
-
-	let options: RendererInit;
-
-	let root!: HTMLElement;
-
-	let unmount: (() => void) | undefined | void;
-
-	const Novely = () => {
-		const ctx = renderer.getContext(options.mainContextKey);
-
-		createEffect(() => {
-			const screen = globalState.screen;
-
-			if (fullscreen && document.fullscreenEnabled) {
-				/**
-				 * Will not work when initial screen is set to `game` because user interaction is required
-				 */
-				if (screen === 'game' && !document.fullscreenElement) {
-					document.documentElement.requestFullscreen().catch(() => {});
-
-					/**
-					 * When mainmenu is opened, then exit fullscreen
-					 */
-				} else if (screen === 'mainmenu' && document.fullscreenElement && 'exitFullscreen' in document) {
-					document.exitFullscreen().catch(() => {});
-				}
-			}
-
-			if (screen !== 'game' && screen !== 'settings' && screen !== 'loading') {
-				ctx.audio.destroy();
-			}
-
-			emitter.emit('screen:change', screen)
-		});
-
-		options.storageData.subscribe(() => {
-			const ctx = renderer.getContext(options.mainContextKey);
-			const store = ctx.store;
-
-			for (const type of ['music', 'sound', 'voice'] as const) {
-				const volume = getVolume(type);
-
-				if (type === 'music' || type === 'sound') {
-					for (const howl of Object.values(store.audio[type])) {
-						if (!howl) continue;
-
-						howl.fade(howl.volume(), volume, 150);
-					}
-				}
-
-				if (type === 'voice') {
-					const howl = store.audio.voice;
-
-					if (howl) {
-						howl.fade(howl.volume(), volume, 150);
-					}
-				}
-			}
-		});
-
-		const rendererContextMain = renderer.getContext(options.mainContextKey);
-		const stateContextMain = useContextState(options.mainContextKey);
-
-		return (
-			<div ref={root as HTMLDivElement}>
-				<Provider
-					globalState={globalState}
-					setGlobalState={setGlobalState}
-
-					storageData={options.storageData}
-					coreData={options.coreData}
-					options={options}
-					renderer={renderer}
-					emitter={emitter}
-
-					characters={characters}
-
-					getContext={renderer.getContext}
-					removeContext={renderer.removeContext}
-				>
-					<Switch>
-						<Match when={globalState.screen === 'game'}>
-							<Game
-								state={stateContextMain.state}
-								setState={/* @once */ stateContextMain.setState}
-								store={/* @once */ rendererContextMain.store}
-								context={/* @once */ rendererContextMain}
-								controls={/* @once */ controls}
-								skipTypewriterWhenGoingBack={/* @once */ skipTypewriterWhenGoingBack}
-							/>
-						</Match>
-						<Match when={globalState.screen === 'mainmenu'}>
-							<MainMenu />
-						</Match>
-						<Match when={globalState.screen === 'saves'}>
-							<Saves />
-						</Match>
-						<Match when={globalState.screen === 'settings'}>
-							<Settings useNativeLanguageNames={/* @once */ useNativeLanguageNames} />
-						</Match>
-						<Match when={globalState.screen === 'loading'}>
-							<Loading />
-						</Match>
-					</Switch>
-
-					<CustomScreen name={globalState.screen} />
-				</Provider>
-			</div>
-		);
-	};
 
 	const CTX_MAP = new Map<string, SolidContext>();
 
 	return {
 		emitter,
 
-		renderer(init: RendererInit): Renderer {
-			options = init;
-			characters = init.characters;
+		renderer(options: RendererInit) {
+			const { characters } = options;
 
-			renderer = {
+			const getVolume = (type: 'music' | 'sound' | 'voice') => {
+				const TYPE_META_MAP = {
+					'music': 2,
+					'sound': 3,
+					'voice': 4
+				} as const;
+
+				return options.storageData.get().meta[TYPE_META_MAP[type]];
+			}
+
+			const getHowl = (ctx: SolidContext, type: 'music' | 'sound' | 'voice', src: string, loop: boolean) => {
+				const kind = type === 'voice' ? 'voices' : type;
+				const cached = ctx.store.audio[kind][src];
+
+				if (cached) return cached;
+
+				const howl = new Howl({
+					src,
+					volume: getVolume(type),
+					loop
+				});
+
+				ctx.setStore((store) => store.audio[kind][src] = howl);
+
+				return howl;
+			}
+
+			let unmount: (() => void) | undefined | void;
+
+			let root: HTMLDivElement;
+
+			const renderer = {
 				getContext(name) {
 					const cached = CTX_MAP.get(name);
 
@@ -205,7 +85,7 @@ const createSolidRenderer = ({
 
 					const ctx: SolidContext = {
 						id: name,
-						root: root,
+						root,
 
 						background(background) {
 							/**
@@ -431,7 +311,7 @@ const createSolidRenderer = ({
 									input,
 									event,
 									error,
-									state: init.getStateFunction(name),
+									state: options.getStateFunction(name),
 									get value() {
 										if (value) return value;
 										return (value = escape(input.value));
@@ -514,7 +394,7 @@ const createSolidRenderer = ({
 
 								lang: options.storageData.get().meta[0],
 
-								state: init.getStateFunction(name)
+								state: options.getStateFunction(name)
 							});
 
 							result ? result.then(resolve) : resolve();
@@ -678,7 +558,35 @@ const createSolidRenderer = ({
 					start() {
 						unmount?.();
 
-						unmount = render(() => <Novely />, target);
+						const Root = createRootComponent({
+							setRoot(_root) {
+								root = _root;
+							},
+
+							renderer,
+
+							characters,
+
+							fullscreen,
+							emitter,
+
+							controls,
+							skipTypewriterWhenGoingBack,
+
+							getVolume,
+
+							rendererContext: renderer.getContext(options.mainContextKey),
+							stateContext: useContextState(options.mainContextKey),
+
+							coreOptions: options
+						})
+
+						unmount = render(() => (
+							<Root
+								globalState={globalState}
+								setGlobalState={setGlobalState}
+							/>
+						), target);
 
 						return {
 							unmount() {
@@ -732,7 +640,7 @@ const createSolidRenderer = ({
 						})
 					}
 				},
-			};
+			} satisfies Renderer;
 
 			return renderer;
 		},

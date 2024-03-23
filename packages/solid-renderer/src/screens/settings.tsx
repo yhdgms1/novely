@@ -5,11 +5,9 @@ import { capitalize } from '$utils';
 import { useData } from '$context';
 import { TypewriterSpeed } from '@novely/core';
 
-interface SettingsProps {
-	useNativeLanguageNames: boolean;
-}
+interface SettingsProps {}
 
-const Settings: VoidComponent<SettingsProps> = (props) => {
+const Settings: VoidComponent<SettingsProps> = () => {
 	const data = useData();
 
 	const language = () => data.storageData().meta[0];
@@ -19,12 +17,9 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 
 	const getLanguageName = (lang: string): string => {
 		/**
-		 * `useNativeLanguageNames`:
-		 *
-		 * True  — "English, Русский, Polskie"
-		 * False — "Angielski, Rosyjski, Polski"
+		 * Turns language into "English, Русский, Polskie"
 		 */
-		const intl = new Intl.DisplayNames([props.useNativeLanguageNames ? lang : language()], {
+		const intl = new Intl.DisplayNames([language()], {
 			type: 'language',
 		});
 
