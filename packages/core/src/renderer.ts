@@ -133,11 +133,11 @@ type Renderer = {
 		/**
 		 * Shows the screen
 		 */
-		showScreen(name: NovelyScreen | 'loading'): void;
+		showScreen(name: NovelyScreen): void;
 		/**
 		 * Returns current screen
 		 */
-		getScreen(): NovelyScreen | 'loading' | (string & Record<never, never>);
+		getScreen(): NovelyScreen | (string & Record<never, never>);
 		/**
 		 * Shows prompt to exit
 		 */
