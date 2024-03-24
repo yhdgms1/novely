@@ -1,5 +1,6 @@
-import type { NovelyScreen, CustomHandler, CustomHandlerGetResult } from '@novely/core';
-import type { DeepMapStore } from 'nanostores';
+import type { CustomHandler, CustomHandlerGetResult } from '@novely/core';
+import type { DeepMapStore, BaseDeepMap } from 'nanostores';
+import type { DeepMergeTwoTypes } from '../types';
 import { deepMap, onMount, cleanStores } from 'nanostores';
 
 type Disposable = {
@@ -215,10 +216,10 @@ type ContextState = {
   custom: ContextStateCustomHandlers;
 }
 
-const CONTEXT_MAP = new Map<string, DeepMapStore<ContextState>>()
+const defaultEmpty = {} satisfies BaseDeepMap;
 
-const createContextState = () => {
-  const contextState = deepMap<ContextState>({
+const getDefaultContextState = (): ContextState => {
+  return {
     background: {
       background: '',
     },
@@ -248,37 +249,75 @@ const createContextState = () => {
       goingBack: false,
       preview: false
     }
-  });
-
-  return contextState;
+  }
 }
 
-const useContextState = (id: string) => {
-  const cached = CONTEXT_MAP.get(id);
+/**
+ * Creates typed context state root
+ *
+ * @example
+ * ```ts
+ * const { useContextState, removeContextState } = createContextStateRoot<{ additionalContextProp: number }>(() => {
+ *   return {
+ *     additionalContextProp: 123
+ *   }
+ * });
+ *
+ * // when you want to create or get context state
+ * useContextState('id here')
+ *
+ * // when context state should be removed
+ * removeContextState('id here')
+ * ```
+ */
+const createContextStateRoot = <Extension extends BaseDeepMap = typeof defaultEmpty>(getExtension: () => Extension = () => ({}) as Extension) => {
+  type Merged = DeepMergeTwoTypes<ContextState, Extension>;
 
-  if (cached) return cached;
+  const CACHE = new Map<string, DeepMapStore<Merged>>();
 
-  const contextState = createContextState();
+  const make = () => {
+    const contextState = deepMap<Merged>({
+      ...getDefaultContextState(),
+      ...getExtension()
+    } as Merged);
 
-  CONTEXT_MAP.set(id, contextState)
-
-  onMount(contextState, () => {
-    return () => {
-      CONTEXT_MAP.delete(id);
-    }
-  })
-
-  return contextState;
-}
-
-const removeContextState = (id: string) => {
-  const contextState = CONTEXT_MAP.get(id);
-
-  if (contextState) {
-    cleanStores(contextState)
+    return contextState;
   }
 
-  CONTEXT_MAP.delete(id);
+  const remove = (id: string) => {
+    const contextState = CACHE.get(id);
+
+    if (contextState) {
+      cleanStores(contextState)
+    }
+
+    CACHE.delete(id);
+  }
+
+  const use = (id: string) => {
+    const cached = CACHE.get(id);
+
+    if (cached) {
+      return cached;
+    }
+
+    const contextState = make();
+
+    CACHE.set(id, contextState);
+
+    onMount(contextState, () => {
+      return () => {
+        CACHE.delete(id);
+      }
+    })
+
+    return contextState;
+  }
+
+  return {
+    useContextState: use,
+    removeContextState: remove
+  }
 }
 
-export { useContextState, removeContextState }
+export { createContextStateRoot }

@@ -1,7 +1,6 @@
 import type {
 	Renderer,
 	RendererInit,
-	AudioHandle,
 	CharacterHandle,
 	CustomHandlerFunctionGetFn,
 	CustomHandler,

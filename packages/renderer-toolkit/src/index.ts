@@ -1,8 +1,6 @@
 export type { MapStore, DeepMapStore } from 'nanostores';
 
-// // createRenderer((options) => {
-
-// // })
+export { createContextStateRoot } from './state/context-state'
 
 export { createRendererState } from './state/renderer-state'
 export type { RendererState, RendererStateStore } from './state/renderer-state'
