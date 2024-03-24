@@ -157,15 +157,6 @@ type AtContextState = {
   store: SolidRendererStore;
 }
 
-type GlobalState = {
-  screens: StateScreens;
-  mainmenu: {
-    items: StateMainmenuItems;
-  };
-  screen: PossibleScreen;
-  exitPromptShown: boolean;
-}
-
 type SolidRendererStore = {
   dialogRef?: HTMLParagraphElement;
   textRef?: HTMLParagraphElement;
@@ -222,10 +213,11 @@ type SolidContext = Omit<Context, 'store' | 'setStore'> & {
   setStore: (fn: (value: SolidRendererStore) => void) => void;
 }
 
+type RendererStoreExtension = { screens: Record<string, StateScreen>; mainmenu: StateMainmenuItems }
+
 export type {
   EmitterEventsMap,
   AtContextState,
-  GlobalState,
   StateCharacter,
   StateChoices,
   StateDialog,
@@ -239,5 +231,6 @@ export type {
   StateMainmenuItems,
   SolidRendererStore,
   CreateSolidRendererOptions,
-  SolidContext
+  SolidContext,
+  RendererStoreExtension
 }

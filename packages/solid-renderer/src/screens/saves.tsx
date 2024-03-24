@@ -6,7 +6,7 @@ import { Save } from '$components';
 
 
 const Saves: VoidComponent = () => {
-	const { t, storageData, setGlobalState } = useData();
+	const { t, storageData, $rendererState } = useData();
 
 	const saves = () => storageData().saves;
 	const language = () => storageData().meta[0];
@@ -14,7 +14,7 @@ const Saves: VoidComponent = () => {
 	return (
 		<div class="root saves">
 			<div class="saves__column">
-				<button type="button" class="button saves__button" onClick={() => setGlobalState('screen', 'mainmenu')}>
+				<button type="button" class="button saves__button" onClick={() => $rendererState.setKey('screen', 'mainmenu')}>
 					{t('GoBack')}
 				</button>
 			</div>

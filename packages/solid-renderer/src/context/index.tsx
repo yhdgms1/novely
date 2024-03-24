@@ -1,15 +1,14 @@
 import type { Accessor, FlowComponent } from 'solid-js';
-import type { SetStoreFunction } from 'solid-js/store';
 import type { Renderer, RendererInit, StorageData, Stored, BaseTranslationStrings, CoreData, Character, Context } from '@novely/core';
-import type { EmitterEventsMap, GlobalState, SolidContext } from '../types';
+import type { EmitterEventsMap, RendererStoreExtension, SolidContext } from '../types';
 import type { Emitter } from '../emitter';
 
 import { from, createContext, useContext, Show } from 'solid-js';
 import { useMedia } from '$hooks';
+import { DeepMapStore, RendererStateStore } from '@novely/renderer-toolkit';
 
 interface DataContext {
-	globalState: GlobalState;
-	setGlobalState: SetStoreFunction<GlobalState>;
+	$rendererState: DeepMapStore<RendererStateStore<RendererStoreExtension>>;
 
 	storageData: Accessor<StorageData>;
 	storageDataUpdate: (fn: (prev: StorageData) => StorageData) => void;
@@ -37,8 +36,7 @@ interface DataContext {
 const Context = createContext<DataContext>();
 
 interface ProviderProps {
-	globalState: GlobalState;
-	setGlobalState: SetStoreFunction<GlobalState>;
+	$rendererState: DeepMapStore<RendererStateStore<RendererStoreExtension>>;
 
 	storageData: Stored<StorageData>;
 	coreData: Stored<CoreData>;
@@ -59,8 +57,7 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
 	const coreData = from(props.coreData) as Accessor<CoreData>;
 
 	const value: DataContext = {
-		globalState: props.globalState,
-		setGlobalState: props.setGlobalState,
+		$rendererState: props.$rendererState,
 
 		storageData: storageData,
 		storageDataUpdate: props.storageData.update,

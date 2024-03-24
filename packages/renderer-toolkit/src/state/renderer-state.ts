@@ -1,10 +1,12 @@
 import type { NovelyScreen } from '@novely/core';
-import { map } from 'nanostores'
+import type { BaseDeepMap, MapStore } from 'nanostores';
+import type { DeepMergeTwoTypes, Prettify } from '../types';
+import { deepMap, map } from 'nanostores';
 
 /**
  * State which is related to whole renderer
  */
-interface RendererState {
+type RendererState = {
   /**
    * Current screen that should be rendered
    */
@@ -18,6 +20,13 @@ interface RendererState {
    */
   exitPromptShown: boolean;
 }
+
+const defaultEmpty = {} satisfies BaseDeepMap;
+
+type RendererStateStore<Extension extends BaseDeepMap = typeof defaultEmpty> = Prettify<DeepMergeTwoTypes<
+  RendererState,
+  Extension
+>>
 
 /**
  * Helper to make renderer state with default recommended values
@@ -41,16 +50,16 @@ interface RendererState {
  * })
  * ```
  */
-const createRendererState = <Extension extends Record<PropertyKey, string | boolean | number | symbol>>(extension: Extension = {} as Extension) => {
-  const rendererState = map<RendererState & Extension>({
+const createRendererState = <Extension extends BaseDeepMap = typeof defaultEmpty>(extension = defaultEmpty as Extension) => {
+  const rendererState = deepMap<RendererStateStore<Extension>>({
     screen: 'mainmenu',
     loadingShown: false,
     exitPromptShown: false,
     ...extension
-  })
+  } as RendererStateStore<Extension>)
 
   return rendererState;
 }
 
 export { createRendererState }
-export type { RendererState }
+export type { RendererState, RendererStateStore }

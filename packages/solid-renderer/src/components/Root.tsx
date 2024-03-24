@@ -1,17 +1,13 @@
 import type { Component } from 'solid-js';
 import type { Emitter } from '../emitter';
-import type { EmitterEventsMap, GlobalState, SolidContext,  } from '../types';
+import type { RendererStateStore, DeepMapStore } from '@novely/renderer-toolkit'
+import type { EmitterEventsMap, SolidContext, RendererStoreExtension } from '../types';
 import { Switch, Match, createEffect } from 'solid-js';
+import { useStore } from '@nanostores/solid'
 import { Character, Renderer, RendererInit } from '@novely/core';
 import { Provider } from '$context';
 import { Game, MainMenu, Saves, Settings, Loading, CustomScreen } from '$screens';
 import { useContextState } from '../store';
-import { SetStoreFunction } from 'solid-js/store';
-
-type RootProps = {
-  globalState: GlobalState
-  setGlobalState: SetStoreFunction<GlobalState>
-}
 
 type CreateRootComponentOpts = {
   setRoot: (root:  HTMLDivElement) => void;
@@ -33,17 +29,21 @@ type CreateRootComponentOpts = {
   rendererContext: SolidContext
   stateContext: ReturnType<typeof useContextState>
 
-  coreOptions: RendererInit
+  coreOptions: RendererInit;
+
+  $rendererState: DeepMapStore<RendererStateStore<RendererStoreExtension>>
 }
 
-const createRootComponent = ({ coreOptions, setRoot, characters, renderer, fullscreen, emitter, controls, skipTypewriterWhenGoingBack, getVolume, rendererContext, stateContext }: CreateRootComponentOpts) => {
-  const Root: Component<RootProps> = (props) => {
+const createRootComponent = ({ $rendererState, coreOptions, setRoot, characters, renderer, fullscreen, emitter, controls, skipTypewriterWhenGoingBack, getVolume, rendererContext, stateContext }: CreateRootComponentOpts) => {
+  const Root: Component = () => {
+    const rendererState = useStore($rendererState);
+
     const screen = () => {
-      return props.globalState.screen;
+      return rendererState().screen;
     }
 
     createEffect(() => {
-      const screen = props.globalState.screen;
+      const screen = rendererState().screen;
 
       if (fullscreen && document.fullscreenEnabled) {
         /**
@@ -94,8 +94,7 @@ const createRootComponent = ({ coreOptions, setRoot, characters, renderer, fulls
     return (
       <div ref={setRoot}>
         <Provider
-          globalState={props.globalState}
-          setGlobalState={props.setGlobalState}
+          $rendererState={$rendererState}
 
           storageData={coreOptions.storageData}
           coreData={coreOptions.coreData}

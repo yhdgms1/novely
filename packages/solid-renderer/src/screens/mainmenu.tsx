@@ -4,15 +4,18 @@ import { For, Show } from 'solid-js';
 import { useData } from '$context';
 import { simple } from '$utils';
 import { Icon } from '$components';
+import { useStore } from '@nanostores/solid';
 
 const MainMenu: VoidComponent = () => {
-	const { t, storageData, coreData, options, globalState, setGlobalState } = useData();
+	const { t, storageData, coreData, options, $rendererState } = useData();
 	const language = () => storageData().meta[0];
+
+	const rendererStore = useStore($rendererState);
 
 	const goto = simple((screen: NovelyScreen | (string & Record<never, never>)) => {
 		if (!coreData().dataLoaded) return;
 
-		setGlobalState('screen', screen);
+		$rendererState.setKey('screen', screen as NovelyScreen);
 	});
 
 	return (
@@ -25,17 +28,17 @@ const MainMenu: VoidComponent = () => {
 				<span class="main-menu__button__text">{t('LoadSave')}</span>
 				<Icon children={/* @once */ Icon.Play()} />
 			</button>
-			<button type="button" class="button main-menu__button" onClick={() => setGlobalState('screen', 'saves')}>
+			<button type="button" class="button main-menu__button" onClick={() => goto('saves')}>
 				<span class="main-menu__button__text">{t('Saves')}</span>
 				<Icon children={/* @once */ Icon.Files()} />
 			</button>
-			<button type="button" class="button main-menu__button" onClick={() => setGlobalState('screen', 'settings')}>
+			<button type="button" class="button main-menu__button" onClick={() => goto('settings')}>
 				<span class="main-menu__button__text">{t('Settings')}</span>
 				<Icon children={/* @once */ Icon.Settings()} />
 			</button>
 			<Show when={language()} keyed>
 				{/* In case developer needs an icon they could provide it in HTML as a `innerHTML` prop */}
-				{(_) => <For each={globalState.mainmenu.items}>{(item) => <button {...item(goto)} />}</For>}
+				{(_) => <For each={rendererStore().mainmenu}>{(item) => <button {...item(goto)} />}</For>}
 			</Show>
 		</div>
 	);

@@ -20,7 +20,9 @@
 		"typescript": "^5.2.2"
 	},
 	"dependencies": {
+		"@nanostores/solid": "^0.4.2",
 		"@novely/core": "*",
+		"@novely/renderer-toolkit": "workspace:^",
 		"@novely/typewriter": "*",
 		"howler": "^2.2.4",
 		"retrieved": "^0.1.0",

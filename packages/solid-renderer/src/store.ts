@@ -1,4 +1,4 @@
-import type { AtContextState, GlobalState } from './types';
+import type { AtContextState } from './types';
 import type { SetStoreFunction } from 'solid-js/store';
 
 import { createStore } from 'solid-js/store';
@@ -87,17 +87,4 @@ const useContextState = (name: string) => {
   return contextState;
 }
 
-const createGlobalState = () => {
-  const store = createStore<GlobalState>({
-    screens: {},
-    mainmenu: {
-      items: [],
-    },
-    screen: 'mainmenu',
-    exitPromptShown: false,
-  })
-
-  return store;
-}
-
-export { createContextState, createGlobalState, useContextState }
+export { createContextState, useContextState }

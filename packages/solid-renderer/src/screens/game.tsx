@@ -4,6 +4,7 @@ import type { SetStoreFunction } from 'solid-js/store';
 import type { SolidRendererStore } from '../renderer';
 import type { AtContextState } from '../types'
 
+import { useStore } from '@nanostores/solid';
 import { createSignal, untrack, For, Show, createUniqueId, createEffect } from 'solid-js';
 import { Character, DialogName, Modal, Icon, ControlPanelButtons, createTypewriter } from '$components';
 import { clickOutside } from '$actions';
@@ -27,6 +28,8 @@ interface GameProps {
 
 const Game: VoidComponent<GameProps> = (props) => {
 	const data = useData();
+
+	const rendererState = useStore(data.$rendererState);
 
 	/**
 	 * Can be destructured because these are passed without getters
@@ -241,7 +244,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 			<Modal
 				isOpen={() => props.state.choices.visible}
-				trapFocus={() => !props.isPreview && !data.globalState.exitPromptShown}
+				trapFocus={() => !props.isPreview && !rendererState().exitPromptShown}
 			>
 				<div class="dialog-container">
 					<span class="dialog-fix" aria-hidden="true">
@@ -278,7 +281,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 			<Modal
 				isOpen={() => props.state.input.visible}
-				trapFocus={() => !props.isPreview && !data.globalState.exitPromptShown}
+				trapFocus={() => !props.isPreview && !rendererState().exitPromptShown}
 			>
 				<div class="dialog-container">
 					<span class="dialog-fix" aria-hidden="true">
@@ -305,8 +308,8 @@ const Game: VoidComponent<GameProps> = (props) => {
 			</Modal>
 
 			<Modal
-				isOpen={() => data.globalState.exitPromptShown && !props.isPreview}
-				trapFocus={() => !props.isPreview && data.globalState.exitPromptShown}
+				isOpen={() => rendererState().exitPromptShown && !props.isPreview}
+				trapFocus={() => !props.isPreview && rendererState().exitPromptShown}
 			>
 				<div class="dialog-container">
 					<span class="dialog-fix" aria-hidden="true">
@@ -322,7 +325,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 								type="button"
 								class="button"
 								onClick={() => {
-									data.setGlobalState('exitPromptShown', false);
+									data.$rendererState.setKey('exitPromptShown', false);
 								}}
 							>
 								{data.t('ExitDialogBack')}
@@ -388,7 +391,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 						</Show>
 					</Show>
 
-					<Show when={data.media.hyperWide() && controlPanelMenuExpanded() && !data.globalState.exitPromptShown}>
+					<Show when={data.media.hyperWide() && controlPanelMenuExpanded() && !rendererState().exitPromptShown}>
 						<span class="control-panel-container-fix" aria-hidden="true">
 							&#8203;
 						</span>
@@ -414,7 +417,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 					>
 						<ControlPanelButtons
 							openSettings={() => {
-								data.setGlobalState('screen', 'settings');
+								data.$rendererState.setKey('screen', 'settings');
 							}}
 							closeDropdown={() => {
 								setControlPanelMenuExpanded(false);

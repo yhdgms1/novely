@@ -1,6 +1,9 @@
 import type { VoidComponent, JSX } from 'solid-js';
+import type { NovelyScreen } from '@novely/core';
+import { noop } from '@novely/renderer-toolkit'
 import { createEffect, createSignal, Show } from 'solid-js';
 import { useData } from '$context'
+import { useStore } from '@nanostores/solid';
 
 interface CustomScreenProps {
 	/**
@@ -10,36 +13,40 @@ interface CustomScreenProps {
 }
 
 const CustomScreen: VoidComponent<CustomScreenProps> = (props) => {
-	const { globalState, setGlobalState } = useData();
+	const { $rendererState } = useData();
 	const [dom, setDOM] = createSignal<Element | JSX.Element | null>(null);
 
-	let unmount: undefined | (() => void);
+	const rendererState = useStore($rendererState);
+
+	let unmount = noop;
 
 	createEffect(() => {
 		/**
 		 * Clear previous screen effects
 		 */
-		if (unmount) unmount();
+		unmount();
+
+		const screens = rendererState().screens;
 
 		/**
 		 * CustomScreen is always rendered, so this check is required
 		 */
-		if (props.name in globalState.screens) {
-			const current = globalState.screens[props.name]();
+		if (props.name in screens) {
+			const current = screens[props.name]();
 
 			setDOM(current.mount());
-			unmount = current.unmount;
+			unmount = current.unmount || noop;
 
 			return;
 		}
 
 		setDOM(null);
-		unmount = undefined;
+		unmount = noop;
 	});
 
 	const onClick: JSX.EventHandlerUnion<HTMLDivElement, MouseEvent> = ({ target }) => {
 		if (target instanceof HTMLElement && target.dataset.novelyGoto) {
-			setGlobalState('screen', target.dataset.novelyGoto);
+			$rendererState.setKey('screen', target.dataset.novelyGoto as NovelyScreen)
 		}
 	};
 

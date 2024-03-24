@@ -6,6 +6,7 @@ import type {
 	CustomHandlerFunctionGetFn,
 	CustomHandler,
 } from '@novely/core';
+import { createRendererState, storeUpdate } from '@novely/renderer-toolkit'
 import type {
   StateScreen,
   StateScreens,
@@ -13,7 +14,8 @@ import type {
   SolidRendererStore,
   CreateSolidRendererOptions,
 	EmitterEventsMap,
-	SolidContext
+	SolidContext,
+	RendererStoreExtension
 } from './types';
 import type { JSX } from 'solid-js';
 
@@ -22,7 +24,7 @@ import { Howl } from 'howler';
 
 import { createEmitter } from './emitter';
 import { canvasDrawImages, createImage, escape, vibrate, useBackground } from '$utils';
-import { createGlobalState, useContextState } from './store';
+import { useContextState } from './store';
 import { produce } from 'solid-js/store';
 import { PRELOADED_IMAGE_MAP } from './shared';
 import { createRootComponent } from './components/Root';
@@ -34,7 +36,11 @@ const createSolidRenderer = ({
 	target = document.body,
 }: CreateSolidRendererOptions = {}) => {
 	const emitter = createEmitter<EmitterEventsMap>();
-	const [globalState, setGlobalState] = createGlobalState();
+
+	const $rendererState = createRendererState<RendererStoreExtension>({
+		screens: {},
+		mainmenu: []
+	});
 
 	const CTX_MAP = new Map<string, SolidContext>();
 
@@ -249,7 +255,7 @@ const createSolidRenderer = ({
 							setState('choices', { choices, question, resolve, visible: true });
 						},
 						clear(keep, keepCharacters, keepAudio, resolve) {
-							setGlobalState('exitPromptShown', false);
+							$rendererState.setKey('exitPromptShown', false);
 
 							if (!keep.has('showBackground')) setState('background', '#000');
 							if (!keep.has('choice'))
@@ -547,13 +553,13 @@ const createSolidRenderer = ({
 				},
 				ui: {
 					showScreen(name) {
-						setGlobalState('screen', name);
+						$rendererState.setKey('screen', name);
 					},
 					getScreen() {
-						return globalState.screen;
+						return $rendererState.get().screen;
 					},
 					showExitPrompt() {
-						setGlobalState('exitPromptShown', true);
+						$rendererState.setKey('exitPromptShown', true)
 					},
 					start() {
 						unmount?.();
@@ -578,14 +584,13 @@ const createSolidRenderer = ({
 							rendererContext: renderer.getContext(options.mainContextKey),
 							stateContext: useContextState(options.mainContextKey),
 
-							coreOptions: options
+							coreOptions: options,
+
+							$rendererState
 						})
 
 						unmount = render(() => (
-							<Root
-								globalState={globalState}
-								setGlobalState={setGlobalState}
-							/>
+							<Root />
 						), target);
 
 						return {
@@ -645,10 +650,12 @@ const createSolidRenderer = ({
 			return renderer;
 		},
 		registerScreen(name: string, screen: StateScreen) {
-			setGlobalState('screens', name, () => screen);
+			$rendererState.setKey(`screens.${name}`, screen);
 		},
 		registerMainmenuItem(fn: StateMainmenuItem) {
-			setGlobalState('mainmenu', 'items', (prev) => [...prev, fn]);
+			// todo: fix maybe
+			// @ts-ignore
+			storeUpdate($rendererState, 'mainmenu', (mainmenu) => [...mainmenu, fn])
 		},
 	};
 };

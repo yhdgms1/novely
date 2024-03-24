@@ -1,8 +1,8 @@
-import type { NovelyScreen } from '@novely/core';
+import type { NovelyScreen, CustomHandler, CustomHandlerGetResult } from '@novely/core';
 import type { DeepMapStore } from 'nanostores';
 import { deepMap, onMount, cleanStores } from 'nanostores';
 
-interface Disposable {
+type Disposable = {
   /**
    * Function that is called after action is completed and game should move forward
    *
@@ -22,14 +22,14 @@ interface Disposable {
   resolve?: () => void;
 }
 
-interface WithActionVisibility {
+type WithActionVisibility = {
   /**
    * Used to check if something should be rendered
    */
   visible: boolean;
 }
 
-interface Labelled {
+type Labelled = {
   /**
    * Label for the action.
    *
@@ -38,7 +38,7 @@ interface Labelled {
   label: string;
 }
 
-interface ContextStateBackground {
+type ContextStateBackground = {
   /**
    * In-game background image
    */
@@ -49,31 +49,54 @@ interface ContextStateBackground {
   clear?: () => void;
 }
 
-interface ContextStateCharacter extends WithActionVisibility {
+type ContextStateCharacter = WithActionVisibility & {
   /**
    * Basically `element.style`
    */
   style: string;
   /**
-   * Character can be removed delayed so it could be removed with animation.
+   * Character removal can be delayed so it could be removed with animation.
    *
    * Storing timeout id is needed to cancel it if in example ShowCharacter was called before time for removal came to the end to prevent character unexpectedly be removed
    */
-  hideCharacterTimeoutId: ReturnType<typeof setTimeout>;
+  hideTimeoutId: ReturnType<typeof setTimeout>;
 }
 
-interface ContextStateCharacters {
+type ContextStateCharacters = {
   [key: string]: ContextStateCharacter;
 }
 
-interface ContextStateText extends Disposable {
+type ContextStateCustomHandler = {
+  /**
+   * Custom Actions has `get` function. It's return type should be cached
+   */
+  getReturn: CustomHandlerGetResult<boolean>
+  /**
+   * Custom Handler function itself
+   */
+  fn: CustomHandler;
+  /**
+   * Clear Function.
+   */
+  clear: () => void;
+  /**
+   * HTML Root where custom action renders its content
+   */
+  dom: null | HTMLDivElement;
+}
+
+type ContextStateCustomHandlers = {
+  [key: string]: ContextStateCustomHandler | undefined
+}
+
+type ContextStateText = Disposable & {
   /**
    * Text to be rendered
    */
   content: string;
 }
 
-interface ContextStateDialog extends Disposable, WithActionVisibility {
+type ContextStateDialog = Disposable & WithActionVisibility & {
   /**
    * Character lyrics
    */
@@ -97,7 +120,7 @@ interface ContextStateDialog extends Disposable, WithActionVisibility {
   }
 }
 
-interface ContextStateInput extends Disposable, WithActionVisibility, Labelled {
+type ContextStateInput = Disposable & WithActionVisibility & Labelled & {
   /**
    * When input validation failed this error message should be shown near input element.
    * When error is present, going to next action should be restricted.
@@ -109,7 +132,7 @@ interface ContextStateInput extends Disposable, WithActionVisibility, Labelled {
   cleanup?: () => void;
 }
 
-interface ContextStateChoice extends WithActionVisibility, Labelled {
+type ContextStateChoice = WithActionVisibility & Labelled & {
   /**
    * It is an array of choices.
    *
@@ -186,6 +209,10 @@ type ContextState = {
   * Meta information about current context
   */
   meta: ContextStateMeta;
+  /**
+   * Custom Action store
+   */
+  custom: ContextStateCustomHandlers;
 }
 
 const CONTEXT_MAP = new Map<string, DeepMapStore<ContextState>>()
@@ -215,6 +242,7 @@ const createContextState = () => {
     text: {
       content: ''
     },
+    custom: {},
     meta: {
       restoring: false,
       goingBack: false,
@@ -234,7 +262,6 @@ const useContextState = (id: string) => {
 
   CONTEXT_MAP.set(id, contextState)
 
-  // todo: check this out
   onMount(contextState, () => {
     return () => {
       CONTEXT_MAP.delete(id);
@@ -247,7 +274,6 @@ const useContextState = (id: string) => {
 const removeContextState = (id: string) => {
   const contextState = CONTEXT_MAP.get(id);
 
-  // todo: check this out
   if (contextState) {
     cleanStores(contextState)
   }

@@ -63,7 +63,7 @@ const Settings: VoidComponent<SettingsProps> = () => {
 	return (
 		<div class="root settings">
 			<div class="settings__column">
-				<button type="button" class="button settings__button" onClick={() => data.setGlobalState('screen', 'mainmenu')}>
+				<button type="button" class="button settings__button" onClick={() => data.$rendererState.setKey('screen', 'mainmenu')}>
 					{data.t('HomeScreen')}
 				</button>
 				<button type="button" class="button settings__button" onClick={() => data.options.restore()}>
