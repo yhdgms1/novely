@@ -1,10 +1,11 @@
 import type { VoidComponent } from 'solid-js';
 import type { Save as NovelySave } from '@novely/core';
 import { createSignal, createEffect, onCleanup, untrack } from 'solid-js';
-import { useContextState } from '../store';
 import { useData } from '$context';
 import { capitalize, getDocumentStyles } from '$utils';
 import { createRetrieved } from "retrieved";
+import { useContextState } from '../context-state'
+import { useShared, removeShared } from '../shared';
 import { Game } from '$screens';
 
 /**
@@ -29,7 +30,7 @@ const Save: VoidComponent<SaveProps> = (props) => {
 
   const KEY = `save-${date}-${type}`;
 
-  const ctx = useContextState(KEY);
+  const $contextState = useContextState(KEY);
   const context = getContext(KEY);
 
   const year = date.getFullYear();
@@ -53,11 +54,10 @@ const Save: VoidComponent<SaveProps> = (props) => {
     controls='outside'
     skipTypewriterWhenGoingBack={true}
 
-    state={ctx.state}
-    setState={ctx.setState}
+    $contextState={$contextState}
 
     context={context}
-    store={context.store}
+    store={useShared(KEY)}
 
     isPreview={true}
   />;
@@ -116,7 +116,8 @@ const Save: VoidComponent<SaveProps> = (props) => {
     }
 
     removeContext(KEY);
-    options.removeContext(KEY)
+    options.removeContext(KEY);
+    removeShared(KEY);
   });
 
   const removeSave = (date: number) => {

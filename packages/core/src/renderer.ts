@@ -102,9 +102,6 @@ type Context = {
 		get goingBack(): boolean;
 		set goingBack(value: boolean);
 	}
-
-	store: unknown;
-	setStore: unknown;
 }
 
 type Renderer = {

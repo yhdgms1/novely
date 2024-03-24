@@ -54,17 +54,17 @@ type ContextStateCharacter = WithActionVisibility & {
   /**
    * Basically `element.style`
    */
-  style: string;
+  style: string | undefined;
   /**
    * Character removal can be delayed so it could be removed with animation.
    *
    * Storing timeout id is needed to cancel it if in example ShowCharacter was called before time for removal came to the end to prevent character unexpectedly be removed
    */
-  hideTimeoutId: ReturnType<typeof setTimeout>;
+  hideTimeoutId?: ReturnType<typeof setTimeout>;
 }
 
 type ContextStateCharacters = {
-  [key: string]: ContextStateCharacter;
+  [key: string]: ContextStateCharacter | undefined;
 }
 
 type ContextStateCustomHandler = {
@@ -122,6 +122,10 @@ type ContextStateDialog = Disposable & WithActionVisibility & {
 }
 
 type ContextStateInput = Disposable & WithActionVisibility & Labelled & {
+  /**
+   * Input Element. Input action very dependent on DOM so this is needed
+   */
+  element: null | HTMLInputElement;
   /**
    * When input validation failed this error message should be shown near input element.
    * When error is present, going to next action should be restricted.
@@ -218,6 +222,11 @@ type ContextState = {
 
 const defaultEmpty = {} satisfies BaseDeepMap;
 
+type ContextStateStore<Extension extends BaseDeepMap = typeof defaultEmpty> = DeepMergeTwoTypes<
+  ContextState,
+  Extension
+>
+
 const getDefaultContextState = (): ContextState => {
   return {
     background: {
@@ -236,6 +245,7 @@ const getDefaultContextState = (): ContextState => {
       miniature: {},
     },
     input: {
+      element: null,
       label: '',
       error: '',
       visible: false
@@ -321,3 +331,8 @@ const createContextStateRoot = <Extension extends BaseDeepMap = typeof defaultEm
 }
 
 export { createContextStateRoot }
+export type {
+  ContextStateStore,
+  ContextState,
+  ContextStateCharacter
+}

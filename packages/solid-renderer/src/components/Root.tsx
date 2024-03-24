@@ -1,20 +1,19 @@
 import type { Component } from 'solid-js';
 import type { Emitter } from '../emitter';
-import type { RendererStateStore, DeepMapStore } from '@novely/renderer-toolkit'
-import type { EmitterEventsMap, SolidContext, RendererStoreExtension } from '../types';
+import type { RendererStateStore, ContextStateStore, DeepMapStore } from '@novely/renderer-toolkit'
+import type { EmitterEventsMap, RendererStoreExtension } from '../types';
+import type { Context } from '@novely/core';
 import { Switch, Match, createEffect } from 'solid-js';
 import { useStore } from '@nanostores/solid'
 import { Character, Renderer, RendererInit } from '@novely/core';
 import { Provider } from '$context';
+import { useShared } from '../shared';
 import { Game, MainMenu, Saves, Settings, Loading, CustomScreen } from '$screens';
-import { useContextState } from '../store';
 
 type CreateRootComponentOpts = {
-  setRoot: (root:  HTMLDivElement) => void;
+  setRoot: (root: HTMLDivElement) => void;
 
-  renderer: Omit<Renderer, "getContext"> & {
-    getContext(name: string): SolidContext;
-  };
+  renderer: Renderer;
 
   characters: Record<string, Character>;
 
@@ -24,17 +23,15 @@ type CreateRootComponentOpts = {
   skipTypewriterWhenGoingBack: boolean;
   controls: 'inside' | 'outside'
 
-  getVolume: (type: 'music' | 'sound' | 'voice') => number;
-
-  rendererContext: SolidContext
-  stateContext: ReturnType<typeof useContextState>
+  rendererContext: Context
 
   coreOptions: RendererInit;
 
+  $contextState: DeepMapStore<ContextStateStore>
   $rendererState: DeepMapStore<RendererStateStore<RendererStoreExtension>>
 }
 
-const createRootComponent = ({ $rendererState, coreOptions, setRoot, characters, renderer, fullscreen, emitter, controls, skipTypewriterWhenGoingBack, getVolume, rendererContext, stateContext }: CreateRootComponentOpts) => {
+const createRootComponent = ({ $rendererState, $contextState, coreOptions, setRoot, characters, renderer, fullscreen, emitter, controls, skipTypewriterWhenGoingBack, rendererContext }: CreateRootComponentOpts) => {
   const Root: Component = () => {
     const rendererState = useStore($rendererState);
 
@@ -86,12 +83,11 @@ const createRootComponent = ({ $rendererState, coreOptions, setRoot, characters,
           <Switch>
             <Match when={screen() === 'game'}>
               <Game
-                state={stateContext.state}
-                setState={/* @once */ stateContext.setState}
-                store={/* @once */ rendererContext.store}
+                $contextState={/* @once */ $contextState}
                 context={/* @once */ rendererContext}
                 controls={/* @once */ controls}
                 skipTypewriterWhenGoingBack={/* @once */ skipTypewriterWhenGoingBack}
+                store={useShared(coreOptions.mainContextKey)}
               />
             </Match>
             <Match when={screen() === 'mainmenu'}>

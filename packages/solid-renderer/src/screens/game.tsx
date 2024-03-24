@@ -1,8 +1,7 @@
-import type { Renderer } from '@novely/core';
+import type { Context } from '@novely/core';
 import type { VoidComponent } from 'solid-js';
-import type { SetStoreFunction } from 'solid-js/store';
 import type { SolidRendererStore } from '../renderer';
-import type { AtContextState } from '../types'
+import type { ContextStateStore, DeepMapStore } from '@novely/renderer-toolkit'
 
 import { useStore } from '@nanostores/solid';
 import { createSignal, untrack, For, Show, createUniqueId, createEffect } from 'solid-js';
@@ -12,10 +11,9 @@ import { useData } from '$context';
 import { canvasDrawImages, url, isCSSImage, onKey } from '$utils';
 
 interface GameProps {
-	state: AtContextState;
-	setState: SetStoreFunction<AtContextState>;
+	context: Context;
 
-	context: ReturnType<Renderer['getContext']>;
+	$contextState: DeepMapStore<ContextStateStore>
 
 	store: SolidRendererStore;
 
@@ -29,19 +27,23 @@ interface GameProps {
 const Game: VoidComponent<GameProps> = (props) => {
 	const data = useData();
 
+	const { $contextState } = props;
+
 	const rendererState = useStore(data.$rendererState);
+	const contextState = useStore($contextState);
 
 	/**
 	 * Can be destructured because these are passed without getters
 	 */
-	const { setState, store, context, controls, skipTypewriterWhenGoingBack } = props;
+	const { store, context, controls, skipTypewriterWhenGoingBack } = props;
 
 	const background = () => {
-		const is = isCSSImage(props.state.background);
+		const bg = contextState().background.background;
+		const is = isCSSImage(bg);
 
 		return {
-			'background-image': is ? url(props.state.background) : '',
-			'background-color': is ? undefined : props.state.background,
+			'background-image': is ? url(bg) : '',
+			'background-color': is ? undefined : bg,
 		}
 	};
 
@@ -50,27 +52,27 @@ const Game: VoidComponent<GameProps> = (props) => {
 	const onChoicesButtonClick = ([disabled, i]: [boolean, number]) => {
 		if (disabled) return;
 
-		const resolve = props.state.choices.resolve!;
+		const resolve = contextState().choice.resolve!;
 
-		setState('choices', {
+		$contextState.setKey('choice', {
 			choices: [],
 			visible: false,
 			resolve: undefined,
-			question: '',
+			label: '',
 		});
 
 		resolve(i);
 	};
 
 	const onInputButtonClick = () => {
-		if (props.state.input.error) return;
+		if (contextState().input.error) return;
 
-		const resolve = props.state.input.resolve;
-		const cleanup = props.state.input.cleanup;
+		const { resolve, cleanup } = contextState().input;
 
-		setState('input', {
-			element: undefined,
-			question: '',
+		$contextState.setKey('input', {
+			element: null,
+			label: '',
+			error: '',
 			visible: false,
 			cleanup: undefined,
 			resolve: undefined,
@@ -80,7 +82,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 		resolve?.();
 	};
 
-	const layers = () => Object.values(props.state.layers);
+	const layers = () => Object.values(contextState().custom);
 
 	const speed = () => data.storageData().meta[1];
 
@@ -103,22 +105,21 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 	const TextWriter = createTypewriter({
 		resolve() {
-			const resolve = props.state.text.resolve!;
+			const resolve = contextState().text.resolve!;
 
-			setState('text', { content: '', resolve: undefined });
+			$contextState.setKey('text', { content: '' });
 			resolve();
 		},
 	});
 
 	const DialogWriter = createTypewriter({
 		resolve() {
-			const resolve = props.state.dialog.resolve!;
+			const resolve = contextState().dialog.resolve!;
 
-			setState('dialog', {
+			$contextState.setKey('dialog', {
 				content: '',
 				name: '',
-				character: undefined,
-				emotion: undefined,
+				miniature: {},
 				visible: false,
 				resolve: undefined,
 			});
@@ -151,8 +152,8 @@ const Game: VoidComponent<GameProps> = (props) => {
 				data-characters={true}
 				class="characters"
 				style={{
-					'--shown-characters-count': Object.values(props.state.characters).reduce((acc, char) => {
-						if (char.visible) {
+					'--shown-characters-count': Object.values(contextState().characters).reduce((acc, c) => {
+						if (c && c.visible) {
 							return acc + 1;
 						}
 
@@ -160,10 +161,10 @@ const Game: VoidComponent<GameProps> = (props) => {
 					}, 0),
 				}}
 			>
-				<For each={Object.entries(props.state.characters)}>
+				<For each={Object.entries(contextState().characters)}>
 					{([character, data]) => (
-						<Show when={data.visible}>
-							<Character character={character} data={data} characters={store.characters} />
+						<Show when={data && data.visible}>
+							<Character character={character} data={data!} characters={store.characters} />
 						</Show>
 					)}
 				</For>
@@ -171,19 +172,19 @@ const Game: VoidComponent<GameProps> = (props) => {
 			<div
 				class="action-dialog"
 				classList={{
-					'action-dialog--visible': props.state.dialog.visible,
-					'action-dialog--hidden': !props.state.dialog.visible,
+					'action-dialog--visible': contextState().dialog.visible,
+					'action-dialog--hidden': !contextState().dialog.visible,
 				}}
 			>
 				<DialogName
-					character={props.state.dialog.character}
-					name={props.state.dialog.name}
+					character={contextState().dialog.miniature.character}
+					name={contextState().dialog.name}
 					characters={data.characters}
 				/>
 				<div
 					class="action-dialog-container"
-					data-no-person={!(props.state.dialog.character && props.state.dialog.emotion)}
-					aria-disabled={!props.state.dialog.content}
+					data-no-person={!(contextState().dialog.miniature.character && contextState().dialog.miniature.emotion)}
+					aria-disabled={!contextState().dialog.content}
 					role="button"
 					tabIndex={0}
 					onClick={DialogWriter.clear}
@@ -191,9 +192,9 @@ const Game: VoidComponent<GameProps> = (props) => {
 					onKeyDown={onKey(DialogWriter.clear, ' ')}
 				>
 					<div class="action-dialog-person">
-						<Show when={props.state.dialog.emotion} keyed>
+						<Show when={contextState().dialog.miniature.emotion} keyed>
 							{(emotion) => {
-								const character = props.state.dialog.character;
+								const character = contextState().dialog.miniature.character;
 
 								/**
 								 * Если персонажа нет
@@ -233,7 +234,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 										? undefined
 										: data.t(DialogWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
 							}}
-							content={props.state.dialog.content}
+							content={contextState().dialog.content}
 							ignore={(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview)}
 							speed={speed()}
 							ended={onWriterEnd(DialogWriter.clear)}
@@ -243,7 +244,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 			</div>
 
 			<Modal
-				isOpen={() => props.state.choices.visible}
+				isOpen={() => contextState().choice.visible}
 				trapFocus={() => !props.isPreview && !rendererState().exitPromptShown}
 			>
 				<div class="dialog-container">
@@ -253,12 +254,12 @@ const Game: VoidComponent<GameProps> = (props) => {
 					<div class="dialog-panel">
 						<span
 							class="dialog-panel-label"
-							data-used={Boolean(props.state.choices.question)}
-							aria-hidden={!props.state.choices.question}
+							data-used={Boolean(contextState().choice.label)}
+							aria-hidden={!contextState().choice.label}
 						>
-							{props.state.choices.question || <>&#8197;</>}
+							{contextState().choice.label || <>&#8197;</>}
 						</span>
-						<For each={props.state.choices.choices}>
+						<For each={contextState().choice.choices}>
 							{([text, active], i) => {
 								const disabled = !active;
 								const index = i();
@@ -280,7 +281,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 			</Modal>
 
 			<Modal
-				isOpen={() => props.state.input.visible}
+				isOpen={() => contextState().input.visible}
 				trapFocus={() => !props.isPreview && !rendererState().exitPromptShown}
 			>
 				<div class="dialog-container">
@@ -289,17 +290,17 @@ const Game: VoidComponent<GameProps> = (props) => {
 					</span>
 					<div class="dialog-panel input-dialog-panel">
 						<label for="novely-input" class="input-dialog-label">
-							<span>{props.state.input.question}</span>
-							{props.state.input.element}
+							<span>{contextState().input.label}</span>
+							{contextState().input.element}
 							<span aria-live="polite" aria-atomic="true">
-								{props.state.input.error}
+								{contextState().input.error}
 							</span>
 						</label>
 						<button
 							type="submit"
 							class="button dialog-input__button"
 							onClick={onInputButtonClick}
-							aria-disabled={Boolean(props.state.input.error)}
+							aria-disabled={Boolean(contextState().input.error)}
 						>
 							{data.t('Sumbit')}
 						</button>
@@ -350,8 +351,8 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 			<div
 				class="action-text"
-				data-shown={Boolean(props.state.text.content)}
-				aria-disabled={!props.state.text.content}
+				data-shown={Boolean(contextState().text.content)}
+				aria-disabled={!contextState().text.content}
 				role="button"
 				tabIndex={0}
 				onClick={TextWriter.clear}
@@ -365,7 +366,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 								? undefined
 								: data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
 					}}
-					content={props.state.text.content}
+					content={contextState().text.content}
 					ignore={(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview)}
 					speed={speed()}
 					ended={onWriterEnd(TextWriter.clear)}

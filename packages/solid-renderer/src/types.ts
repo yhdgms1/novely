@@ -131,35 +131,7 @@ type PossibleScreen = NovelyScreen | (string & Record<never, never>);
 type StateMainmenuItem = (goto: (name: PossibleScreen) => void) => JSX.ButtonHTMLAttributes<HTMLButtonElement>;
 type StateMainmenuItems = StateMainmenuItem[];
 
-type StateMeta = {
-  restoring: boolean
-  preview: boolean
-  goingBack: boolean
-}
-
-type AtContextState = {
-  disposeBackground: undefined | (() => void);
-
-  /**
-   * Background that should be rendered
-   */
-  background: string;
-  characters: Record<string, StateCharacter>;
-  dialog: StateDialog;
-  choices: StateChoices;
-  input: StateInput;
-  layers: StateLayers;
-  text: StateText;
-
-  meta: StateMeta;
-
-  store: SolidRendererStore;
-}
-
 type SolidRendererStore = {
-  dialogRef?: HTMLParagraphElement;
-  textRef?: HTMLParagraphElement;
-
   characters: Record<string, CharacterHandle>;
 }
 
@@ -204,7 +176,6 @@ type RendererStoreExtension = { screens: Record<string, StateScreen>; mainmenu: 
 
 export type {
   EmitterEventsMap,
-  AtContextState,
   StateCharacter,
   StateChoices,
   StateDialog,

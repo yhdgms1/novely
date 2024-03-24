@@ -19,7 +19,7 @@ import type {
 import type { Stored } from './store';
 import type { Context } from './renderer';
 import type { BaseTranslationStrings } from './translations';
-import type { ControlledPromise, MatchActionInit, MatchActionMapComplete } from './utils';
+import type { ControlledPromise, MatchActionInit } from './utils';
 import {
 	matchAction,
 	isNumber,

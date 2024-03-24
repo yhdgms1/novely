@@ -4,8 +4,8 @@ import type {
 	CharacterHandle,
 	CustomHandlerFunctionGetFn,
 	CustomHandler,
+	Context
 } from '@novely/core';
-import { createRendererState, storeUpdate, createStartFunction, createAudio, Howl } from '@novely/renderer-toolkit'
 import type {
   StateScreen,
   StateScreens,
@@ -13,18 +13,16 @@ import type {
   SolidRendererStore,
   CreateSolidRendererOptions,
 	EmitterEventsMap,
-	SolidContext,
 	RendererStoreExtension
 } from './types';
 import type { JSX } from 'solid-js';
 
 import { render } from 'solid-js/web';
-
+import { createRendererState, storeUpdate, createStartFunction, createAudio, Howl } from '@novely/renderer-toolkit'
 import { createEmitter } from './emitter';
+import { useContextState, removeContextState } from './context-state'
 import { canvasDrawImages, createImage, escape, vibrate, useBackground } from '$utils';
-import { useContextState } from './store';
-import { produce } from 'solid-js/store';
-import { PRELOADED_IMAGE_MAP } from './shared';
+import { PRELOADED_IMAGE_MAP, useShared } from './shared';
 import { createRootComponent } from './components/Root';
 
 const createSolidRenderer = ({
@@ -40,7 +38,7 @@ const createSolidRenderer = ({
 		mainmenu: []
 	});
 
-	const CTX_MAP = new Map<string, SolidContext>();
+	const CTX_MAP = new Map<string, Context>();
 
 	return {
 		emitter,
@@ -58,36 +56,29 @@ const createSolidRenderer = ({
 
 					if (cached) return cached;
 
-					const { state, setState } = useContextState(name);
+					const $contextState = useContextState(name);
 
-					const ctx: SolidContext = {
+					const ctx: Context = {
 						id: name,
 						root,
 
 						background(background) {
-							/**
-							 * I'm not quite sure this should be inside the `state` because this is a function that does action
-							 * And state is about just describing stuff
-							 *
-							 * Also, not really relevent, but there is two contexts at the same `useContextState` and `renderer.getContext`,
-							 * Maybe even more if we cound core's stack context
-							 */
-							state.disposeBackground?.();
+							$contextState.get().background.clear?.();
 
 							if (typeof background === 'string') {
-								setState('background', background);
+								$contextState.setKey('background.background', background);
 
 								return;
 							}
 
 							const { dispose } = useBackground(background, (value) => {
-								setState('background', value);
+								$contextState.setKey('background.background', value);
 							})
 
-							setState('disposeBackground', () => dispose);
+							$contextState.setKey('background.clear', dispose);
 						},
 						character(character) {
-							const chars = this.store.characters;
+							const chars = useShared(name).characters;
 
 							if (chars[character]) {
 								return chars[character];
@@ -117,12 +108,12 @@ const createSolidRenderer = ({
 									}
 								},
 								append(className, style) {
-									clearTimeout(state.characters[character]?.timeoutId);
+									clearTimeout($contextState.get().characters[character]?.hideTimeoutId);
 
 									/**
 									 * Set style and show
 									 */
-									setState('characters', character, { style, visible: true });
+									$contextState.setKey(`characters.${character}`, { style, visible: true })
 
 									const { canvas: element } = chars[character];
 
@@ -148,14 +139,14 @@ const createSolidRenderer = ({
 											/**
 											 * Ignore remove animations, because it is not shown anyway
 											 */
-											setState('characters', character, { visible: false });
+											$contextState.setKey(`characters.${character}.visible`, false)
 											resolve();
 
 											return;
 										}
 
 										const timeoutId = setTimeout(() => {
-											setState('characters', character, { visible: false });
+											$contextState.setKey(`characters.${character}.visible`, false)
 											resolve();
 										}, duration);
 
@@ -166,7 +157,8 @@ const createSolidRenderer = ({
 											chars[character].canvas.className = className as string;
 										}
 
-										setState('characters', character, { style, timeoutId });
+										$contextState.setKey(`characters.${character}.style`, style)
+										$contextState.setKey(`characters.${character}.hideTimeoutId`, timeoutId)
 									})
 								},
 								animate(timeout, classes) {
@@ -208,49 +200,69 @@ const createSolidRenderer = ({
 								}
 							} satisfies CharacterHandle;
 
-							ctx.setStore((store) => store.characters[character] = characterHandle)
+							useShared(name).characters[character] = characterHandle;
 
 							return characterHandle;
 						},
 						dialog(content, name, character, emotion, resolve) {
-							setState('dialog', {
+							$contextState.setKey('dialog', {
 								content,
 								name,
-								character,
-								emotion,
+								miniature: {
+									character,
+									emotion,
+								},
 								visible: true,
 								resolve,
 							});
 						},
-						choices(question, choices, resolve) {
-							setState('choices', { choices, question, resolve, visible: true });
+						choices(label, choices, resolve) {
+							$contextState.setKey('choice', { choices, label, resolve, visible: true });
 						},
 						clear(keep, keepCharacters, keepAudio, resolve) {
 							$rendererState.setKey('exitPromptShown', false);
 
-							if (!keep.has('showBackground')) setState('background', '#000');
-							if (!keep.has('choice'))
-								setState('choices', {
+							if (!keep.has('showBackground')) {
+								$contextState.setKey('background.background', '#000');
+							}
+
+							if (!keep.has('choice')) {
+								$contextState.setKey('choice', {
 									choices: [],
 									visible: false,
-									resolve: undefined,
-									question: '',
+									label: '',
 								});
-							if (!keep.has('input'))
-								setState('input', {
-									element: undefined,
-									question: '',
+							}
+
+							if (!keep.has('input')) {
+								$contextState.setKey('input', {
+									element: null,
+									label: '',
 									visible: false,
 									error: '',
 								});
-							if (!keep.has('dialog')) setState('dialog', { visible: false, content: '', name: '' });
-							if (!keep.has('text')) setState('text', { content: '' });
-
-							for (const character of Object.keys(state.characters)) {
-								if (!keepCharacters.has(character)) setState('characters', character, { visible: false });
 							}
 
-							for (const [id, layer] of Object.entries(state.layers)) {
+							if (!keep.has('dialog')) {
+								$contextState.setKey('dialog', { visible: false, content: '', name: '', miniature: {} });
+							}
+
+							if (!keep.has('text')) {
+								$contextState.setKey('text', { content: '' });
+							}
+
+							const { characters, custom } = $contextState.get();
+
+							for (const character of Object.keys(characters)) {
+								if (!keepCharacters.has(character)) {
+									$contextState.setKey(`characters.${character}`, {
+										style: undefined,
+										visible: false
+									})
+								}
+							}
+
+							for (const [id, layer] of Object.entries(custom)) {
 								if (!layer) continue;
 
 								/**
@@ -258,7 +270,7 @@ const createSolidRenderer = ({
 								 */
 								if (!(ctx.meta.goingBack && layer.fn.skipClearOnGoingBack)) {
 									layer.clear();
-									setState('layers', id, undefined);
+									$contextState.setKey(`custom.${id}`, undefined);
 								}
 							}
 
@@ -266,9 +278,9 @@ const createSolidRenderer = ({
 
 							resolve();
 						},
-						input(question, onInput, setup, resolve) {
+						input(label, onInput, setup, resolve) {
 							const error = (value: string) => {
-								setState('input', { error: value });
+								$contextState.setKey('input.error', value);
 							};
 
 							const onInputHandler: JSX.EventHandlerUnion<HTMLInputElement, InputEvent> = (event) => {
@@ -295,11 +307,12 @@ const createSolidRenderer = ({
 								onInput={onInputHandler}
 							/> as HTMLInputElement;
 
-							setup(input, (callback) => setState('input', { cleanup: callback }));
+							setup(input, (callback) => $contextState.setKey('input.cleanup', callback));
 
-							setState('input', {
+							$contextState.setKey('input', {
 								element: input,
-								question,
+								label,
+								error: '',
 								visible: true,
 								resolve,
 							});
@@ -312,10 +325,10 @@ const createSolidRenderer = ({
 						custom(fn, resolve) {
 							// @ts-expect-error I don't understand
 							const get: CustomHandlerFunctionGetFn = (insert = true) => {
-								const cached = state.layers[fn.key];
+								const cached = $contextState.get().custom[fn.key]
 
 								if (cached) {
-									return cached.value;
+									return cached.getReturn
 								}
 
 								/**
@@ -329,29 +342,32 @@ const createSolidRenderer = ({
 								 */
 								const clearManager = () => {
 									clear();
-									setState('layers', fn.key, undefined);
+									$contextState.setKey(`custom.${fn.key}`, undefined);
 								};
 
 								const element = insert ? ((<div data-id={fn.key} />) as HTMLDivElement) : null;
 
-								setState('layers', fn.key, {
-									fn,
-									dom: element,
-									clear: clearManager,
-									value: {
-										root: ctx.root,
-										element,
-										delete: clearManager,
-										data(data: any) {
-											return data ? (store = data) : store;
-										},
-										clear(cb: () => void) {
-											clear = cb;
-										},
+								const getReturn = {
+									root: ctx.root,
+									element,
+									delete: clearManager,
+									data(data: any) {
+										return data ? (store = data) : store;
 									},
-								});
+									clear(cb: () => void) {
+										clear = cb;
+									},
+								}
 
-								return state.layers[fn.key]!.value;
+								$contextState.setKey(`custom.${fn.key}`, {
+									dom: element,
+									fn,
+									getReturn,
+
+									clear: clearManager,
+								})
+
+								return getReturn
 							};
 
 							const result = fn({
@@ -370,7 +386,7 @@ const createSolidRenderer = ({
 							return result;
 						},
 						clearCustom(fn) {
-							const data = state.layers[fn.key];
+							const data = $contextState.get().custom[fn.key];
 
 							if (data) data.clear();
 						},
@@ -378,38 +394,33 @@ const createSolidRenderer = ({
 							vibrate(pattern);
 						},
 						text(content, resolve) {
-							setState('text', { content, resolve });
+							$contextState.setKey('text', { content, resolve })
 						},
 
 						audio: audio.context,
 
 						meta: {
 							get restoring() {
-								return state.meta.restoring;
+								return $contextState.get().meta.restoring;
 							},
 							set restoring(value: boolean) {
-								setState('meta', { restoring: value })
+								$contextState.setKey('meta.restoring', value)
 							},
 
 							get preview() {
-								return state.meta.preview;
+								return $contextState.get().meta.preview;
 							},
 							set preview(value: boolean) {
-								setState('meta', { preview: value })
+								$contextState.setKey('meta.preview', value)
 							},
 
 							get goingBack() {
-								return state.meta.goingBack;
+								return $contextState.get().meta.goingBack;
 							},
 							set goingBack(value: boolean) {
-								setState('meta', { goingBack: value })
+								$contextState.setKey('meta.goingBack', value)
 							}
-						},
-
-						store: state.store,
-						setStore: (fn) => {
-							setState('store', produce(fn))
-						},
+						}
 					};
 
 					CTX_MAP.set(name, ctx);
@@ -418,7 +429,7 @@ const createSolidRenderer = ({
 				},
 				removeContext(name) {
 					CTX_MAP.delete(name);
-					useContextState(name).remove();
+					removeContextState(name);
 				},
 				ui: {
 					showScreen(name) {
@@ -446,14 +457,12 @@ const createSolidRenderer = ({
 							controls,
 							skipTypewriterWhenGoingBack,
 
-							getVolume: audio.getVolume,
-
 							rendererContext: renderer.getContext(options.mainContextKey),
-							stateContext: useContextState(options.mainContextKey),
 
 							coreOptions: options,
 
-							$rendererState
+							$rendererState,
+							$contextState: useContextState(options.mainContextKey)
 						})
 
 						return render(() => <Root />, target);

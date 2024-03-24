@@ -1,6 +1,6 @@
 import type { Accessor, FlowComponent } from 'solid-js';
 import type { Renderer, RendererInit, StorageData, Stored, BaseTranslationStrings, CoreData, Character, Context } from '@novely/core';
-import type { EmitterEventsMap, RendererStoreExtension, SolidContext } from '../types';
+import type { EmitterEventsMap, RendererStoreExtension } from '../types';
 import type { Emitter } from '../emitter';
 
 import { from, createContext, useContext, Show } from 'solid-js';
@@ -29,7 +29,7 @@ interface DataContext {
 
 	characters: Record<string, Character>;
 
-	getContext: (name: string) => SolidContext;
+	getContext: (name: string) => Context;
 	removeContext: (name: string) => void;
 }
 
@@ -48,7 +48,7 @@ interface ProviderProps {
 
 	characters: Record<string, Character>;
 
-	getContext: (name: string) => SolidContext;
+	getContext: (name: string) => Context;
 	removeContext: (name: string) => void;
 }
 
