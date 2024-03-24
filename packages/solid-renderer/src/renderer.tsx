@@ -6,7 +6,7 @@ import type {
 	CustomHandlerFunctionGetFn,
 	CustomHandler,
 } from '@novely/core';
-import { createRendererState, storeUpdate } from '@novely/renderer-toolkit'
+import { createRendererState, storeUpdate, createStartFunction } from '@novely/renderer-toolkit'
 import type {
   StateScreen,
   StateScreens,
@@ -76,8 +76,6 @@ const createSolidRenderer = ({
 
 				return howl;
 			}
-
-			let unmount: (() => void) | undefined | void;
 
 			let root: HTMLDivElement;
 
@@ -561,9 +559,7 @@ const createSolidRenderer = ({
 					showExitPrompt() {
 						$rendererState.setKey('exitPromptShown', true)
 					},
-					start() {
-						unmount?.();
-
+					start: createStartFunction(() => {
 						const Root = createRootComponent({
 							setRoot(_root) {
 								root = _root;
@@ -589,17 +585,8 @@ const createSolidRenderer = ({
 							$rendererState
 						})
 
-						unmount = render(() => (
-							<Root />
-						), target);
-
-						return {
-							unmount() {
-								unmount?.();
-								unmount = void 0;
-							},
-						};
-					},
+						return render(() => <Root />, target);
+					})
 				},
 				misc: {
 					preloadImage: (image) => {
