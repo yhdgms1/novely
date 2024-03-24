@@ -155,30 +155,6 @@ const createAudio = (storageData: StorageDataStore) => {
     }
   };
 
-  const misc: AudioMisc = {
-    preloadAudioBlocking: (src) => {
-      return new Promise((resolve) => {
-        /**
-         * Howler automatically caches loaded sounds so this is enough
-         */
-        const howl = new Howl({
-          src,
-        });
-
-        /**
-         * @todo: can this happen?
-         */
-        if (howl.state() === 'loaded') {
-          resolve();
-          return;
-        }
-
-        howl.once('load', resolve);
-        howl.once('loaderror', () => resolve());
-      })
-    }
-  };
-
   /**
    * Used in clear action when audio should be cleared
    * @param keepAudio Passed from Clear Action
@@ -221,18 +197,42 @@ const createAudio = (storageData: StorageDataStore) => {
     }
   });
 
-  // todo: pass this where it needed
-  unsubscribe;
-
   return {
     context,
-    misc,
 
     clear,
+
+    // todo: pass this where it needed
+    unsubscribe,
 
     getVolume,
     getHowl
   }
 }
 
-export { createAudio, Howl }
+const createAudioMisc = () => {
+  const misc: AudioMisc = {
+    preloadAudioBlocking: (src) => {
+      return new Promise((resolve) => {
+        /**
+         * Howler automatically caches loaded sounds so this is enough
+         */
+        const howl = new Howl({
+          src,
+        });
+
+        if (howl.state() === 'loaded') {
+          resolve();
+          return;
+        }
+
+        howl.once('load', resolve);
+        howl.once('loaderror', () => resolve());
+      })
+    }
+  };
+
+  return misc;
+}
+
+export { createAudioMisc, createAudio, Howl }

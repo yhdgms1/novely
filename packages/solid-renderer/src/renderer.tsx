@@ -18,12 +18,14 @@ import type {
 import type { JSX } from 'solid-js';
 
 import { render } from 'solid-js/web';
-import { createRendererState, storeUpdate, createStartFunction, createAudio, Howl } from '@novely/renderer-toolkit'
+import { createRendererState, storeUpdate, createStartFunction, createAudio, createAudioMisc, Howl } from '@novely/renderer-toolkit'
 import { createEmitter } from './emitter';
 import { useContextState, removeContextState } from './context-state'
 import { canvasDrawImages, createImage, escape, vibrate, useBackground } from '$utils';
 import { PRELOADED_IMAGE_MAP, useShared } from './shared';
 import { createRootComponent } from './components/Root';
+
+const { preloadAudioBlocking } = createAudioMisc();
 
 const createSolidRenderer = ({
 	fullscreen = false,
@@ -46,8 +48,6 @@ const createSolidRenderer = ({
 		renderer(options: RendererInit) {
 			const { characters } = options;
 
-			const audio = createAudio(options.storageData);
-
 			let root: HTMLDivElement;
 
 			const renderer = {
@@ -56,6 +56,7 @@ const createSolidRenderer = ({
 
 					if (cached) return cached;
 
+					const audio = createAudio(options.storageData);
 					const $contextState = useContextState(name);
 
 					const ctx: Context = {
@@ -490,7 +491,7 @@ const createSolidRenderer = ({
 							img.addEventListener('error', done);
 						});
 					},
-					preloadAudioBlocking: audio.misc.preloadAudioBlocking
+					preloadAudioBlocking
 				},
 			} satisfies Renderer;
 
