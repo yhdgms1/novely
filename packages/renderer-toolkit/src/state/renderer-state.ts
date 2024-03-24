@@ -1,7 +1,7 @@
 import type { NovelyScreen } from '@novely/core';
-import type { BaseDeepMap, MapStore } from 'nanostores';
-import type { DeepMergeTwoTypes, Prettify } from '../types';
-import { deepMap, map } from 'nanostores';
+import type { BaseDeepMap } from 'nanostores';
+import type { DeepMergeTwoTypes } from '../types';
+import { deepMap } from 'nanostores';
 
 /**
  * State which is related to whole renderer
@@ -23,10 +23,10 @@ type RendererState = {
 
 const defaultEmpty = {} satisfies BaseDeepMap;
 
-type RendererStateStore<Extension extends BaseDeepMap = typeof defaultEmpty> = Prettify<DeepMergeTwoTypes<
+type RendererStateStore<Extension extends BaseDeepMap = typeof defaultEmpty> = DeepMergeTwoTypes<
   RendererState,
   Extension
->>
+>
 
 /**
  * Helper to make renderer state with default recommended values

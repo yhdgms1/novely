@@ -1,5 +1,4 @@
 import type {
-  ValidAction,
   CustomHandler,
   CustomHandlerGetResult,
   CharacterHandle,
