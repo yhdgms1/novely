@@ -104,6 +104,7 @@ false && engine.script({
 	start: [
 		action.preload(outdoor),
 		action.text('Нажимайте на текст для продолжения'),
+		action.playMusic(sakura_girl),
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok'),
 		action.voice(voice1),

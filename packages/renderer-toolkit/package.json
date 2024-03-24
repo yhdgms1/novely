@@ -25,6 +25,7 @@
 		"build": "tsup --dts"
 	},
 	"devDependencies": {
+		"@types/howler": "^2.2.11",
 		"tsup": "^8.0.0",
 		"typescript": "^5.2.2"
 	},
@@ -32,6 +33,7 @@
 		"@novely/core": "*",
 		"@novely/deepmerge": "latest",
 		"esm-env": "^1.0.0",
+		"howler": "^2.2.4",
 		"klona": "^2.0.6",
 		"nanostores": "^0.10.0",
 		"p-limit": "3.1.0"

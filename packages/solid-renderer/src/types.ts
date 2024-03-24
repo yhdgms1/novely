@@ -161,18 +161,6 @@ type SolidRendererStore = {
   textRef?: HTMLParagraphElement;
 
   characters: Record<string, CharacterHandle>;
-
-  audio: {
-    music: Partial<Record<string, Howl>>
-    sound: Partial<Record<string, Howl>>
-    voices: Partial<Record<string, Howl>>
-
-    voice?: Howl;
-
-    resumeList: Howl[];
-
-    onDocumentVisibilityChangeListener?: () => void;
-  }
 }
 
 type CreateSolidRendererOptions = {

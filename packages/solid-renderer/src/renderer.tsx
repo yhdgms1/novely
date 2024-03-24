@@ -6,7 +6,7 @@ import type {
 	CustomHandlerFunctionGetFn,
 	CustomHandler,
 } from '@novely/core';
-import { createRendererState, storeUpdate, createStartFunction } from '@novely/renderer-toolkit'
+import { createRendererState, storeUpdate, createStartFunction, createAudio, Howl } from '@novely/renderer-toolkit'
 import type {
   StateScreen,
   StateScreens,
@@ -20,7 +20,6 @@ import type {
 import type { JSX } from 'solid-js';
 
 import { render } from 'solid-js/web';
-import { Howl } from 'howler';
 
 import { createEmitter } from './emitter';
 import { canvasDrawImages, createImage, escape, vibrate, useBackground } from '$utils';
@@ -50,32 +49,7 @@ const createSolidRenderer = ({
 		renderer(options: RendererInit) {
 			const { characters } = options;
 
-			const getVolume = (type: 'music' | 'sound' | 'voice') => {
-				const TYPE_META_MAP = {
-					'music': 2,
-					'sound': 3,
-					'voice': 4
-				} as const;
-
-				return options.storageData.get().meta[TYPE_META_MAP[type]];
-			}
-
-			const getHowl = (ctx: SolidContext, type: 'music' | 'sound' | 'voice', src: string, loop: boolean) => {
-				const kind = type === 'voice' ? 'voices' : type;
-				const cached = ctx.store.audio[kind][src];
-
-				if (cached) return cached;
-
-				const howl = new Howl({
-					src,
-					volume: getVolume(type),
-					loop
-				});
-
-				ctx.setStore((store) => store.audio[kind][src] = howl);
-
-				return howl;
-			}
+			const audio = createAudio(options.storageData);
 
 			let root: HTMLDivElement;
 
@@ -289,16 +263,7 @@ const createSolidRenderer = ({
 								}
 							}
 
-							ctx.audio.voiceStop();
-
-							const musics = Object.entries(ctx.store.audio.music).filter(([name]) => keepAudio.music && !keepAudio.music.has(name)).map(([_, h]) => h);
-							const sounds = Object.entries(ctx.store.audio.sound).filter(([name]) => keepAudio.sounds && !keepAudio.sounds.has(name)).map(([_, h]) => h);
-
-							for (const music of [...musics, ...sounds]) {
-								if (!music) continue;
-
-								music.stop();
-							}
+							audio.clear(keepAudio);
 
 							resolve();
 						},
@@ -417,100 +382,7 @@ const createSolidRenderer = ({
 							setState('text', { content, resolve });
 						},
 
-						audio: {
-							music(src, method, loop = method === 'music') {
-								const resource = getHowl(ctx, method, src, loop);
-
-								/**
-								 * Update
-								 */
-								resource.loop(loop);
-
-								this.start();
-
-								return {
-									pause() {
-										resource.fade(getVolume(method), 0, 300);
-										resource.once('fade', resource.pause);
-									},
-									play() {
-										if (resource.playing()) return;
-
-										resource.play();
-										resource.fade(0, getVolume(method), 300);
-									},
-									stop() {
-										resource.fade(getVolume(method), 0, 300);
-										resource.once('fade', resource.stop);
-									},
-								} satisfies AudioHandle;
-							},
-							voice(source) {
-								this.start();
-								this.voiceStop();
-
-								const resource = ctx.store.audio.voice = getHowl(ctx, 'voice', source, false);
-
-								resource.once('end', () => {
-									ctx.setStore(store => store.audio.voice = undefined)
-								});
-
-								resource.play();
-							},
-							voiceStop() {
-								ctx.store.audio.voice?.stop();
-							},
-							start() {
-								if (!ctx.store.audio.onDocumentVisibilityChangeListener) {
-									const onDocumentVisibilityChange = () => {
-										if (document.visibilityState === 'hidden') {
-											for (const howl of Object.values(ctx.store.audio.music)) {
-												if (howl && howl.playing()) {
-													ctx.setStore(store => store.audio.resumeList.push(howl))
-													howl.pause();
-												}
-											}
-
-											const currentVoice = ctx.store.audio.voice;
-
-											if (currentVoice && currentVoice.playing()) {
-												ctx.setStore(store => store.audio.resumeList.push(currentVoice))
-												currentVoice.pause();
-											}
-
-										} else {
-											for (const howl of ctx.store.audio.resumeList) {
-												howl.play();
-											}
-
-											ctx.setStore(store => store.audio.resumeList = []);
-										}
-									}
-
-									ctx.setStore(store => store.audio.onDocumentVisibilityChangeListener = onDocumentVisibilityChange)
-									document.addEventListener('visibilitychange', onDocumentVisibilityChange)
-								}
-							},
-							clear() {
-								const musics = Object.values(ctx.store.audio.music);
-								const sounds = Object.values(ctx.store.audio.sound);
-
-								for (const music of [...musics, ...sounds]) {
-									if (!music) continue;
-
-									music.stop();
-								}
-
-								this.voiceStop();
-							},
-							destroy() {
-								this.clear();
-
-								if (ctx.store.audio.onDocumentVisibilityChangeListener) {
-									document.removeEventListener('visibilitychange', ctx.store.audio.onDocumentVisibilityChangeListener);
-								}
-							}
-						},
+						audio: audio.context,
 
 						meta: {
 							get restoring() {
@@ -575,7 +447,7 @@ const createSolidRenderer = ({
 							controls,
 							skipTypewriterWhenGoingBack,
 
-							getVolume,
+							getVolume: audio.getVolume,
 
 							rendererContext: renderer.getContext(options.mainContextKey),
 							stateContext: useContextState(options.mainContextKey),
@@ -610,27 +482,7 @@ const createSolidRenderer = ({
 							img.addEventListener('error', done);
 						});
 					},
-					preloadAudioBlocking: (src) => {
-						return new Promise((resolve) => {
-							/**
-							 * Howler automatically caches loaded sounds so this is enough
-							 */
-							const howl = new Howl({
-								src,
-							});
-
-							/**
-							 * @todo: can this happen?
-							 */
-							if (howl.state() === 'loaded') {
-								resolve();
-								return;
-							}
-
-							howl.once('load', resolve);
-							howl.once('loaderror', () => resolve());
-						})
-					}
+					preloadAudioBlocking: audio.misc.preloadAudioBlocking
 				},
 			} satisfies Renderer;
 
@@ -640,8 +492,7 @@ const createSolidRenderer = ({
 			$rendererState.setKey(`screens.${name}`, screen);
 		},
 		registerMainmenuItem(fn: StateMainmenuItem) {
-			// todo: fix maybe
-			// @ts-ignore
+			// @ts-expect-error Deep dive
 			storeUpdate($rendererState, 'mainmenu', (mainmenu) => [...mainmenu, fn])
 		},
 	};

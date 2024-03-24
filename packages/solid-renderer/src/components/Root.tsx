@@ -67,30 +67,6 @@ const createRootComponent = ({ $rendererState, coreOptions, setRoot, characters,
       emitter.emit('screen:change', screen)
     });
 
-    coreOptions.storageData.subscribe(() => {
-      const { store } = rendererContext;
-
-      for (const type of ['music', 'sound', 'voice'] as const) {
-        const volume = getVolume(type);
-
-        if (type === 'music' || type === 'sound') {
-          for (const howl of Object.values(store.audio[type])) {
-            if (!howl) continue;
-
-            howl.fade(howl.volume(), volume, 150);
-          }
-        }
-
-        if (type === 'voice') {
-          const howl = store.audio.voice;
-
-          if (howl) {
-            howl.fade(howl.volume(), volume, 150);
-          }
-        }
-      }
-    });
-
     return (
       <div ref={setRoot}>
         <Provider

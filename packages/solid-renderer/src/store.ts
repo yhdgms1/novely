@@ -46,14 +46,6 @@ const createContextState = () => {
 
     store: {
       characters: {},
-
-      audio: {
-        music: {},
-        sound: {},
-        voices: {},
-
-        resumeList: []
-      }
     },
   });
 
