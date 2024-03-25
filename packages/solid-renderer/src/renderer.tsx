@@ -409,21 +409,21 @@ const createSolidRenderer = ({
 							get restoring() {
 								return $contextState.get().meta.restoring;
 							},
-							set restoring(value: boolean) {
+							set restoring(value) {
 								$contextState.setKey('meta.restoring', value)
 							},
 
 							get preview() {
 								return $contextState.get().meta.preview;
 							},
-							set preview(value: boolean) {
+							set preview(value) {
 								$contextState.setKey('meta.preview', value)
 							},
 
 							get goingBack() {
 								return $contextState.get().meta.goingBack;
 							},
-							set goingBack(value: boolean) {
+							set goingBack(value) {
 								$contextState.setKey('meta.goingBack', value)
 							}
 						}
