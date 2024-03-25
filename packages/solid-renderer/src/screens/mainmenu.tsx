@@ -1,16 +1,15 @@
 import type { VoidComponent } from 'solid-js';
 import type { NovelyScreen } from '@novely/core';
-import { For, Show } from 'solid-js';
+import { For, Show, from } from 'solid-js';
 import { useData } from '$context';
 import { simple } from '$utils';
 import { Icon } from '$components';
-import { useStore } from '@nanostores/solid';
 
 const MainMenu: VoidComponent = () => {
 	const { t, storageData, coreData, options, $rendererState } = useData();
 	const language = () => storageData().meta[0];
 
-	const rendererStore = useStore($rendererState);
+	const rendererStore = from($rendererState);
 
 	const goto = simple((screen: NovelyScreen | (string & Record<never, never>)) => {
 		if (!coreData().dataLoaded) return;
@@ -38,7 +37,7 @@ const MainMenu: VoidComponent = () => {
 			</button>
 			<Show when={language()} keyed>
 				{/* In case developer needs an icon they could provide it in HTML as a `innerHTML` prop */}
-				{(_) => <For each={rendererStore().mainmenu}>{(item) => <button {...item(goto)} />}</For>}
+				{(_) => <For each={rendererStore()!.mainmenu}>{(item) => <button {...item(goto)} />}</For>}
 			</Show>
 		</div>
 	);

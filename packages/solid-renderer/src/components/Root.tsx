@@ -3,8 +3,7 @@ import type { Emitter } from '../emitter';
 import type { RendererStateStore, ContextStateStore, DeepMapStore } from '@novely/renderer-toolkit'
 import type { EmitterEventsMap, RendererStoreExtension } from '../types';
 import type { Context } from '@novely/core';
-import { Switch, Match, createEffect } from 'solid-js';
-import { useStore } from '@nanostores/solid'
+import { Switch, Match, createEffect, from } from 'solid-js';
 import { Character, Renderer, RendererInit } from '@novely/core';
 import { Provider } from '$context';
 import { useShared } from '../shared';
@@ -33,14 +32,14 @@ type CreateRootComponentOpts = {
 
 const createRootComponent = ({ $rendererState, $contextState, coreOptions, setRoot, characters, renderer, fullscreen, emitter, controls, skipTypewriterWhenGoingBack, rendererContext }: CreateRootComponentOpts) => {
   const Root: Component = () => {
-    const rendererState = useStore($rendererState);
+    const rendererState = from($rendererState);
 
     const screen = () => {
-      return rendererState().screen;
+      return rendererState()!.screen;
     }
 
     createEffect(() => {
-      const screen = rendererState().screen;
+      const screen = rendererState()!.screen;
 
       if (fullscreen && document.fullscreenEnabled) {
         /**

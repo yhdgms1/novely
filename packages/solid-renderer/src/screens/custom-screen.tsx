@@ -1,9 +1,8 @@
 import type { VoidComponent, JSX } from 'solid-js';
 import type { NovelyScreen } from '@novely/core';
 import { noop } from '@novely/renderer-toolkit'
-import { createEffect, createSignal, Show } from 'solid-js';
+import { createEffect, createSignal, Show, from } from 'solid-js';
 import { useData } from '$context'
-import { useStore } from '@nanostores/solid';
 
 interface CustomScreenProps {
 	/**
@@ -16,7 +15,7 @@ const CustomScreen: VoidComponent<CustomScreenProps> = (props) => {
 	const { $rendererState } = useData();
 	const [dom, setDOM] = createSignal<Element | JSX.Element | null>(null);
 
-	const rendererState = useStore($rendererState);
+	const rendererState = from($rendererState);
 
 	let unmount = noop;
 
@@ -26,7 +25,7 @@ const CustomScreen: VoidComponent<CustomScreenProps> = (props) => {
 		 */
 		unmount();
 
-		const screens = rendererState().screens;
+		const screens = rendererState()!.screens;
 
 		/**
 		 * CustomScreen is always rendered, so this check is required
