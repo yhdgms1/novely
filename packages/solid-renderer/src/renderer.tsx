@@ -18,7 +18,15 @@ import type {
 import type { JSX } from 'solid-js';
 
 import { render } from 'solid-js/web';
-import { createRendererState, storeUpdate, createStartFunction, createAudio, createAudioMisc, Howl } from '@novely/renderer-toolkit'
+import {
+	createGetContext,
+	createRendererState,
+	createStartFunction,
+	createAudio,
+	createAudioMisc,
+	storeUpdate,
+	Howl
+} from '@novely/renderer-toolkit'
 import { createEmitter } from './emitter';
 import { useContextState, removeContextState } from './context-state'
 import { canvasDrawImages, createImage, escape, vibrate, useBackground } from '$utils';
@@ -40,7 +48,7 @@ const createSolidRenderer = ({
 		mainmenu: []
 	});
 
-	const CTX_MAP = new Map<string, Context>();
+	const { getContextCached, removeContext } = createGetContext();
 
 	return {
 		emitter,
@@ -51,15 +59,11 @@ const createSolidRenderer = ({
 			let root: HTMLDivElement;
 
 			const renderer = {
-				getContext(name) {
-					const cached = CTX_MAP.get(name);
-
-					if (cached) return cached;
-
+				getContext: getContextCached((name) => {
 					const audio = createAudio(options.storageData);
 					const $contextState = useContextState(name);
 
-					const ctx: Context = {
+					const context: Context = {
 						id: name,
 						root,
 
@@ -197,7 +201,7 @@ const createSolidRenderer = ({
 									 */
 									handler.key = '@@internal-animate-character';
 
-									ctx.custom(handler, () => {});
+									context.custom(handler, () => {});
 								}
 							} satisfies CharacterHandle;
 
@@ -263,14 +267,14 @@ const createSolidRenderer = ({
 								}
 							}
 
-							for (const [id, layer] of Object.entries(custom)) {
-								if (!layer) continue;
+							for (const [id, handler] of Object.entries(custom)) {
+								if (!handler) continue;
 
 								/**
 								 * Если происходит переход назад, и слой просит пропустить очистку при переходе назад, то не будем очищать слой
 								 */
-								if (!(ctx.meta.goingBack && layer.fn.skipClearOnGoingBack)) {
-									layer.clear();
+								if (!(context.meta.goingBack && handler.fn.skipClearOnGoingBack)) {
+									handler.clear();
 									$contextState.setKey(`custom.${id}`, undefined);
 								}
 							}
@@ -349,7 +353,7 @@ const createSolidRenderer = ({
 								const element = insert ? ((<div data-id={fn.key} />) as HTMLDivElement) : null;
 
 								const getReturn = {
-									root: ctx.root,
+									root: context.root,
 									element,
 									delete: clearManager,
 									data(data: any) {
@@ -374,8 +378,8 @@ const createSolidRenderer = ({
 							const result = fn({
 								get,
 
-								goingBack: ctx.meta.goingBack,
-								preview: ctx.meta.preview,
+								goingBack: context.meta.goingBack,
+								preview: context.meta.preview,
 
 								lang: options.storageData.get().meta[0],
 
@@ -424,12 +428,10 @@ const createSolidRenderer = ({
 						}
 					};
 
-					CTX_MAP.set(name, ctx);
-
-					return ctx;
-				},
+					return context;
+				}),
 				removeContext(name) {
-					CTX_MAP.delete(name);
+					removeContext(name);
 					removeContextState(name);
 				},
 				ui: {

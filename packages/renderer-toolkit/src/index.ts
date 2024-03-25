@@ -15,3 +15,5 @@ export { createAudio, createAudioMisc, Howl } from './audio/audio'
 export type { AudioStore } from './audio/types'
 
 export { createShared } from './shared/create-shared'
+
+export { createGetContext } from './context/create-get-context'
