@@ -19,7 +19,7 @@
 	gap: 1rem;
 	grid-template-columns: repeat(auto-fit, minmax(22vmin, 30%));
 	align-content: flex-start;
-	justify-content: center;
+	justify-content: space-between;
 
 	list-style: none;
 
@@ -33,10 +33,6 @@
 
 	border-radius: var(--novely-saves-list-border-radius, .875rem);
 	background-color: var(--novely-saves-list-background-color, #ffffff57);
-}
-
-.saves__list-few {
-	justify-content: flex-start;
 }
 
 .saves__list::-webkit-scrollbar {
@@ -64,6 +60,7 @@
 .saves__list--empty {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 
 	color: var(--novely-saves-list-empty-color, black);
 }
