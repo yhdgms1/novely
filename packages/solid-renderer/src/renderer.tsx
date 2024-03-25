@@ -25,6 +25,7 @@ import {
 	createAudio,
 	createAudioMisc,
 	storeUpdate,
+	createRootSetter,
 	Howl
 } from '@novely/renderer-toolkit'
 import { createEmitter } from './emitter';
@@ -56,7 +57,7 @@ const createSolidRenderer = ({
 		renderer(options: RendererInit) {
 			const { characters } = options;
 
-			let root: HTMLDivElement;
+			const { root, setRoot } = createRootSetter(() => renderer.getContext(options.mainContextKey));
 
 			const renderer = {
 				getContext: getContextCached((name) => {
@@ -65,7 +66,7 @@ const createSolidRenderer = ({
 
 					const context: Context = {
 						id: name,
-						root,
+						root: root(),
 
 						background(background) {
 							$contextState.get().background.clear?.();
@@ -446,9 +447,7 @@ const createSolidRenderer = ({
 					},
 					start: createStartFunction(() => {
 						const Root = createRootComponent({
-							setRoot(_root) {
-								root = _root;
-							},
+							setRoot,
 
 							renderer,
 

@@ -4,7 +4,6 @@ import { Show, For } from 'solid-js';
 import { useData } from '$context';
 import { Save } from '$components';
 
-
 const Saves: VoidComponent = () => {
 	const { t, storageData, $rendererState } = useData();
 
