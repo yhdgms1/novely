@@ -1,9 +1,19 @@
-import type { BackgroundImage, Context, DefaultActionProxy, RendererInit, CustomHandler, State, CustomHandlerFunctionGetFn } from '@novely/core'
+import type {
+  BackgroundImage,
+  Context,
+  DefaultActionProxy,
+  RendererInit,
+  CustomHandler,
+  State,
+  ActionInputOnInputMeta,
+	ActionInputSetup
+} from '@novely/core'
 import type { ContextState, ContextStateStore } from '../state/context-state'
 import type { RendererStateStore } from '../state/renderer-state'
 import type { DeepMapStore } from 'nanostores'
 
 import { useBackground } from './background'
+import { escapeHTML } from '../utils'
 
 const handleBackgroundAction = ($contextState: DeepMapStore<ContextStateStore<any>>, background: string | BackgroundImage) => {
   const { clear } = $contextState.get().background;
@@ -176,6 +186,53 @@ const handleTextAction = ($contextState: DeepMapStore<ContextStateStore<any>>, c
   $contextState.setKey('text', { content, resolve })
 }
 
+const handleInputAction = ($contextState: DeepMapStore<ContextStateStore<any>>, options: RendererInit, context: Context, label: string, onInput: (opts: ActionInputOnInputMeta<string, State>) => void, setup: ActionInputSetup, resolve: () => void) => {
+  const error = (value: string) => {
+    $contextState.setKey('input.error', value);
+  };
+
+  const onInputHandler = (event: InputEvent & { currentTarget: HTMLInputElement }) => {
+    let value: string | undefined;
+
+    onInput({
+      lang: options.storageData.get().meta[0],
+      input,
+      event,
+      error,
+      state: options.getStateFunction(context.id),
+      get value() {
+        if (value) return value;
+        return (value = escapeHTML(input.value));
+      },
+    });
+  };
+
+  const input = document.createElement('input');
+
+  input.setAttribute('type', 'text')
+  input.setAttribute('name', 'novely-input')
+  input.setAttribute('required', 'true')
+  input.setAttribute('autocomplete', 'off')
+
+  // @ts-expect-error Type is correct
+  input.addEventListener('input', onInputHandler);
+
+  setup(input, (callback) => $contextState.setKey('input.cleanup', callback));
+
+  $contextState.setKey('input', {
+    element: input,
+    label,
+    error: '',
+    visible: true,
+    resolve,
+  });
+
+  /**
+   * Initially run the fake input event to handle errors & etc
+   */
+  input.dispatchEvent(new InputEvent('input', { bubbles: true }));
+}
+
 export {
   handleBackgroundAction,
   handleDialogAction,
@@ -183,5 +240,6 @@ export {
   handleClearAction,
   handleCustomAction,
   handleClearCustomAction,
-  handleTextAction
+  handleTextAction,
+  handleInputAction
 }

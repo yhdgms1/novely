@@ -14,7 +14,6 @@ import type {
 	EmitterEventsMap,
 	RendererStoreExtension
 } from './types';
-import type { JSX } from 'solid-js';
 
 import { render } from 'solid-js/web';
 import {
@@ -33,11 +32,12 @@ import {
 	handleClearAction,
 	handleCustomAction,
 	handleClearCustomAction,
-	handleTextAction
+	handleTextAction,
+	handleInputAction
 } from '@novely/renderer-toolkit'
 import { createEmitter } from './emitter';
 import { useContextState, removeContextState } from './context-state'
-import { canvasDrawImages, createImage, escape, vibrate } from '$utils';
+import { canvasDrawImages, createImage, vibrate } from '$utils';
 import { PRELOADED_IMAGE_MAP, useShared } from './shared';
 import { createRootComponent } from './components/Root';
 
@@ -219,48 +219,15 @@ const createSolidRenderer = ({
 							resolve();
 						},
 						input(label, onInput, setup, resolve) {
-							const error = (value: string) => {
-								$contextState.setKey('input.error', value);
-							};
-
-							const onInputHandler: JSX.EventHandlerUnion<HTMLInputElement, InputEvent> = (event) => {
-								let value: string | undefined;
-
-								onInput({
-									lang: options.storageData.get().meta[0],
-									input,
-									event,
-									error,
-									state: options.getStateFunction(name),
-									get value() {
-										if (value) return value;
-										return (value = escape(input.value));
-									},
-								});
-							};
-
-							const input = <input
-								type="text"
-								name="novely-input"
-								required
-								autocomplete="off"
-								onInput={onInputHandler}
-							/> as HTMLInputElement;
-
-							setup(input, (callback) => $contextState.setKey('input.cleanup', callback));
-
-							$contextState.setKey('input', {
-								element: input,
+							handleInputAction(
+								$contextState,
+								options,
+								context,
 								label,
-								error: '',
-								visible: true,
-								resolve,
-							});
-
-							/**
-							 * Initially run the fake input event to handle errors & etc
-							 */
-							input.dispatchEvent(new InputEvent('input', { bubbles: true }));
+								onInput,
+								setup,
+								resolve
+							);
 						},
 						custom(fn, resolve) {
 							return handleCustomAction($contextState, options, context, fn, resolve)

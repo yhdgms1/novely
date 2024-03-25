@@ -27,5 +27,6 @@ export {
   handleClearAction,
   handleCustomAction,
   handleClearCustomAction,
-  handleTextAction
+  handleTextAction,
+  handleInputAction
 } from './context/actions'

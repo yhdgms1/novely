@@ -69,18 +69,6 @@ const url = <T extends string>(str: T): `url(${T})` => {
 	return `url(${str})`;
 };
 
-const escaped: Record<string, string> = {
-	'"': '&quot;',
-	"'": '&#39;',
-	'&': '&amp;',
-	'<': '&lt;',
-	'>': '&gt;',
-};
-
-const escape = (str: string) => {
-	return String(str).replace(/["'&<>]/g, (match) => escaped[match]);
-};
-
 const onKey = (cb: (event: KeyboardEvent) => void, ...keys: string[]) => {
 	return (e: KeyboardEvent) => {
 		if (keys.some((key) => key === e.key)) {
@@ -144,7 +132,6 @@ export {
 	url,
 	createImage,
 	capitalize,
-	escape,
 	onKey,
 	findLast,
 	simple,

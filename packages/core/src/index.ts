@@ -11,7 +11,9 @@ export type {
 	FunctionableValue,
 	CustomHandlerFunctionGetFn,
 	CustomHandlerFunctionParameters,
-	BackgroundImage
+	BackgroundImage,
+	ActionInputOnInputMeta,
+	ActionInputSetup
 } from './action';
 export type { Emotions, Character } from './character';
 export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context } from './renderer';

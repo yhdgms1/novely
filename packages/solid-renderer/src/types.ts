@@ -50,7 +50,7 @@ type CreateSolidRendererOptions = {
 }
 
 type EmitterEventsMap = {
-  'screen:change': PossibleScreen | 'loading',
+  'screen:change': PossibleScreen,
 };
 
 type RendererStoreExtension = { screens: Record<string, StateScreen>; mainmenu: StateMainmenuItems }
