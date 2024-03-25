@@ -33,11 +33,12 @@ import {
 	handleCustomAction,
 	handleClearCustomAction,
 	handleTextAction,
-	handleInputAction
+	handleInputAction,
+	handleVibrateAction
 } from '@novely/renderer-toolkit'
 import { createEmitter } from './emitter';
 import { useContextState, removeContextState } from './context-state'
-import { canvasDrawImages, createImage, vibrate } from '$utils';
+import { canvasDrawImages, createImage } from '$utils';
 import { PRELOADED_IMAGE_MAP, useShared } from './shared';
 import { createRootComponent } from './components/Root';
 
@@ -236,7 +237,7 @@ const createSolidRenderer = ({
 							handleClearCustomAction($contextState, fn)
 						},
 						vibrate(pattern) {
-							vibrate(pattern);
+							handleVibrateAction(pattern)
 						},
 						text(content, resolve) {
 							handleTextAction($contextState, content, resolve)

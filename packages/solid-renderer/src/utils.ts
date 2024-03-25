@@ -91,27 +91,6 @@ const simple = <T extends unknown[], R>(fn: (...args: T) => R) => {
 	};
 };
 
-const vibrationPossible = (() => {
-	let can = false;
-
-	const onPointerDown = () => {
-		can = true;
-		document.removeEventListener('pointerdown', onPointerDown);
-	};
-
-	document.addEventListener('pointerdown', onPointerDown);
-
-	return () => can;
-})();
-
-const vibrate = (pattern: VibratePattern) => {
-	if (vibrationPossible() && 'vibrate' in navigator) {
-		try {
-			navigator.vibrate(pattern);
-		} catch {}
-	}
-}
-
 const getDocumentStyles = () => {
 	let css = ''
 
@@ -135,7 +114,5 @@ export {
 	onKey,
 	findLast,
 	simple,
-	vibrationPossible,
-	vibrate,
 	getDocumentStyles,
 };

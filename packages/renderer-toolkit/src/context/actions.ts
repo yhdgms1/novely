@@ -12,6 +12,7 @@ import type { ContextState, ContextStateStore } from '../state/context-state'
 import type { RendererStateStore } from '../state/renderer-state'
 import type { DeepMapStore } from 'nanostores'
 
+import { vibrate } from './vibrate'
 import { useBackground } from './background'
 import { escapeHTML } from '../utils'
 
@@ -233,6 +234,9 @@ const handleInputAction = ($contextState: DeepMapStore<ContextStateStore<any>>, 
   input.dispatchEvent(new InputEvent('input', { bubbles: true }));
 }
 
+
+const handleVibrateAction = vibrate;
+
 export {
   handleBackgroundAction,
   handleDialogAction,
@@ -241,5 +245,6 @@ export {
   handleCustomAction,
   handleClearCustomAction,
   handleTextAction,
-  handleInputAction
+  handleInputAction,
+  handleVibrateAction
 }
