@@ -19,3 +19,13 @@ export { createShared } from './shared/create-shared'
 export { createGetContext } from './context/create-get-context'
 
 export { createRootSetter } from './root/root-setter'
+
+export {
+  handleBackgroundAction,
+  handleDialogAction,
+  handleChoiceAction,
+  handleClearAction,
+  handleCustomAction,
+  handleClearCustomAction,
+  handleTextAction
+} from './context/actions'

@@ -270,5 +270,5 @@ export type {
 	BackgroundImage,
 	ActionInputSetup,
 	CustomHandlerFunctionGetFn,
-	CustomHandlerFunctionParameters
+	CustomHandlerFunctionParameters,
 };

@@ -2,7 +2,6 @@ import type {
 	Renderer,
 	RendererInit,
 	CharacterHandle,
-	CustomHandlerFunctionGetFn,
 	CustomHandler,
 	Context
 } from '@novely/core';
@@ -26,11 +25,19 @@ import {
 	createAudioMisc,
 	storeUpdate,
 	createRootSetter,
-	Howl
+	Howl,
+
+	handleBackgroundAction,
+	handleDialogAction,
+	handleChoiceAction,
+	handleClearAction,
+	handleCustomAction,
+	handleClearCustomAction,
+	handleTextAction
 } from '@novely/renderer-toolkit'
 import { createEmitter } from './emitter';
 import { useContextState, removeContextState } from './context-state'
-import { canvasDrawImages, createImage, escape, vibrate, useBackground } from '$utils';
+import { canvasDrawImages, createImage, escape, vibrate } from '$utils';
 import { PRELOADED_IMAGE_MAP, useShared } from './shared';
 import { createRootComponent } from './components/Root';
 
@@ -69,19 +76,7 @@ const createSolidRenderer = ({
 						root: root(),
 
 						background(background) {
-							$contextState.get().background.clear?.();
-
-							if (typeof background === 'string') {
-								$contextState.setKey('background.background', background);
-
-								return;
-							}
-
-							const { dispose } = useBackground(background, (value) => {
-								$contextState.setKey('background.background', value);
-							})
-
-							$contextState.setKey('background.clear', dispose);
+							handleBackgroundAction($contextState, background)
 						},
 						character(character) {
 							const chars = useShared(name).characters;
@@ -211,74 +206,13 @@ const createSolidRenderer = ({
 							return characterHandle;
 						},
 						dialog(content, name, character, emotion, resolve) {
-							$contextState.setKey('dialog', {
-								content,
-								name,
-								miniature: {
-									character,
-									emotion,
-								},
-								visible: true,
-								resolve,
-							});
+							handleDialogAction($contextState, content, name, character, emotion, resolve)
 						},
 						choices(label, choices, resolve) {
-							$contextState.setKey('choice', { choices, label, resolve, visible: true });
+							handleChoiceAction($contextState, label, choices, resolve)
 						},
 						clear(keep, keepCharacters, keepAudio, resolve) {
-							$rendererState.setKey('exitPromptShown', false);
-
-							if (!keep.has('showBackground')) {
-								$contextState.setKey('background.background', '#000');
-							}
-
-							if (!keep.has('choice')) {
-								$contextState.setKey('choice', {
-									choices: [],
-									visible: false,
-									label: '',
-								});
-							}
-
-							if (!keep.has('input')) {
-								$contextState.setKey('input', {
-									element: null,
-									label: '',
-									visible: false,
-									error: '',
-								});
-							}
-
-							if (!keep.has('dialog')) {
-								$contextState.setKey('dialog', { visible: false, content: '', name: '', miniature: {} });
-							}
-
-							if (!keep.has('text')) {
-								$contextState.setKey('text', { content: '' });
-							}
-
-							const { characters, custom } = $contextState.get();
-
-							for (const character of Object.keys(characters)) {
-								if (!keepCharacters.has(character)) {
-									$contextState.setKey(`characters.${character}`, {
-										style: undefined,
-										visible: false
-									})
-								}
-							}
-
-							for (const [id, handler] of Object.entries(custom)) {
-								if (!handler) continue;
-
-								/**
-								 * Если происходит переход назад, и слой просит пропустить очистку при переходе назад, то не будем очищать слой
-								 */
-								if (!(context.meta.goingBack && handler.fn.skipClearOnGoingBack)) {
-									handler.clear();
-									$contextState.setKey(`custom.${id}`, undefined);
-								}
-							}
+							handleClearAction($rendererState, $contextState, context, keep, keepCharacters)
 
 							audio.clear(keepAudio);
 
@@ -329,78 +263,16 @@ const createSolidRenderer = ({
 							input.dispatchEvent(new InputEvent('input', { bubbles: true }));
 						},
 						custom(fn, resolve) {
-							// @ts-expect-error I don't understand
-							const get: CustomHandlerFunctionGetFn = (insert = true) => {
-								const cached = $contextState.get().custom[fn.key]
-
-								if (cached) {
-									return cached.getReturn
-								}
-
-								/**
-								 * `Clear` function
-								 */
-								let clear = () => {};
-								let store = {};
-
-								/**
-								 * Function that call the `Clear` defined by the action itself, and then deletes the layer
-								 */
-								const clearManager = () => {
-									clear();
-									$contextState.setKey(`custom.${fn.key}`, undefined);
-								};
-
-								const element = insert ? ((<div data-id={fn.key} />) as HTMLDivElement) : null;
-
-								const getReturn = {
-									root: context.root,
-									element,
-									delete: clearManager,
-									data(data: any) {
-										return data ? (store = data) : store;
-									},
-									clear(cb: () => void) {
-										clear = cb;
-									},
-								}
-
-								$contextState.setKey(`custom.${fn.key}`, {
-									dom: element,
-									fn,
-									getReturn,
-
-									clear: clearManager,
-								})
-
-								return getReturn
-							};
-
-							const result = fn({
-								get,
-
-								goingBack: context.meta.goingBack,
-								preview: context.meta.preview,
-
-								lang: options.storageData.get().meta[0],
-
-								state: options.getStateFunction(name)
-							});
-
-							result ? result.then(resolve) : resolve();
-
-							return result;
+							return handleCustomAction($contextState, options, context, fn, resolve)
 						},
 						clearCustom(fn) {
-							const data = $contextState.get().custom[fn.key];
-
-							if (data) data.clear();
+							handleClearCustomAction($contextState, fn)
 						},
 						vibrate(pattern) {
 							vibrate(pattern);
 						},
 						text(content, resolve) {
-							$contextState.setKey('text', { content, resolve })
+							handleTextAction($contextState, content, resolve)
 						},
 
 						audio: audio.context,
@@ -502,7 +374,8 @@ const createSolidRenderer = ({
 			$rendererState.setKey(`screens.${name}`, screen);
 		},
 		registerMainmenuItem(fn: StateMainmenuItem) {
-			// @ts-expect-error Deep dive
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore Deep dive
 			storeUpdate($rendererState, 'mainmenu', (mainmenu) => [...mainmenu, fn])
 		},
 	};
