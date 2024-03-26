@@ -6,7 +6,8 @@ import type {
   CustomHandler,
   State,
   ActionInputOnInputMeta,
-	ActionInputSetup
+	ActionInputSetup,
+  CustomHandlerFunctionGetFn
 } from '@novely/core'
 import type { ContextState, ContextStateStore } from '../state/context-state'
 import type { RendererStateStore } from '../state/renderer-state'
@@ -16,7 +17,7 @@ import { vibrate } from './vibrate'
 import { useBackground } from './background'
 import { escapeHTML } from '../utils'
 
-const handleBackgroundAction = ($contextState: DeepMapStore<ContextStateStore<any>>, background: string | BackgroundImage) => {
+const handleBackgroundAction = ($contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>, background: string | BackgroundImage) => {
   const { clear } = $contextState.get().background;
 
   clear && clear();
@@ -34,7 +35,7 @@ const handleBackgroundAction = ($contextState: DeepMapStore<ContextStateStore<an
   $contextState.setKey('background.clear', dispose);
 }
 
-const handleDialogAction = ($contextState: DeepMapStore<ContextStateStore<any>>, content: string, name: string, character: string | undefined, emotion: string | undefined, resolve: () => void) => {
+const handleDialogAction = ($contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>, content: string, name: string, character: string | undefined, emotion: string | undefined, resolve: () => void) => {
   $contextState.setKey('dialog', {
     content,
     name,
@@ -47,11 +48,11 @@ const handleDialogAction = ($contextState: DeepMapStore<ContextStateStore<any>>,
   });
 }
 
-const handleChoiceAction = ($contextState: DeepMapStore<ContextStateStore<any>>, label: string, choices: [name: string, active: boolean][], resolve: (selected: number) => void) => {
+const handleChoiceAction = ($contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>, label: string, choices: [name: string, active: boolean][], resolve: (selected: number) => void) => {
   $contextState.setKey('choice', { choices, label, resolve, visible: true });
 }
 
-const handleClearAction = ($rendererState: DeepMapStore<RendererStateStore<any>>, $contextState: DeepMapStore<ContextStateStore<any>>, context: Context, keep: Set<keyof DefaultActionProxy>, keepCharacters: Set<string>) => {
+const handleClearAction = ($rendererState: DeepMapStore<RendererStateStore<Record<PropertyKey, unknown>>>, $contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>, context: Context, keep: Set<keyof DefaultActionProxy>, keepCharacters: Set<string>) => {
   $rendererState.setKey('exitPromptShown', false);
 
   if (!keep.has('showBackground')) {
@@ -106,7 +107,7 @@ const handleClearAction = ($rendererState: DeepMapStore<RendererStateStore<any>>
 /**
  * You MUST return value returned by this function
  */
-const handleCustomAction = ($contextState: DeepMapStore<ContextStateStore<any>>, options: RendererInit, context: Context, fn: CustomHandler<string, State>, resolve: () => void) => {
+const handleCustomAction = ($contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>, options: RendererInit, context: Context, fn: CustomHandler<string, State>, resolve: () => void) => {
   const get = (insert = true) => {
     const cached = $contextState.get().custom[fn.key]
 
@@ -162,7 +163,7 @@ const handleCustomAction = ($contextState: DeepMapStore<ContextStateStore<any>>,
   };
 
   const result = fn({
-    get,
+    get: get as CustomHandlerFunctionGetFn,
 
     goingBack: context.meta.goingBack,
     preview: context.meta.preview,
@@ -177,17 +178,17 @@ const handleCustomAction = ($contextState: DeepMapStore<ContextStateStore<any>>,
   return result;
 }
 
-const handleClearCustomAction = ($contextState: DeepMapStore<ContextStateStore<any>>, fn: CustomHandler<string, State>) => {
+const handleClearCustomAction = ($contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>, fn: CustomHandler<string, State>) => {
   const data = $contextState.get().custom[fn.key];
 
   if (data) data.clear();
 }
 
-const handleTextAction = ($contextState: DeepMapStore<ContextStateStore<any>>, content: string, resolve: () => void) => {
+const handleTextAction = ($contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>, content: string, resolve: () => void) => {
   $contextState.setKey('text', { content, resolve })
 }
 
-const handleInputAction = ($contextState: DeepMapStore<ContextStateStore<any>>, options: RendererInit, context: Context, label: string, onInput: (opts: ActionInputOnInputMeta<string, State>) => void, setup: ActionInputSetup, resolve: () => void) => {
+const handleInputAction = ($contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>, options: RendererInit, context: Context, label: string, onInput: (opts: ActionInputOnInputMeta<string, State>) => void, setup: ActionInputSetup, resolve: () => void) => {
   const error = (value: string) => {
     $contextState.setKey('input.error', value);
   };

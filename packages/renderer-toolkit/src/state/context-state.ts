@@ -1,6 +1,5 @@
 import type { CustomHandler, CustomHandlerGetResult } from '@novely/core';
 import type { DeepMapStore, BaseDeepMap } from 'nanostores';
-import type { DeepMergeTwoTypes } from '../types';
 import { deepMap, onMount, cleanStores } from 'nanostores';
 
 type Disposable = {
@@ -222,10 +221,7 @@ type ContextState = {
 
 const defaultEmpty = {} satisfies BaseDeepMap;
 
-type ContextStateStore<Extension extends BaseDeepMap = typeof defaultEmpty> = DeepMergeTwoTypes<
-  ContextState,
-  Extension
->
+type ContextStateStore<Extension extends BaseDeepMap = typeof defaultEmpty> = ContextState & Extension
 
 const getDefaultContextState = (): ContextState => {
   return {
@@ -281,15 +277,13 @@ const getDefaultContextState = (): ContextState => {
  * ```
  */
 const createContextStateRoot = <Extension extends BaseDeepMap = typeof defaultEmpty>(getExtension: () => Extension = () => ({}) as Extension) => {
-  type Merged = DeepMergeTwoTypes<ContextState, Extension>;
-
-  const CACHE = new Map<string, DeepMapStore<Merged>>();
+  const CACHE = new Map<string, DeepMapStore<ContextStateStore<Extension>>>();
 
   const make = () => {
-    const contextState = deepMap<Merged>({
+    const contextState = deepMap<ContextStateStore<Extension>>({
       ...getDefaultContextState(),
       ...getExtension()
-    } as Merged);
+    } as ContextStateStore<Extension>);
 
     return contextState;
   }

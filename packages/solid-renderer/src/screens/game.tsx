@@ -12,7 +12,7 @@ import { canvasDrawImages, url, isCSSImage, onKey } from '$utils';
 interface GameProps {
 	context: Context;
 
-	$contextState: DeepMapStore<ContextStateStore>
+	$contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>
 
 	store: SolidRendererStore;
 
@@ -81,7 +81,9 @@ const Game: VoidComponent<GameProps> = (props) => {
 		resolve?.();
 	};
 
-	const layers = () => Object.values(contextState()!.custom);
+	const layers = () => {
+		return Object.values(contextState()!.custom);
+	}
 
 	const speed = () => data.storageData().meta[1];
 
