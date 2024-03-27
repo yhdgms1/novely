@@ -1,4 +1,7 @@
-export type { MapStore, DeepMapStore } from 'nanostores';
+export { computed } from 'nanostores'
+export type { MapStore, DeepMapStore, Atom, WritableAtom, ReadableAtom } from 'nanostores';
+
+export { memo } from './atoms/memo'
 
 export { createContextStateRoot } from './state/context-state'
 export type { ContextStateStore, ContextState, ContextStateCharacter } from './state/context-state'

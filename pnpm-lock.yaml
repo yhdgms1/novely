@@ -266,7 +266,7 @@ importers:
         specifier: '*'
         version: link:../core
       '@novely/renderer-toolkit':
-        specifier: workspace:^
+        specifier: '*'
         version: link:../renderer-toolkit
       '@novely/typewriter':
         specifier: '*'
@@ -335,7 +335,7 @@ importers:
   packages/vite-plugin-nvl:
     dependencies:
       '@novely/core':
-        specifier: latest
+        specifier: '*'
         version: link:../core
       '@novely/parser':
         specifier: latest
@@ -348,8 +348,8 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2
       vite:
-        specifier: ^4.5.2
-        version: 4.5.2
+        specifier: ^5.0.0
+        version: 5.0.12
 
   packages/vscode-highlight: {}
 
