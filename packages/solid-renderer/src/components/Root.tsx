@@ -3,7 +3,8 @@ import type { Emitter } from '../emitter';
 import type { RendererStateStore, ContextStateStore, DeepMapStore } from '@novely/renderer-toolkit'
 import type { EmitterEventsMap, RendererStoreExtension } from '../types';
 import type { Context } from '@novely/core';
-import { Switch, Match, createEffect, from } from 'solid-js';
+import { memo } from '@novely/renderer-toolkit';
+import { Switch, Match, createEffect, from, Show } from 'solid-js';
 import { Character, Renderer, RendererInit } from '@novely/core';
 import { Provider } from '$context';
 import { useShared } from '../shared';
@@ -32,35 +33,32 @@ type CreateRootComponentOpts = {
 
 const createRootComponent = ({ $rendererState, $contextState, coreOptions, setRoot, characters, renderer, fullscreen, emitter, controls, skipTypewriterWhenGoingBack, rendererContext }: CreateRootComponentOpts) => {
   const Root: Component = () => {
-    const rendererState = from($rendererState);
-
-    const screen = () => {
-      return rendererState()!.screen;
-    }
+    const screen = from(memo($rendererState, (state) => state.screen));
+    const loadingShown = from(memo($rendererState, (state) => state.loadingShown));
 
     createEffect(() => {
-      const screen = rendererState()!.screen;
+      const currentScreen = screen()!;
 
       if (fullscreen && document.fullscreenEnabled) {
         /**
          * Will not work when initial screen is set to `game` because user interaction is required
          */
-        if (screen === 'game' && !document.fullscreenElement) {
+        if (currentScreen === 'game' && !document.fullscreenElement) {
           document.documentElement.requestFullscreen().catch(() => {});
 
           /**
            * When mainmenu is opened, then exit fullscreen
            */
-        } else if (screen === 'mainmenu' && document.fullscreenElement && 'exitFullscreen' in document) {
+        } else if (currentScreen === 'mainmenu' && document.fullscreenElement && 'exitFullscreen' in document) {
           document.exitFullscreen().catch(() => {});
         }
       }
 
-      if (screen !== 'game' && screen !== 'settings' && screen !== 'loading') {
+      if (currentScreen !== 'game' && currentScreen !== 'settings' && !loadingShown()) {
         rendererContext.audio.destroy();
       }
 
-      emitter.emit('screen:change', screen)
+      emitter.emit('screen:change', currentScreen)
     });
 
     return (
@@ -98,12 +96,13 @@ const createRootComponent = ({ $rendererState, $contextState, coreOptions, setRo
             <Match when={screen() === 'settings'}>
               <Settings />
             </Match>
-            <Match when={screen() === 'loading'}>
-              <Loading />
-            </Match>
           </Switch>
 
-          <CustomScreen name={screen()} />
+          <Show when={loadingShown()}>
+            <Loading overlay />
+          </Show>
+
+          <CustomScreen name={screen()!} />
         </Provider>
       </div>
     );

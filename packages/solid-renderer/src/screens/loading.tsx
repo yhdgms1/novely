@@ -1,10 +1,17 @@
 import type { VoidComponent } from 'solid-js';
 
-interface LoadingProps {}
+interface LoadingProps {
+	overlay?: boolean;
+}
 
-const Loading: VoidComponent<LoadingProps> = () => {
+const Loading: VoidComponent<LoadingProps> = (props) => {
 	return (
-		<div class="root loading">
+		<div
+			class="root loading"
+			classList={{
+				overlay: props.overlay
+			}}
+		>
 			<div class="loading__animation">
 				<div />
 				<div />

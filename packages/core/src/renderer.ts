@@ -136,6 +136,16 @@ type Renderer = {
 		 */
 		getScreen(): NovelyScreen | (string & Record<never, never>);
 		/**
+		 * Shows loading
+		 *
+		 * Unline `showScreen('loading')` does not change screen
+		 */
+		showLoading(): void;
+		/**
+		 * Hides loading
+		 */
+		hideLoading(): void;
+		/**
 		 * Shows prompt to exit
 		 */
 		showExitPrompt(): void;

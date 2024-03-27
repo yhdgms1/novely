@@ -83,7 +83,7 @@ const engine = novely({
 
 	initialScreen: 'mainmenu',
 
-	preloadAssets: 'blocking',
+	preloadAssets: 'lazy',
 
 	askBeforeExit: false,
 

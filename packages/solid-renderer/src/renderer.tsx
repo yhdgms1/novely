@@ -282,6 +282,12 @@ const createSolidRenderer = ({
 					getScreen() {
 						return $rendererState.get().screen;
 					},
+					showLoading() {
+						$rendererState.setKey('loadingShown', true);
+					},
+					hideLoading() {
+						$rendererState.setKey('loadingShown', false);
+					},
 					showExitPrompt() {
 						$rendererState.setKey('exitPromptShown', true)
 					},

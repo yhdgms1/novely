@@ -64,7 +64,7 @@ type Stack = {
 	clear(): void;
 };
 
-type NovelyScreen = 'mainmenu' | 'game' | 'saves' | 'settings' | 'loading';
+type NovelyScreen = 'mainmenu' | 'game' | 'saves' | 'settings';
 
 /**
  * @see https://pendletonjones.com/deep-partial

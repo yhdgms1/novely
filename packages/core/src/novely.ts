@@ -99,11 +99,10 @@ const novely = <
 	const times = new Set<number>();
 
 	const ASSETS_TO_PRELOAD = new Set<string>();
-	const assetsLoaded = createControlledPromise();
 
 	const dataLoaded = createControlledPromise();
 
-	let scriptCalled = false;
+	let initialScreenWasShown = false;
 
 	/**
 	 * Prevent `undefined`
@@ -121,8 +120,24 @@ const novely = <
 	const scriptBase = async (part: Story) => {
 		Object.assign(story, flattenStory(part));
 
+		let loadingIsShown = false;
+
+		/**
+		 * This is the first `script` call, likely data did not loaded yet
+		 */
+		if (!initialScreenWasShown) {
+			renderer.ui.showLoading();
+			loadingIsShown = true;
+		}
+
 		if (preloadAssets === 'blocking' && ASSETS_TO_PRELOAD.size > 0) {
-			renderer.ui.showScreen('loading');
+			/**
+			 * Likely updating this will not break anything, but just to be sure nothing breaks
+			 * We want to avoid flashes, and who knows how some renderer will use it
+			 */
+			if (!loadingIsShown) {
+				renderer.ui.showLoading();
+			}
 
 			const { preloadAudioBlocking, preloadImageBlocking } = renderer.misc;
 
@@ -153,24 +168,21 @@ const novely = <
 			await Promise.allSettled(list);
 		}
 
-		const screen = renderer.ui.getScreen();
-		const nextScreen = (scriptCalled ? screen : initialScreen) as NovelyScreen;
-
 		ASSETS_TO_PRELOAD.clear();
-		assetsLoaded.resolve();
 
-		if (nextScreen === 'game') {
-			await assetsLoaded.promise;
-			await dataLoaded.promise;
+		await dataLoaded.promise;
 
-			if (!scriptCalled) {
+		renderer.ui.hideLoading()
+
+		if (!initialScreenWasShown) {
+			initialScreenWasShown = true;
+
+			if (initialScreen === 'game') {
 				restore();
+			} else {
+				renderer.ui.showScreen(initialScreen);
 			}
-		} else {
-			renderer.ui.showScreen(nextScreen);
 		}
-
-		scriptCalled = true;
 	};
 
 	/**
