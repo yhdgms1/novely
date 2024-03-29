@@ -629,6 +629,8 @@ const createUseStackFunction = (renderer: Renderer) => {
 				stack.push(value);
 			},
 			clear() {
+				stack.previous = undefined;
+
 				stack.length = 0;
 				stack.length = 1;
 			}
