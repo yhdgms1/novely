@@ -634,6 +634,7 @@ const novely = <
 		const current = stack.value;
 
 		stack.clear();
+		ctx.clear(EMPTY_SET, EMPTY_SET, { music: EMPTY_SET, sounds: EMPTY_SET }, noop);
 		renderer.ui.showScreen('mainmenu');
 		ctx.audio.destroy();
 
