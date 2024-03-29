@@ -4,7 +4,7 @@ import { createSignal, createEffect, onCleanup, untrack } from 'solid-js';
 import { useData } from '$context';
 import { capitalize, getDocumentStyles } from '$utils';
 import { createRetrieved } from "retrieved";
-import { useContextState } from '../context-state'
+import { removeContextState, useContextState } from '../context-state'
 import { useShared, removeShared } from '../shared';
 import { Game } from '$screens';
 
@@ -115,6 +115,17 @@ const Save: VoidComponent<SaveProps> = (props) => {
       }
     }
 
+    const state = useContextState(KEY);
+
+    for (const custom of Object.values(state.get().custom)) {
+      if (!custom) continue;
+
+      try {
+        custom.clear();
+      } catch {}
+    }
+
+    removeContextState(KEY);
     removeContext(KEY);
     options.removeContext(KEY);
     removeShared(KEY);
