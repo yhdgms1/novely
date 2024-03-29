@@ -45,7 +45,8 @@ import {
 	isAudioAction,
 	isString,
 	isImageAsset,
-	getResourseType
+	getResourseType,
+	isUserRequiredAction
 } from './utils';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
@@ -530,7 +531,7 @@ const novely = <
 		if (previous) {
 			const { queue: prevQueue } = getActionsFromPath(story, previous[0], false);
 
-			for (let i = prevQueue.length - 1; i > queue.length; i--) {
+			for (let i = prevQueue.length - 1; i > queue.length - 1; i--) {
 				const element = prevQueue[i];
 
 				/**
@@ -572,8 +573,24 @@ const novely = <
 			data: latest[1]
 		});
 
-		await processor.run((action, props) => {
+		const lastQueueItem = queue.at(-1) || [];
+		const isLastQueueItemRequiresUserAction = isUserRequiredAction(lastQueueItem)
+
+		await processor.run((item) => {
 			if (!latest) return;
+
+			/**
+			 * Skip because this item will be ran again by `render(context)` call
+			 *
+			 * Double call breaks custom actions which depens on promise.
+			 *
+			 * !todo more detailed analysis
+			 */
+			if (isLastQueueItemRequiresUserAction && lastQueueItem === item) {
+				return
+			}
+
+			const [action, ...props] = item;
 
 			return match(action, props, {
 				ctx: context,
@@ -694,7 +711,7 @@ const novely = <
 			skip: new Set,
 		});
 
-		await processor.run((action, props) => {
+		await processor.run(([action, ...props]) => {
 			if (isAudioAction(action)) return;
 			if (action === 'vibrate') return;
 			if (action === 'end') return;

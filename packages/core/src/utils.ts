@@ -568,9 +568,9 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 		}
 	}
 
-	const run = async (match: (action: keyof ActionProxy<Record<string, Character>, string, State>, props: any) => Thenable<void>) => {
-		for await (const [action, ...params] of processedQueue) {
-			const result = match(action, params);
+	const run = async (match: (item: Exclude<ValidAction, ValidAction[]>) => Thenable<void>) => {
+		for await (const item of processedQueue) {
+			const result = match(item);
 
 			if (isPromise(result)) {
 				await result;
