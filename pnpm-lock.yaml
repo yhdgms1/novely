@@ -181,9 +181,6 @@ importers:
       '@novely/solid-renderer':
         specifier: workspace:*
         version: link:../solid-renderer
-      '@novely/video':
-        specifier: workspace:*
-        version: link:../video
       animate.css:
         specifier: ^4.1.1
         version: 4.1.1
@@ -314,19 +311,6 @@ importers:
         version: 5.2.2
 
   packages/typewriter:
-    devDependencies:
-      tsup:
-        specifier: ^8.0.0
-        version: 8.0.0(typescript@5.2.2)
-      typescript:
-        specifier: ^5.2.2
-        version: 5.2.2
-
-  packages/video:
-    dependencies:
-      '@novely/core':
-        specifier: '*'
-        version: link:../core
     devDependencies:
       tsup:
         specifier: ^8.0.0

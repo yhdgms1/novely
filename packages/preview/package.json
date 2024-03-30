@@ -18,7 +18,6 @@
 		"@novely/core": "workspace:*",
 		"@novely/particles": "workspace:*",
 		"@novely/solid-renderer": "workspace:*",
-		"@novely/video": "workspace:*",
 		"@novely/rive": "workspace:*",
 		"animate.css": "^4.1.1",
 		"modern-normalize": "~2.0.0",
