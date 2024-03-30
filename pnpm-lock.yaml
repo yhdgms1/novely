@@ -35,6 +35,9 @@ importers:
       '@novely/deepmerge':
         specifier: latest
         version: link:../deepmerge
+      dequal:
+        specifier: ^2.0.3
+        version: 2.0.3
       esm-env:
         specifier: ^1.0.0
         version: 1.0.0
@@ -2214,7 +2217,6 @@ packages:
   /dequal@2.0.3:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
     engines: {node: '>=6'}
-    dev: true
 
   /detect-libc@1.0.3:
     resolution: {integrity: sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==}

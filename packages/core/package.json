@@ -30,6 +30,7 @@
 	},
 	"dependencies": {
 		"@novely/deepmerge": "latest",
+		"dequal": "^2.0.3",
 		"esm-env": "^1.0.0",
 		"klona": "^2.0.6",
 		"p-limit": "3.1.0"

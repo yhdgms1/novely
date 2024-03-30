@@ -10,7 +10,6 @@ import type {
 	State,
 	Data,
 	StorageData,
-	NovelyScreen,
 	CoreData,
 	Path,
 	NovelyInit,
@@ -46,8 +45,8 @@ import {
 	isString,
 	isImageAsset,
 	getResourseType,
-	isUserRequiredAction
 } from './utils';
+import { dequal } from 'dequal/lite';
 import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
 import { deepmerge } from '@novely/deepmerge';
@@ -414,11 +413,30 @@ const novely = <
 		const current = klona(stack.value);
 
 		storageData.update((prev) => {
+			const replace = () => {
+				prev.saves[prev.saves.length - 1] = current;
+
+				return prev;
+			}
+
+			const add = () => {
+				prev.saves.push(current);
+
+				return prev;
+			}
+
 			/**
-			 * Find latest save that were created in current session, and check if it is latest in an array
-			 *
-			 * We check if save was created in current session and it is latest in array
-			 * When it is not then replacing it will break logical chain
+			 * Get latest
+			 */
+			const last = prev.saves.at(-1);
+
+			/**
+			 * We cannot compare anything here, thus just reutrn
+			 */
+			if (!last) return add();
+
+			/**
+			 * Find last save that was created in current session, and check if it is latest in an array
 			 *
 			 * [auto save 1]
 			 * [manual save 1]
@@ -432,27 +450,28 @@ const novely = <
 			current[2][0] = intime(Date.now());
 			current[2][1] = type;
 
-			if (!override || !isLatest) {
-				prev.saves.push(current);
+			const isIdentical = (dequal(last[0], current[0]) && dequal(last[1], current[1]));
 
+			/**
+			 * Even in override is false, we will replace auto save with maual, because they are the same thing basically
+			 */
+			if (last[2][1] === 'auto' && type === 'manual' && isIdentical) {
+				return replace();
+			}
+
+			/**
+			 * Player has made a manual save, novely decided to make an auto save
+			 * But it is identical to previously created manual save so completely not wanted
+			 */
+			if (last[2][1] === 'manual' && type === 'auto' && isIdentical) {
 				return prev;
 			}
 
-			/**
-			 * Get latest
-			 */
-			const latest = prev.saves.at(-1);
-
-			/**
-			 * When that save is the same type, replace it
-			 */
-			if (latest && latest[2][1] === type) {
-				prev.saves[prev.saves.length - 1] = current;
-			} else {
-				prev.saves.push(current);
+			if (!override || !isLatest) {
+				return add();
 			}
 
-			return prev;
+			return replace();
 		});
 	};
 
