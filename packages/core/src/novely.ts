@@ -574,17 +574,13 @@ const novely = <
 		});
 
 		const lastQueueItem = queue.at(-1) || [];
-		const isLastQueueItemRequiresUserAction = isUserRequiredAction(lastQueueItem)
+		const isLastQueueItemRequiresUserAction = isSkippedDuringRestore(lastQueueItem[0]) || isUserRequiredAction(lastQueueItem);
 
 		await processor.run((item) => {
 			if (!latest) return;
 
 			/**
 			 * Skip because this item will be ran again by `render(context)` call
-			 *
-			 * Double call breaks custom actions which depens on promise.
-			 *
-			 * !todo more detailed analysis
 			 */
 			if (isLastQueueItemRequiresUserAction && lastQueueItem === item) {
 				return

@@ -216,8 +216,8 @@ const handleInputAction = ($contextState: DeepMapStore<ContextStateStore<Record<
   input.setAttribute('required', 'true')
   input.setAttribute('autocomplete', 'off')
 
-  // @ts-expect-error Type is correct
-  input.addEventListener('input', onInputHandler);
+  // @ts-expect-error Type is actually correct
+  !context.meta.preview && input.addEventListener('input', onInputHandler);
 
   setup(input, (callback) => $contextState.setKey('input.cleanup', callback));
 
@@ -232,7 +232,7 @@ const handleInputAction = ($contextState: DeepMapStore<ContextStateStore<Record<
   /**
    * Initially run the fake input event to handle errors & etc
    */
-  input.dispatchEvent(new InputEvent('input', { bubbles: true }));
+  !context.meta.preview && input.dispatchEvent(new InputEvent('input', { bubbles: true }));
 }
 
 
