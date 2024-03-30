@@ -398,7 +398,7 @@ const novely = <
 	addEventListener('visibilitychange', onVisibilityChange);
 	addEventListener('beforeunload', throttledEmergencyOnStorageDataChange);
 
-	const save = (override = false, type: Save[2][1] = override ? 'auto' : 'manual') => {
+	const save = (type: Save[2][1]) => {
 		if (!coreData.get().dataLoaded) return;
 
 		/**
@@ -436,13 +436,9 @@ const novely = <
 			if (!last) return add();
 
 			/**
-			 * Find last save that was created in current session, and check if it is latest in an array
-			 *
-			 * [auto save 1]
-			 * [manual save 1]
-			 * [auto save 2] <- should not replace first auto save
+			 * Belongs to current game session
 			 */
-			const isLatest = findLastIndex(prev.saves, (value) => times.has(value[2][0])) === prev.saves.length - 1;
+			if (!times.has(last[2][0])) return add();
 
 			/**
 			 * Update type and time information
@@ -455,7 +451,7 @@ const novely = <
 			/**
 			 * Even in override is false, we will replace auto save with maual, because they are the same thing basically
 			 */
-			if (last[2][1] === 'auto' && type === 'manual' && isIdentical) {
+			if (last[2][1] === 'auto' && type === 'manual') {
 				return replace();
 			}
 
@@ -467,11 +463,11 @@ const novely = <
 				return prev;
 			}
 
-			if (!override || !isLatest) {
-				return add();
+			if (last[2][1] === 'auto' && type === 'auto') {
+				return replace();
 			}
 
-			return replace();
+			return add();
 		});
 	};
 
@@ -823,7 +819,7 @@ const novely = <
 
 		stack.push(current);
 
-		save(true, 'auto');
+		save('auto');
 	};
 
 	const nextPath = (path: Path) => {

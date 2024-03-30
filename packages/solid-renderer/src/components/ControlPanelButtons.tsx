@@ -33,7 +33,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
 				class="button control-panel__button"
 				title={data.t('DoSave')}
 				onClick={() => {
-					data.options.save(false, 'manual');
+					data.options.save('manual');
 				}}
 			>
 				<span class="control-panel__button__content">{data.t('DoSave')}</span>
@@ -57,7 +57,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
 				class="button control-panel__button"
 				title={data.t('Settings')}
 				onClick={() => {
-					data.options.save(false, 'auto');
+					data.options.save('auto');
 					props.openSettings();
 				}}
 			>

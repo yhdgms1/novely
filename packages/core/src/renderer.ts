@@ -171,7 +171,7 @@ type RendererInit = {
 	set: (save: Save<State>) => Promise<void>;
 	restore: (save?: Save<State>) => Promise<void>;
 
-	save: (override?: boolean, type?: Save<State>[2][1]) => void;
+	save: (type: Save<State>[2][1]) => void;
 	newGame: () => void;
 	exit: (force?: boolean) => void;
 	back: () => Promise<void>;
