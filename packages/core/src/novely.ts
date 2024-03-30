@@ -670,7 +670,9 @@ const novely = <
 		 *
 		 * What we do is enmemory on exit.
 		 */
-		save('auto');
+		if (interacted > 0) {
+			save('auto');
+		}
 
 		const stack = useStack(ctx);
 		const current = stack.value;
