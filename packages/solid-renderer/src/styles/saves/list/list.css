@@ -15,11 +15,11 @@
 
 	padding: var(--novely-saves-list-border-width, .875rem) 1rem;
 
-	display: grid;
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+
 	gap: 1rem;
-	grid-template-columns: repeat(auto-fit, minmax(22vmin, 30%));
-	align-content: flex-start;
-	justify-content: space-between;
 
 	list-style: none;
 
@@ -70,9 +70,14 @@
 
 	padding: 0.375rem;
 
+	align-self: flex-start;
+
 	display: flex;
-	gap: 0.375rem;
 	flex-wrap: wrap;
+
+	width: max(22vmin, 30%);
+
+	gap: 0.375rem;
 }
 
 .saves__list-item__description {
@@ -101,6 +106,8 @@
 
 	.saves__list-item {
 		flex-direction: column;
+
+		width: 100%;
 	}
 }
 
