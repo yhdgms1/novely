@@ -548,7 +548,7 @@ const novely = <
 				 *
 				 * [
 				 *  ['dialog', ...props]
-				 *  ['dialog', ...props]
+				 *  ['showBackground', ...props]
 				 *  ['custom', function]
 				 * ]
 				 *
@@ -573,16 +573,15 @@ const novely = <
 			data: latest[1]
 		});
 
-		const lastQueueItem = queue.at(-1) || [];
-		const isLastQueueItemRequiresUserAction = isSkippedDuringRestore(lastQueueItem[0]) || isUserRequiredAction(lastQueueItem);
+		const lastQueueItem = queue.at(-1);
 
 		await processor.run((item) => {
 			if (!latest) return;
 
 			/**
-			 * Skip because this item will be ran again by `render(context)` call
+			 * Skip because last item will be ran again by `render(context)` call
 			 */
-			if (isLastQueueItemRequiresUserAction && lastQueueItem === item) {
+			if (lastQueueItem === item) {
 				return
 			}
 
@@ -642,6 +641,24 @@ const novely = <
 		 * Exit only possible in main context
 		 */
 		const ctx = renderer.getContext(MAIN_CONTEXT_KEY);
+
+		/**
+		 * Imagine list of actions like
+		 *
+		 * [
+		 *  ['input', ...args]
+		 *  ['dialog', ...args]
+		 * ]
+		 *
+		 * When you have done with input, you will go to the dialog
+		 * And at that moment you exit the game
+		 *
+		 * What happens? Input was "enmemoried", but dialog not. So when you will open saves, you'll see input action.
+		 * We cannot "enmemory" dialog when it's just started, because goingBack is going to last enmemoried item, which will be that dialog, so impossible to go back.
+		 *
+		 * What we do is enmemory on exit.
+		 */
+		enmemory(ctx);
 
 		const stack = useStack(ctx);
 		const current = stack.value;
