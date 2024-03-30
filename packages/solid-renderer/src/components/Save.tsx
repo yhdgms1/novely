@@ -28,7 +28,7 @@ const Save: VoidComponent<SaveProps> = (props) => {
   const [timestamp, type] = props.save[2];
   const date = new Date(timestamp);
 
-  const KEY = `save-${date}-${type}`;
+  const KEY = `save-${Number(date)}-${type}`;
 
   const $contextState = useContextState(KEY);
   const context = getContext(KEY);

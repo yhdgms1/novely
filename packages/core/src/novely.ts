@@ -722,7 +722,9 @@ const novely = <
 	/**
 	 * Execute save in context at `name`
 	 */
-	const preview = async ([path, data]: Save, name: string) => {
+	const preview = async (save: Save, name: string) => {
+		const [path, data] = save;
+
 		const { queue } = getActionsFromPath(story, path, true);
 		const ctx = renderer.getContext(name);
 
@@ -735,6 +737,8 @@ const novely = <
 		const processor = createQueueProcessor(queue, {
 			skip: new Set,
 		});
+
+		useStack(ctx).push(klona(save))
 
 		await processor.run(([action, ...props]) => {
 			if (isAudioAction(action)) return;
