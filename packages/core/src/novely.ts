@@ -27,7 +27,6 @@ import {
 	getLanguage as defaultGetLanguage,
 	throttle,
 	isFunction,
-	findLastIndex,
 	createControlledPromise,
 	findLastPathItemBeforeItemOfType,
 	isBlockStatement,
@@ -45,6 +44,7 @@ import {
 	isString,
 	isImageAsset,
 	getResourseType,
+	isUserRequiredAction,
 } from './utils';
 import { dequal } from 'dequal/lite';
 import { PRELOADED_ASSETS } from './global';
@@ -436,22 +436,18 @@ const novely = <
 			if (!last) return add();
 
 			/**
-			 * Belongs to current game session
-			 */
-			if (!times.has(last[2][0])) return add();
-
-			/**
 			 * Update type and time information
 			 */
 			current[2][0] = intime(Date.now());
 			current[2][1] = type;
 
 			const isIdentical = (dequal(last[0], current[0]) && dequal(last[1], current[1]));
+			const isLastMadeInCurrentSession = times.has(last[2][0]);
 
 			/**
 			 * Even in override is false, we will replace auto save with maual, because they are the same thing basically
 			 */
-			if (last[2][1] === 'auto' && type === 'manual') {
+			if (isLastMadeInCurrentSession && last[2][1] === 'auto' && type === 'manual') {
 				return replace();
 			}
 
@@ -463,7 +459,7 @@ const novely = <
 				return prev;
 			}
 
-			if (last[2][1] === 'auto' && type === 'auto') {
+			if (isLastMadeInCurrentSession && last[2][1] === 'auto' && type === 'auto') {
 				return replace();
 			}
 
@@ -588,7 +584,8 @@ const novely = <
 			data: latest[1]
 		});
 
-		const lastQueueItem = queue.at(-1);
+		const lastQueueItem = queue.at(-1) || []
+		const lastQueueItemRequiresUserAction = isSkippedDuringRestore(lastQueueItem[0]) || isUserRequiredAction(lastQueueItem)
 
 		await processor.run((item) => {
 			if (!latest) return;
@@ -596,7 +593,7 @@ const novely = <
 			/**
 			 * Skip because last item will be ran again by `render(context)` call
 			 */
-			if (lastQueueItem === item) {
+			if (lastQueueItem === item && lastQueueItemRequiresUserAction) {
 				return
 			}
 
@@ -673,7 +670,7 @@ const novely = <
 		 *
 		 * What we do is enmemory on exit.
 		 */
-		enmemory(ctx);
+		save('auto');
 
 		const stack = useStack(ctx);
 		const current = stack.value;
