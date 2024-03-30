@@ -59,9 +59,10 @@
 }
 
 .saves__list--empty {
-	display: flex;
 	align-items: center;
 	justify-content: center;
+
+	place-content: center;
 
 	color: var(--novely-saves-list-empty-color, black);
 }
