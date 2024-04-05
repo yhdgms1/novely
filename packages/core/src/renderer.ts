@@ -25,7 +25,7 @@ interface CharacterHandle {
 type AudioHandle = {
 	stop: () => void;
 	pause: () => void;
-	play: () => void;
+	play: (loop: boolean) => void;
 }
 
 type Context = {
@@ -77,7 +77,7 @@ type Context = {
 	audio: {
 		voice: (source: string) => void;
 		voiceStop: () => void;
-		music: (source: string, method: 'music' | 'sound', loop?: boolean) => AudioHandle;
+		music: (source: string, method: 'music' | 'sound') => AudioHandle;
 		/**
 		 * Stop all sounds
 		 */

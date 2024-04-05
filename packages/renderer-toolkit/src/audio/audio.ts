@@ -41,7 +41,7 @@ const createAudio = (storageData: StorageDataStore) => {
     return storageData.get().meta[TYPE_META_MAP[type]];
   }
 
-  const getHowl = (type: 'music' | 'sound' | 'voice', src: string, loop: boolean) => {
+  const getHowl = (type: 'music' | 'sound' | 'voice', src: string) => {
     const kind = type === 'voice' ? 'voices' : type;
     const cached = store[kind][src];
 
@@ -50,7 +50,6 @@ const createAudio = (storageData: StorageDataStore) => {
     const howl = new Howl({
       src,
       volume: getVolume(type),
-      loop
     });
 
     store[kind][src] = howl;
@@ -59,13 +58,8 @@ const createAudio = (storageData: StorageDataStore) => {
   }
 
   const context: AudioContext = {
-    music(src, method, loop = method === 'music') {
-      const resource = getHowl(method, src, loop);
-
-      /**
-       * Update
-       */
-      resource.loop(loop);
+    music(src, method) {
+      const resource = getHowl(method, src);
 
       this.start();
 
@@ -74,8 +68,13 @@ const createAudio = (storageData: StorageDataStore) => {
           resource.fade(getVolume(method), 0, 300);
           resource.once('fade', resource.pause);
         },
-        play() {
+        play(loop) {
           if (resource.playing()) return;
+
+          /**
+           * Update
+           */
+          resource.loop(loop);
 
           resource.play();
           resource.fade(0, getVolume(method), 300);
@@ -90,7 +89,7 @@ const createAudio = (storageData: StorageDataStore) => {
       this.start();
       this.voiceStop();
 
-      const resource = store.voice = getHowl('voice', source, false);
+      const resource = store.voice = getHowl('voice', source);
 
       resource.once('end', () => {
         store.voice = undefined;

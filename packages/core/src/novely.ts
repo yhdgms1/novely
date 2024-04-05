@@ -878,7 +878,11 @@ const novely = <
 			push();
 		},
 		playMusic({ ctx, push }, [source]) {
-			ctx.audio.music(source, 'music', true).play();
+			ctx.audio.music(source, 'music').play(true);
+			push();
+		},
+		pauseMusic({ ctx, push }, [source]) {
+			ctx.audio.music(source, 'music').pause();
 			push();
 		},
 		stopMusic({ ctx, push }, [source]) {
@@ -886,7 +890,11 @@ const novely = <
 			push();
 		},
 		playSound({ ctx, push }, [source, loop]) {
-			ctx.audio.music(source, 'sound', loop || false).play();
+			ctx.audio.music(source, 'sound').play(loop || false);
+			push();
+		},
+		pauseSound({ ctx, push }, [source]) {
+			ctx.audio.music(source, 'sound').pause();
 			push();
 		},
 		stopSound({ ctx, push }, [source]) {

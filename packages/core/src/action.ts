@@ -11,7 +11,10 @@ type ValidAction =
 	| ['showBackground', string | NonEmptyRecord<BackgroundImage>]
 	| ['playMusic', string]
 	| ['stopMusic', string]
+	| ['pauseMusic', string]
 	| ['playSound', audio: string, loop?: boolean]
+	| ['pauseSound', string]
+	| ['stopSound', string]
 	| ['voice', string]
 	| ['stopVoice']
 	| ['jump', string]
@@ -191,11 +194,11 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 	) => ValidAction;
 
 	playMusic: (audio: string) => ValidAction;
-
+	pauseMusic: (audio: string) => ValidAction;
 	stopMusic: (audio: string) => ValidAction;
 
 	playSound: (audio: string, loop?: boolean) => ValidAction;
-
+	pauseSound: (audio: string) => ValidAction;
 	stopSound: (audio: string) => ValidAction;
 
 	/**
