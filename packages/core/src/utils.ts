@@ -512,10 +512,13 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 					return false;
 				}
 
+				const musicGonnaBePaused = action === 'playMusic' && _action === 'pauseMusic';
+				const soundGonnaBePaused = action === 'playSound' && _action === 'pauseSound';
+
 				/**
 				 * It either will be closed OR same action will be ran again
 				 */
-				return _action === closing || _action === action;
+				return musicGonnaBePaused || soundGonnaBePaused || _action === closing || _action === action;
 			});
 
 			if (skip) continue;
