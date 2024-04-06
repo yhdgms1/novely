@@ -111,6 +111,10 @@ type TranslationDescription = {
 	 * IETF BCP 47 language tag
 	 */
 	tag?: string;
+	/**
+	 * Custom name
+	 */
+	nameOverride?: string;
 	plural?: Record<string, Pluralization>;
 	actions?: TranslationActions;
 }

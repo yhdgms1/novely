@@ -200,6 +200,8 @@ type RendererInit = {
 	removeContext: (name: string) => void;
 
 	getStateFunction: (context: string) => StateFunction<State>;
+
+	getLanguageDisplayName: (lang: Lang) => string;
 };
 
 export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context };

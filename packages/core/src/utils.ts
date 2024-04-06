@@ -1,6 +1,5 @@
-import type { ActionProxy, DefaultActionProxy, CustomHandler, Story, ValidAction, GetActionParameters } from './action';
-import type { Character } from './character';
-import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, State } from './types';
+import type { DefaultActionProxy, CustomHandler, Story, ValidAction } from './action';
+import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, Lang } from './types';
 import type { Context, Renderer } from './renderer';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE, AUDIO_ACTIONS, HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from './constants';
 import { STACK_MAP } from './shared';
@@ -715,6 +714,51 @@ const getResourseType = async (request: typeof fetch, url: string) => {
 	return 'other'
 }
 
+/**
+ * Simple cache by key. Without revalidation. Never stale.
+ *
+ * todo: use where it needed
+ */
+const cache = <T>() => {
+  const cache = new Map<string, T>()
+
+	const get = (key: string, fn: () => T) => {
+		let value = cache.get(key);
+
+		if (!value) {
+			value = fn();
+			cache.set(key, value);
+		}
+
+		return value;
+	}
+
+  return get;
+}
+
+/**
+ * Capitalizes the string
+ * @param str String without emojis or complex graphemes
+ */
+const capitalize = (str: string) => {
+	return str[0].toUpperCase() + str.slice(1);
+};
+
+const getIntlLanguageDisplayName = (lang: Lang) => {
+	/**
+	 * When using Intl fails we just return language key.
+	 */
+	try {
+		const intl = new Intl.DisplayNames([lang], {
+			type: 'language',
+		});
+
+		return intl.of(lang) || lang;
+	} catch {
+		return lang;
+	}
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -749,7 +793,9 @@ export {
 	mapSet,
 	isImageAsset,
 	getUrlFileExtension,
-	getResourseType
+	getResourseType,
+	capitalize,
+	getIntlLanguageDisplayName
 };
 
 export type { MatchActionInit, ControlledPromise, MatchActionMapComplete }

@@ -13,7 +13,8 @@ import type {
 	CoreData,
 	Path,
 	NovelyInit,
-	StateFunction
+	StateFunction,
+	Lang
 } from './types';
 import type { Stored } from './store';
 import type { Context } from './renderer';
@@ -45,9 +46,10 @@ import {
 	isImageAsset,
 	getResourseType,
 	isUserRequiredAction,
+	capitalize,
+	getIntlLanguageDisplayName,
 } from './utils';
 import { dequal } from 'dequal/lite';
-import { PRELOADED_ASSETS } from './global';
 import { store } from './store';
 import { deepmerge } from '@novely/deepmerge';
 import { klona } from 'klona/json';
@@ -57,11 +59,11 @@ import { localStorageStorage } from './storage';
 import pLimit from 'p-limit';
 
 import { DEV } from 'esm-env';
-import { STACK_MAP } from './shared';
+import { STACK_MAP, PRELOADED_ASSETS } from './shared';
 
 const novely = <
-	Languages extends string,
-	Characters extends Record<string, Character<Languages>>,
+	$Language extends string,
+	Characters extends Record<string, Character<$Language>>,
 	StateScheme extends State,
 	DataScheme extends Data,
 >({
@@ -83,13 +85,13 @@ const novely = <
 	parallelAssetsDownloadLimit = 15,
 	fetch: request = fetch,
 	saveOnUnload = true
-}: NovelyInit<Languages, Characters, StateScheme, DataScheme>) => {
+}: NovelyInit<$Language, Characters, StateScheme, DataScheme>) => {
 	/**
 	 * Local type declaration to not repeat code
 	 */
-	type Actions = ActionProxy<Characters, Languages, StateScheme>;
+	type Actions = ActionProxy<Characters, $Language, StateScheme>;
 
-	const languages = Object.keys(translation) as Languages[];
+	const languages = Object.keys(translation) as $Language[];
 
 	const limitScript = pLimit(1);
 	const limitAssetsDownload = pLimit(parallelAssetsDownloadLimit);
@@ -279,8 +281,8 @@ const novely = <
 		/**
 		 * This is valid language
 		 */
-		if (languages.includes(language as Languages)) {
-			return language as Languages;
+		if (languages.includes(language as $Language)) {
+			return language as $Language;
 		}
 
 		if (DEV) {
@@ -294,7 +296,7 @@ const novely = <
 	 * 1) Novely rendered using the `initialData`, but you can't start new game or `load` an empty one - this is scary, imagine losing your progress
 	 * 2) Actual stored data is loaded, language and etc is changed
 	 */
-	const initialData: StorageData<Languages, DataScheme> = {
+	const initialData: StorageData<$Language, DataScheme> = {
 		saves: [],
 		data: klona(defaultData),
 		meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED, 1, 1, 1],
@@ -375,7 +377,7 @@ const novely = <
 		 */
 		dataLoaded.resolve();
 
-		storageData.set(stored as StorageData<Languages, DataScheme>);
+		storageData.set(stored as StorageData<$Language, DataScheme>);
 	};
 
 	/**
@@ -717,8 +719,8 @@ const novely = <
 		await restore(stack.value);
 	};
 
-	const t = (key: BaseTranslationStrings, lang: string | Languages) => {
-		return translation[lang as Languages].internal[key];
+	const t = (key: BaseTranslationStrings, lang: string | $Language) => {
+		return translation[lang as $Language].internal[key];
 	};
 
 	/**
@@ -783,6 +785,16 @@ const novely = <
 		return state;
 	}
 
+	const getLanguageDisplayName = (lang: Lang) => {
+		const language = translation[lang as $Language];
+
+		if (DEV && !language) {
+			throw new Error(`Attempt to use unsupported language "${language}". Supported languages: ${languages.join(', ')}.`)
+		}
+
+		return capitalize(language.nameOverride || getIntlLanguageDisplayName(lang));
+	}
+
 	const renderer = createRenderer({
 		mainContextKey: MAIN_CONTEXT_KEY,
 
@@ -800,6 +812,8 @@ const novely = <
 		languages,
 		storageData: storageData as unknown as Stored<StorageData<string, Data>>,
 		coreData,
+
+		getLanguageDisplayName
 	});
 
 	const useStack = createUseStackFunction(renderer);
@@ -941,7 +955,7 @@ const novely = <
 					}
 
 					if (lang in block) {
-						return block[lang as Languages];
+						return block[lang as $Language];
 					}
 				}
 
@@ -990,7 +1004,7 @@ const novely = <
 				/**
 				 * Первый элемент может быть как строкой, так и элементов выбора
 				 */
-				choices.unshift(question as unknown as [TextContent<Languages, State>, ValidAction[], () => boolean]);
+				choices.unshift(question as unknown as [TextContent<$Language, State>, ValidAction[], () => boolean]);
 				/**
 				 * Значит, текст не требуется
 				 */
@@ -1308,7 +1322,7 @@ const novely = <
 	/**
 	 * Basically replaces content inside of {{braces}}.
 	 */
-	const templateReplace = (content: TextContent<Languages, Data>, values?: Data) => {
+	const templateReplace = (content: TextContent<$Language, Data>, values?: Data) => {
 		const {
 			data,
 			meta: [lang],
@@ -1321,14 +1335,14 @@ const novely = <
 			? content(obj)
 			: typeof content === 'string'
 				? content
-				: content[lang as Languages];
+				: content[lang as $Language];
 
 		const str = flattenAllowedContent(
 			isFunction(cnt) ? cnt(obj) : cnt,
 			obj as State
 		);
 
-		const t = translation[lang as Languages];
+		const t = translation[lang as $Language];
 		const pluralRules = (t.plural || t.actions) && new Intl.PluralRules(t.tag || lang);
 
 		return replaceTranslation(
@@ -1407,8 +1421,8 @@ const novely = <
 		/**
 		 * @deprecated Renamed into `templateReplace`
 		 */
-		unwrap(content: TextContent<Languages, DataScheme>) {
-			return templateReplace(content as TextContent<Languages, Data>);
+		unwrap(content: TextContent<$Language, DataScheme>) {
+			return templateReplace(content as TextContent<$Language, Data>);
 		},
 		/**
 		 * Replaces content inside {{braces}} with using global data
@@ -1422,8 +1436,8 @@ const novely = <
 		 * })
 		 * ```
 		 */
-		templateReplace(content: TextContent<Languages, DataScheme>) {
-			return templateReplace(content as TextContent<Languages, Data>)
+		templateReplace(content: TextContent<$Language, DataScheme>) {
+			return templateReplace(content as TextContent<$Language, Data>)
 		},
 		/**
 		 * Cancel data loading, hide UI, ignore page change events

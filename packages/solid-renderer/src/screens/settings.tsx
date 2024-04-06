@@ -1,7 +1,6 @@
 import type { VoidComponent, JSX } from 'solid-js';
 
 import { For, createUniqueId } from 'solid-js';
-import { capitalize } from '$utils';
 import { useData } from '$context';
 import { TypewriterSpeed } from '@novely/core';
 
@@ -14,17 +13,6 @@ const Settings: VoidComponent<SettingsProps> = () => {
 	const textSpeed = () => data.storageData().meta[1];
 
 	const volume = (kind: 2 | 3 | 4) => data.storageData().meta[kind];
-
-	const getLanguageName = (lang: string): string => {
-		/**
-		 * Turns language into "English, Русский, Polskie"
-		 */
-		const intl = new Intl.DisplayNames([language()], {
-			type: 'language',
-		});
-
-		return intl.of(lang) || lang;
-	};
 
 	const onLanguageSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = ({ currentTarget: { value } }) => {
 		data.storageDataUpdate((prev) => {
@@ -80,7 +68,7 @@ const Settings: VoidComponent<SettingsProps> = () => {
 							<For each={data.options.languages}>
 								{(lang) => (
 									<option value={lang} selected={lang === language()}>
-										{capitalize(getLanguageName(lang))}
+										{data.options.getLanguageDisplayName(lang)}
 									</option>
 								)}
 							</For>
