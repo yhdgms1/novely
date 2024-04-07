@@ -1323,26 +1323,18 @@ const novely = <
 	 * Basically replaces content inside of {{braces}}.
 	 */
 	const templateReplace = (content: TextContent<$Language, Data>, values?: Data) => {
-		const {
-			data,
-			meta: [lang],
-		} = storageData.get();
+		const { data, meta: [lang] } = storageData.get();
 
-		// `values` or else global data
+		// Object to take values from
 		const obj = values || data;
-		// string or function value
-		const cnt = isFunction(content)
-			? content(obj)
-			: typeof content === 'string'
-				? content
-				: content[lang as $Language];
 
+		// String
 		const str = flattenAllowedContent(
-			isFunction(cnt) ? cnt(obj) : cnt,
-			obj as State
+			!isFunction(content) && !isString(content) ? content[lang] : content,
+			obj
 		);
 
-		const t = translation[lang as $Language];
+		const t = translation[lang];
 		const pluralRules = (t.plural || t.actions) && new Intl.PluralRules(t.tag || lang);
 
 		return replaceTranslation(
