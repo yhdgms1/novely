@@ -1310,6 +1310,19 @@ const novely = <
 				ctx,
 				data: stack.value[1]
 			});
+		} else if (Object.values(story).some((branch) => branch === referred)) {
+			/**
+			 * Developer might not write the end action on their own, so we will catch situation when there are no other options than end the game.
+			 *
+			 * There are three options right now.
+			 * - We've got to the action — gonna render it
+			 * - We've got `undefined`. This means we are tried to go forward, but story array ended already, so we are gonna run exit
+			 * - We've got branch of story object. This means we exitied from where it's possible to exit and now we can only end the game
+			 */
+			match('end', [], {
+				ctx,
+				data: stack.value[1]
+			})
 		} else {
 			match('exit', [], {
 				ctx,
