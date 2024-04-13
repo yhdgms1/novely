@@ -715,7 +715,16 @@ const novely = <
 		 */
 		const stack = useStack(MAIN_CONTEXT_KEY);
 
+		const valueBeforeBack = stack.value;
+
 		stack.back();
+
+		/**
+		 * There was only one item in the stack so there is no `stack.previous`, also `ctx.meta.goingBack` did not changed
+		 */
+		if (dequal(valueBeforeBack, stack.value) && !stack.previous) {
+			return;
+		}
 
 		await restore(stack.value);
 	};
