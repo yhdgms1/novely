@@ -56,6 +56,7 @@ import { klona } from 'klona/json';
 import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, MAIN_CONTEXT_KEY } from './constants';
 import { replace as replaceTranslation, flattenAllowedContent } from './translation';
 import { localStorageStorage } from './storage';
+import { setupBrowserVisibilityChangeListeners } from './browser';
 import pLimit from 'p-limit';
 
 import { DEV } from 'esm-env';
@@ -389,17 +390,9 @@ const novely = <
 
 	const initial = getDefaultSave(klona(defaultState));
 
-	const onVisibilityChange = () => {
-		if (document.visibilityState === 'hidden') {
-			throttledEmergencyOnStorageDataChange();
-		}
-	}
-
-	/**
-	 * Try to save data when page is switched OR is going to be unloaded
-	 */
-	addEventListener('visibilitychange', onVisibilityChange);
-	addEventListener('beforeunload', throttledEmergencyOnStorageDataChange);
+	const unsubscribeFromBrowserVisibilityChange = setupBrowserVisibilityChangeListeners({
+		onChange: throttledEmergencyOnStorageDataChange
+	})
 
 	const save = (type: Save[2][1]) => {
 		if (!coreData.get().dataLoaded) return;
@@ -749,7 +742,7 @@ const novely = <
 		ctx.meta.preview = true;
 
 		const processor = createQueueProcessor(queue, {
-			skip: new Set,
+			skip: EMPTY_SET,
 		});
 
 		useStack(ctx).push(klona(save))
@@ -1465,8 +1458,7 @@ const novely = <
 
 			UIInstance.unmount();
 
-			removeEventListener('visibilitychange', onVisibilityChange);
-			removeEventListener('beforeunload', throttledEmergencyOnStorageDataChange);
+			unsubscribeFromBrowserVisibilityChange();
 		}
 	};
 };
