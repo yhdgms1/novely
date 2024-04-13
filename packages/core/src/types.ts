@@ -260,6 +260,26 @@ interface NovelyInit<
 	 * @default true
 	 */
 	saveOnUnload?: boolean | 'prod';
+	/**
+	 * The key that signifies the start of the game. It is not recommended to override this parameter.
+	 *
+	 * @default 'start'
+	 * @example
+	 * ```ts
+	 * const engine = novely({
+	 *   ...,
+	 *   startKey: 'PART_1'
+	 * })
+	 *
+	 * engine.script({
+	 *   // now game will start from here
+	 *   PART_1: [
+	 *
+	 *   ]
+	 * })
+	 * ```
+	 */
+	startKey?: 'start' | (string & Record<never, never>);
 }
 
 type StateFunction<S extends State> = {

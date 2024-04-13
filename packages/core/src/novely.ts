@@ -84,7 +84,8 @@ const novely = <
 	preloadAssets = 'lazy',
 	parallelAssetsDownloadLimit = 15,
 	fetch: request = fetch,
-	saveOnUnload = true
+	saveOnUnload = true,
+	startKey = 'start'
 }: NovelyInit<$Language, Characters, StateScheme, DataScheme>) => {
 	/**
 	 * Local type declaration to not repeat code
@@ -263,7 +264,7 @@ const novely = <
 	const getDefaultSave = (state = {}) => {
 		return [
 			[
-				['jump', 'start'],
+				['jump', startKey],
 				[null, 0],
 			],
 			state,
@@ -1043,6 +1044,8 @@ const novely = <
 				if (DEV && !transformedChoices[selected]) {
 					throw new Error('Choice children is empty, either add content there or make item not selectable')
 				}
+
+				// todo: calculate offset dynamically
 
 				stack.value[0].push(['choice', selected + offset], [null, 0]);
 				render(ctx);
