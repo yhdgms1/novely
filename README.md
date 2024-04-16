@@ -45,6 +45,10 @@ engine.script({
 })
 ```
 
+## Community
+
+We have a [Discord](https://discord.gg/h2U63hx4GR) server
+
 ## Demo
 
 You can see working demo [here](https://novely-demo.pages.dev/)
