@@ -20,7 +20,7 @@ engine.script({
         [a.dialog("You", "Let me get some sleep"), a.exit()],
       ]
     ),
-    a.condition(() => state().sister.angry, {
+    a.condition((state) => state.sister.angry, {
       true: [
         a.dialog(
           "Sister",

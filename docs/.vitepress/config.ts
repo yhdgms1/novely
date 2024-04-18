@@ -29,6 +29,7 @@ export default defineConfig({
         items: [
           { text: "Getting Started", link: "/guide/getting-started" },
           { text: "Configuration", link: "/guide/configuration" },
+          { text: "State", link: "/guide/state" },
           { text: "Translation", link: "/guide/translation" },
           { text: "Characters", link: "/guide/characters" },
           { text: "Other Options", link: "/guide/other-options" },
@@ -43,6 +44,7 @@ export default defineConfig({
               { text: "Block", link: "/guide/actions/block" },
               { text: "Clear", link: "/guide/actions/clear" },
               { text: "Dialog", link: "/guide/actions/dialog" },
+              { text: "Say", link: "/guide/actions/say" },
               { text: "End", link: "/guide/actions/end" },
               { text: "Function", link: "/guide/actions/function" },
               { text: "Input", link: "/guide/actions/input" },

@@ -4,11 +4,11 @@ Shows the text that someone says
 
 ## Parameters
 
-|   Имя   |                 Type                  | Optional |            Description            |
-| :-----: | :-----------------------------------: | :------: | :-------------------------------: |
-| person  |               `string`                |    ⭕    | Person ID, any name, or undefined |
-| content | <code>(() => string) \| string</code> |    ❌    |            Dialog text            |
-| emotion |               `string`                |    ✔️    |          Person Emotion           |
+|   Имя   |     Type      | Optional |            Description            |
+| :-----: | :-----------: | :------: | :-------------------------------: |
+| person  |   `string`    |    ⭕    | Person ID, any name, or undefined |
+| content | `TextContent` |    ❌    |            Dialog text            |
+| emotion |   `string`    |    ✔️    |          Person Emotion           |
 
 ## Usage
 

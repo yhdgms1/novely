@@ -19,7 +19,7 @@ engine.script({
       "Naruto",
       "horny",
     ),
-    engine.action.dialog('Naruto', 'S-sakura-chan...')
+    engine.action.say('Naruto', 'S-sakura-chan...')
     engine.action.animateCharacter(
       "Naruto",
       500,

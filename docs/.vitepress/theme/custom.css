@@ -3,7 +3,6 @@ body {
 }
 
 :root {
-  --vp-c-default-soft: var(--vp-c-neutral-soft);
   /* this is on purpose */
   --vp-c-brand-1: var(--vp-c-green-3);
   --vp-c-brand-2: var(--vp-c-green-2);

@@ -10,8 +10,13 @@ Input Box
 | onInput  |                       `(meta: InputMeta) => void`                        |    ❌    | Called when typing from the keyboard |
 |  setup   | `(input: HTMLInputElement, cleanup: (cb: (() => void)) => void) => void` |    ✔️    |     Helps you setup the `input`      |
 
+::: details `InputMeta` type declaration
 ```ts
 interface InputMeta {
+  /**
+   * Function to set and get state
+   */
+  state: StateFunction<State>;
   /**
    * Input Element
    */
@@ -35,6 +40,7 @@ interface InputMeta {
   lang: string;
 }
 ```
+:::
 
 ## Usage
 
@@ -43,7 +49,7 @@ engine.script({
   start: [
     action.input(
       "What's you'r name?",
-      ({ input, error, event, value }) => {
+      ({ state, input, error, event, value }) => {
         /**
          * Update error message or hide it
          */
@@ -52,7 +58,7 @@ engine.script({
         /**
          * Update state, using sanitized value here for security reasons
          */
-        engine.state({ name: value });
+        state({ name: value });
       },
       (input) => {
         input.setAttribute("minlength", "2");
@@ -80,7 +86,7 @@ engine.script({
     ),
     action.input(
       "What's you'r name?",
-      ({ input, error, event, value, lang }) => {
+      ({ state, input, error, event, value, lang }) => {
         /**
          * Update error message or hide it
          */
@@ -89,7 +95,7 @@ engine.script({
         /**
          * Update state, using sanitized value here for security reasons
          */
-        engine.state({ name: value });
+        state({ name: value });
       },
       (input) => {
         input.setAttribute("minlength", "2");

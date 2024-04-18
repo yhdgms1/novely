@@ -16,10 +16,10 @@ engine.script({
     engine.action.function(async () => {
       console.log("got here");
     }),
-    engine.action.function((restoring, goingBack, preview) => {
+    engine.action.function(({ restoring, goingBack, preview }) => {
       console.log(restoring, goingBack, preview)
     }),
-    engine.action.function((restoring, goingBack, preview) => {
+    engine.action.function(({ restoring, goingBack, preview }) => {
       if (restoring || goingBack || preview) return;
 
       return new Promise((resolve) => {

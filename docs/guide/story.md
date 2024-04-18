@@ -11,10 +11,10 @@ engine.script({
   ],
   dojo: [
     engine.action.showBackground('./dojo.jpeg'),
-    engine.action.dialog('Senpai', 'This is how story defined...'),
+    engine.action.say('Senpai', 'This is how story defined...'),
     [
       engine.action.showBackground('./dojo-2.jpeg'),
-      engine.action.dialog('Senpai', 'And arrays can be used there')
+      engine.action.say('Senpai', 'And arrays can be used there')
     ]
   ]
 });

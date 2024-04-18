@@ -16,13 +16,11 @@ engine.script({
   "block:adv": [
     engine.action.condition(() => canShowAdv(), {
       true: [
-        engine.action.text(
-          t({
-            en: "Adv will be shown",
-          })
-        ),
-        engine.action.function(async (restoring, goingBack) => {
-          if (restoring || goingBack) return;
+        engine.action.text({
+          en: "Adv will be shown",
+        }),
+        engine.action.function(async ({ restoring, goingBack, preview }) => {
+          if (restoring || goingBack || preview) return;
 
           // double check
           if (canShowAdv()) {
@@ -34,7 +32,7 @@ engine.script({
     }),
   ],
   start: [
-    engine.action.dialog("Mistress", "Hello, little puppy"),
+    engine.action.say("Person", "Hello"),
     // call block when you need it
     engine.action.block("block:adv"),
   ],

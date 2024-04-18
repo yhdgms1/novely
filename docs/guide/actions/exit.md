@@ -3,12 +3,12 @@
 Exit's branches inside of [Choice](/guide/actions/choice.md), [Condition](/guide/actions/condition.md), and [Block](/guide/actions/block.md).
 
 ::: warning
-Novely does this automatically, so there's no need to exit action.
+Novely does this automatically, so there's no need to use exit action.
 :::
 
 ## Example
 
-Look at examples below to understand how `Exit` can be used
+Look at examples below to understand where `Exit` is used.
 
 ### Choice
 
@@ -20,7 +20,7 @@ engine.script({
       [
         "Cherry",
         [
-          engine.action.dialog(
+          engine.action.say(
             "buddy",
             "Then I will buy you a cherry ice cream!"
           ),
@@ -30,12 +30,12 @@ engine.script({
       [
         "Vanilla",
         [
-          engine.action.dialog("buddy", "Vanilla ice cream! Got it!"),
+          engine.action.say("buddy", "Vanilla ice cream! Got it!"),
           engine.action.exit(),
         ],
       ]
     ),
-    engine.action.dialog("buddy", "Hello! Can I get uhh..."),
+    engine.action.say("buddy", "Hello! Can I get uhh..."),
   ],
 });
 ```
@@ -49,11 +49,11 @@ engine.script({
       () => Math.random() >= 0.5 ? 'true' : 'false',
       {
         'true': [
-          engine.action.dialog('baby', 'AAAAAAAAAAAAAAAAAAA')
+          engine.action.say('baby', 'AAAAAAAAAAAAAAAAAAA')
           engine.action.exit(),
         ],
         'false': [
-          engine.action.dialog('baby', '*Snores*'),
+          engine.action.say('baby', '*Snores*'),
           engine.action.exit()
         ]
       }
@@ -69,25 +69,25 @@ engine.script({
 engine.script({
   start: [
     engine.action.condition(
-      () => state().age >= 18 ? 'true' : 'false',
+      (state) => state.age >= 18 ? 'true' : 'false',
       {
         'true': [
-          engine.action.dialog('cashier', 'Ok'),
+          engine.action.say('cashier', 'Ok'),
           engine.action.choice(
             'Select Right PIN Code',
             [
               '1337',
               [
-                engine.action.dialog('cashier', 'Incorrect.'),
-                engine.action.dialog('you', 'Oh, damn. Then goodbye'),
+                engine.action.say('cashier', 'Incorrect.'),
+                engine.action.say('you', 'Oh, damn. Then goodbye'),
                 engine.action.exit(),
               ]
             ],
             [
               '1984',
               [
-                engine.action.dialog('cashier', 'Have a nice day'),
-                engine.action.dialog('you', 'You too, bye'),
+                engine.action.say('cashier', 'Have a nice day'),
+                engine.action.say('you', 'You too, bye'),
                 engine.action.exit()
               ]
             ]
@@ -95,7 +95,7 @@ engine.script({
           engine.action.exit(), // Note that first `exit` is inside choice, and then inside `condition`
         ],
         'false': [
-          engine.action.dialog('cashier', 'Leave that store immediately!'),
+          engine.action.say('cashier', 'Leave that store immediately!'),
           engine.action.exit()
         ]
       }

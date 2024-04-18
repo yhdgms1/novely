@@ -1,12 +1,14 @@
 # Translation
 
-Novely could be translated to different, even to imaginary languages. So how does this works?
+Translation into different languages plays a crucial role, especially for an engine that focused on large volumes of text.
 
-First of all, there is internal translation that is used to translate UI parts such as buttons in the main menu.
+## UI translation
 
-## Internal translation
+First, you need to import the languages into the game and declare them. Yes, languages are not included in the engine by default
 
-The internal translation has the following scheme:
+::: details Editing game translation
+
+You can customize the translation of the interface as you want, the only thing is you should follow the interface translation declaration.
 
 ```ts
 interface InterfaceTranslation {
@@ -34,10 +36,20 @@ interface InterfaceTranslation {
   TextSpeedMedium: string;
   TextSpeedFast: string;
   TextSpeedAuto: string;
+  CompleteText: string;
+	GoForward: string;
+	ExitDialogWarning: string;
+	ExitDialogExit: string;
+	ExitDialogBack: string;
+	OpenMenu: string;
+	CloseMenu: string;
+	MusicVolume: string;
+	SoundVolume: string;
+	VoiceVolume: string;
 }
 ```
 
-You can customize the translation of the interface as you want
+You need only to overwrite some values.
 
 ```ts
 import { EN } from "@novely/core";
@@ -47,10 +59,13 @@ const custom = {
   Settings: "Options",
 };
 ```
+:::
 
 The only thing you should do is to pass it to the `internal` key as follows:
 
-```ts{4}
+```ts
+import { EN } from "@novely/core";
+
 const engine = novely({
   translation: {
     en: {
@@ -60,22 +75,70 @@ const engine = novely({
 })
 ```
 
-## Variables
+## Lyric translation
 
-When you have done setting up translation you can use variables!
-
-Whenever you have called a `state` function to save some state, and in any text action used two pairs of curly braces with path in between you will get it work!
+A typical character's speech can be expressed using ordinary strings, or a function
 
 ```ts
 engine.script({
   start: [
-    engine.action.function(() => {
-      engine.state({ user: { name: 'Alexei' }, respected: true })
-    }),
-    engine.action.dialog(
-      'Character',
-      'You can say that {{user.name}} is respected and that is {{respected}} '
+    // Typical character speech
+    engine.action.say(
+      'Person',
+      'Someday we will win the final battle between goodness and neutrality'
+    ),
+    engine.action.say(
+      'Person',
+      () => Math.random() > 0.5 ? 'Some' : 'day...'
     )
+  ]
+})
+```
+
+But for translation into other languages, everything is actually quite simple! You just need to use an object where the language id will be used as the key.
+
+```ts
+engine.script({
+  start: [
+    // Translated character speech
+    engine.action.say('Person', {
+      en: 'Someday we will win the final battle between goodness and neutrality',
+      ru: 'Когда-нибудь всё будет хорошо'
+    }),
+    engine.action.say('Person', {
+      en: () => Math.random() > 0.5 ? 'Some' : 'day...',
+      ru: () => Math.random() > 0.5 ? 'Когда' : 'нибудь...'
+    })
+  ]
+})
+```
+
+The translation is written for all languages in one place. Therefore, it is actually much more convenient to manage translations in the game and avoid creating differences between games in different languages.
+
+## Variables
+
+We offer the ability to insert values from the state directly into strings. To do this, you need to write an variable reference between curly braces
+
+```ts
+engine.script({
+  start: [
+    engine.action.function(({ state }) => {
+      state({ age: 47 })
+    }),
+    engine.action.say('Person', 'I am {{age}} years old.')
+  ]
+})
+```
+
+You could also use nested references.
+
+```ts
+engine.script({
+  start: [
+    engine.action.function(({ state }) => {
+      state({ person: { age: 47 } })
+    }),
+    engine.action.say('Person', 'I am {{person.age}} years old.')
   ]
 })
 ```
@@ -84,85 +147,93 @@ engine.script({
 
 What is pluralization? It is a process of changing nouns from singular to plural form.
 
-```ts{8-17}
-translation: {
-  en: {
-    tag: 'en-GB',
-    internal: EN,
-    /**
-     * Pluralization strings
-     */
-    plural: {
-      'year': {
-        'zero': 'years',
-        'two': 'years',
-        'few': 'years',
-        'many': 'years',
-        'other': 'years',
-        'one': 'year',
-      }
+```ts
+const engine = novely({
+  ...,
+  translation: {
+    en: {
+      internal: EN,
+      plural: {
+        'year': {
+          'zero': 'years',
+          'two': 'years',
+          'few': 'years',
+          'many': 'years',
+          'other': 'years',
+          'one': 'year',
+        }
+      },
     },
-    actions: {
-      backwards: (string) => {
-        return [...string].reverse().join('');
-      }
-    },
-  },
-};
+  }
+})
 ```
-
-The pluralization object is of the following type:
+::: details Pluralization object type
 
 ```ts
 type PluralObject = {
   [Key in Intl.LDMLPluralRule]?: string;
 };
 ```
+:::
 
-## Usage
-
-Once you have configured the engine, you can get the content. The example also uses the content enclosed between {{ and }} – it will be taken from state, which can be supplied via the `state` function, which is also available from the engine. When content between {{ and }} contain's `@` it will look for pluralization. Look at the following example:
+To use the pluralization functionality, after refering the variable, you need to put the `@` sign and refer to the plural name.
 
 ```ts
 engine.script({
   start: [
-    engine.action.function(() => {
-      engine.state({ data: { name: "Harley Quinn", age: 21 } });
+    engine.action.function(({ state }) => {
+      state({ person: { age: 1 } })
     }),
-    engine.action.dialog(
-      "Person",
-      'Hi, my name is {{data.name}} and I am {{data.years}} {{data.years@year}} old'
-    ), // Will replace {{data.name}} with Herley Quinn, {{data.years}} with 21, and {{data.years@year}} with `years`
-  ],
-});
-```
-
-Also there is "actions" thing. When you type `%` and an action name after it, it will transform the content using the function defined in `actions` object. When no function found - it will ignore `%action`.
-
-```ts
-engine.script({
-  start: [
-    engine.action.function(() => {
-      engine.state({ data: { name: "Alice" } });
-    }),
-    engine.action.dialog(
-      "Person",
-      "Did you know that {{data.name}} is {{data.name%backwards}} backwards?"
-    ), // Will replace {{data.name%backwards}} with result of `backwards` function with `Alice` as an argument
-    engine.action.dialog("Player", "Very impressive..."),
-  ],
-});
-```
-
-For multiple languages you should provide an object with each language as a key
-
-```ts
-engine.script({
-  start: [
-    engine.action.dialog("Person", {
-      en: "Hello",
-      ru: "Привет"
-    })
+    engine.action.say('Person', 'I am {{person.age}} {{person.age@year}} old.')
   ]
-});
+})
+```
+
+## Actions
+
+Also, we have actions for variables! In fact, this is a function that changes the value of a variable in any way
+
+```ts
+const engine = novely({
+  ...,
+  translation: {
+    en: {
+      internal: EN,
+      plural: {},
+      actions: {
+        capitalize: (str) => {
+          return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+      }
+    },
+  }
+})
+
+engine.script({
+  start: [
+    engine.action.function(({ state }) => {
+      state({ name: 'john' })
+    }),
+    engine.action.say('Person', 'My name is {{name%capitalize}}')
+  ]
+})
+```
+
+## Custom Languages
+
+Although it may be rare, you can create your own language. This could be a mame language, or you could implement some form of censorship, such as excluding obscene words from a children's version.
+
+```ts
+const engine = novely({
+  ...,
+  translation: {
+    'uwunglish': {
+      internal: EN,
+      // You should pass IETF BCP 47 language tag. It will be used for transliteration and other things
+      tag: 'en-US',
+      // You should pass name override. This thing will be shown instead of name that in that case cannot be determinated automatically
+      nameOverride: 'UwU English'
+    },
+  }
+})
 ```

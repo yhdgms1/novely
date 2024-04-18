@@ -19,12 +19,12 @@ When game was released, the script looked like this:
 ```ts
 engine.script({
   start: [
-    engine.action.dialog(
+    engine.action.say(
       "Jack",
       "Me and my boyfriend love each other, nothing can stop our love! 🏳️‍🌈"
     ), // index: 0
     engine.action.function(() => {}), // index: 1
-    engine.action.dialog("Max", "Yes"), // index: 2
+    engine.action.say("Max", "Yes"), // index: 2
   ],
 });
 ```
@@ -37,7 +37,7 @@ If you just delete the line, as in the example below...
 engine.script({
   start: [
     engine.action.function(() => {}), // index: 0
-    engine.action.dialog("Max", "Oh no"), // index: 1
+    engine.action.say("Max", "Oh no"), // index: 1
   ],
 });
 ```
@@ -51,7 +51,7 @@ engine.script({
   start: [
     engine.action.next(), // index: 0
     engine.action.function(() => {}), // index: 1
-    engine.action.dialog("Max", "Oh no"), // index: 2
+    engine.action.say("Max", "Oh no"), // index: 2
   ],
 });
 ```

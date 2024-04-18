@@ -1,6 +1,10 @@
 # Preload
 
-Preload assets so they will not be loading on player's eyes. Works only with image assets
+Preload assets so they will not be loading on player's eyes. 
+
+::: warning
+Works only with image assets
+:::
 
 ## Parameters
 
@@ -21,7 +25,7 @@ engine.script({
     // engine.action.preload(assets.home), // calling preload here will have no effect
     engine.action.showBackground(assets.home),
     engine.action.preload(assets.class), // preload is called before action that takes players's time to skip
-    engine.action.dialog("Person", "Lorem ipsum dolor sit amet"),
+    engine.action.say("Person", "Lorem ipsum dolor sit amet"),
     engine.action.showBackground(assets.class), // so when this action will be used image will already be loaded
   ],
 });
