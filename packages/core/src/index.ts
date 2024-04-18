@@ -40,6 +40,10 @@ export type { Stored } from './store';
 export type { BaseTranslationStrings } from './translations';
 export type { AllowedContent, PluralType, Pluralization, TranslationActions } from './translation';
 
+export type {
+	ConditionParams
+} from './type-utils';
+
 export { novely } from './novely';
 export { localStorageStorage } from './storage';
 

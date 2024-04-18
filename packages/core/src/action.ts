@@ -1,5 +1,5 @@
 import type { Character } from './character';
-import type { Thenable, NonEmptyRecord, StateFunction, State } from './types';
+import type { Thenable, NonEmptyRecord, StateFunction, State, Lang } from './types';
 
 type ValidAction =
 	| ['choice', number]
@@ -144,13 +144,15 @@ type ChoiceCheckFunction<L extends string, S extends State> = {
 	(props: ChoiceCheckFunctionProps<L, S>): boolean;
 }
 
+type ConditionCheckFunction<S extends State, R extends string | true | false> = (state: S) => R;
+
 type FunctionAction<L extends string, S extends State> = (props: FunctionActionProps<L, S>) => Thenable<void>;
 
 type ActionInputSetup = (input: HTMLInputElement, cleanup: (cb: () => void) => void) => void;
 
 type BackgroundImage = Partial<Record<'portrait' | 'landscape' | 'all', string>> & Record<string, string>;
 
-type ActionProxy<Characters extends Record<string, Character>, Languages extends string, S extends State> = {
+type ActionProxy<Characters extends Record<string, Character>, Languages extends Lang, S extends State> = {
 	choice: {
 		(...choices: [name: TextContent<Languages, S>, actions: ValidAction[], active?: ChoiceCheckFunction<Languages, S>][]): ValidAction;
 		(
@@ -169,7 +171,7 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 	) => ValidAction;
 
 	condition: <T extends string | true | false>(
-		condition: (state: S) => T,
+		condition: ConditionCheckFunction<S, T>,
 		variants: Record<T extends true ? 'true' : T extends false ? 'false' : T, ValidAction[]>,
 	) => ValidAction;
 
@@ -253,7 +255,7 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 	block: (scene: string) => ValidAction;
 };
 
-type DefaultActionProxy = ActionProxy<Record<string, Character>, string, State>;
+type DefaultActionProxy = ActionProxy<Record<string, Character>, Lang, State>;
 type GetActionParameters<T extends Capitalize<keyof DefaultActionProxy>> = Parameters<
 	DefaultActionProxy[Uncapitalize<T>]
 >;
@@ -274,4 +276,5 @@ export type {
 	ActionInputSetup,
 	CustomHandlerFunctionGetFn,
 	CustomHandlerFunctionParameters,
+	ConditionCheckFunction
 };
