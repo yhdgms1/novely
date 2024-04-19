@@ -30,6 +30,7 @@ export default defineConfig({
           { text: "Getting Started", link: "/guide/getting-started" },
           { text: "Configuration", link: "/guide/configuration" },
           { text: "State", link: "/guide/state" },
+          { text: "Game States", link: "/guide/game-states" },
           { text: "Translation", link: "/guide/translation" },
           { text: "Characters", link: "/guide/characters" },
           { text: "Other Options", link: "/guide/other-options" },

@@ -221,7 +221,7 @@ engine.script({
 
 ## Custom Languages
 
-Although it may be rare, you can create your own language. This could be a mame language, or you could implement some form of censorship, such as excluding obscene words from a children's version.
+Although it may be rare, you can create your own language. This could be a meme language, or you could implement some form of censorship, such as excluding obscene words from a children's version.
 
 ```ts
 const engine = novely({

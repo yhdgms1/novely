@@ -75,7 +75,7 @@ engine.story({
 })
 ```
 
-It is recommended to use that provided function, on when possible add a check.
+If you can't use the `state` function bound to context, you should add some checks before calling the `engine.state`.
 
 ```ts
 engine.story({
