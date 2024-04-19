@@ -44,7 +44,7 @@ Storing multiple images is not always available. It is not enough to store image
 In addition, the engine is focused on text adventures. Therefore, it is not uncommon for text to be displayed on the preview. If there are several translations, the text on the preview must match the selected language. This cannot be achieved using images.
 :::
 
-Therefore, to create a preview, we restore a separate version of the save. A lot of things shouldn't happen on the preview. Actually, the `preview` variable can be used for checking.
+Therefore, to create a preview, we restore a separate version of the save. A lot of things shouldn't happen on the preview. The `preview` variable can be used for checking.
 
 ```ts
 engine.script({
