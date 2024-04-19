@@ -6,6 +6,20 @@ Translation into different languages plays a crucial role, especially for an eng
 
 First, you need to import the languages into the game and declare them. Yes, languages are not included in the engine by default
 
+The only thing you should do is to pass it to the `internal` key as follows:
+
+```ts
+import { EN } from "@novely/core";
+
+const engine = novely({
+  translation: {
+    en: {
+      internal: EN
+    }
+  }
+})
+```
+
 ::: details Editing game translation
 
 You can customize the translation of the interface as you want, the only thing is you should follow the interface translation declaration.
@@ -37,15 +51,15 @@ interface InterfaceTranslation {
   TextSpeedFast: string;
   TextSpeedAuto: string;
   CompleteText: string;
-	GoForward: string;
-	ExitDialogWarning: string;
-	ExitDialogExit: string;
-	ExitDialogBack: string;
-	OpenMenu: string;
-	CloseMenu: string;
-	MusicVolume: string;
-	SoundVolume: string;
-	VoiceVolume: string;
+  GoForward: string;
+  ExitDialogWarning: string;
+  ExitDialogExit: string;
+  ExitDialogBack: string;
+  OpenMenu: string;
+  CloseMenu: string;
+  MusicVolume: string;
+  SoundVolume: string;
+  VoiceVolume: string;
 }
 ```
 
@@ -60,20 +74,6 @@ const custom = {
 };
 ```
 :::
-
-The only thing you should do is to pass it to the `internal` key as follows:
-
-```ts
-import { EN } from "@novely/core";
-
-const engine = novely({
-  translation: {
-    en: {
-      internal: EN
-    }
-  }
-})
-```
 
 ## Lyric translation
 
