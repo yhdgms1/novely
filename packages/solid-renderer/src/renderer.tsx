@@ -22,7 +22,6 @@ import {
 	createStartFunction,
 	createAudio,
 	createAudioMisc,
-	storeUpdate,
 	createRootSetter,
 	Howl,
 
@@ -34,7 +33,9 @@ import {
 	handleClearCustomAction,
 	handleTextAction,
 	handleInputAction,
-	handleVibrateAction
+	handleVibrateAction,
+
+	mutateAtom
 } from '@novely/renderer-toolkit'
 import { createEmitter } from './emitter';
 import { useContextState, removeContextState } from './context-state'
@@ -115,7 +116,7 @@ const createSolidRenderer = ({
 									/**
 									 * Set style and show
 									 */
-									$contextState.setKey(`characters.${character}`, { style, visible: true })
+									mutateAtom($contextState, (state) => state.characters[character], { style, visible: true });
 
 									const { canvas: element } = chars[character];
 
@@ -141,14 +142,14 @@ const createSolidRenderer = ({
 											/**
 											 * Ignore remove animations, because it is not shown anyway
 											 */
-											$contextState.setKey(`characters.${character}.visible`, false)
+											mutateAtom($contextState, (state) => state.characters[character]!.visible, false);
 											resolve();
 
 											return;
 										}
 
 										const timeoutId = setTimeout(() => {
-											$contextState.setKey(`characters.${character}.visible`, false)
+											mutateAtom($contextState, (state) => state.characters[character]!.visible, false);
 											resolve();
 										}, duration);
 
@@ -159,8 +160,8 @@ const createSolidRenderer = ({
 											chars[character].canvas.className = className as string;
 										}
 
-										$contextState.setKey(`characters.${character}.style`, style)
-										$contextState.setKey(`characters.${character}.hideTimeoutId`, timeoutId)
+										mutateAtom($contextState, (state) => state.characters[character]!.style, style);
+										mutateAtom($contextState, (state) => state.characters[character]!.hideTimeoutId, timeoutId);
 									})
 								},
 								animate(timeout, classes) {
@@ -250,21 +251,21 @@ const createSolidRenderer = ({
 								return $contextState.get().meta.restoring;
 							},
 							set restoring(value) {
-								$contextState.setKey('meta.restoring', value)
+								mutateAtom($contextState, (state) => state.meta.restoring, value);
 							},
 
 							get preview() {
 								return $contextState.get().meta.preview;
 							},
 							set preview(value) {
-								$contextState.setKey('meta.preview', value)
+								mutateAtom($contextState, (state) => state.meta.preview, value);
 							},
 
 							get goingBack() {
 								return $contextState.get().meta.goingBack;
 							},
 							set goingBack(value) {
-								$contextState.setKey('meta.goingBack', value)
+								mutateAtom($contextState, (state) => state.meta.goingBack, value);
 							}
 						}
 					};
@@ -277,19 +278,19 @@ const createSolidRenderer = ({
 				},
 				ui: {
 					showScreen(name) {
-						$rendererState.setKey('screen', name);
+						mutateAtom($rendererState, (state) => state.screen, name);
 					},
 					getScreen() {
 						return $rendererState.get().screen;
 					},
 					showLoading() {
-						$rendererState.setKey('loadingShown', true);
+						mutateAtom($rendererState, (state) => state.loadingShown, true);
 					},
 					hideLoading() {
-						$rendererState.setKey('loadingShown', false);
+						mutateAtom($rendererState, (state) => state.loadingShown, false);
 					},
 					showExitPrompt() {
-						$rendererState.setKey('exitPromptShown', true)
+						mutateAtom($rendererState, (state) => state.exitPromptShown, true);
 					},
 					start: createStartFunction(() => {
 						const Root = createRootComponent({
@@ -345,12 +346,10 @@ const createSolidRenderer = ({
 			return renderer;
 		},
 		registerScreen(name: string, screen: StateScreen) {
-			$rendererState.setKey(`screens.${name}`, screen);
+			mutateAtom($rendererState, (state) => state.screens[name], () => screen);
 		},
 		registerMainmenuItem(fn: StateMainmenuItem) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore Deep dive
-			storeUpdate($rendererState, 'mainmenu', (mainmenu) => [...mainmenu, fn])
+			mutateAtom($rendererState, (state) => state.mainmenu, (mainmenu) => [...mainmenu, fn]);
 		},
 	};
 };

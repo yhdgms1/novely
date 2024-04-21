@@ -1,7 +1,7 @@
 {
 	"name": "@novely/renderer-toolkit",
 	"description": "Toolkit for creating renderer for novely",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"type": "module",
 	"sideEffects": false,
 	"publishConfig": {
@@ -31,15 +31,12 @@
 	},
 	"dependencies": {
 		"@novely/core": "*",
-		"@novely/deepmerge": "latest",
 		"esm-env": "^1.0.0",
 		"howler": "^2.2.4",
-		"klona": "^2.0.6",
-		"nanostores": "^0.10.0",
+		"nanostores": "^0.10.3",
 		"p-limit": "3.1.0"
 	},
 	"peerDependencies": {
-		"klona": "^2.0.6"
 	},
 	"license": "ISC",
 	"bugs": {
