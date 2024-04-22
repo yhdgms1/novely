@@ -19,7 +19,40 @@ const getClonedOldValue = <$AtomValue>(atom: Atom<$AtomValue>) => {
   return oldValue
 }
 
-const batchUpdate = (fn: () => void) => {}
+const atomsBatch = new Set();
+
+let updateQueue: (() => void)[] = [];
+
+let batching = false;
+let batchOldMap: null | any = null;
+
+const batchUpdate = (fn: () => void) => {
+  batching = true;
+
+  fn();
+
+  if (atomsBatch.size > 1) {
+    throw new Error('You can batch only one atom update using `mutateAtom`')
+  }
+
+  for (const update of updateQueue) {
+    try {
+      update();
+    } catch (error) {
+      console.error('Error when batching `mutateAtom` call: ', error);
+    }
+  }
+
+  console.log(updateQueue)
+
+  // @ts-expect-error There is a hidden notify method
+  Array.from(atomsBatch.values())[0].notify(batchOldMap, '')
+
+  updateQueue = [];
+  batching = false;
+  batchOldMap = null;
+  atomsBatch.clear();
+}
 
 /**
  * @example
@@ -34,6 +67,10 @@ const batchUpdate = (fn: () => void) => {}
  * ```
  */
 const mutateAtom = <$AtomValue extends object, $MutateValue>(atom: WritableAtom<$AtomValue>, getPath: (object: $AtomValue) => $MutateValue, setter: Setter<$MutateValue>) => {
+  if (batching) {
+    atomsBatch.add(atom);
+  }
+
   const atomValue = atom.get();
   const targets = new Set();
 
@@ -80,6 +117,8 @@ const mutateAtom = <$AtomValue extends object, $MutateValue>(atom: WritableAtom<
   if (newValue === current) {
     console.warn(`The new value is the same as the current value.`)
 
+    console.log(newValue)
+
     return newValue;
   }
 
@@ -98,12 +137,24 @@ const mutateAtom = <$AtomValue extends object, $MutateValue>(atom: WritableAtom<
     }
   }
 
-  // @ts-expect-error Value is actually is not read-only
-  atom.value = { ...setPath(atom.value, fakedPath, newValue) }
-  // @ts-expect-error There is a hidden notify method
-  atom.notify(oldMap, path.join('.'))
+  const applyNewValue = () => {
+    // @ts-expect-error Value is actually is not read-only
+    atom.value = { ...setPath(atom.value, fakedPath, newValue) }
+  }
+
+  if (!batching) {
+    applyNewValue();
+    // @ts-expect-error There is a hidden notify method
+    atom.notify(oldMap, path.join('.'))
+  } else {
+    if (!batchOldMap) {
+      batchOldMap = oldMap;
+    }
+
+    updateQueue.push(applyNewValue);
+  }
 
   return newValue
 }
 
-export { mutateAtom }
+export { mutateAtom, batchUpdate }
