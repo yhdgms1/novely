@@ -11,47 +11,33 @@ import type {
 } from '@novely/core'
 import type { ContextState, ContextStateStore } from '../state/context-state'
 import type { RendererStateStore } from '../state/renderer-state'
-import type { DeepMapStore } from 'nanostores'
+import type { DeepAtom } from '../atoms/deep-atom'
 
 import { vibrate } from './vibrate'
 import { useBackground } from './background'
 import { escapeHTML } from '../utils'
-import { mutateAtom } from '../atoms/mutate-atom'
 
-const handleBackgroundAction = ($contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>, background: string | BackgroundImage) => {
+const handleBackgroundAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, background: string | BackgroundImage) => {
   const { clear } = $contextState.get().background;
 
   clear && clear();
 
   if (typeof background === 'string') {
-    mutateAtom(
-      $contextState,
-      (state) => state.background.background,
-      background
-    );
+    $contextState.mutate((s) => s.background.background, background);
 
     return;
   }
 
   const { dispose } = useBackground(background, (value) => {
-    mutateAtom(
-      $contextState,
-      (state) => state.background.background,
-      value
-    );
+    $contextState.mutate((s) => s.background.background, value);
   })
 
-  mutateAtom(
-    $contextState,
-    (state) => state.background.clear,
-    () => dispose
-  );
+  $contextState.mutate((s) => s.background.clear, () => dispose);
 }
 
-const handleDialogAction = ($contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>, content: string, name: string, character: string | undefined, emotion: string | undefined, resolve: () => void) => {
-  mutateAtom(
-    $contextState,
-    (state) => state.dialog,
+const handleDialogAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, content: string, name: string, character: string | undefined, emotion: string | undefined, resolve: () => void) => {
+  $contextState.mutate(
+    (s) => s.dialog,
     {
       content,
       name,
@@ -62,44 +48,37 @@ const handleDialogAction = ($contextState: DeepMapStore<ContextStateStore<Record
       visible: true,
       resolve,
     }
-  )
+  );
 }
 
-const handleChoiceAction = ($contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>, label: string, choices: [name: string, active: boolean][], resolve: (selected: number) => void) => {
-  mutateAtom(
-    $contextState,
-    (state) => state.choice,
+const handleChoiceAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, label: string, choices: [name: string, active: boolean][], resolve: (selected: number) => void) => {
+  $contextState.mutate(
+    (s) => s.choice,
     { choices, label, resolve, visible: true }
-  )
+  );
 }
 
-const handleClearAction = ($rendererState: DeepMapStore<RendererStateStore<Record<PropertyKey, unknown>>>, $contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>, context: Context, keep: Set<keyof DefaultActionProxy>, keepCharacters: Set<string>) => {
-  mutateAtom($rendererState, (state) => state.exitPromptShown, false);
+const handleClearAction = ($rendererState: DeepAtom<RendererStateStore<Record<PropertyKey, unknown>>>, $contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, context: Context, keep: Set<keyof DefaultActionProxy>, keepCharacters: Set<string>) => {
+  $rendererState.mutate((s) => s.exitPromptShown, false);
 
   if (!keep.has('showBackground')) {
-    mutateAtom(
-      $contextState,
-      (state) => state.background.background,
-      '#000'
-    );
+    $contextState.mutate((s) => s.background.background, '#000');
   }
 
   if (!keep.has('choice')) {
-    mutateAtom(
-      $contextState,
-      (state) => state.choice,
+    $contextState.mutate(
+      (s) => s.choice,
       {
         choices: [],
         visible: false,
         label: '',
       }
-    )
+    );
   }
 
   if (!keep.has('input')) {
-    mutateAtom(
-      $contextState,
-      (state) => state.input,
+    $contextState.mutate(
+      (s) => s.input,
       {
         element: null,
         label: '',
@@ -110,31 +89,30 @@ const handleClearAction = ($rendererState: DeepMapStore<RendererStateStore<Recor
   }
 
   if (!keep.has('dialog')) {
-    mutateAtom(
-      $contextState,
-      (state) => state.dialog,
-      { visible: false, content: '', name: '', miniature: {} }
+    $contextState.mutate(
+      (s) => s.dialog,
+      {
+        visible: false,
+        content: '',
+        name: '',
+        miniature: {}
+      }
     );
   }
 
   if (!keep.has('text')) {
-    mutateAtom(
-      $contextState,
-      (state) => state.text,
-      { content: '' }
-    );
+    $contextState.mutate((s) => s.text, { content: '' });
   }
 
   const { characters, custom } = $contextState.get() as ContextState;
 
   for (const character of Object.keys(characters)) {
     if (!keepCharacters.has(character)) {
-      mutateAtom(
-        $contextState,
-        (state) => state.characters[character],
+      $contextState.mutate(
+        (s) => s.characters[character],
         {
           style: undefined,
-          visible: false,
+          visible: false
         }
       );
     }
@@ -145,18 +123,14 @@ const handleClearAction = ($rendererState: DeepMapStore<RendererStateStore<Recor
     if (context.meta.goingBack && handler.fn.skipClearOnGoingBack) continue;
 
     handler.clear();
-    mutateAtom(
-      $contextState,
-      (state) => state.custom[id],
-      undefined
-    );
+    $contextState.mutate((s) => s.custom[id], undefined);
   }
 }
 
 /**
  * You MUST return value returned by this function
  */
-const handleCustomAction = ($contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>, options: RendererInit, context: Context, fn: CustomHandler<string, State>, resolve: () => void) => {
+const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, options: RendererInit, context: Context, fn: CustomHandler<string, State>, resolve: () => void) => {
   const get = (insert = true) => {
     const cached = $contextState.get().custom[fn.key]
 
@@ -175,11 +149,7 @@ const handleCustomAction = ($contextState: DeepMapStore<ContextStateStore<Record
      */
     const clearManager = () => {
       clear();
-      mutateAtom(
-        $contextState,
-        (state) => state.custom[fn.key],
-        undefined
-      );
+      $contextState.mutate((s) => s.custom[fn.key], undefined);
     };
 
     const createElement = () => {
@@ -204,9 +174,8 @@ const handleCustomAction = ($contextState: DeepMapStore<ContextStateStore<Record
       },
     }
 
-    mutateAtom(
-      $contextState,
-      (state) => state.custom[fn.key],
+    $contextState.mutate(
+      (s) => s.custom[fn.key],
       {
         dom: element,
         fn,
@@ -235,27 +204,19 @@ const handleCustomAction = ($contextState: DeepMapStore<ContextStateStore<Record
   return result;
 }
 
-const handleClearCustomAction = ($contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>, fn: CustomHandler<string, State>) => {
+const handleClearCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, fn: CustomHandler<string, State>) => {
   const data = $contextState.get().custom[fn.key];
 
   if (data) data.clear();
 }
 
-const handleTextAction = ($contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>, content: string, resolve: () => void) => {
-  mutateAtom(
-    $contextState,
-    (state) => state.text,
-    { content, resolve }
-  );
+const handleTextAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, content: string, resolve: () => void) => {
+  $contextState.mutate((s) => s.text, { content, resolve });
 }
 
-const handleInputAction = ($contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>, options: RendererInit, context: Context, label: string, onInput: (opts: ActionInputOnInputMeta<string, State>) => void, setup: ActionInputSetup, resolve: () => void) => {
+const handleInputAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, options: RendererInit, context: Context, label: string, onInput: (opts: ActionInputOnInputMeta<string, State>) => void, setup: ActionInputSetup, resolve: () => void) => {
   const error = (value: string) => {
-    mutateAtom(
-      $contextState,
-      (state) => state.input.error,
-      value
-    );
+    $contextState.mutate((s) => s.input.error, value);
   };
 
   const onInputHandler = (event: InputEvent & { currentTarget: HTMLInputElement }) => {
@@ -284,11 +245,10 @@ const handleInputAction = ($contextState: DeepMapStore<ContextStateStore<Record<
   // @ts-expect-error Type is actually correct
   !context.meta.preview && input.addEventListener('input', onInputHandler);
 
-  setup(input, (callback) => mutateAtom($contextState, (state) => state.input.cleanup, () => callback));
+  setup(input, (callback) => $contextState.mutate((s) => s.input.cleanup, () => callback));
 
-  mutateAtom(
-    $contextState,
-    (state) => state.input,
+  $contextState.mutate(
+    (s) => s.input,
     {
       element: input,
       label,

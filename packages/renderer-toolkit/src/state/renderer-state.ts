@@ -1,6 +1,6 @@
 import type { NovelyScreen } from '@novely/core';
 import type { BaseDeepMap } from 'nanostores';
-import { deepMap } from 'nanostores';
+import { deepAtom } from '../atoms/deep-atom';
 
 /**
  * State which is related to whole renderer
@@ -47,7 +47,7 @@ type RendererStateStore<Extension extends BaseDeepMap = typeof defaultEmpty> = R
  * ```
  */
 const createRendererState = <Extension extends BaseDeepMap = typeof defaultEmpty>(extension = defaultEmpty as Extension) => {
-  const rendererState = deepMap<RendererStateStore<Extension>>({
+  const rendererState = deepAtom<RendererStateStore<Extension>>({
     screen: 'mainmenu',
     loadingShown: false,
     exitPromptShown: false,

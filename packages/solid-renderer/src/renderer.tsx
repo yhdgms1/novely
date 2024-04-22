@@ -34,8 +34,6 @@ import {
 	handleTextAction,
 	handleInputAction,
 	handleVibrateAction,
-
-	mutateAtom
 } from '@novely/renderer-toolkit'
 import { createEmitter } from './emitter';
 import { useContextState, removeContextState } from './context-state'
@@ -113,10 +111,7 @@ const createSolidRenderer = ({
 								append(className, style) {
 									clearTimeout($contextState.get().characters[character]?.hideTimeoutId);
 
-									/**
-									 * Set style and show
-									 */
-									mutateAtom($contextState, (state) => state.characters[character], { style, visible: true });
+									$contextState.mutate((s) => s.characters[character], { style, visible: true });
 
 									const { canvas: element } = chars[character];
 
@@ -142,14 +137,14 @@ const createSolidRenderer = ({
 											/**
 											 * Ignore remove animations, because it is not shown anyway
 											 */
-											mutateAtom($contextState, (state) => state.characters[character]!.visible, false);
+											$contextState.mutate((s) => s.characters[character]!.visible, false);
 											resolve();
 
 											return;
 										}
 
 										const timeoutId = setTimeout(() => {
-											mutateAtom($contextState, (state) => state.characters[character]!.visible, false);
+											$contextState.mutate((s) => s.characters[character]!.visible, false);
 											resolve();
 										}, duration);
 
@@ -160,8 +155,8 @@ const createSolidRenderer = ({
 											chars[character].canvas.className = className as string;
 										}
 
-										mutateAtom($contextState, (state) => state.characters[character]!.style, style);
-										mutateAtom($contextState, (state) => state.characters[character]!.hideTimeoutId, timeoutId);
+										$contextState.mutate((s) => s.characters[character]!.style, style);
+										$contextState.mutate((s) => s.characters[character]!.hideTimeoutId, timeoutId);
 									})
 								},
 								animate(timeout, classes) {
@@ -251,21 +246,21 @@ const createSolidRenderer = ({
 								return $contextState.get().meta.restoring;
 							},
 							set restoring(value) {
-								mutateAtom($contextState, (state) => state.meta.restoring, value);
+								$contextState.mutate((s) => s.meta.restoring, value);
 							},
 
 							get preview() {
 								return $contextState.get().meta.preview;
 							},
 							set preview(value) {
-								mutateAtom($contextState, (state) => state.meta.preview, value);
+								$contextState.mutate((s) => s.meta.preview, value);
 							},
 
 							get goingBack() {
 								return $contextState.get().meta.goingBack;
 							},
 							set goingBack(value) {
-								mutateAtom($contextState, (state) => state.meta.goingBack, value);
+								$contextState.mutate((s) => s.meta.goingBack, value);
 							}
 						}
 					};
@@ -278,19 +273,19 @@ const createSolidRenderer = ({
 				},
 				ui: {
 					showScreen(name) {
-						mutateAtom($rendererState, (state) => state.screen, name);
+						$rendererState.mutate((s) => s.screen, name);
 					},
 					getScreen() {
 						return $rendererState.get().screen;
 					},
 					showLoading() {
-						mutateAtom($rendererState, (state) => state.loadingShown, true);
+						$rendererState.mutate((s) => s.loadingShown, true);
 					},
 					hideLoading() {
-						mutateAtom($rendererState, (state) => state.loadingShown, false);
+						$rendererState.mutate((s) => s.loadingShown, false);
 					},
 					showExitPrompt() {
-						mutateAtom($rendererState, (state) => state.exitPromptShown, true);
+						$rendererState.mutate((s) => s.exitPromptShown, true);
 					},
 					start: createStartFunction(() => {
 						const Root = createRootComponent({
@@ -346,10 +341,10 @@ const createSolidRenderer = ({
 			return renderer;
 		},
 		registerScreen(name: string, screen: StateScreen) {
-			mutateAtom($rendererState, (state) => state.screens[name], () => screen);
+			$rendererState.mutate((s) => s.screens[name], () => screen);
 		},
 		registerMainmenuItem(fn: StateMainmenuItem) {
-			mutateAtom($rendererState, (state) => state.mainmenu, (mainmenu) => [...mainmenu, fn]);
+			$rendererState.mutate((s) => s.mainmenu, (mainmenu) => [...mainmenu, fn]);
 		},
 	};
 };

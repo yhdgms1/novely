@@ -1,6 +1,8 @@
 import type { CustomHandler, CustomHandlerGetResult } from '@novely/core';
-import type { DeepMapStore, BaseDeepMap } from 'nanostores';
-import { deepMap, onMount, cleanStores } from 'nanostores';
+import type { BaseDeepMap } from 'nanostores';
+import type { DeepAtom } from '../atoms/deep-atom';
+import { onMount, cleanStores } from 'nanostores';
+import { deepAtom } from '../atoms/deep-atom';
 
 type Disposable = {
   /**
@@ -226,7 +228,7 @@ type ContextStateStore<Extension extends BaseDeepMap = typeof defaultEmpty> = Co
 const getDefaultContextState = (): ContextState => {
   return {
     background: {
-      background: '',
+      background: '#000',
     },
     characters: {},
     choice: {
@@ -277,10 +279,10 @@ const getDefaultContextState = (): ContextState => {
  * ```
  */
 const createContextStateRoot = <Extension extends BaseDeepMap = typeof defaultEmpty>(getExtension: () => Extension = () => ({}) as Extension) => {
-  const CACHE = new Map<string, DeepMapStore<ContextStateStore<Extension>>>();
+  const CACHE = new Map<string, DeepAtom<ContextStateStore<Extension>>>();
 
   const make = () => {
-    const contextState = deepMap<ContextStateStore<Extension>>({
+    const contextState = deepAtom<ContextStateStore<Extension>>({
       ...getDefaultContextState(),
       ...getExtension()
     } as ContextStateStore<Extension>);
