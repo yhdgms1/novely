@@ -2,7 +2,7 @@ export { computed } from 'nanostores'
 export type { MapStore, DeepMapStore, Atom, WritableAtom, ReadableAtom } from 'nanostores';
 
 export { memo } from './atoms/memo'
-export { mutateAtom, batchUpdate } from './atoms/mutate-atom'
+export { mutateAtom } from './atoms/mutate-atom'
 
 export { createContextStateRoot } from './state/context-state'
 export type { ContextStateStore, ContextState, ContextStateCharacter } from './state/context-state'
