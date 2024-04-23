@@ -5,10 +5,10 @@ import { deepMap, setPath } from 'nanostores'
 type AnyFunction = (...args: any[]) => any;
 
 type GetPath<$AtomValue extends object, $MutateValue> = (object: $AtomValue) => $MutateValue;
-type Setter<T> = T extends AnyFunction ? () => T : (T | ((prev: T) => NoInfer<T>))
+type Setter<T> = T extends AnyFunction ? () => T : (T | ((prev: T) => T))
 
 type DeepAtom<T extends BaseDeepMap> = DeepMapStore<T> & {
-  mutate: <$MutateValue>(getPath: ((object: T) => $MutateValue), setter: Setter<$MutateValue>) => $MutateValue;
+  mutate: <$MutateValue>(getPath: ((object: T) => $MutateValue), setter: Setter<NoInfer<$MutateValue>>) => NoInfer<$MutateValue>;
 }
 
 /**
