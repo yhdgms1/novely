@@ -48,6 +48,10 @@ const usePath = <$AtomValue extends BaseDeepMap, $MutateValue>(atomValue: $AtomV
 
       current = value;
 
+      if (value === undefined) {
+        return new Proxy({}, proxyHandler);
+      }
+
       if (value && typeof value === 'object') {
         return new Proxy(value, proxyHandler);
       }
@@ -87,8 +91,6 @@ const deepAtom = <$AtomValue extends BaseDeepMap>(init: $AtomValue): DeepAtom<$A
     const newValue = typeof setter === 'function' ? setter(value) : setter;
 
     if (newValue === value) {
-      console.warn(`The new value is the same as the current value.`)
-
       return newValue;
     }
 
