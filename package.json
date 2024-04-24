@@ -31,7 +31,9 @@
 		"dev:rive": "pnpm --filter=@novely/rive... --parallel dev",
 		"build:rive": "pnpm --filter=@novely/rive... --parallel build",
 		"dev:toolkit": "pnpm --filter=@novely/renderer-toolkit... --parallel dev",
-		"build:toolkit": "pnpm --filter=@novely/renderer-toolkit... --parallel build"
+		"build:toolkit": "pnpm --filter=@novely/renderer-toolkit... --parallel build",
+		"dev:image-format-selector": "pnpm --filter=@novely/image-format-selector... --parallel dev",
+		"build:image-format-selector": "pnpm --filter=@novely/image-format-selector... --parallel build"
 	},
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "^6.18.1",

@@ -6,6 +6,8 @@ import { snow } from './particles';
 
 import { show, animate, hide as hideRive, remove } from '@novely/rive';
 
+import { selectFormat, setPriority } from '@novely/image-format-selector'
+
 import outdoor from './assets/outdoor.png';
 import lily_ok from './assets/lily.png';
 
