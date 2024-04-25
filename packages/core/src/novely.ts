@@ -69,6 +69,7 @@ const novely = <
 	DataScheme extends Data,
 >({
 	characters,
+	defaultEmotions = {},
 	storage = localStorageStorage({ key: 'novely-game-storage' }),
 	storageDelay = Promise.resolve(),
 	renderer: createRenderer,
@@ -937,9 +938,13 @@ const novely = <
 			push();
 		},
 		showCharacter({ ctx, push }, [character, emotion, className, style]) {
+			emotion ||= defaultEmotions[character];
+
 			if (DEV && !emotion) {
 				throw new Error(`Attemp to show character "${character}" without emotion provided.`)
 			}
+
+			if (!emotion) return;
 
 			if (DEV && !characters[character].emotions[emotion]) {
 				throw new Error(`Attempt to show character "${character}" with unknown emotion "${emotion}"`)

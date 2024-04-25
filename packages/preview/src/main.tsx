@@ -51,6 +51,10 @@ const engine = novely({
 		}
 	},
 
+	defaultEmotions: {
+		Lily: 'ok',
+	},
+
 	translation: {
 		ru: {
 			internal: RU,
@@ -108,7 +112,7 @@ false && engine.script({
 		action.text('Нажимайте на текст для продолжения'),
 		action.playMusic(sakura_girl),
 		action.showBackground(outdoor),
-		action.showCharacter('Lily', 'ok'),
+		action.showCharacter('Lily'),
 		action.voice(voice1),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		action.say('Lily', 'Ну привет, мальчик-неудачник'),

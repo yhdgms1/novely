@@ -217,7 +217,7 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 	showCharacter: {
 		<C extends keyof Characters>(
 			character: C,
-			emotion: keyof Characters[C]['emotions'],
+			emotion?: keyof Characters[C]['emotions'],
 			className?: string,
 			style?: string,
 		): ValidAction;

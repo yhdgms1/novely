@@ -1,11 +1,13 @@
-type Name<Keys extends string = string> = string | Record<Keys, string>;
-type Emotions<Keys extends string = string> = Record<
-	Keys,
+import type { Lang } from "./types";
+
+type Name<$Lang extends Lang> = string | Record<$Lang, string>;
+type Emotions<Emotion extends string = string> = Record<
+	Emotion,
 	string | string[]
 >;
 
-type Character<LanguageKeys extends string = string> = {
-	name: Name<LanguageKeys>;
+type Character<$Lang extends Lang = string> = {
+	name: Name<$Lang>;
 	color: string;
 	emotions: Emotions;
 };

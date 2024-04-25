@@ -145,6 +145,36 @@ interface NovelyInit<
 	 */
 	characters: Characters;
 	/**
+	 * Defined default emotions for characters
+	 * @example
+	 * ```ts
+	 * const engine = novely({
+	 *  characters: {
+	 *   Yuki: {
+	 *    name: 'Yuki',
+	 *    color: '#f595f6',
+	 *    emotions: {
+	 *     normal: './normal.png'
+	 *    }
+	 *   }
+	 *  },
+	 *  defaultEmotions: {
+	 *   Yuki: 'normal'
+	 *  }
+	 * });
+	 *
+	 * engine.script({
+	 *  start: [
+	 *    // Without emotion!
+	 *    engine.action.showCharacter('Yuki')
+	 *  ]
+	 * })
+	 * ```
+	 */
+	defaultEmotions?: {
+		[Character in keyof NoInfer<Characters>]?: (keyof NoInfer<Characters>[Character]['emotions'] & string)
+	}
+	/**
 	 * An object that provides access to the game's storage system.
 	 * @default localStorage // at key `novely-game-storage`
 	 */
