@@ -41,7 +41,7 @@ type Lang = string;
 type TypewriterSpeed = 'Slow' | 'Medium' | 'Fast' | 'Auto';
 type SoundVolume = number;
 
-type StorageMeta<L extends string = string> = [
+type StorageMeta<L extends Lang = string> = [
 	lang: L,
 	typewriter_speed: TypewriterSpeed,
 	music_volume: SoundVolume,
@@ -51,7 +51,7 @@ type StorageMeta<L extends string = string> = [
 
 type Migration = (save: unknown) => unknown;
 
-type StorageData<L extends string = string, D extends Data = Data> = {
+type StorageData<L extends Lang = string, D extends Data = Data> = {
 	saves: Save[];
 	data: D;
 	meta: StorageMeta<L>;
@@ -145,7 +145,7 @@ interface NovelyInit<
 	 */
 	characters: Characters;
 	/**
-	 * Defined default emotions for characters
+	 * Define default emotions for characters
 	 * @example
 	 * ```ts
 	 * const engine = novely({

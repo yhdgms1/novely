@@ -21,6 +21,14 @@ type SolidRendererStore = {
   characters: Record<string, CharacterHandle>;
 }
 
+type SettingsIcons = {
+  language: string;
+  typewriter_speed: string;
+  music_volume: string;
+  sound_volume: string;
+  voice_volume: string;
+}
+
 type CreateSolidRendererOptions = {
   /**
    * Enter fullscreen mode when opening a game, exit when opening main-menu
@@ -42,11 +50,7 @@ type CreateSolidRendererOptions = {
    * @default document.body
    */
   target?: MountableElement;
-  /**
-   * In the settings screen languages will be shown in it's own language instead of selected language
-   * @default true
-   */
-  useNativeLanguageNames?: boolean;
+  settingsIcons?: SettingsIcons
 }
 
 type EmitterEventsMap = {
@@ -56,6 +60,7 @@ type EmitterEventsMap = {
 type RendererStoreExtension = { screens: Record<string, StateScreen>; mainmenu: StateMainmenuItems }
 
 export type {
+  SettingsIcons,
   EmitterEventsMap,
   StateScreen,
   StateScreens,

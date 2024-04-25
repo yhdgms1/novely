@@ -3,10 +3,13 @@ import type { VoidComponent, JSX } from 'solid-js';
 import { For, createUniqueId } from 'solid-js';
 import { useData } from '$context';
 import { TypewriterSpeed } from '@novely/core';
+import { SettingsIcons } from '../types';
 
-interface SettingsProps {}
+interface SettingsProps {
+	icons: SettingsIcons
+}
 
-const Settings: VoidComponent<SettingsProps> = () => {
+const Settings: VoidComponent<SettingsProps> = (props) => {
 	const data = useData();
 
 	const language = () => data.storageData().meta[0];
@@ -62,7 +65,7 @@ const Settings: VoidComponent<SettingsProps> = () => {
 				<div>
 					<div class="select">
 						<label class="select__label" for={languageSelectID}>
-							<span aria-hidden={true}>🌎</span> {data.t('Language')}
+							<span aria-hidden={true} innerHTML={props.icons.language} /> {data.t('Language')}
 						</label>
 						<select class="select__select" id={languageSelectID} onChange={onLanguageSelect}>
 							<For each={data.options.languages}>
@@ -76,7 +79,7 @@ const Settings: VoidComponent<SettingsProps> = () => {
 					</div>
 					<div class="select">
 						<label class="select__label" for={speedSelectID}>
-							<span aria-hidden={true}>⚡</span> {data.t('TextSpeed')}
+							<span aria-hidden={true} innerHTML={props.icons.typewriter_speed} /> {data.t('TextSpeed')}
 						</label>
 						<select class="select__select" id={speedSelectID} onChange={onSpeedSelect}>
 							<For each={['Slow', 'Medium', 'Fast', 'Auto']}>
@@ -93,7 +96,7 @@ const Settings: VoidComponent<SettingsProps> = () => {
 				<div>
 					<div class="range">
 						<label class="range__label" for={musicVolumeSelectID}>
-							<span aria-hidden={true}>🎵</span> {data.t('MusicVolume')}
+							<span aria-hidden={true} innerHTML={props.icons.music_volume} /> {data.t('MusicVolume')}
 						</label>
 						<input
 							class="range__range"
@@ -108,7 +111,7 @@ const Settings: VoidComponent<SettingsProps> = () => {
 					</div>
 					<div class="range">
 						<label class="range__label" for={soundVolumeSelectID}>
-							<span aria-hidden={true}>🔊</span> {data.t('SoundVolume')}
+							<span aria-hidden={true} innerHTML={props.icons.sound_volume} /> {data.t('SoundVolume')}
 						</label>
 						<input
 							class="range__range"
@@ -123,7 +126,7 @@ const Settings: VoidComponent<SettingsProps> = () => {
 					</div>
 					<div class="range">
 						<label class="range__label" for={voiceVolumeSelectID}>
-							<span aria-hidden={true}>🗣️</span> {data.t('VoiceVolume')}
+							<span aria-hidden={true} innerHTML={props.icons.voice_volume} /> {data.t('VoiceVolume')}
 						</label>
 						<input
 							class="range__range"

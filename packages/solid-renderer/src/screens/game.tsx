@@ -164,7 +164,8 @@ const Game: VoidComponent<GameProps> = (props) => {
 			class={props.className}
 			classList={{
 				'root': true,
-				'game': true
+				'game': true,
+				'preview': props.isPreview
 			}}
 		>
 			<div

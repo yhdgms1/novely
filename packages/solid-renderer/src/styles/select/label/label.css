@@ -7,3 +7,15 @@
 	padding: 0.25rem 0.5rem;
 	border-radius: 0.25rem;
 }
+
+@media (max-aspect-ratio: 0.8) {
+	.select__label {
+		min-width: 50%;
+	}
+}
+
+@media (max-aspect-ratio: 0.26) {
+	.select__label {
+		min-width: 100%;
+	}
+}

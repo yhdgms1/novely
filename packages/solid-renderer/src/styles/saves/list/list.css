@@ -83,6 +83,8 @@
 }
 
 .saves__list-item__description {
+	font-variant-numeric: tabular-nums;
+
 	width: 100%;
 
 	display: flex;

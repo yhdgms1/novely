@@ -41,3 +41,15 @@
 .range__range:active::-webkit-slider-thumb, .range__range:active::-moz-range-thumb {
   background-color: var(--novely-range-thumb-active-color, #FF66A8);
 }
+
+@media (max-aspect-ratio: 0.8) {
+	.range__range {
+		min-width: 50%;
+	}
+}
+
+@media (max-aspect-ratio: 0.26) {
+	.range__range {
+		min-width: 100%;
+	}
+}

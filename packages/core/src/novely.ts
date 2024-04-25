@@ -884,9 +884,6 @@ const novely = <
 			render(ctx);
 		},
 		forward(ctx) {
-			/**
-			 * There should be way to determine when it's better to enmemory before push and when after
-			 */
 			if (!ctx.meta.preview) enmemory(ctx);
 
 			matchActionInit.push(ctx);
@@ -938,7 +935,7 @@ const novely = <
 			push();
 		},
 		showCharacter({ ctx, push }, [character, emotion, className, style]) {
-			emotion ||= defaultEmotions[character];
+			emotion ??= defaultEmotions[character];
 
 			if (DEV && !emotion) {
 				throw new Error(`Attemp to show character "${character}" without emotion provided.`)

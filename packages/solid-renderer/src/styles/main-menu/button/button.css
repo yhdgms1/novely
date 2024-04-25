@@ -9,6 +9,10 @@
 	justify-items: center;
 }
 
+.main-menu__button__text {
+	align-self: center;
+}
+
 @media (max-aspect-ratio: 0.26) {
 	.main-menu__button {
 		grid-template-columns: 1fr;

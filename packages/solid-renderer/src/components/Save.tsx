@@ -38,13 +38,11 @@ const Save: VoidComponent<SaveProps> = (props) => {
   const stringDate = () => capitalize(
     date.toLocaleDateString(props.language, {
       year: year === CURRENT_YEAR ? undefined : 'numeric',
-      weekday: 'long',
       month: 'long',
       day: 'numeric',
       dayPeriod: 'narrow',
       hour: 'numeric',
       minute: 'numeric',
-      second: 'numeric',
     })
   );
 

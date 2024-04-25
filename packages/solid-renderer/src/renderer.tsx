@@ -48,6 +48,13 @@ const createSolidRenderer = ({
 	controls = 'outside',
 	skipTypewriterWhenGoingBack = true,
 	target = document.body,
+	settingsIcons = {
+		language: '🌎',
+		typewriter_speed: '⚡',
+		music_volume: '🎵',
+		sound_volume: '🔊',
+		voice_volume: '🗣️'
+	}
 }: CreateSolidRendererOptions = {}) => {
 	const emitter = createEmitter<EmitterEventsMap>();
 
@@ -300,6 +307,8 @@ const createSolidRenderer = ({
 
 							controls,
 							skipTypewriterWhenGoingBack,
+
+							settingsIcons,
 
 							rendererContext: renderer.getContext(options.mainContextKey),
 
