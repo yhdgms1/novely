@@ -927,6 +927,10 @@ const novely = <
 			push();
 		},
 		showCharacter({ ctx, push }, [character, emotion, className, style]) {
+			if (DEV && !emotion) {
+				throw new Error(`Attemp to show character "${character}" without emotion provided.`)
+			}
+
 			if (DEV && !characters[character].emotions[emotion]) {
 				throw new Error(`Attempt to show character "${character}" with unknown emotion "${emotion}"`)
 			}
