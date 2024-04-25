@@ -1136,19 +1136,7 @@ const novely = <
 		end({ ctx }) {
 			if (ctx.meta.preview) return;
 
-			ctx.vibrate(0);
-			ctx.clear(EMPTY_SET, EMPTY_SET, { music: EMPTY_SET, sounds: EMPTY_SET }, noop);
-
-			renderer.ui.showScreen('mainmenu');
-
-			/**
-			 * Reset interactive value
-			 */
-			interactivity(false);
-			/**
-			 * Reset session times
-			 */
-			times.clear();
+			exit(true);
 		},
 		input({ ctx, data, forward }, [question, onInput, setup]) {
 			ctx.input(
