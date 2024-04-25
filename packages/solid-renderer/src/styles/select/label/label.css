@@ -10,7 +10,7 @@
 
 @media (max-aspect-ratio: 0.8) {
 	.select__label {
-		min-width: 50%;
+		min-width: 70%;
 	}
 }
 
