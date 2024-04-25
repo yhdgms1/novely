@@ -497,6 +497,14 @@ const novely = <
 	 * Restore save or if none is passed then look for latest save, if there is no saves will create a new save
 	 */
 	const restore = async (save?: Save) => {
+		if (isEmpty(story)) {
+			if (DEV) {
+				throw new Error('Story is empty. You should call an `enine.script` function [https://novely.pages.dev/guide/story.html]')
+			}
+
+			return;
+		}
+
 		if (!coreData.get().dataLoaded) return;
 
 		let latest = save || storageData.get().saves.at(-1);
@@ -730,6 +738,8 @@ const novely = <
 	 * Execute save in context at `name`
 	 */
 	const preview = async (save: Save, name: string) => {
+		if (isEmpty(story)) return;
+
 		const [path, data] = save;
 
 		const { queue } = getActionsFromPath(story, path, true);
