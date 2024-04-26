@@ -213,20 +213,15 @@ engine.script({
 			en: "Ah, {{age}} {{age@years}} old? It's a wonderful age",
 			ru: 'Ох, {{age}} {{age@years}}? Это прекрасный возраст',
 		}),
-		action.condition(() => true, {
-			true: [
-				action.text({
-					en: 'The End',
-					ru: 'Конец',
-				}),
-				// Проверка автоматического exit
-			],
+		action.text({
+			en: 'The End',
+			ru: 'Конец'
 		}),
-		action.jump('another'),
+		action.end(),
 	],
 });
 
-engine.script({
+false && engine.script({
 	another: [
 		action.showBackground(outdoor),
 		action.say('Lily', {
