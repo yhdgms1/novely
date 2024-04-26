@@ -75,8 +75,8 @@ const novely = <
 	renderer: createRenderer,
 	initialScreen = 'mainmenu',
 	translation,
-	state: defaultState,
-	data: defaultData,
+	state: defaultState = {} as StateScheme,
+	data: defaultData = {} as DataScheme,
 	autosaves = true,
 	migrations = [],
 	throttleTimeout = 799,
@@ -108,12 +108,6 @@ const novely = <
 	const dataLoaded = createControlledPromise();
 
 	let initialScreenWasShown = false;
-
-	/**
-	 * Prevent `undefined`
-	 */
-	defaultData ||= {} as DataScheme;
-	defaultState ||= {} as StateScheme;
 
 	/**
 	 * Saves timestamps created in this session

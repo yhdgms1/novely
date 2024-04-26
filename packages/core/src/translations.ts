@@ -18,7 +18,7 @@ const RU = {
 	Remove: 'Удалить',
 	LoadASaveFrom: 'Загрузить сохранение от',
 	DeleteASaveFrom: 'Удалить сохранение от',
-	TextSpeed: 'Скорость Текста',
+	TextSpeed: 'Скорость текста',
 	TextSpeedSlow: 'Медленная',
 	TextSpeedMedium: 'Средняя',
 	TextSpeedFast: 'Быстрая',

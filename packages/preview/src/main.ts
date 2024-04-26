@@ -96,7 +96,7 @@ const engine = novely({
 	migrations: [
 		(saved) => {
 			if (saved && typeof saved === 'object' && 'saves' in saved && Array.isArray(saved.saves)) {
-				saved.saves = saved.saves.filter((item) => Array.isArray(item) && item[2][0] > 1693459780762);
+				saved.saves = saved.saves.filter((item) => Array.isArray(item) && item[2][0] > 1714120271394);
 			}
 
 			return saved;
