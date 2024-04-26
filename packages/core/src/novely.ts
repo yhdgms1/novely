@@ -642,7 +642,7 @@ const novely = <
 	/**
 	 * @param force Force exit
 	 */
-	const exit = (force = false) => {
+	const exit = (force = false, saving = true) => {
 		if (interacted > 1 && !force && askBeforeExit) {
 			renderer.ui.showExitPrompt();
 			return;
@@ -669,7 +669,7 @@ const novely = <
 		 *
 		 * What we do is enmemory on exit.
 		 */
-		if (interacted > 0) {
+		if (interacted > 0 && saving) {
 			save('auto');
 		}
 
@@ -1130,7 +1130,7 @@ const novely = <
 		end({ ctx }) {
 			if (ctx.meta.preview) return;
 
-			exit(true);
+			exit(true, false);
 		},
 		input({ ctx, data, forward }, [question, onInput, setup]) {
 			ctx.input(
