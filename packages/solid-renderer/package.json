@@ -19,9 +19,9 @@
 		"typescript": "^5.4.5"
 	},
 	"dependencies": {
-		"@novely/core": "*",
+		"@novely/core": "workspace:*",
 		"@novely/renderer-toolkit": "workspace:*",
-		"@novely/typewriter": "*",
+		"@novely/typewriter": "workspace:*",
 		"retrieved": "^0.1.0",
 		"solid-js": "1.8.5"
 	},

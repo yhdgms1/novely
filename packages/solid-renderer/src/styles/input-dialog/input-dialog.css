@@ -34,7 +34,7 @@
 	border-radius: var(--novely-input-dialog-border-radius, .875rem);
 	box-shadow: 0.063rem 0.063rem 0.25rem var(--novely-input-dialog-box-shadow-color, #00000072);
 
-	/* prettier-ignore */
+	/* biome-ignore */
 	background-image: var(--novely-input-dialog-background-image, radial-gradient(#d6608998 20%, transparent 20%), radial-gradient(#d6608998 20%, transparent 20%));
 	background-color: var(--novely-input-dialog-background-color, #f092b4d8);
 	background-position: var(--novely-input-dialog-background-position, 0 0, 3.125rem 3.125rem);

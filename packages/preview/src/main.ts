@@ -250,5 +250,3 @@ false && engine.script({
 		action.showBackground('hotpink')
 	]
 })
-
-export {};

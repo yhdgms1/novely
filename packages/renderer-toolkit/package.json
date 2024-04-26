@@ -30,7 +30,7 @@
 		"typescript": "^5.4.5"
 	},
 	"dependencies": {
-		"@novely/core": "*",
+		"@novely/core": "workspace:*",
 		"esm-env": "^1.0.0",
 		"howler": "^2.2.4",
 		"nanostores": "^0.10.3",

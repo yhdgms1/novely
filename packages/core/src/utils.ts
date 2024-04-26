@@ -136,7 +136,7 @@ const throttle = <Fn extends (...args: any[]) => any>(fn: Fn, ms: number) => {
 
 		throttled = true;
 
-		setTimeout(function () {
+		setTimeout(() => {
 			throttled = false;
 
 			if (savedArgs) {

@@ -39,9 +39,7 @@ type TextContent<L extends string, S extends State> = string | ((state: S) => st
 
 type FunctionableValue<T> = T | (() => T);
 
-type CustomHandlerGetResultDataFunction = {
-	(data?: Record<string, unknown>): Record<string, unknown>;
-};
+type CustomHandlerGetResultDataFunction = (data?: Record<string, unknown>) => Record<string, unknown>;
 
 type CustomHandlerGetResult<I extends boolean> = {
 	delete: () => void;
@@ -141,9 +139,7 @@ type ChoiceCheckFunctionProps<L extends string, S extends State> = {
 	state: S;
 }
 
-type ChoiceCheckFunction<L extends string, S extends State> = {
-	(props: ChoiceCheckFunctionProps<L, S>): boolean;
-}
+type ChoiceCheckFunction<L extends string, S extends State> = (props: ChoiceCheckFunctionProps<L, S>) => boolean
 
 type ConditionCheckFunction<S extends State, R extends string | true | false> = (state: S) => R;
 
@@ -215,14 +211,11 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 
 	jump: (scene: string) => ValidAction;
 
-	showCharacter: {
-		<C extends keyof Characters>(
+	showCharacter: <C extends keyof Characters>(
 			character: C,
 			emotion?: keyof Characters[C]['emotions'],
 			className?: string,
-			style?: string,
-		): ValidAction;
-	};
+			style?: string,) => ValidAction;
 
 	hideCharacter: (
 		character: keyof Characters,

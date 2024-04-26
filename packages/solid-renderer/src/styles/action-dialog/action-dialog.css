@@ -36,7 +36,7 @@
 	border-radius: var(--novely-dialog-border-radius, .875rem);
 	box-shadow: 0.063rem 0.063rem 0.25rem var(--novely-dialog-box-shadow-color, #00000072);
 
-	/* prettier-ignore */
+	/* biome-ignore */
 	background-image: var(--novely-dialog-background-image, radial-gradient(#d6608998 20%, transparent 20%), radial-gradient(#d6608998 20%, transparent 20%));
 	background-color: var(--novely-dialog-background-color, #f092b4d8);
 	background-position: var(--novely-dialog-background-position, 0 0, 3.125rem 3.125rem);
@@ -83,7 +83,7 @@
 	word-wrap: break-word;
 	word-break: break-word;
 
-	/* prettier-ignore */
+	/* biome-ignore */
 	text-shadow: 0.063rem 0.063rem 0 black, -0.063rem -0.063rem 0 black, 0.063rem -0.063rem 0 black, -0.063rem 0.063rem 0 black;
 }
 

@@ -39,7 +39,7 @@ test('print', () => {
 	let temp = print(parse(input));
 
 	for (let i = 0; i < 10; i++) {
-		let res = print(parse(temp));
+		const res = print(parse(temp));
 
 		assert.equal(temp, res);
 

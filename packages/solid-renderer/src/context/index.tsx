@@ -5,7 +5,7 @@ import type { Emitter } from '../emitter';
 
 import { from, createContext, useContext, Show } from 'solid-js';
 import { useMedia } from '$hooks';
-import { DeepMapStore, RendererStateStore } from '@novely/renderer-toolkit';
+import type { DeepMapStore, RendererStateStore } from '@novely/renderer-toolkit';
 
 interface DataContext {
 	$rendererState: DeepMapStore<RendererStateStore<RendererStoreExtension>>;

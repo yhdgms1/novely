@@ -14,9 +14,7 @@ const createCanvas2D = () => {
 		throw new Error('Could not get `context`');
 	}
 
-	canvas.getContext = function () {
-		return context;
-	};
+	canvas.getContext = () => context;
 
 	return canvas as unknown as HTMLCanvasElement;
 };

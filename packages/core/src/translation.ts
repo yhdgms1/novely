@@ -1,4 +1,4 @@
-import { Data, State } from "./types";
+import type { Data, State } from "./types";
 
 type PluralType = Intl.LDMLPluralRule;
 type Pluralization = Partial<Record<PluralType, string>>;

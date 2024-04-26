@@ -2,8 +2,8 @@ import type { VoidComponent, JSX } from 'solid-js';
 
 import { For, createUniqueId } from 'solid-js';
 import { useData } from '$context';
-import { TypewriterSpeed } from '@novely/core';
-import { SettingsIcons } from '../types';
+import type { TypewriterSpeed } from '@novely/core';
+import type { SettingsIcons } from '../types';
 
 interface SettingsProps {
 	icons: SettingsIcons

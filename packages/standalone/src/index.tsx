@@ -43,7 +43,7 @@ window.KK = KK;
 window.JP = JP;
 
 let rendererOptions: CreateSolidRendererOptions | undefined;
-let storageKey: string = 'novely-saves';
+let storageKey = 'novely-saves';
 
 Object.defineProperty(window, 'rendererOptions', {
 	get() {

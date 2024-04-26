@@ -4,9 +4,11 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
+		"lint": "biome lint --apply ./packages",
+		"format": "@biomejs/biome format --write .",
+
 		"dev": "pnpm dev:preview",
 		"init-repo": "pnpm build:parser && pnpm build:vite-plugin-nvl && pnpm build:deepmerge && pnpm build:core && pnpm build:typewriter && pnpm build:particles && pnpm build:toolkit && pnpm build:solid",
-		"format": "prettier --write .",
 		"dev:core": "pnpm --filter=@novely/core... --parallel dev",
 		"build:core": "pnpm --filter=@novely/core... --parallel build",
 		"dev:solid": "pnpm --filter=@novely/solid-renderer... --parallel dev",
@@ -36,9 +38,6 @@
 		"build:image-format-selector": "pnpm --filter=@novely/image-format-selector... --parallel build"
 	},
 	"devDependencies": {
-		"@typescript-eslint/eslint-plugin": "^7.7.1",
-		"@typescript-eslint/parser": "^7.7.1",
-		"eslint": "^8.56.0",
-		"prettier": "^3.2.5"
+		"@biomejs/biome": "^1.7.1"
 	}
 }

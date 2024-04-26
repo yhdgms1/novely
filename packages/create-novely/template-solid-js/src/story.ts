@@ -38,5 +38,3 @@ script({
 		a.end(),
 	],
 })
-
-export {}

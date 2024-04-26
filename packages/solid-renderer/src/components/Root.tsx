@@ -5,7 +5,7 @@ import type { EmitterEventsMap, RendererStoreExtension, SettingsIcons } from '..
 import type { Context } from '@novely/core';
 import { memo } from '@novely/renderer-toolkit';
 import { Switch, Match, createEffect, from, Show } from 'solid-js';
-import { Character, Renderer, RendererInit } from '@novely/core';
+import type { Character, Renderer, RendererInit } from '@novely/core';
 import { Provider } from '$context';
 import { useShared } from '../shared';
 import { Game, MainMenu, Saves, Settings, Loading, CustomScreen } from '$screens';
