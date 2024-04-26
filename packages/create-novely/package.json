@@ -14,8 +14,8 @@
 	},
 	"devDependencies": {
 		"@types/prompts": "^2.4.4",
-		"tsup": "^8.0.0",
-		"typescript": "^5.2.2"
+		"tsup": "^8.0.2",
+		"typescript": "^5.4.5"
 	},
 	"dependencies": {
 		"kolorist": "^1.8.0",

@@ -36,9 +36,9 @@
 		"build:image-format-selector": "pnpm --filter=@novely/image-format-selector... --parallel build"
 	},
 	"devDependencies": {
-		"@typescript-eslint/eslint-plugin": "^6.18.1",
-		"@typescript-eslint/parser": "^6.18.1",
+		"@typescript-eslint/eslint-plugin": "^7.7.1",
+		"@typescript-eslint/parser": "^7.7.1",
 		"eslint": "^8.56.0",
-		"prettier": "^3.2.1"
+		"prettier": "^3.2.5"
 	}
 }
