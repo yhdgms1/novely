@@ -189,13 +189,10 @@ const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<Pro
   };
 
   const result = fn({
-    get: get as CustomHandlerFunctionGetFn,
-
-    goingBack: context.meta.goingBack,
-    preview: context.meta.preview,
-
+    ...context.meta,
     lang: options.storageData.get().meta[0],
 
+    get: get as CustomHandlerFunctionGetFn,
     state: options.getStateFunction(context.id)
   });
 

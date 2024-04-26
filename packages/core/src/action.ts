@@ -69,6 +69,7 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 	get: CustomHandlerFunctionGetFn;
 	state: StateFunction<S>;
 
+	restoring: boolean;
 	goingBack: boolean;
 	preview: boolean;
 
