@@ -1,6 +1,9 @@
 import { DEV, BROWSER } from 'esm-env';
 import { avif, jxl, webp } from './constants';
 
+// todo: remove when support is enough
+import '@ungap/with-resolvers';
+
 type ImageFormat = 'avif' | 'jxl' | 'webp' | 'fallback';
 
 const selectionCache = new Map<string, string>();
@@ -29,9 +32,18 @@ const formatsMap = {
 	webp
 } as const;
 
+const { promise: formatsSupportChecked, resolve: formatsSupportCheckedResolve } = Promise.withResolvers<void>();
+
+let formatsSupportCheckedCount = 0;
+
 for (const [format, source] of Object.entries(formatsMap)) {
 	supportsFormat(source).then((supports) => {
 		supportsMap[format as keyof typeof supportsMap] = supports;
+		formatsSupportCheckedCount += 1;
+
+		if (formatsSupportCheckedCount === Object.keys(formatsMap).length) {
+			formatsSupportCheckedResolve();
+		}
 	})
 }
 
@@ -111,4 +123,4 @@ const selectFormat = (imageSet: Partial<Record<ImageFormat, string>>) => {
 	return image;
 }
 
-export { setPriority, selectFormat }
+export { setPriority, selectFormat, formatsSupportChecked }

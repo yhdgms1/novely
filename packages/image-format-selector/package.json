@@ -1,7 +1,7 @@
 {
 	"name": "@novely/image-format-selector",
 	"description": "Select image format",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"type": "module",
 	"sideEffects": false,
 	"types": "./dist/index.d.ts",
@@ -15,6 +15,7 @@
 		"build": "tsup"
 	},
 	"dependencies": {
+		"@ungap/with-resolvers": "^0.1.0",
 		"esm-env": "1.0.0"
 	},
 	"devDependencies": {

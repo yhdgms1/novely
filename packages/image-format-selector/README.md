@@ -10,20 +10,20 @@ In code snippets we use the [Vite Imagetools Plugin](https://www.npmjs.com/packa
 import { novely } from '@novely/core'
 import { selectFormat } from '@novely/image-format-selector'
 
-import bernard_jpeg from './bernard.jpeg'
-import bernard_webp from './bernard.jpeg?format=webp'
+import gibert_jpeg from './gibert.jpeg'
+import gibert_webp from './gibert.jpeg?format=webp'
 
 const engine = novely({
   characters: {
-    'Bernard': {
-      name: 'Bernard',
+    'Gibert': {
+      name: 'Gibert',
       color: '#ed5c87',
       emotions: {
         // You should use getter here
         get normal() {
           return selectFormat({
-            webp: bernard_webp,
-            fallback: bernard_jpeg
+            webp: gibert_webp,
+            fallback: gibert_jpeg
           })
         },
         get angry() {
@@ -36,6 +36,33 @@ const engine = novely({
       },
     },
   },
+})
+```
+
+## Wait until checked
+
+```ts
+import { novely } from '@novely/core'
+import { selectFormat, formatsSupportChecked } from '@novely/image-format-selector'
+
+import marseille_jpeg from './marseille.jpeg'
+import marseille_webp from './marseille.jpeg?format=webp'
+
+const engine = novely({
+  ...
+})
+
+formatsSupportChecked.then(() => {
+  const marseille = selectFormat({
+    webp: marseille_webp,
+    fallback: marseille_jpeg
+  })
+
+  engine.script({
+    start: [
+      engine.action.showBackground(marseille)
+    ]
+  })
 })
 ```
 
