@@ -1,7 +1,7 @@
 import type { Character } from './character';
 import type {
   ActionProxy,
-  ConditionCheckFunction
+  ConditionCheckFunction,
 } from './action';
 import type { Lang } from './types';
 

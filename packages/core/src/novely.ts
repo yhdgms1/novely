@@ -64,9 +64,10 @@ import { STACK_MAP, PRELOADED_ASSETS } from './shared';
 
 const novely = <
 	$Language extends string,
-	Characters extends Record<string, Character<$Language>>,
-	StateScheme extends State,
-	DataScheme extends Data,
+	$Characters extends Record<string, Character<$Language>>,
+	$State extends State,
+	$Data extends Data,
+	$Actions extends Record<string, (...args: any[]) => ValidAction>
 >({
 	characters,
 	defaultEmotions = {},
@@ -75,8 +76,8 @@ const novely = <
 	renderer: createRenderer,
 	initialScreen = 'mainmenu',
 	translation,
-	state: defaultState = {} as StateScheme,
-	data: defaultData = {} as DataScheme,
+	state: defaultState = {} as $State,
+	data: defaultData = {} as $Data,
 	autosaves = true,
 	migrations = [],
 	throttleTimeout = 799,
@@ -88,11 +89,12 @@ const novely = <
 	fetch: request = fetch,
 	saveOnUnload = true,
 	startKey = 'start'
-}: NovelyInit<$Language, Characters, StateScheme, DataScheme>) => {
+}: NovelyInit<$Language, $Characters, $State, $Data, $Actions>) => {
+	// Local type declaration to not repeat code
 	/**
-	 * Local type declaration to not repeat code
+	 * All action functions
 	 */
-	type Actions = ActionProxy<Characters, $Language, StateScheme>;
+	type Actions = $Actions & ActionProxy<$Characters, $Language, $State>;
 
 	const languages = Object.keys(translation) as $Language[];
 
@@ -206,7 +208,11 @@ const novely = <
 	}
 
 	const action = new Proxy({} as Actions, {
-		get<Action extends keyof Actions>(_: unknown, action: Action) {
+		get<Action extends keyof Actions & string>(_: unknown, action: Action) {
+			if (action in renderer.actions) {
+				return renderer.actions[action];
+			}
+
 			return (...props: Parameters<Actions[Action]>) => {
 				if (preloadAssets === 'blocking') {
 					if (action === 'showBackground') {
@@ -293,7 +299,7 @@ const novely = <
 	 * 1) Novely rendered using the `initialData`, but you can't start new game or `load` an empty one - this is scary, imagine losing your progress
 	 * 2) Actual stored data is loaded, language and etc is changed
 	 */
-	const initialData: StorageData<$Language, DataScheme> = {
+	const initialData: StorageData<$Language, $Data> = {
 		saves: [],
 		data: klona(defaultData),
 		meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED, 1, 1, 1],
@@ -374,7 +380,7 @@ const novely = <
 		 */
 		dataLoaded.resolve();
 
-		storageData.set(stored as StorageData<$Language, DataScheme>);
+		storageData.set(stored as StorageData<$Language, $Data>);
 	};
 
 	/**
@@ -1367,7 +1373,7 @@ const novely = <
 
 		if (!value) return _data;
 
-		const val = isFunction(value) ? value(_data) : deepmerge(_data, value as DataScheme);
+		const val = isFunction(value) ? value(_data) : deepmerge(_data, value as $Data);
 
 		storageData.update((prev) => {
 			prev.data = val;
@@ -1376,7 +1382,7 @@ const novely = <
 		})
 
 		return undefined;
-	}) as StateFunction<DataScheme>;
+	}) as StateFunction<$Data>;
 
 	return {
 		/**
@@ -1429,7 +1435,7 @@ const novely = <
 		/**
 		 * @deprecated Renamed into `templateReplace`
 		 */
-		unwrap(content: TextContent<$Language, DataScheme>) {
+		unwrap(content: TextContent<$Language, $Data>) {
 			return templateReplace(content as TextContent<$Language, Data>);
 		},
 		/**
@@ -1444,7 +1450,7 @@ const novely = <
 		 * })
 		 * ```
 		 */
-		templateReplace(content: TextContent<$Language, DataScheme>) {
+		templateReplace(content: TextContent<$Language, $Data>) {
 			return templateReplace(content as TextContent<$Language, Data>)
 		},
 		/**

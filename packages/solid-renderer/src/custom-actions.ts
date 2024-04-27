@@ -1,4 +1,4 @@
-import type { CustomHandler, ValidAction, ActionProxy, Character, Lang, State } from "@novely/core";
+import type { CustomHandler, ValidAction, Character, Lang } from "@novely/core";
 import { PRELOADED_IMAGE_MAP } from './shared';
 import { canvasDrawImages, createImage } from "$utils";
 
@@ -14,7 +14,7 @@ type ShowArbitraryCharacterParams<$Characters extends Record<string, Character<L
   style?: string;
 }
 
-const getActions = <$Lang extends Lang, $Characters extends Record<string, Character<$Lang>>, $State extends State>(_: ActionProxy<$Characters, $Lang, $State>) => {
+const createShowArbitraryCharacterAction = <$Characters extends Record<string, Character>>(_: $Characters) => {
   const showArbitraryCharacter = <$Character extends keyof $Characters>(params: ShowArbitraryCharacterParams<$Characters, $Character>) => {
     const handler: CustomHandler = ({ get }) => {
       const { clear, __internals } = get(false);
@@ -40,9 +40,7 @@ const getActions = <$Lang extends Lang, $Characters extends Record<string, Chara
     return ['custom', handler] as ValidAction;
   }
 
-  return {
-    showArbitraryCharacter
-  }
+  return showArbitraryCharacter;
 }
 
-export { getActions }
+export { createShowArbitraryCharacterAction }

@@ -3,7 +3,9 @@ import type {
 	RendererInit,
 	CharacterHandle,
 	CustomHandler,
-	Context
+	Context,
+	Character,
+	Lang
 } from '@novely/core';
 import type {
   StateScreen,
@@ -40,7 +42,7 @@ import { useContextState, removeContextState } from './context-state'
 import { canvasDrawImages, createImage } from '$utils';
 import { PRELOADED_IMAGE_MAP, useShared } from './shared';
 import { createRootComponent } from './components/Root';
-import { getActions } from './custom-actions';
+import { createShowArbitraryCharacterAction } from './custom-actions';
 
 const { preloadAudioBlocking } = createAudioMisc();
 
@@ -69,9 +71,7 @@ const createSolidRenderer = ({
 	return {
 		emitter,
 
-		getActions,
-
-		renderer(options: RendererInit) {
+		renderer<$Language extends Lang, $Characters extends Record<string, Character<$Language>>>(options: RendererInit<$Language, $Characters>) {
 			const { characters } = options;
 
 			const { root, setRoot } = createRootSetter(() => renderer.getContext(options.mainContextKey));
@@ -348,6 +348,9 @@ const createSolidRenderer = ({
 					},
 					preloadAudioBlocking
 				},
+				actions: {
+					showArbitraryCharacter: createShowArbitraryCharacterAction(options.characters)
+				}
 			} satisfies Renderer;
 
 			return renderer;
