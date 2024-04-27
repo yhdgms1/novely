@@ -14,7 +14,8 @@ import type {
 	Path,
 	NovelyInit,
 	StateFunction,
-	Lang
+	Lang,
+	TypeEssentials
 } from './types';
 import type { Stored } from './store';
 import type { Context } from './renderer';
@@ -1384,6 +1385,13 @@ const novely = <
 		return undefined;
 	}) as StateFunction<$Data>;
 
+	const typeEssentials: TypeEssentials<$Language, $State, $Data, $Characters> = {
+		l: null,
+		s: null,
+		d: null,
+		c: null
+	}
+
 	return {
 		/**
 		 * Function to set game script
@@ -1432,6 +1440,19 @@ const novely = <
 		 * ```
 		 */
 		data,
+		/**
+		 * Used in combination with type utilities
+		 *
+		 * @example
+		 * ```ts
+		 * import type { ConditionParams, StateFunction } from '@novely/core';
+     *
+		 * const conditionCheck = (state: StateFunction<ConditionParams<typeof engine.typeEssintials>>) => {
+		 *   return state.age >= 18;
+		 * }
+		 * ```
+		 */
+		typeEssentials,
 		/**
 		 * @deprecated Renamed into `templateReplace`
 		 */

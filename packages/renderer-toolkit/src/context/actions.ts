@@ -130,7 +130,7 @@ const handleClearAction = ($rendererState: DeepAtom<RendererStateStore<Record<Pr
 /**
  * You MUST return value returned by this function
  */
-const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, options: RendererInit, context: Context, fn: CustomHandler<string, State>, resolve: () => void) => {
+const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, options: RendererInit<any, any>, context: Context, fn: CustomHandler<string, State>, resolve: () => void) => {
   const get = (insert = true) => {
     const cached = $contextState.get().custom[fn.key]
 
@@ -215,7 +215,7 @@ const handleTextAction = ($contextState: DeepAtom<ContextStateStore<Record<Prope
   $contextState.mutate((s) => s.text, { content, resolve });
 }
 
-const handleInputAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, options: RendererInit, context: Context, label: string, onInput: (opts: ActionInputOnInputMeta<string, State>) => void, setup: ActionInputSetup, resolve: () => void) => {
+const handleInputAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, options: RendererInit<any, any>, context: Context, label: string, onInput: (opts: ActionInputOnInputMeta<string, State>) => void, setup: ActionInputSetup, resolve: () => void) => {
   const error = (value: string) => {
     $contextState.mutate((s) => s.input.error, value);
   };

@@ -318,6 +318,13 @@ type StateFunction<S extends State> = {
 	(): S;
 }
 
+type TypeEssentials<$Lang extends Lang, $State extends State, $Data extends Data, $Characters extends Record<string, Character<$Lang>>> = {
+	readonly l: $Lang | null;
+	readonly s: $State | null;
+	readonly d: $Data | null;
+	readonly c: $Characters | null;
+}
+
 export type {
 	Thenable,
 	PathItem,
@@ -339,5 +346,6 @@ export type {
 	UseStackFunctionReturnType,
 	StackHolder,
 	NovelyInit,
-	StateFunction
+	StateFunction,
+	TypeEssentials
 };
