@@ -26,7 +26,7 @@ type CreateRootComponentOpts = {
 
   rendererContext: Context
 
-  coreOptions: RendererInit
+  coreOptions: RendererInit<any, any>
 
   $contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>
   $rendererState: DeepMapStore<RendererStateStore<RendererStoreExtension>>
