@@ -1,10 +1,5 @@
-import type { Character } from './character';
-import type {
-  ActionProxy,
-  ConditionCheckFunction
-} from './action';
-import type { Lang } from './types';
+import type { TypeEssentials } from './types';
 
-type ConditionParams<T> = T extends ActionProxy<Record<string, Character>, Lang, infer $State> ? Parameters<ConditionCheckFunction<$State, string | boolean>>[0] : never;
+type ConditionParams<T> = T extends TypeEssentials<any, infer $State, any, any> ? $State : never;
 
 export type { ConditionParams }

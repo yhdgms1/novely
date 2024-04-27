@@ -160,13 +160,15 @@ type Renderer = {
 		};
 	};
 
+	actions: Record<string, (...args: any[]) => ValidAction>
+
 	getContext: (context: string) => Context;
 
 	removeContext: (context: string) => void;
 };
 
-type RendererInit = {
-	characters: Record<string, Character<Lang>>;
+type RendererInit<$Language extends Lang, $Characters extends Record<string, Character<$Language>>> = {
+	characters: $Characters;
 
 	set: (save: Save<State>) => Promise<void>;
 	restore: (save?: Save<State>) => Promise<void>;
@@ -176,7 +178,7 @@ type RendererInit = {
 	exit: (force?: boolean) => void;
 	back: () => Promise<void>;
 
-	languages: Lang[];
+	languages: $Language[];
 
 	/**
 	 * Translation function

@@ -16,7 +16,7 @@ interface DataContext {
 	coreData: Accessor<CoreData>;
 	coreDataUpdate: (fn: (prev: CoreData) => CoreData) => void;
 
-	options: RendererInit;
+	options: RendererInit<any, any>;
 	renderer: Renderer;
 
 	t: (key: BaseTranslationStrings | (string & Record<never, never>)) => string;
@@ -41,7 +41,7 @@ interface ProviderProps {
 	storageData: Stored<StorageData>;
 	coreData: Stored<CoreData>;
 
-	options: RendererInit;
+	options: RendererInit<any, any>;
 	renderer: Renderer;
 
 	emitter: Emitter<EmitterEventsMap>;

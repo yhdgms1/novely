@@ -1,4 +1,4 @@
-import type { DefaultActionProxy } from './action';
+import type { DefaultActionProxy, ValidAction } from './action';
 import type { Storage } from './storage';
 import type { TranslationActions, Pluralization } from './translation';
 import type { Renderer, RendererInit } from './renderer';
@@ -121,9 +121,10 @@ type TranslationDescription = {
 
 interface NovelyInit<
 	$Language extends Lang,
-	Characters extends Record<string, Character<NoInfer<$Language>>>,
-	StateScheme extends State,
-	DataScheme extends Data,
+	$Characters extends Record<string, Character<NoInfer<$Language>>>,
+	$State extends State,
+	$Data extends Data,
+	$Actions extends Record<string, (...args: any[]) => ValidAction>
 > {
 	/**
 	 * An object containing the characters in the game.
@@ -143,7 +144,7 @@ interface NovelyInit<
 	 * })
 	 * ```
 	 */
-	characters: Characters;
+	characters: $Characters;
 	/**
 	 * Define default emotions for characters
 	 * @example
@@ -172,7 +173,7 @@ interface NovelyInit<
 	 * ```
 	 */
 	defaultEmotions?: {
-		[Character in keyof NoInfer<Characters>]?: (keyof NoInfer<Characters>[Character]['emotions'] & string)
+		[Character in keyof NoInfer<$Characters>]?: (keyof NoInfer<$Characters>[Character]['emotions'] & string)
 	}
 	/**
 	 * An object that provides access to the game's storage system.
@@ -187,8 +188,8 @@ interface NovelyInit<
 	 * A function that returns a Renderer object used to display the game's content
 	 */
 	renderer: (
-		initializationData: RendererInit
-	) => Renderer;
+		initializationData: RendererInit<NoInfer<$Language>, NoInfer<$Characters>>
+	) => Renderer & { actions: $Actions };
 	/**
 	 * An optional property that specifies the initial screen to display when the game starts
 	 */
@@ -224,13 +225,13 @@ interface NovelyInit<
 	 *
 	 * State is a local value bound to one save
 	 */
-	state?: StateScheme;
+	state?: $State;
 	/**
 	 * Initial data value
 	 *
 	 * Data is a global value shared between saves
 	 */
-	data?: DataScheme;
+	data?: $Data;
 	/**
 	 * Enable autosaves or disable
 	 * @default true
@@ -317,6 +318,13 @@ type StateFunction<S extends State> = {
 	(): S;
 }
 
+type TypeEssentials<$Lang extends Lang, $State extends State, $Data extends Data, $Characters extends Record<string, Character<$Lang>>> = {
+	readonly l: $Lang | null;
+	readonly s: $State | null;
+	readonly d: $Data | null;
+	readonly c: $Characters | null;
+}
+
 export type {
 	Thenable,
 	PathItem,
@@ -338,5 +346,6 @@ export type {
 	UseStackFunctionReturnType,
 	StackHolder,
 	NovelyInit,
-	StateFunction
+	StateFunction,
+	TypeEssentials
 };
