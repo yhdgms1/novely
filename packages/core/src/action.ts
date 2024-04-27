@@ -1,4 +1,5 @@
 import type { Character } from './character';
+import type { Context } from './renderer';
 import type { Thenable, NonEmptyRecord, StateFunction, State, Lang } from './types';
 
 type ValidAction =
@@ -42,7 +43,10 @@ type FunctionableValue<T> = T | (() => T);
 type CustomHandlerGetResultDataFunction = (data?: Record<string, unknown>) => Record<string, unknown>;
 
 type CustomHandlerGetResult<I extends boolean> = {
-	delete: () => void;
+	/**
+	 * Remove's custom handler instance
+	 */
+	remove: () => void;
 	/**
 	 * Данные
 	 */
@@ -59,6 +63,10 @@ type CustomHandlerGetResult<I extends boolean> = {
 	 * Устанавливает обработчик очистки
 	 */
 	clear: (fn: () => void) => void;
+
+	__internals: {
+		ctx: Context;
+	}
 };
 
 type CustomHandlerFunctionGetFn = <I extends boolean = true>(insert?: I) => CustomHandlerGetResult<I>;

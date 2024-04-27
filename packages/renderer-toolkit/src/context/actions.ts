@@ -165,13 +165,17 @@ const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<Pro
     const getReturn = {
       root: context.root,
       element,
-      delete: clearManager,
+      remove: clearManager,
       data(data: any) {
         return data ? (store = data) : store;
       },
       clear(cb: () => void) {
         clear = cb;
       },
+
+      __internals: {
+        ctx: context
+      }
     }
 
     $contextState.mutate(
