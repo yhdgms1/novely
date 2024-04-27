@@ -23,7 +23,7 @@ import voice1 from './assets/voice/1.mp3'
 import voice2 from './assets/voice/2.mp3'
 import voice3 from './assets/voice/3.mp3'
 
-const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidRenderer({
+const { emitter, getActions, renderer, registerScreen, registerMainmenuItem } = createSolidRenderer({
 	fullscreen: false,
 });
 
@@ -106,6 +106,8 @@ const engine = novely({
 
 const { action } = engine;
 
+const solidActions = getActions(action);
+
 false && engine.script({
 	start: [
 		action.preload(outdoor),
@@ -145,7 +147,15 @@ engine.script({
 		action.playMusic(sakura_girl),
 		action.custom(particles(snow)),
 		action.showBackground(outdoor),
-		action.showCharacter('Lily', 'ok'),
+		// action.showCharacter('Lily', 'ok'),
+		solidActions.showArbitraryCharacter({
+			id: 'Lily',
+			emotion: 'ok',
+
+			extendWith() {
+				return []
+			}
+		}),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		// show('car', ({ init }) => {
 		// 	init({

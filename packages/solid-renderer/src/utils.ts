@@ -39,23 +39,33 @@ const createImage = (src: string) => {
 	return img;
 };
 
+const createCanvas = () => {
+	return document.createElement('canvas');
+}
+
+const getContext = (canvas: HTMLCanvasElement) => {
+	return canvas.getContext('2d')!;
+}
+
 /**
- * Рисует `images` на `canvas`
+ * Draws passed `images` array on a `canvas`
  */
-const canvasDrawImages = (
-	canvas = document.createElement('canvas'),
-	ctx = canvas.getContext('2d')!,
-	images: HTMLImageElement[],
-) => {
+const canvasDrawImages = (canvas = createCanvas(), ctx = getContext(canvas), images: HTMLImageElement[],) => {
 	let set = false;
 
 	for (const image of images) {
 		const isLoaded = image.complete && image.naturalHeight !== 0;
 
 		const draw = () => {
-			if (!set) (set = true), (canvas.width = image.naturalWidth), (canvas.height = image.naturalHeight);
+			if (!set) {
+				set = true;
+
+				canvas.width = image.naturalWidth;
+				canvas.height = image.naturalHeight;
+			}
 
 			ctx.drawImage(image, 0, 0);
+
 			image.removeEventListener('load', draw);
 		};
 

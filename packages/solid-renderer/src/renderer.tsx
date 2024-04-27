@@ -40,6 +40,7 @@ import { useContextState, removeContextState } from './context-state'
 import { canvasDrawImages, createImage } from '$utils';
 import { PRELOADED_IMAGE_MAP, useShared } from './shared';
 import { createRootComponent } from './components/Root';
+import { getActions } from './custom-actions';
 
 const { preloadAudioBlocking } = createAudioMisc();
 
@@ -67,6 +68,8 @@ const createSolidRenderer = ({
 
 	return {
 		emitter,
+
+		getActions,
 
 		renderer(options: RendererInit) {
 			const { characters } = options;

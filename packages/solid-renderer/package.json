@@ -10,7 +10,7 @@
 	"module": "./dist/index.jsx",
 	"sideEffects": false,
 	"scripts": {
-		"dev": "node ./build.js --watch",
+		"dev": "node ./build.js --w",
 		"build": "node ./build.js && tsc"
 	},
 	"devDependencies": {
