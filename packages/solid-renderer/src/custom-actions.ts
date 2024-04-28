@@ -17,7 +17,7 @@ type ShowArbitraryCharacterParams<$Characters extends Record<string, Character<L
 const createShowArbitraryCharacterAction = <$Characters extends Record<string, Character>>(_: $Characters) => {
   const showArbitraryCharacter = <$Character extends keyof $Characters>(params: ShowArbitraryCharacterParams<$Characters, $Character>) => {
     const handler: CustomHandler = ({ get }) => {
-      const { clear, __internals } = get(false);
+      const { __internals } = get(false);
       const { ctx } = __internals;
 
       const handle = ctx.character(params.id);
@@ -28,9 +28,6 @@ const createShowArbitraryCharacterAction = <$Characters extends Record<string, C
       const extension = (e => Array.isArray(e) ? e : [e])(params.extendWith());
 
       canvasDrawImages(handle.canvas, handle.ctx, extension.map((src) => PRELOADED_IMAGE_MAP.get(src) || createImage(src)));
-
-      // idk
-      clear(() => handle.ctx.clearRect(0, 0, handle.canvas.width, handle.canvas.height));
     }
 
     handler.id = SHOW_ARBITARY_CHARACTER;

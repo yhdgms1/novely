@@ -115,6 +115,16 @@ const createSolidRenderer = ({
 									}
 
 									if (shouldRender && stored) {
+										/**
+										 * Clear previous emotion
+										 */
+										canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+
+										/**
+										 * Will resize canvas to image size
+										 */
+										canvas.dataset.resized = 'false';
+
 										canvasDrawImages(canvas, canvasContext, stored);
 									}
 								},
