@@ -95,6 +95,14 @@
 }
 
 .saves__list-item__iframe {
+	/**
+	 * https://stackoverflow.com/a/38260951
+   *
+   * When some element takes whole screen in the `iframe` and uses `backdrop-filter` then `border-radius` will not work.
+	 * Setting `backdrop-filter: blur(0)` fixes the problem.
+	 */
+	backdrop-filter: blur(0px);
+
 	width: 100%;
 
 	border-radius: var(--saves-list-iframe-border-radius);
