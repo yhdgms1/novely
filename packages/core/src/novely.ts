@@ -1454,12 +1454,6 @@ const novely = <
 		 */
 		typeEssentials,
 		/**
-		 * @deprecated Renamed into `templateReplace`
-		 */
-		unwrap(content: TextContent<$Language, $Data>) {
-			return templateReplace(content as TextContent<$Language, Data>);
-		},
-		/**
 		 * Replaces content inside {{braces}} with using global data
 		 * @example
 		 * ```ts
