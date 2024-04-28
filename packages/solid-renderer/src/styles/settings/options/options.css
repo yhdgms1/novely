@@ -1,15 +1,4 @@
-.settings__column {
-	display: flex;
-
-	align-items: center;
-	justify-content: center;
-
-	flex-direction: column;
-
-	flex-wrap: wrap;
-}
-
-.settings__column-grid {
+.settings__options {
 	width: 100%;
 
 	display: grid;
@@ -19,7 +8,7 @@
 }
 
 @media (max-aspect-ratio: 0.8) {
-	.settings__column-grid {
+	.settings__options {
 		grid-template-columns: 1fr;
 	}
 }

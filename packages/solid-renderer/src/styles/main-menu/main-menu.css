@@ -4,12 +4,13 @@
 
 	padding: 0 1rem;
 
-	display: grid;
-	align-content: center;
+	display: flex;
 }
 
-@media (min-aspect-ratio: 0.8) {
+@media (max-aspect-ratio: 0.8) {
 	.main-menu {
-		justify-content: start;
+		flex-direction: column;
+
+		justify-content: center;
 	}
 }

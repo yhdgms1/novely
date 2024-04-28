@@ -53,7 +53,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 
 	return (
 		<div class="root settings">
-			<div class="settings__column">
+			<div class="settings__controls">
 				<button type="button" class="button settings__button" onClick={() => data.$rendererState.setKey('screen', 'mainmenu')}>
 					{data.t('HomeScreen')}
 				</button>
@@ -61,7 +61,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 					{data.t('ToTheGame')}
 				</button>
 			</div>
-			<div class="settings__column-grid">
+			<div class="settings__options">
 				<div>
 					<div class="select">
 						<label class="select__label" for={languageSelectID}>

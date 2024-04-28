@@ -1,5 +1,5 @@
 @media (max-aspect-ratio: 0.8) {
-	.saves__column {
+	.saves__controls {
 		display: flex;
 		align-items: center;
 		justify-content: center;

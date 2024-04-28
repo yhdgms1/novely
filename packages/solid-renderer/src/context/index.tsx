@@ -5,10 +5,10 @@ import type { Emitter } from '../emitter';
 
 import { from, createContext, useContext, Show } from 'solid-js';
 import { useMedia } from '$hooks';
-import type { DeepMapStore, RendererStateStore } from '@novely/renderer-toolkit';
+import type { DeepAtom, RendererStateStore } from '@novely/renderer-toolkit';
 
 interface DataContext {
-	$rendererState: DeepMapStore<RendererStateStore<RendererStoreExtension>>;
+	$rendererState: DeepAtom<RendererStateStore<RendererStoreExtension>>;
 
 	storageData: Accessor<StorageData>;
 	storageDataUpdate: (fn: (prev: StorageData) => StorageData) => void;
@@ -36,7 +36,7 @@ interface DataContext {
 const Context = createContext<DataContext>();
 
 interface ProviderProps {
-	$rendererState: DeepMapStore<RendererStateStore<RendererStoreExtension>>;
+	$rendererState: DeepAtom<RendererStateStore<RendererStoreExtension>>;
 
 	storageData: Stored<StorageData>;
 	coreData: Stored<CoreData>;

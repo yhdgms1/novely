@@ -1,4 +1,5 @@
 @import './settings.css';
 
 @import './button/button.css';
-@import './column/column.css';
+@import './controls/controls.css';
+@import './options/options.css';

@@ -12,7 +12,7 @@ const Saves: VoidComponent = () => {
 
 	return (
 		<div class="root saves">
-			<div class="saves__column">
+			<div class="saves__controls">
 				<button type="button" class="button saves__button" onClick={() => $rendererState.setKey('screen', 'mainmenu')}>
 					{t('GoBack')}
 				</button>

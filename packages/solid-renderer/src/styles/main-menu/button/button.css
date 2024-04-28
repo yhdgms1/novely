@@ -13,6 +13,12 @@
 	align-self: center;
 }
 
+@media (max-aspect-ratio: 0.8) {
+	.main-menu__button  {
+		min-width: 100%;
+	}
+}
+
 @media (max-aspect-ratio: 0.26) {
 	.main-menu__button {
 		grid-template-columns: 1fr;
