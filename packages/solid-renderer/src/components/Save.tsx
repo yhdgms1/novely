@@ -60,7 +60,7 @@ const Save: VoidComponent<SaveProps> = (props) => {
     isPreview={true}
   />;
 
-  const onIframeClick = () => {
+  const loadSave = () => {
     options.set(props.save)
   }
 
@@ -76,10 +76,8 @@ const Save: VoidComponent<SaveProps> = (props) => {
      */
     contentDocument.head.insertAdjacentHTML(
       'beforeend',
-      `<style>:root { font-size: 30%; background: black; cursor: pointer; } *:not(html, body) { pointer-events: none; } *, *::before, *::after { animation-play-state: paused !important; }</style><style>${stylesheet()}</style>`
+      `<style>:root { font-size: 30%; background: black; cursor: pointer; } * { pointer-events: none; } *, *::before, *::after { animation-play-state: paused !important; }</style><style>${stylesheet()}</style>`
     );
-
-    contentDocument.body.addEventListener('click', onIframeClick);
 
     context.root = contentDocument.body;
 
@@ -105,12 +103,6 @@ const Save: VoidComponent<SaveProps> = (props) => {
 
     if (iframeElement) {
       iframeElement.removeEventListener('load', onIframeLoaded);
-
-      const { contentDocument } = iframeElement;
-
-      if (contentDocument) {
-        contentDocument.body.removeEventListener('click', onIframeClick);
-      }
     }
 
     const state = useContextState(KEY);
@@ -139,17 +131,38 @@ const Save: VoidComponent<SaveProps> = (props) => {
 
   return (
     <li class="saves__list-item">
-      <iframe
-        loading="lazy"
+      <div
+        class="saves__list-item__load"
         role="button"
-        tabindex="-1"
-        class="saves__list-item__iframe"
+        tabindex="0"
         aria-label={t('LoadASaveFrom') + ' ' + stringDate()}
-        ref={setIframe}
-      />
+
+        onClick={loadSave}
+
+        onKeyDown={(event) => {
+          if (event.code === 'Enter') {
+            loadSave()
+          }
+        }}
+
+        onKeyUp={(event) => {
+          if (event.code === 'Space') {
+            loadSave();
+          }
+        }}
+      >
+        <iframe
+          loading="lazy"
+          role="button"
+          tabindex="-1"
+          class="saves__list-item__iframe"
+          ref={setIframe}
+        />
+      </div>
 
       <div class="saves__list-item__description">
-        <div>{stringDate()}</div>
+        {/** There in information about date in remove and load aria-labels */}
+        <div aria-hidden={true}>{stringDate()}</div>
         <div>{stringType}</div>
       </div>
 

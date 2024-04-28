@@ -100,7 +100,24 @@
 	border-radius: var(--saves-list-iframe-border-radius);
 
 	border: none;
-	aspect-ratio: 4 / 3;
+	aspect-ratio: 8 / 5;
+}
+
+.saves__list-item__load {
+	width: 100%;
+
+	position: relative;
+}
+
+.saves__list-item__load::after {
+	content: '';
+
+	position: absolute;
+	inset: 0;
+
+	z-index: 2;
+
+	cursor: pointer;
 }
 
 @media (max-aspect-ratio: 0.8) {
