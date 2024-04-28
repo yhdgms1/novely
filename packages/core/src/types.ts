@@ -119,6 +119,10 @@ type TranslationDescription = {
 	actions?: TranslationActions;
 }
 
+type DefaultEmotions<$Characters extends Record<string, Character<Lang>>> = {
+	[Character in keyof $Characters]?: (keyof $Characters[Character]['emotions'] & string)
+}
+
 interface NovelyInit<
 	$Language extends Lang,
 	$Characters extends Record<string, Character<NoInfer<$Language>>>,
@@ -172,9 +176,7 @@ interface NovelyInit<
 	 * })
 	 * ```
 	 */
-	defaultEmotions?: {
-		[Character in keyof NoInfer<$Characters>]?: (keyof NoInfer<$Characters>[Character]['emotions'] & string)
-	}
+	defaultEmotions?: DefaultEmotions<NoInfer<$Characters>>;
 	/**
 	 * An object that provides access to the game's storage system.
 	 * @default localStorage // at key `novely-game-storage`
@@ -347,5 +349,6 @@ export type {
 	StackHolder,
 	NovelyInit,
 	StateFunction,
-	TypeEssentials
+	TypeEssentials,
+	DefaultEmotions
 };
