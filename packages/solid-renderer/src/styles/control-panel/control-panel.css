@@ -3,7 +3,7 @@
 	position: fixed;
 
 	right: 0.4rem;
-	bottom: 0.4rem;
+	bottom: 0.45rem;
 }
 
 .control-panel-container {
@@ -11,6 +11,8 @@
 
 	display: flex;
 	justify-content: end;
+
+	gap: calc(var(--novely-px) * 3);
 }
 
 .control-panel-container--center:not(.control-panel-container--wide-open) {
@@ -61,5 +63,6 @@
 @media (max-aspect-ratio: 0.8) and ((min-aspect-ratio: 0.26) or (max-aspect-ratio: 0.1)) {
 	.control-panel {
 		left: 0.4rem;
+		bottom: 0.4rem;
 	}
 }

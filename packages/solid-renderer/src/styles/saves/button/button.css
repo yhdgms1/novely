@@ -7,6 +7,13 @@
 	touch-action: auto !important;
 }
 
+.saves__button-reset {
+  --button-box-shadow-spread-radius: 0.15rem;
+
+  border-radius: 0.4rem;
+  margin: 0;
+}
+
 @media (max-aspect-ratio: 0.8) {
 	.saves__button {
 		min-width: 80%;

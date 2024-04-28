@@ -34,7 +34,7 @@
 
 	border: var(--novely-dialog-border-width, 0.18rem) solid var(--novely-dialog-border-color, #ffffff);
 	border-radius: var(--novely-dialog-border-radius, .875rem);
-	box-shadow: 0.063rem 0.063rem 0.25rem var(--novely-dialog-box-shadow-color, #00000072);
+	box-shadow: var(--novely-px) var(--novely-px) 0.25rem var(--novely-dialog-box-shadow-color, #00000072);
 
 	/* biome-ignore */
 	background-image: var(--novely-dialog-background-image, radial-gradient(#d6608998 20%, transparent 20%), radial-gradient(#d6608998 20%, transparent 20%));
@@ -45,7 +45,7 @@
 	display: flex;
 	flex-wrap: nowrap;
 
-	padding-bottom: 2.8rem;
+	padding-block-end: 2.8rem;
 }
 
 .action-dialog-person {
@@ -71,20 +71,20 @@
 	width: fit-content;
 	margin-left: 5vmin;
 
-	box-shadow: 0.063rem 0.063rem 0.18rem #00000042;
+	box-shadow: var(--novely-px) var(--novely-px) 0.18rem #00000042;
 }
 
 .action-dialog-content {
 	width: 100%;
 
-	font-size: 2.2375rem;
+	font-size: 2rem;
 	line-height: 1.2;
 
 	word-wrap: break-word;
 	word-break: break-word;
 
 	/* biome-ignore */
-	text-shadow: 0.063rem 0.063rem 0 black, -0.063rem -0.063rem 0 black, 0.063rem -0.063rem 0 black, -0.063rem 0.063rem 0 black;
+	text-shadow: var(--novely-px) var(--novely-px) 0 black, calc(var(--novely-px) * -1) calc(var(--novely-px) * -1) 0 black, var(--novely-px) calc(var(--novely-px) * -1) 0 black, calc(var(--novely-px) * -1) var(--novely-px) 0 black;
 }
 
 .action-dialog-content--disable-shadow {
@@ -111,11 +111,11 @@
 	}
 
 	.action-dialog-name {
-		font-size: 1.02rem;
+		font-size: 1.2rem;
 	}
 
 	.action-dialog-content {
-		font-size: 1.32rem;
+		font-size: 1.2rem;
 	}
 
 	.action-dialog-container {
@@ -145,7 +145,7 @@
 
 @media only screen and (min-aspect-ratio: 0.8) and (pointer: coarse) {
 	.action-dialog-content {
-		font-size: 1.32rem;
+		font-size: 1.2rem;
 		line-height: 1.15;
 	}
 

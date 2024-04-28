@@ -23,6 +23,6 @@
 
 @media (max-aspect-ratio: 0.26) {
 	.characters {
-		padding-bottom: 50vh;
+		padding-block-end: 50vh;
 	}
 }

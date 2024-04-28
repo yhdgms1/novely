@@ -1,4 +1,6 @@
 .control-panel__button {
+	--button-box-shadow-spread-radius: var(--novely-px);
+
 	border: 0.125rem solid var(--novely-button-border-color, #ffc7df);
 
 	margin: 0;
@@ -34,11 +36,11 @@
 	.control-panel__button__content {
 		clip: rect(0 0 0 0);
 		clip-path: inset(50%);
-		height: 0.063rem;
+		height: var(--novely-px);
 		overflow: hidden;
 		position: absolute;
 		white-space: nowrap;
-		width: 0.063rem;
+		width: var(--novely-px);
 	}
 }
 

@@ -27,6 +27,8 @@
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 	-webkit-tap-highlight-color: transparent;
 	-webkit-touch-callout: none;
+
+	--novely-px: 0.0625rem;
 }
 
 .root,

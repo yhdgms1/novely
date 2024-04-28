@@ -1,10 +1,10 @@
-.settings__column {
+.settings__controls {
 	display: flex;
 
 	align-items: center;
-	justify-content: center;
-
+	justify-content: flex-start;
 	flex-direction: column;
-
 	flex-wrap: wrap;
+
+	padding-block-start: 1rem;
 }

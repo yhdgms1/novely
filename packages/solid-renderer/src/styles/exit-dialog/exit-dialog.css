@@ -6,7 +6,7 @@
 
 	border: var(--novely-exit-dialog-border-width, 0.18rem) solid var(--novely-exit-dialog-border-color, #ffffff);
 	border-radius: var(--novely-exit-dialog-border-radius, .875rem);
-	box-shadow: 0.063rem 0.063rem 0.25rem var(--novely-exit-dialog-box-shadow-color, #00000072);
+	box-shadow: var(--novely-px) var(--novely-px) 0.25rem var(--novely-exit-dialog-box-shadow-color, #00000072);
 
 	/* biome-ignore */
 	background-image: var(--novely-exit-dialog-background-image, radial-gradient(#d6608998 20%, transparent 20%), radial-gradient(#d6608998 20%, transparent 20%));

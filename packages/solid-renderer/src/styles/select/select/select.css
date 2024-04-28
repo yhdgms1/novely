@@ -1,19 +1,27 @@
 .select__select {
 	background-color: var(--novely-select-background-color, #ffe9f3);
-	border: 0.25rem solid var(--novely-select-border-color, #ffc7df);
 	color: var(--novely-select-color, #000);
 
-	margin: 0.4rem 0;
+	border: none;
+
+	/*
+	 * todo: find out why hack with ::after does not work
+	 */
+	box-shadow: 0 0 0 var(--select-box-shadow-spread-radius, 0.25rem) var(--novely-select-border-color, #ffc7df);
+
+	margin: calc(var(--select-box-shadow-spread-radius, 0.25rem) + 0.4rem) var(--select-box-shadow-spread-radius, 0.25rem);
 	padding: 0.4rem;
 
-	font-size: 1.02rem;
+	font-size: 1rem;
 
 	max-width: 100%;
+
+	border-radius: .25rem;
 }
 
 @media (max-aspect-ratio: 0.8) {
 	.select__select {
-		min-width: 70%;
+		min-width: calc(70% - var(--select-box-shadow-spread-radius, 0.25rem) * 2);
 	}
 }
 
