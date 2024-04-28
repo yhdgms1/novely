@@ -1,7 +1,7 @@
 import type { Context } from '@novely/core';
 import type { VoidComponent } from 'solid-js';
 import type { SolidRendererStore } from '../renderer';
-import type { ContextStateStore, DeepMapStore } from '@novely/renderer-toolkit'
+import type { ContextStateStore, DeepAtom } from '@novely/renderer-toolkit'
 
 import { memo } from '@novely/renderer-toolkit';
 import { createSignal, untrack, For, Show, createUniqueId, createEffect, createMemo, from } from 'solid-js';
@@ -13,7 +13,7 @@ import { canvasDrawImages, url, isCSSImage, onKey } from '$utils';
 interface GameProps {
 	context: Context;
 
-	$contextState: DeepMapStore<ContextStateStore<Record<PropertyKey, unknown>>>
+	$contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>
 
 	store: SolidRendererStore;
 
