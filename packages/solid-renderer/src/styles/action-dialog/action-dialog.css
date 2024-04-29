@@ -158,6 +158,6 @@
 	}
 }
 
-.preview .action-dialog-name, .preview.action-dialog-content {
+.preview .action-dialog-name, .preview .action-dialog-content {
 	font-size: 2rem;
 }
