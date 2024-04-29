@@ -10,6 +10,8 @@
 
 	position: fixed;
 	z-index: 3;
+
+	pointer-events: none;
 }
 
 .characters > canvas {

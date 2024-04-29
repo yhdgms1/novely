@@ -160,7 +160,6 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 	return (
 		<div
-			style={background()}
 			class={props.className}
 			classList={{
 				'root': true,
@@ -168,6 +167,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				'preview': props.isPreview
 			}}
 		>
+			<div class="background" style={background()} />
 			<div
 				data-characters={true}
 				class="characters"
