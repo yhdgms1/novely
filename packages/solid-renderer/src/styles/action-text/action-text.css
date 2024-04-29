@@ -9,7 +9,7 @@
 	display: none;
 
 	text-align: center;
-	font-size: 1.5rem;
+	font-size: 2rem;
 }
 
 .action-text[data-shown='true'] {
@@ -40,4 +40,20 @@
 	-webkit-tap-highlight-color: transparent;
 	-webkit-touch-callout: none;
 	touch-action: none;
+}
+
+@media (max-aspect-ratio: 0.8) {
+	.action-text {
+		font-size: 1.2rem;
+	}
+}
+
+@media only screen and (min-aspect-ratio: 0.8) and (pointer: coarse) {
+	.action-text {
+		font-size: 1.2rem;
+	}
+}
+
+.preview .action-text {
+	font-size: 2rem;
 }
