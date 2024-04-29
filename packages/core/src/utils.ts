@@ -468,11 +468,9 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 	for (const [i, item] of queue.entries()) {
 		const [action, ...params] = item;
 
-		/**
-		 * Clear method only works with things like `dialog` which can blink and etc
-		 * So it's just easier to add everything in there
-		 */
-		keep.add(action);
+		if (isUserRequiredAction(item) && !queue.slice(0, i + 1).some((action => isUserRequiredAction(action)))) {
+			keep.add(action);
+		}
 
 		if (options.skip.has(item) && item !== options.skipPreserve) {
 			continue;

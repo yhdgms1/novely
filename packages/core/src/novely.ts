@@ -539,11 +539,10 @@ const novely = <
 		renderer.ui.showScreen('game');
 
 		const { queue, skip, skipPreserve } = getActionsFromPath(story, path, false);
-		const processor = createQueueProcessor(queue, {
+		const { run, keep: { keep, characters, audio } } = createQueueProcessor(queue, {
 			skip,
 			skipPreserve
 		});
-		const { keep, characters, audio } = processor.keep;
 
 		if (previous) {
 			const { queue: prevQueue } = getActionsFromPath(story, previous[0], false);
@@ -593,7 +592,7 @@ const novely = <
 		const lastQueueItem = queue.at(-1) || []
 		const lastQueueItemRequiresUserAction = isSkippedDuringRestore(lastQueueItem[0]) || isUserRequiredAction(lastQueueItem)
 
-		await processor.run((item) => {
+		await run((item) => {
 			if (!latest) return;
 
 			/**
