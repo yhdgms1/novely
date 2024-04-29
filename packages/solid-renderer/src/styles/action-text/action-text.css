@@ -57,3 +57,9 @@
 .preview .action-text {
 	font-size: 2rem;
 }
+
+@media only screen and (min-aspect-ratio: 0.8) and (pointer: coarse) {
+	.preview .action-text {
+		font-size: 1.8rem;
+	}
+}

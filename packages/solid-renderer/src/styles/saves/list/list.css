@@ -85,6 +85,13 @@
 	gap: 0.375rem;
 }
 
+@media only screen and (min-aspect-ratio: 0.8) and (pointer: coarse) {
+	.saves__list-item {
+		width: max(22vmin, calc(50% - 1rem));
+	}
+}
+
+
 .saves__list-item__description {
 	font-variant-numeric: tabular-nums;
 
