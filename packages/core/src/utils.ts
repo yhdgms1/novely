@@ -468,13 +468,11 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 	for (const [i, item] of queue.entries()) {
 		const [action, ...params] = item;
 
-		if (isUserRequiredAction(item) && !queue.slice(0, i + 1).some((action => isUserRequiredAction(action)))) {
-			keep.add(action);
-		}
-
 		if (options.skip.has(item) && item !== options.skipPreserve) {
 			continue;
 		}
+
+		keep.add(action);
 
 		if (action === 'function' || action === 'custom') {
 			/**
