@@ -10,15 +10,15 @@ interface SettingsProps {
 }
 
 const Settings: VoidComponent<SettingsProps> = (props) => {
-	const data = useData();
+	const { t, storageData, storageDataUpdate, options, $rendererState, emitter } = useData();
 
-	const language = () => data.storageData().meta[0];
-	const textSpeed = () => data.storageData().meta[1];
+	const language = () => storageData().meta[0];
+	const textSpeed = () => storageData().meta[1];
 
-	const volume = (kind: 2 | 3 | 4) => data.storageData().meta[kind];
+	const volume = (kind: 2 | 3 | 4) => storageData().meta[kind];
 
 	const onLanguageSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = ({ currentTarget: { value } }) => {
-		data.storageDataUpdate((prev) => {
+		storageDataUpdate((prev) => {
 			prev.meta[0] = value;
 
 			return prev;
@@ -26,7 +26,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 	};
 
 	const onSpeedSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = ({ currentTarget: { value } }) => {
-		data.storageDataUpdate((prev) => {
+		storageDataUpdate((prev) => {
 			prev.meta[1] = value as TypewriterSpeed;
 
 			return prev;
@@ -35,7 +35,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 
 	const volumeChange = (kind: 2 | 3 | 4) => {
 		const fn: JSX.EventHandlerUnion<HTMLInputElement, Event> = ({ currentTarget: { valueAsNumber } }) => {
-			data.storageDataUpdate((prev) => {
+			storageDataUpdate((prev) => {
 				prev.meta[kind] = valueAsNumber;
 
 				return prev;
@@ -51,27 +51,45 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 	const soundVolumeSelectID = createUniqueId();
 	const voiceVolumeSelectID = createUniqueId();
 
+	const emitButtonClick = () => {
+		emitter.emit('navigationButton:click', void 0)
+	}
+
 	return (
 		<div class="root settings">
 			<div class="settings__controls">
-				<button type="button" class="button settings__button" onClick={() => data.$rendererState.setKey('screen', 'mainmenu')}>
-					{data.t('HomeScreen')}
+				<button
+					type="button"
+					class="button settings__button"
+					onClick={() => {
+						$rendererState.setKey('screen', 'mainmenu');
+						emitButtonClick();
+					}}
+				>
+					{t('HomeScreen')}
 				</button>
-				<button type="button" class="button settings__button" onClick={() => data.options.restore()}>
-					{data.t('ToTheGame')}
+				<button
+					type="button"
+					class="button settings__button"
+					onClick={() => {
+						options.restore();
+						emitButtonClick();
+					}}
+				>
+					{t('ToTheGame')}
 				</button>
 			</div>
 			<div class="settings__options">
 				<div>
 					<div class="select">
 						<label class="select__label" for={languageSelectID}>
-							<span class="select__label__icon" aria-hidden={true} innerHTML={props.icons.language} /> {data.t('Language')}
+							<span class="select__label__icon" aria-hidden={true} innerHTML={props.icons.language} /> {t('Language')}
 						</label>
 						<select class="select__select" id={languageSelectID} onChange={onLanguageSelect}>
-							<For each={data.options.languages}>
+							<For each={options.languages}>
 								{(lang) => (
 									<option value={lang} selected={lang === language()}>
-										{data.options.getLanguageDisplayName(lang)}
+										{options.getLanguageDisplayName(lang)}
 									</option>
 								)}
 							</For>
@@ -79,13 +97,13 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 					</div>
 					<div class="select">
 						<label class="select__label" for={speedSelectID}>
-							<span class="select__label__icon" aria-hidden={true} innerHTML={props.icons.typewriter_speed} /> {data.t('TextSpeed')}
+							<span class="select__label__icon" aria-hidden={true} innerHTML={props.icons.typewriter_speed} /> {t('TextSpeed')}
 						</label>
 						<select class="select__select" id={speedSelectID} onChange={onSpeedSelect}>
 							<For each={['Slow', 'Medium', 'Fast', 'Auto']}>
 								{(speed) => (
 									<option value={speed} selected={speed === textSpeed()}>
-										{data.t('TextSpeed' + speed)}
+										{t('TextSpeed' + speed)}
 									</option>
 								)}
 							</For>
@@ -96,7 +114,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 				<div>
 					<div class="range">
 						<label class="range__label" for={musicVolumeSelectID}>
-							<span class="range__label__icon" aria-hidden={true} innerHTML={props.icons.music_volume} /> {data.t('MusicVolume')}
+							<span class="range__label__icon" aria-hidden={true} innerHTML={props.icons.music_volume} /> {t('MusicVolume')}
 						</label>
 						<input
 							class="range__range"
@@ -111,7 +129,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 					</div>
 					<div class="range">
 						<label class="range__label" for={soundVolumeSelectID}>
-							<span class="range__label__icon" aria-hidden={true} innerHTML={props.icons.sound_volume} /> {data.t('SoundVolume')}
+							<span class="range__label__icon" aria-hidden={true} innerHTML={props.icons.sound_volume} /> {t('SoundVolume')}
 						</label>
 						<input
 							class="range__range"
@@ -126,7 +144,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 					</div>
 					<div class="range">
 						<label class="range__label" for={voiceVolumeSelectID}>
-							<span class="range__label__icon" aria-hidden={true} innerHTML={props.icons.voice_volume} /> {data.t('VoiceVolume')}
+							<span class="range__label__icon" aria-hidden={true} innerHTML={props.icons.voice_volume} /> {t('VoiceVolume')}
 						</label>
 						<input
 							class="range__range"

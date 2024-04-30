@@ -5,7 +5,7 @@ import { useData } from '$context';
 import { Save } from '$components';
 
 const Saves: VoidComponent = () => {
-	const { t, storageData, $rendererState } = useData();
+	const { t, storageData, $rendererState, emitter } = useData();
 
 	const saves = () => storageData().saves;
 	const language = () => storageData().meta[0];
@@ -13,10 +13,18 @@ const Saves: VoidComponent = () => {
 	return (
 		<div class="root saves">
 			<div class="saves__controls">
-				<button type="button" class="button saves__button" onClick={() => $rendererState.setKey('screen', 'mainmenu')}>
+				<button
+					type="button"
+					class="button saves__button"
+					onClick={() => {
+						$rendererState.setKey('screen', 'mainmenu');
+						emitter.emit('navigationButton:click', void 0);
+					}}
+				>
 					{t('GoBack')}
 				</button>
 			</div>
+
 			<div class="saves__list-container">
 				<Show
 					when={saves().length > 0}

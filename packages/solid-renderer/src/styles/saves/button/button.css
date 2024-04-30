@@ -16,7 +16,7 @@
 
 @media (max-aspect-ratio: 0.8) {
 	.saves__button {
-		min-width: 80%;
+		min-width: calc(100% - calc(var(--button-box-shadow-spread-radius, .25rem) * 2));
 	}
 
 	.saves__button-load {

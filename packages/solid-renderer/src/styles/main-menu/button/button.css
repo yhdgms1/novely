@@ -15,7 +15,7 @@
 
 @media (max-aspect-ratio: 0.8) {
 	.main-menu__button  {
-		min-width: 100%;
+		min-width: calc(100% - calc(var(--button-box-shadow-spread-radius, .25rem) * 2));
 	}
 }
 

@@ -55,6 +55,7 @@ type CreateSolidRendererOptions = {
 
 type EmitterEventsMap = {
   'screen:change': PossibleScreen,
+  'navigationButton:click': void,
 };
 
 type RendererStoreExtension = { screens: Record<string, StateScreen>; mainmenu: StateMainmenuItems }

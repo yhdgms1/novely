@@ -1,13 +1,16 @@
 .saves__controls {
 	padding-block-start: 1rem;
+
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	flex-wrap: wrap;
 }
 
 @media (max-aspect-ratio: 0.8) {
 	.saves__controls {
-		display: flex;
-		align-items: center;
+		padding-block-end: 1rem;
+
 		justify-content: center;
-		flex-direction: column;
-		flex-wrap: wrap;
 	}
 }
