@@ -1402,6 +1402,10 @@ const novely = <
 		c: null
 	}
 
+	const getCurrentStorageData = () => {
+		return coreData.get().dataLoaded ? klona(storageData.get()) : null;
+	}
+
 	return {
 		/**
 		 * Function to set game script
@@ -1488,7 +1492,16 @@ const novely = <
 			UIInstance.unmount();
 
 			unsubscribeFromBrowserVisibilityChange();
-		}
+		},
+		/**
+		 * Funtion to get current storage data
+		 *
+		 * @example
+		 * ```ts
+		 * const currentStorageData = engine.getCurrentStorageData();
+		 * ```
+		 */
+		getCurrentStorageData
 	};
 };
 
