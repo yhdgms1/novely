@@ -350,6 +350,10 @@ const novely = <
 
 		for (const migration of migrations) {
 			stored = migration(stored) as StorageData;
+
+			if (DEV && !stored) {
+				throw new Error('Migrations should return a value.')
+			}
 		}
 
 		if (overrideLanguage || !stored.meta[0]) {
