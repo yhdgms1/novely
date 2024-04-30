@@ -649,15 +649,25 @@ const novely = <
 	 * @param force Force exit
 	 */
 	const exit = (force = false, saving = true) => {
-		if (interacted > 1 && !force && askBeforeExit) {
-			renderer.ui.showExitPrompt();
-			return;
-		}
-
 		/**
 		 * Exit only possible in main context
 		 */
 		const ctx = renderer.getContext(MAIN_CONTEXT_KEY);
+
+		const stack = useStack(ctx);
+		const current = stack.value;
+
+		const isSaved = () => {
+			const { saves } = storageData.get();
+			const [currentPath, currentData] = stack.value;
+
+			return saves.some(([path, data, [date, type]]) => type === 'manual' && times.has(date) && dequal(path, currentPath) && dequal(data, currentData))
+		}
+
+		if (interacted > 1 && !force && askBeforeExit && !isSaved()) {
+			renderer.ui.showExitPrompt();
+			return;
+		}
 
 		/**
 		 * Imagine list of actions like
@@ -678,9 +688,6 @@ const novely = <
 		if (interacted > 0 && saving) {
 			save('auto');
 		}
-
-		const stack = useStack(ctx);
-		const current = stack.value;
 
 		stack.clear();
 		ctx.clear(EMPTY_SET, EMPTY_SET, { music: EMPTY_SET, sounds: EMPTY_SET }, noop);
