@@ -15,8 +15,6 @@
 		"noUnusedParameters": false,
 		"noImplicitReturns": true,
 		"skipLibCheck": true,
-		"composite": true,
-    "declarationMap": true,
 		"verbatimModuleSyntax": true,
 		"useUnknownInCatchVariables": true,
 		"allowImportingTsExtensions": true
