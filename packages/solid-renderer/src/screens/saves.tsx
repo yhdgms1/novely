@@ -5,7 +5,7 @@ import { useData } from '$context';
 import { Save } from '$components';
 
 const Saves: VoidComponent = () => {
-	const { t, storageData, $rendererState, emitter } = useData();
+	const { t, storageData, $rendererState } = useData();
 
 	const saves = () => storageData().saves;
 	const language = () => storageData().meta[0];
@@ -18,7 +18,6 @@ const Saves: VoidComponent = () => {
 					class="button saves__button"
 					onClick={() => {
 						$rendererState.setKey('screen', 'mainmenu');
-						emitter.emit('navigationButton:click', void 0);
 					}}
 				>
 					{t('GoBack')}

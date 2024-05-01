@@ -10,7 +10,7 @@ interface SettingsProps {
 }
 
 const Settings: VoidComponent<SettingsProps> = (props) => {
-	const { t, storageData, storageDataUpdate, options, $rendererState, emitter } = useData();
+	const { t, storageData, storageDataUpdate, options, $rendererState } = useData();
 
 	const language = () => storageData().meta[0];
 	const textSpeed = () => storageData().meta[1];
@@ -51,10 +51,6 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 	const soundVolumeSelectID = createUniqueId();
 	const voiceVolumeSelectID = createUniqueId();
 
-	const emitButtonClick = () => {
-		emitter.emit('navigationButton:click', void 0)
-	}
-
 	return (
 		<div class="root settings">
 			<div class="settings__controls">
@@ -63,7 +59,6 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 					class="button settings__button"
 					onClick={() => {
 						$rendererState.setKey('screen', 'mainmenu');
-						emitButtonClick();
 					}}
 				>
 					{t('HomeScreen')}
@@ -73,7 +68,6 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 					class="button settings__button"
 					onClick={() => {
 						options.restore();
-						emitButtonClick();
 					}}
 				>
 					{t('ToTheGame')}

@@ -6,7 +6,7 @@ import { simple } from '$utils';
 import { Icon } from '$components';
 
 const MainMenu: VoidComponent = () => {
-	const { t, storageData, coreData, options, $rendererState, emitter } = useData();
+	const { t, storageData, coreData, options, $rendererState } = useData();
 	const language = () => storageData().meta[0];
 
 	const rendererStore = from($rendererState);
@@ -17,10 +17,6 @@ const MainMenu: VoidComponent = () => {
 		$rendererState.mutate((s) => s.screen, screen as NovelyScreen);
 	});
 
-	const emitButtonClick = () => {
-		emitter.emit('navigationButton:click', void 0)
-	}
-
 	return (
 		<div class="root main-menu">
 			<div class="main-menu__controls">
@@ -29,7 +25,6 @@ const MainMenu: VoidComponent = () => {
 					class="button main-menu__button"
 					onClick={() => {
 						options.newGame();
-						emitButtonClick();
 					}}
 				>
 					<span class="main-menu__button__text">{t('NewGame')}</span>
@@ -40,7 +35,6 @@ const MainMenu: VoidComponent = () => {
 					class="button main-menu__button"
 					onClick={() => {
 						options.restore();
-						emitButtonClick();
 					}}
 				>
 					<span class="main-menu__button__text">{t('LoadSave')}</span>
@@ -51,7 +45,6 @@ const MainMenu: VoidComponent = () => {
 					class="button main-menu__button"
 					onClick={() => {
 						goto('saves');
-						emitButtonClick();
 					}}
 				>
 					<span class="main-menu__button__text">{t('Saves')}</span>
@@ -62,7 +55,6 @@ const MainMenu: VoidComponent = () => {
 					class="button main-menu__button"
 					onClick={() => {
 						goto('settings');
-						emitButtonClick();
 					}}
 				>
 					<span class="main-menu__button__text">{t('Settings')}</span>
