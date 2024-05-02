@@ -16,7 +16,7 @@ type ValidAction =
 	| ['playSound', audio: string, loop?: boolean]
 	| ['pauseSound', string]
 	| ['stopSound', string]
-	| ['voice', string]
+	| ['voice', string | Record<string, string>]
 	| ['stopVoice']
 	| ['jump', string]
 	| ['showCharacter', string, keyof Character['emotions'], string?, string?]
@@ -157,6 +157,8 @@ type ActionInputSetup = (input: HTMLInputElement, cleanup: (cb: () => void) => v
 
 type BackgroundImage = Partial<Record<'portrait' | 'landscape' | 'all', string>> & Record<string, string>;
 
+type VoiceAction<L extends Lang> = (params: string | Partial<Record<L, string>>) => ValidAction;
+
 type ActionProxy<Characters extends Record<string, Character>, Languages extends Lang, S extends State> = {
 	choice: {
 		(...choices: [name: TextContent<Languages, S>, actions: ValidAction[], active?: ChoiceCheckFunction<Languages, S>][]): ValidAction;
@@ -210,8 +212,18 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 
 	/**
 	 * Plays voice
+	 *
+	 * @example
+	 * ```
+	 * engine.script({
+	 *   start: [
+	 *     engine.action.voice('./rick-astley-never-gonna-give-you-up.mp3'),
+	 *     engine.action.say('Rick', 'Never gonna give you up'),
+	 *   ]
+	 * })
+	 * ```
 	 */
-	voice: (voice: string) => ValidAction;
+	voice: VoiceAction<Languages>
 	/**
 	 * Stops currently playing voice
 	 */

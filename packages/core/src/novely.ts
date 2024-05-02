@@ -215,6 +215,9 @@ const novely = <
 			}
 
 			return (...props: Parameters<Actions[Action]>) => {
+				// todo: figure out how to preload audio
+				// preloading every languages especially in browser (not in Electron or Tauri, however, this is thill is browser, but there is no huge latency) is not effective
+
 				if (preloadAssets === 'blocking') {
 					if (action === 'showBackground') {
 						/**
@@ -938,7 +941,19 @@ const novely = <
 			push();
 		},
 		voice({ ctx, push }, [source]) {
-			ctx.audio.voice(source);
+			const [lang] = storageData.get().meta;
+
+			const audioSource = isString(source) ? source : source[lang]
+
+			/**
+			 * We allow ignoring voice because it is okay to not have voiceover for certain languages
+			 */
+			if (!audioSource) {
+				push();
+				return;
+			}
+
+			ctx.audio.voice(audioSource);
 			push();
 		},
 		stopVoice({ ctx, push }) {
