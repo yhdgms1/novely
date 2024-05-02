@@ -50,6 +50,7 @@ const createAudio = (storageData: StorageDataStore) => {
     const howl = new Howl({
       src,
       volume: getVolume(type),
+      html5: type === 'music',
     });
 
     store[kind][src] = howl;
