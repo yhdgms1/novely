@@ -11,7 +11,7 @@ const Saves: VoidComponent = () => {
 	const language = () => storageData().meta[0];
 
 	return (
-		<div class="root saves">
+		<div class="saves">
 			<div class="saves__controls">
 				<button
 					type="button"

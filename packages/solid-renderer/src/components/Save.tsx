@@ -1,6 +1,7 @@
 import type { VoidComponent } from 'solid-js';
 import type { Save as NovelySave } from '@novely/core';
-import { createSignal, createEffect, onCleanup, untrack } from 'solid-js';
+import { Show, createSignal, createEffect, onCleanup, untrack } from 'solid-js';
+import { Transition } from 'solid-transition-group';
 import { useData } from '$context';
 import { capitalize, getDocumentStyles } from '$utils';
 import { createRetrieved } from "retrieved";
@@ -24,6 +25,7 @@ interface SaveProps {
 const Save: VoidComponent<SaveProps> = (props) => {
   const { t, options, getContext, storageData, storageDataUpdate, removeContext } = useData();
   const [iframe, setIframe] = createSignal<HTMLIFrameElement>()
+  const [overlayShown, setOverlayShown] = createSignal(true);
 
   const [timestamp, type] = props.save[2];
   const date = new Date(timestamp);
@@ -129,6 +131,15 @@ const Save: VoidComponent<SaveProps> = (props) => {
 		});
 	};
 
+  /**
+   * todo: using observer get shown items and load their background, after all are loaded, then remove overlay
+   */
+  const hideOverlayTimeoutID = setTimeout(() => {
+    setOverlayShown(false);
+  }, 300);
+
+  onCleanup(() => clearTimeout(hideOverlayTimeoutID));
+
   return (
     <li class="saves__list-item">
       <div
@@ -151,6 +162,12 @@ const Save: VoidComponent<SaveProps> = (props) => {
           }
         }}
       >
+        <Transition name="saves__list-item__overlay">
+          <Show when={overlayShown()}>
+            <div class="saves__list-item__overlay" />
+          </Show>
+        </Transition>
+
         <iframe
           loading="lazy"
           role="button"

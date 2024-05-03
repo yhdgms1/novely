@@ -1,6 +1,6 @@
 {
 	"name": "@novely/solid-renderer",
-	"version": "0.28.11",
+	"version": "0.29.0",
 	"type": "module",
 	"publishConfig": {
 		"access": "public"
@@ -23,7 +23,8 @@
 		"@novely/renderer-toolkit": "workspace:*",
 		"@novely/typewriter": "workspace:*",
 		"retrieved": "^0.1.0",
-		"solid-js": "1.8.5"
+		"solid-js": "1.8.5",
+		"solid-transition-group": "^0.2.3"
 	},
 	"peerDependencies": {
 		"@novely/core": "*",

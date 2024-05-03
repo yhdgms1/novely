@@ -24,7 +24,5 @@
 }
 
 :root {
-	--novely-settings-background-image: url('./assets/outdoor.png');
-	--novely-main-menu-background-image: url('./assets/outdoor.png');
-	--novely-saves-background-image: url('./assets/outdoor.png');
+	--novely-root-background-image: url('./assets/outdoor.png');
 }

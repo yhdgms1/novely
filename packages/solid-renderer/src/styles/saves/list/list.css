@@ -135,6 +135,30 @@
 	cursor: pointer;
 }
 
+.saves__list-item__overlay {
+	position: absolute;
+	inset: 0;
+
+	z-index: 3;
+
+	pointer-events: none;
+
+	background-color: var(--novely-saves-list-overlay-item-background-color, var(--novely-saves-list-item-background-color, #ffe9f3));
+}
+
+/**
+ * Solid Transition Group classes
+ */
+.saves__list-item__overlay-enter-active,
+.saves__list-item__overlay-exit-active {
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.saves__list-item__overlay-enter,
+.saves__list-item__overlay-exit-to {
+  opacity: 0;
+}
+
 @media (max-aspect-ratio: 0.8) {
 	.saves__list {
 		height: 100%;

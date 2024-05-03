@@ -7,7 +7,7 @@ interface LoadingProps {
 const Loading: VoidComponent<LoadingProps> = (props) => {
 	return (
 		<div
-			class="root loading"
+			class="loading"
 			classList={{
 				overlay: props.overlay
 			}}

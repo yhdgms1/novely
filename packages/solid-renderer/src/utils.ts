@@ -33,7 +33,6 @@ const createImage = (src: string) => {
 
 	Object.assign(img, {
 		src,
-		crossOrigin: '*'
 	});
 
 	return img;

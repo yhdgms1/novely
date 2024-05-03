@@ -8,7 +8,8 @@ import { createSignal, untrack, For, Show, createUniqueId, createEffect, createM
 import { Character, DialogName, Modal, Icon, ControlPanelButtons, createTypewriter } from '$components';
 import { clickOutside } from '$actions';
 import { useData } from '$context';
-import { canvasDrawImages, url, isCSSImage, onKey } from '$utils';
+import { canvasDrawImages, createImage, isCSSImage, onKey } from '$utils';
+import { PRELOADED_IMAGE_MAP } from '../shared'
 
 interface GameProps {
 	context: Context;
@@ -140,11 +141,11 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 	const background = createMemo(() => {
 		const bg = backgroundState()!.background;
-		const is = isCSSImage(bg);
+		const isImage = isCSSImage(bg);
 
 		return {
-			'background-image': is ? url(bg) : '',
-			'background-color': is ? undefined : bg,
+			'background-image': isImage ? bg : undefined,
+			'background-color': isImage ? undefined : bg,
 		}
 	})
 
@@ -162,12 +163,34 @@ const Game: VoidComponent<GameProps> = (props) => {
 		<div
 			class={props.className}
 			classList={{
-				'root': true,
 				'game': true,
 				'preview': props.isPreview
 			}}
 		>
-			<div class="background" style={background()} />
+			<Show when={background()['background-image']} fallback={<div class="background" style={background()} />}>
+				{src => {
+					let img = PRELOADED_IMAGE_MAP.get(src());
+
+					if (img) {
+						const clone = img.cloneNode(true) as HTMLImageElement;
+
+						return Object.assign(clone, {
+							className: 'background'
+						});
+					}
+
+					img = createImage(src());
+
+					img.addEventListener('load', () => {
+						PRELOADED_IMAGE_MAP.set(src(), img);
+					});
+
+					return Object.assign(img, {
+						className: 'background'
+					});
+				}}
+			</Show>
+
 			<div
 				data-characters={true}
 				class="characters"

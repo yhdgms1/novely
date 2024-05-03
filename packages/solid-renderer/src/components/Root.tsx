@@ -63,7 +63,7 @@ const createRootComponent = ({ $rendererState, $contextState, coreOptions, setRo
     });
 
     return (
-      <div ref={setRoot}>
+      <div class="root" ref={setRoot}>
         <Provider
           $rendererState={$rendererState}
 

@@ -17,19 +17,21 @@ import { vibrate } from './vibrate'
 import { useBackground } from './background'
 import { escapeHTML } from '../utils'
 
-const handleBackgroundAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, background: string | BackgroundImage) => {
+const handleBackgroundAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, background: string | BackgroundImage, onChange?: (currentBackground: string) => void) => {
   const { clear } = $contextState.get().background;
 
   clear && clear();
 
   if (typeof background === 'string') {
     $contextState.mutate((s) => s.background.background, background);
+    onChange?.(background);
 
     return;
   }
 
   const { dispose } = useBackground(background, (value) => {
     $contextState.mutate((s) => s.background.background, value);
+    onChange?.(value);
   })
 
   $contextState.mutate((s) => s.background.clear, () => dispose);

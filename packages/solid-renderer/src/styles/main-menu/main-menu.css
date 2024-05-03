@@ -1,8 +1,9 @@
 .main-menu {
 	overflow: hidden;
-	background-image: var(--novely-main-menu-background-image);
 
 	padding: 0 1rem;
+
+	height: 100%;
 
 	display: flex;
 }

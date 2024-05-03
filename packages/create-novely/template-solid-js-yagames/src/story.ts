@@ -2,7 +2,7 @@ import { engine } from './engine'
 
 import outdoor from './assets/outdoor.png'
 
-const { script, action: a, state } = engine
+const { script, action: a } = engine
 
 const story = {
 	start: [
@@ -18,7 +18,7 @@ const story = {
 		a.dialog('Lily', 'My name is Lily. And you are...?'),
 		a.input(
 			'What is your name?',
-			({ input, error, value }) => {
+			({ input, error, state, value }) => {
 				/**
 				 * Set the error, or remove it when string is empty
 				 */

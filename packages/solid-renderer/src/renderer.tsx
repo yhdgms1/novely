@@ -86,7 +86,9 @@ const createSolidRenderer = ({
 						root: root(),
 
 						background(background) {
-							handleBackgroundAction($contextState, background)
+							handleBackgroundAction($contextState, background, (bg) => {
+								renderer.misc.preloadImage(bg);
+							})
 						},
 						character(character) {
 							const chars = useShared(name).characters;
@@ -335,15 +337,20 @@ const createSolidRenderer = ({
 					})
 				},
 				misc: {
-					preloadImage: (image) => {
-						return (document.createElement('img').src = image);
+					preloadImage: (src) => {
+						/**
+						 * We are not awaiting this
+						 */
+						renderer.misc.preloadImageBlocking(src);
+
+						return src;
 					},
-					preloadImageBlocking: (image) => {
-						const img = createImage(image);
+					preloadImageBlocking: (src) => {
+						const img = createImage(src);
 
 						return new Promise<any>((resolve) => {
 							const done = () => {
-								PRELOADED_IMAGE_MAP.set(image, img);
+								PRELOADED_IMAGE_MAP.set(src, img);
 								resolve(1);
 							}
 

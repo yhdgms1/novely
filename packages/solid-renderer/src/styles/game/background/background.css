@@ -3,6 +3,9 @@
   background-position: center;
   background-size: cover;
 
+  object-fit: cover;
+  object-position: 50% 50%;
+
   width: 100vw;
   height: 100vh;
 

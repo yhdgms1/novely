@@ -18,7 +18,7 @@ const MainMenu: VoidComponent = () => {
 	});
 
 	return (
-		<div class="root main-menu">
+		<div class="main-menu">
 			<div class="main-menu__controls">
 				<button
 					type="button"

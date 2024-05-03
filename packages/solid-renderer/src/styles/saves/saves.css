@@ -2,9 +2,8 @@
 	padding: 0 1rem;
 	gap: 1rem;
 
-	overflow: hidden;
+	height: 100%;
 
-	background-image: var(--novely-saves-background-image);
 	display: flex;
 }
 
