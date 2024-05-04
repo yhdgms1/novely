@@ -10,9 +10,7 @@
 
 	text-align: center;
 	font-size: 2rem;
-}
 
-.action-text[data-shown='true'] {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -23,14 +21,14 @@
 	color: var(--novely-fullscreen-text-color, white);
 }
 
-.action-text[data-shown='true'] > span {
+.action-text > span {
 	cursor: pointer;
 
 	word-wrap: break-word;
 	word-break: break-word;
 }
 
-.action-text[data-shown='true']:focus-visible > span {
+.action-text:focus-visible > span {
 	text-decoration: underline;
 }
 

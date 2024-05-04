@@ -145,15 +145,7 @@ engine.script({
 		action.playMusic(sakura_girl),
 		action.custom(particles(snow)),
 		action.showBackground(outdoor),
-		// action.showCharacter('Lily', 'ok'),
-		action.showArbitraryCharacter({
-			id: 'Lily',
-			emotion: 'ok',
-
-			extendWith() {
-				return []
-			}
-		}),
+		action.showCharacter('Lily', 'ok'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		// show('car', ({ init }) => {
 		// 	init({

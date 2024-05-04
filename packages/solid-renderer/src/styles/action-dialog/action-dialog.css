@@ -2,6 +2,8 @@
 	min-height: 26vh;
 	width: 75%;
 
+	display: flex;
+
 	position: fixed;
 	left: 50%;
 	transform: translateX(-50%);
@@ -14,14 +16,6 @@
 	justify-content: flex-end;
 
 	cursor: default;
-}
-
-.action-dialog--visible {
-	display: flex;
-}
-
-.action-dialog--hidden {
-	display: none;
 }
 
 .action-dialog-container {
@@ -51,6 +45,10 @@
 .action-dialog-person {
 	max-height: 25vh;
 	max-width: 25vw;
+
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
 }
 
 .action-dialog-name,

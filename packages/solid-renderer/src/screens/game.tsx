@@ -193,94 +193,96 @@ const Game: VoidComponent<GameProps> = (props) => {
 				}}
 			</Show>
 
-			<div
-				data-characters={true}
-				class="characters"
-				style={{
-					'--shown-characters-count': charactersCount(),
-				}}
-			>
-				<For each={Object.entries(characters())}>
-					{([character, data]) => (
-						<Show when={data && data.visible}>
-							<Character character={character} data={data!} characters={store.characters} />
-						</Show>
-					)}
-				</For>
-			</div>
-			<div
-				class="action-dialog"
-				classList={{
-					'action-dialog--visible': dialog().visible,
-					'action-dialog--hidden': !dialog().visible,
-				}}
-			>
-				<DialogName
-					character={dialog().miniature.character}
-					name={dialog().name}
-					characters={data.characters}
-				/>
+			<Show when={charactersCount() > 0}>
 				<div
-					class="action-dialog-container"
-					data-no-person={!(dialog().miniature.character && dialog().miniature.emotion)}
-					aria-disabled={!dialog().content}
-					role="button"
-					tabIndex={0}
-					onClick={DialogWriter.clear}
-					onKeyPress={onKey(DialogWriter.clear, 'Enter')}
-					onKeyDown={onKey(DialogWriter.clear, ' ')}
+					data-characters={true}
+					class="characters"
+					style={{
+						'--shown-characters-count': charactersCount(),
+					}}
 				>
-					<div class="action-dialog-person">
-						<Show when={dialog()!.miniature.emotion} keyed>
-							{(emotion) => {
-								const character = dialog().miniature.character;
+					<For each={Object.entries(characters())}>
+						{([character, data]) => (
+							<Show when={data && data.visible}>
+								<Character character={character} data={data!} characters={store.characters} />
+							</Show>
+						)}
+					</For>
+				</div>
+			</Show>
 
-								/**
-								 * Если персонажа нет
-								 */
-								if (!character) return null;
-
-								/**
-								 * Если эмоция ещё не загружена - загрузим её
-								 */
-								if (!store.characters[character] || !store.characters[character].emotions[emotion]) {
-									context.character(character).emotion(emotion, false);
-								}
-
-								const image = store.characters[character].emotions[emotion];
-
-								/**
-								 * Если элемент - картинка, не будем выполнять лишнюю отрисовку на `canvas`
-								 */
-								if ('src' in image) return image;
-
-								const [canvas] = canvasDrawImages(undefined, undefined, Object.values(image));
-
-								return canvas;
-							}}
-						</Show>
-					</div>
+			<Show when={dialog().visible}>
+				<div class="action-dialog">
+					<DialogName
+						character={dialog().miniature.character}
+						name={dialog().name}
+						characters={data.characters}
+					/>
 					<div
-						classList={{
-							"action-dialog-content": true,
-							"action-dialog-content--disable-shadow": props.isPreview
-						}}
+						class="action-dialog-container"
+						data-no-person={!(dialog().miniature.character && dialog().miniature.emotion)}
+						aria-disabled={!dialog().content}
+						role="button"
+						tabIndex={0}
+						onClick={DialogWriter.clear}
+						onKeyPress={onKey(DialogWriter.clear, 'Enter')}
+						onKeyDown={onKey(DialogWriter.clear, ' ')}
 					>
-						<DialogWriter.Typewriter
-							attributes={{
-								title:
-									DialogWriter.state() === 'idle'
-										? undefined
-										: data.t(DialogWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
+						<Show when={dialog().miniature.emotion}>
+							<div class="action-dialog-person">
+								<Show when={dialog().miniature.emotion} keyed>
+									{(emotion) => {
+										const character = dialog().miniature.character;
+
+										/**
+										 * Если персонажа нет
+										 */
+										if (!character) return null;
+
+										/**
+										 * Если эмоция ещё не загружена - загрузим её
+										 */
+										if (!store.characters[character] || !store.characters[character].emotions[emotion]) {
+											context.character(character).emotion(emotion, false);
+										}
+
+										const image = store.characters[character].emotions[emotion];
+
+										/**
+										 * Если элемент - картинка, не будем выполнять лишнюю отрисовку на `canvas`
+										 */
+										if ('src' in image) return image;
+
+										const [canvas] = canvasDrawImages(undefined, undefined, Object.values(image));
+
+										return canvas;
+									}}
+								</Show>
+							</div>
+						</Show>
+
+						<div
+							classList={{
+								"action-dialog-content": true,
+								"action-dialog-content--disable-shadow": props.isPreview
 							}}
-							content={dialog().content}
-							ignore={(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview)}
-							speed={speed()}
-							ended={onWriterEnd(DialogWriter.clear)}
-						/>
+						>
+							<DialogWriter.Typewriter
+								attributes={{
+									title:
+										DialogWriter.state() === 'idle'
+											? undefined
+											: data.t(DialogWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
+								}}
+								content={dialog().content}
+								ignore={(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview)}
+								speed={speed()}
+								ended={onWriterEnd(DialogWriter.clear)}
+							/>
+						</div>
 					</div>
 				</div>
-			</div>
+			</Show>
 
 			<Modal
 				isOpen={() => choice().visible}
@@ -384,33 +386,36 @@ const Game: VoidComponent<GameProps> = (props) => {
 				</div>
 			</Modal>
 
-			<div data-custom={true}>
-				<For each={customs()}>{(value) => value!.dom}</For>
-			</div>
+			<Show when={customs().length > 0}>
+				<div data-custom={true}>
+					<For each={customs()}>{(value) => value!.dom}</For>
+				</div>
+			</Show>
 
-			<div
-				class="action-text"
-				data-shown={Boolean(text()!.content)}
-				aria-disabled={!text()!.content}
-				role="button"
-				tabIndex={0}
-				onClick={TextWriter.clear}
-				onKeyPress={onKey(TextWriter.clear, 'Enter')}
-				onKeyDown={onKey(TextWriter.clear, ' ')}
-			>
-				<TextWriter.Typewriter
-					attributes={{
-						title:
-							TextWriter.state() === 'idle'
-								? undefined
-								: data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
-					}}
-					content={text()!.content}
-					ignore={(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview)}
-					speed={speed()}
-					ended={onWriterEnd(TextWriter.clear)}
-				/>
-			</div>
+			<Show when={Boolean(text()!.content)}>
+				<div
+					class="action-text"
+					aria-disabled={!text()!.content}
+					role="button"
+					tabIndex={0}
+					onClick={TextWriter.clear}
+					onKeyPress={onKey(TextWriter.clear, 'Enter')}
+					onKeyDown={onKey(TextWriter.clear, ' ')}
+				>
+					<TextWriter.Typewriter
+						attributes={{
+							title:
+								TextWriter.state() === 'idle'
+									? undefined
+									: data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
+						}}
+						content={text()!.content}
+						ignore={(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview)}
+						speed={speed()}
+						ended={onWriterEnd(TextWriter.clear)}
+					/>
+				</div>
+			</Show>
 
 			<Show when={!props.isPreview}>
 				<div class="control-panel">

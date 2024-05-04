@@ -59,7 +59,7 @@ const canvasDrawImages = (canvas = createCanvas(), ctx = getContext(canvas), ima
 			if (!set) {
 				set = true;
 
-				if (canvas.dataset.resized === 'false') {
+				if (canvas.dataset.resized === 'false' || !canvas.dataset.resized) {
 					canvas.width = image.naturalWidth;
 					canvas.height = image.naturalHeight;
 
