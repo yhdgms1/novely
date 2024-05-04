@@ -3,10 +3,10 @@ import type { Save as NovelySave } from '@novely/core';
 import { Show, createSignal, createEffect, onCleanup, untrack } from 'solid-js';
 import { Transition } from 'solid-transition-group';
 import { useData } from '$context';
-import { capitalize, getDocumentStyles } from '$utils';
+import { capitalize, getDocumentStyles, isCSSImage, once } from '$utils';
 import { createRetrieved } from "retrieved";
 import { removeContextState, useContextState } from '../context-state'
-import { useShared, removeShared } from '../shared';
+import { useShared, removeShared, PRELOADED_IMAGE_MAP } from '../shared';
 import { Game } from '$screens';
 
 /**
@@ -20,17 +20,34 @@ const stylesheet = createRetrieved(getDocumentStyles);
 interface SaveProps {
   save: NovelySave;
   language: string;
+
+  observed: boolean;
+  overlayShown: boolean;
+
+  onPreviewDone: () => void;
 }
 
 const Save: VoidComponent<SaveProps> = (props) => {
   const { t, options, getContext, storageData, storageDataUpdate, removeContext } = useData();
   const [iframe, setIframe] = createSignal<HTMLIFrameElement>()
-  const [overlayShown, setOverlayShown] = createSignal(true);
+  const [iframeLoaded, setIframeLoaded] = createSignal(false);
+  const [previewStarted, setPreviewStarted] = createSignal(false);
+
+  let previewDoneTimeoutId: number;
+
+  const previewDone = once(() => {
+    /**
+     * 150-ms delay is for situation when background is loaded but not everything yet done
+     */
+    previewDoneTimeoutId = setTimeout(() => {
+      untrack(props.onPreviewDone);
+    }, 150);
+  });
 
   const [timestamp, type] = props.save[2];
   const date = new Date(timestamp);
 
-  const KEY = `save-${Number(date)}-${type}`;
+  const KEY = `save-${timestamp}-${type}`;
 
   const $contextState = useContextState(KEY);
   const context = getContext(KEY);
@@ -66,6 +83,14 @@ const Save: VoidComponent<SaveProps> = (props) => {
     options.set(props.save)
   }
 
+  const removeSave = (date: number) => {
+		storageDataUpdate((prev) => {
+			prev.saves = untrack(storageData).saves.filter((save) => save[2][0] !== date);
+
+			return prev;
+		});
+	};
+
   const onIframeLoaded = () => {
     const { contentDocument } = iframe()!;
 
@@ -85,8 +110,50 @@ const Save: VoidComponent<SaveProps> = (props) => {
 
     contentDocument.body.appendChild(game as HTMLElement);
 
-    options.preview(props.save, KEY);
+    setIframeLoaded(true);
   }
+
+  createEffect(() => {
+    if (props.observed && iframeLoaded() && !previewStarted()) {
+      setPreviewStarted(true);
+
+      options.preview(props.save, KEY).then(() => {
+        /**
+         * Right now there is no way to know that everything is loaded (including characters)
+         * We only check background here
+         */
+        const background = useContextState(KEY).get().background.background;
+
+        if (!background || !isCSSImage(background)) {
+          return previewDone();
+        }
+
+        if (PRELOADED_IMAGE_MAP.has(background)) {
+          return previewDone();
+        }
+
+        const backgroundElement = context.root.querySelector<HTMLImageElement>('img.background');
+
+        if (!backgroundElement) {
+          return previewDone();
+        }
+
+        if (backgroundElement.complete && backgroundElement.naturalHeight !== 0) {
+          return previewDone();
+        }
+
+        const onLoadingStatusChange = () => {
+          backgroundElement.removeEventListener('load', onLoadingStatusChange);
+          backgroundElement.removeEventListener('error', onLoadingStatusChange);
+
+          previewDone();
+        }
+
+        backgroundElement.addEventListener('load', onLoadingStatusChange);
+        backgroundElement.addEventListener('error', onLoadingStatusChange);
+      })
+    }
+  })
 
   createEffect(() => {
     const iframeElement = iframe();
@@ -123,25 +190,15 @@ const Save: VoidComponent<SaveProps> = (props) => {
     removeShared(KEY);
   });
 
-  const removeSave = (date: number) => {
-		storageDataUpdate((prev) => {
-			prev.saves = untrack(storageData).saves.filter((save) => save[2][0] !== date);
-
-			return prev;
-		});
-	};
-
-  /**
-   * todo: using observer get shown items and load their background, after all are loaded, then remove overlay
-   */
-  const hideOverlayTimeoutID = setTimeout(() => {
-    setOverlayShown(false);
-  }, 300);
-
-  onCleanup(() => clearTimeout(hideOverlayTimeoutID));
+  onCleanup(() => {
+    clearTimeout(previewDoneTimeoutId);
+  });
 
   return (
-    <li class="saves__list-item">
+    <li
+      class="saves__list-item"
+      data-timestamp={timestamp}
+    >
       <div
         class="saves__list-item__load"
         role="button"
@@ -163,7 +220,7 @@ const Save: VoidComponent<SaveProps> = (props) => {
         }}
       >
         <Transition name="saves__list-item__overlay">
-          <Show when={overlayShown()}>
+          <Show when={props.overlayShown}>
             <div class="saves__list-item__overlay" />
           </Show>
         </Transition>

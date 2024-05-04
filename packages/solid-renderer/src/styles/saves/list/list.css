@@ -111,26 +111,20 @@
 	backdrop-filter: blur(0px);
 
 	width: 100%;
+	height: 100%;
 
 	border-radius: var(--saves-list-iframe-border-radius);
 
 	border: none;
 	aspect-ratio: 8 / 5;
+
+	pointer-events: none;
 }
 
 .saves__list-item__load {
-	width: 100%;
-
 	position: relative;
-}
 
-.saves__list-item__load::after {
-	content: '';
-
-	position: absolute;
-	inset: 0;
-
-	z-index: 2;
+	width: 100%;
 
 	cursor: pointer;
 }

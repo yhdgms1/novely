@@ -278,22 +278,25 @@ importers:
       '@novely/typewriter':
         specifier: workspace:*
         version: link:../typewriter
+      '@solid-primitives/destructure':
+        specifier: ^0.1.17
+        version: 0.1.17(solid-js@1.8.17)
       retrieved:
         specifier: ^0.1.0
         version: 0.1.0
       solid-js:
-        specifier: 1.8.5
-        version: 1.8.5
+        specifier: 1.8.17
+        version: 1.8.17
       solid-transition-group:
         specifier: ^0.2.3
-        version: 0.2.3(solid-js@1.8.5)
+        version: 0.2.3(solid-js@1.8.17)
     devDependencies:
       esbuild:
         specifier: ^0.20.2
         version: 0.20.2
       esbuild-plugin-solid:
         specifier: ^0.5.0
-        version: 0.5.0(esbuild@0.20.2)(solid-js@1.8.5)
+        version: 0.5.0(esbuild@0.20.2)(solid-js@1.8.17)
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -305,7 +308,7 @@ importers:
         version: 0.29.2(klona@2.0.6)
       '@novely/solid-renderer':
         specifier: latest
-        version: 0.25.0(@novely/core@0.29.2(klona@2.0.6))(klona@2.0.6)(solid-js@1.8.12)
+        version: 0.25.0(@novely/core@0.29.2(klona@2.0.6))(klona@2.0.6)(solid-js@1.8.17)
       modern-normalize:
         specifier: ~2.0.0
         version: 2.0.0
@@ -315,7 +318,7 @@ importers:
         version: 0.20.2
       esbuild-plugin-solid:
         specifier: ^0.5.0
-        version: 0.5.0(esbuild@0.20.2)(solid-js@1.8.12)
+        version: 0.5.0(esbuild@0.20.2)(solid-js@1.8.17)
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -1096,6 +1099,11 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@solid-primitives/destructure@0.1.17':
+    resolution: {integrity: sha512-MTjEIIeiw36Png0tze70XnhQ79IbkreX8v0qpjJ77+CLT5MkVQtFoiNHGkZPyw7UtkZQE08qvV6KAJw8s9dCwg==}
+    peerDependencies:
+      solid-js: ^1.6.12
+
   '@solid-primitives/refs@1.0.8':
     resolution: {integrity: sha512-+jIsWG8/nYvhaCoG2Vg6CJOLgTmPKFbaCrNQKWfChalgUf9WrVxWw0CdJb3yX15n5lUcQ0jBo6qYtuVVmBLpBw==}
     peerDependencies:
@@ -1732,6 +1740,9 @@ packages:
 
   solid-js@1.8.12:
     resolution: {integrity: sha512-sLE/i6M9FSWlov3a2pTC5ISzanH2aKwqXTZj+bbFt4SUrVb4iGEa7fpILBMOxsQjkv3eXqEk6JVLlogOdTe0UQ==}
+
+  solid-js@1.8.17:
+    resolution: {integrity: sha512-E0FkUgv9sG/gEBWkHr/2XkBluHb1fkrHywUgA6o6XolPDCJ4g1HaLmQufcBBhiF36ee40q+HpG/vCZu7fLpI3Q==}
 
   solid-js@1.8.5:
     resolution: {integrity: sha512-xvtJvzJzWbsn35oKFhW9kNwaxG1Z/YLMsDp4tLVcYZTMPzvzQ8vEZuyDQ6nt7xDArVgZJ7TUFrJUwrui/oq53A==}
@@ -2564,6 +2575,16 @@ snapshots:
     transitivePeerDependencies:
       - klona
 
+  '@novely/solid-renderer@0.25.0(@novely/core@0.29.2(klona@2.0.6))(klona@2.0.6)(solid-js@1.8.17)':
+    dependencies:
+      '@novely/core': 0.29.2(klona@2.0.6)
+      '@novely/renderer-toolkit': 0.0.4(klona@2.0.6)
+      '@novely/typewriter': 0.5.1
+      retrieved: 0.1.0
+      solid-js: 1.8.17
+    transitivePeerDependencies:
+      - klona
+
   '@novely/typewriter@0.5.1': {}
 
   '@novely/vite-plugin-nvl@0.4.2(@novely/core@0.29.2(klona@2.0.6))(vite@5.0.12(@types/node@20.3.1)(lightningcss@1.24.1))':
@@ -2610,18 +2631,23 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.5.0':
     optional: true
 
-  '@solid-primitives/refs@1.0.8(solid-js@1.8.5)':
+  '@solid-primitives/destructure@0.1.17(solid-js@1.8.17)':
     dependencies:
-      '@solid-primitives/utils': 6.2.3(solid-js@1.8.5)
-      solid-js: 1.8.5
+      '@solid-primitives/utils': 6.2.3(solid-js@1.8.17)
+      solid-js: 1.8.17
 
-  '@solid-primitives/transition-group@1.0.5(solid-js@1.8.5)':
+  '@solid-primitives/refs@1.0.8(solid-js@1.8.17)':
     dependencies:
-      solid-js: 1.8.5
+      '@solid-primitives/utils': 6.2.3(solid-js@1.8.17)
+      solid-js: 1.8.17
 
-  '@solid-primitives/utils@6.2.3(solid-js@1.8.5)':
+  '@solid-primitives/transition-group@1.0.5(solid-js@1.8.17)':
     dependencies:
-      solid-js: 1.8.5
+      solid-js: 1.8.17
+
+  '@solid-primitives/utils@6.2.3(solid-js@1.8.17)':
+    dependencies:
+      solid-js: 1.8.17
 
   '@types/babel__core@7.20.1':
     dependencies:
@@ -2798,23 +2824,13 @@ snapshots:
 
   electron-to-chromium@1.4.440: {}
 
-  esbuild-plugin-solid@0.5.0(esbuild@0.20.2)(solid-js@1.8.12):
+  esbuild-plugin-solid@0.5.0(esbuild@0.20.2)(solid-js@1.8.17):
     dependencies:
       '@babel/core': 7.22.5
       '@babel/preset-typescript': 7.22.5(@babel/core@7.22.5)
       babel-preset-solid: 1.7.4(@babel/core@7.22.5)
       esbuild: 0.20.2
-      solid-js: 1.8.12
-    transitivePeerDependencies:
-      - supports-color
-
-  esbuild-plugin-solid@0.5.0(esbuild@0.20.2)(solid-js@1.8.5):
-    dependencies:
-      '@babel/core': 7.22.5
-      '@babel/preset-typescript': 7.22.5(@babel/core@7.22.5)
-      babel-preset-solid: 1.7.4(@babel/core@7.22.5)
-      esbuild: 0.20.2
-      solid-js: 1.8.5
+      solid-js: 1.8.17
     transitivePeerDependencies:
       - supports-color
 
@@ -3244,6 +3260,12 @@ snapshots:
       seroval: 1.0.4
       seroval-plugins: 1.0.4(seroval@1.0.4)
 
+  solid-js@1.8.17:
+    dependencies:
+      csstype: 3.1.2
+      seroval: 1.0.4
+      seroval-plugins: 1.0.4(seroval@1.0.4)
+
   solid-js@1.8.5:
     dependencies:
       csstype: 3.1.2
@@ -3256,11 +3278,11 @@ snapshots:
       '@babel/types': 7.22.5
       solid-js: 1.8.5
 
-  solid-transition-group@0.2.3(solid-js@1.8.5):
+  solid-transition-group@0.2.3(solid-js@1.8.17):
     dependencies:
-      '@solid-primitives/refs': 1.0.8(solid-js@1.8.5)
-      '@solid-primitives/transition-group': 1.0.5(solid-js@1.8.5)
-      solid-js: 1.8.5
+      '@solid-primitives/refs': 1.0.8(solid-js@1.8.17)
+      '@solid-primitives/transition-group': 1.0.5(solid-js@1.8.17)
+      solid-js: 1.8.17
 
   source-map-js@1.0.2: {}
 
