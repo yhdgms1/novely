@@ -1,6 +1,7 @@
 import type { VoidComponent } from 'solid-js';
 import type { Save as NovelySave } from '@novely/core';
-import { Show, createSignal, createEffect, onCleanup, untrack, createMemo } from 'solid-js';
+import { Portal } from 'solid-js/web';
+import { Show, createSignal, createEffect, onCleanup, untrack } from 'solid-js';
 import { Transition } from 'solid-transition-group';
 import { useData } from '$context';
 import { capitalize, getDocumentStyles, isCSSImage, once } from '$utils';
@@ -52,20 +53,6 @@ const Save: VoidComponent<SaveProps> = (props) => {
   const $contextState = useContextState(KEY);
   const context = getContext(KEY);
 
-  const game = createMemo(() => {
-    return <Game
-      controls='outside'
-      skipTypewriterWhenGoingBack={true}
-
-      $contextState={$contextState}
-
-      context={context}
-      store={useShared(KEY)}
-
-      isPreview={true}
-    /> as HTMLElement;
-  });
-
   const year = date.getFullYear();
 
   const stringDate = () => capitalize(
@@ -110,17 +97,10 @@ const Save: VoidComponent<SaveProps> = (props) => {
 
     context.root = contentDocument.body;
 
-    /**
-     * Does not work if placed not here
-     *
-     * todo: understand and fix
-     */
-    context.root.appendChild(game());
-
     setIframeLoaded(true);
   }
 
-  createEffect( () => {
+  createEffect(() => {
     if (props.observed && iframeLoaded() && !previewStarted()) {
       setPreviewStarted(true);
 
@@ -162,25 +142,7 @@ const Save: VoidComponent<SaveProps> = (props) => {
     }
   })
 
-  createEffect(() => {
-    const iframeElement = iframe();
-
-    if (!iframeElement) return;
-
-    /**
-     * When src set in JSX load event is not firing
-     */
-    iframeElement.setAttribute('src', 'about:blank')
-    iframeElement.addEventListener('load', onIframeLoaded);
-  });
-
   onCleanup(() => {
-    const iframeElement = iframe();
-
-    if (iframeElement) {
-      iframeElement.removeEventListener('load', onIframeLoaded);
-    }
-
     const state = useContextState(KEY);
 
     for (const custom of Object.values(state.get().custom)) {
@@ -234,11 +196,33 @@ const Save: VoidComponent<SaveProps> = (props) => {
 
         <Show when={props.observed} fallback={<div class="saves__list-item__iframe" />}>
           <iframe
-            loading="lazy"
+            loading={undefined /** "lazy" is broken on Firefox Mobile as of now (06.05.2024) */}
+
             tabindex="-1"
             class="saves__list-item__iframe"
             ref={setIframe}
+
+            src="about:blank"
+            onLoad={() => {
+              onIframeLoaded();
+            }}
           />
+
+          <Show when={iframeLoaded()}>
+            <Portal mount={context.root}>
+              <Game
+                controls='outside'
+                skipTypewriterWhenGoingBack={true}
+
+                $contextState={$contextState}
+
+                context={context}
+                store={useShared(KEY)}
+
+                isPreview={true}
+              />
+            </Portal>
+          </Show>
         </Show>
       </div>
 
