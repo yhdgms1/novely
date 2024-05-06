@@ -1,7 +1,6 @@
 import type { VoidComponent } from 'solid-js';
 import type { Save as NovelySave } from '@novely/core';
-import { Show, createSignal, createEffect, onCleanup, untrack } from 'solid-js';
-import { render } from 'solid-js/web';
+import { Show, createSignal, createEffect, onCleanup, untrack, createMemo } from 'solid-js';
 import { Transition } from 'solid-transition-group';
 import { useData } from '$context';
 import { capitalize, getDocumentStyles, isCSSImage, once } from '$utils';
@@ -9,7 +8,6 @@ import { createRetrieved } from "retrieved";
 import { removeContextState, useContextState } from '../context-state'
 import { useShared, removeShared, PRELOADED_IMAGE_MAP } from '../shared';
 import { Game } from '$screens';
-import { noop } from '@novely/renderer-toolkit';
 
 /**
  * When year changes page reload will be needed to render correctly but no one will notice
@@ -53,6 +51,20 @@ const Save: VoidComponent<SaveProps> = (props) => {
 
   const $contextState = useContextState(KEY);
   const context = getContext(KEY);
+
+  const game = createMemo(() => {
+    return <Game
+      controls='outside'
+      skipTypewriterWhenGoingBack={true}
+
+      $contextState={$contextState}
+
+      context={context}
+      store={useShared(KEY)}
+
+      isPreview={true}
+    /> as HTMLElement;
+  });
 
   const year = date.getFullYear();
 
@@ -98,30 +110,19 @@ const Save: VoidComponent<SaveProps> = (props) => {
 
     context.root = contentDocument.body;
 
+    /**
+     * Does not work if placed not here
+     *
+     * todo: understand and fix
+     */
+    context.root.appendChild(game());
+
     setIframeLoaded(true);
   }
 
-  let dispose = noop;
-
-  createEffect(() => {
+  createEffect( () => {
     if (props.observed && iframeLoaded() && !previewStarted()) {
       setPreviewStarted(true);
-
-      dispose = render(() => {
-        return (
-          <Game
-            controls='outside'
-            skipTypewriterWhenGoingBack={true}
-
-            $contextState={$contextState}
-
-            context={context}
-            store={useShared(KEY)}
-
-            isPreview={true}
-          />
-        )
-      }, context.root);
 
       options.preview(props.save, KEY).then(() => {
         /**
@@ -198,7 +199,6 @@ const Save: VoidComponent<SaveProps> = (props) => {
 
   onCleanup(() => {
     clearTimeout(previewDoneTimeoutId);
-    dispose();
   });
 
   return (
