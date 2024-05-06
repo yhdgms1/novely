@@ -27,6 +27,8 @@
 	overflow-y: scroll;
 	overflow-x: hidden;
 
+	content-visibility: auto;
+
 	margin-block-start: 0;
 	margin-block-end: 0;
 
@@ -102,6 +104,8 @@
 }
 
 .saves__list-item__iframe {
+	display: block;
+
 	/**
 	 * https://stackoverflow.com/a/38260951
    *

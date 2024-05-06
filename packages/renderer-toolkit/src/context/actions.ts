@@ -17,6 +17,38 @@ import { vibrate } from './vibrate'
 import { useBackground } from './background'
 import { escapeHTML } from '../utils'
 
+const allEmpty = (target: object | string | number | null | undefined) => {
+  if (typeof target === 'string') {
+    return target == '';
+  }
+
+  if (typeof target === 'number') {
+    return target == 0;
+  }
+
+  if (!target) {
+    return true;
+  }
+
+  for (const value of Object.values(target)) {
+    if (value && typeof value === 'object') {
+      if (!allEmpty(value)) {
+        return false;
+      }
+    }
+
+    if (Array.isArray(value) && value.length > 0) {
+      for (const inner of value) {
+        if (!allEmpty(inner)) {
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
 const handleBackgroundAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, background: string | BackgroundImage, onChange?: (currentBackground: string) => void) => {
   const { clear } = $contextState.get().background;
 

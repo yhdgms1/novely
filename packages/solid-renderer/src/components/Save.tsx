@@ -1,6 +1,7 @@
 import type { VoidComponent } from 'solid-js';
 import type { Save as NovelySave } from '@novely/core';
 import { Show, createSignal, createEffect, onCleanup, untrack } from 'solid-js';
+import { render } from 'solid-js/web';
 import { Transition } from 'solid-transition-group';
 import { useData } from '$context';
 import { capitalize, getDocumentStyles, isCSSImage, once } from '$utils';
@@ -8,6 +9,7 @@ import { createRetrieved } from "retrieved";
 import { removeContextState, useContextState } from '../context-state'
 import { useShared, removeShared, PRELOADED_IMAGE_MAP } from '../shared';
 import { Game } from '$screens';
+import { noop } from '@novely/renderer-toolkit';
 
 /**
  * When year changes page reload will be needed to render correctly but no one will notice
@@ -37,7 +39,7 @@ const Save: VoidComponent<SaveProps> = (props) => {
 
   const previewDone = once(() => {
     /**
-     * 150-ms delay is for situation when background is loaded but not everything yet done
+     * 150-ms delay is for situation when background is loaded but not everything done yet
      */
     previewDoneTimeoutId = setTimeout(() => {
       untrack(props.onPreviewDone);
@@ -66,18 +68,6 @@ const Save: VoidComponent<SaveProps> = (props) => {
   );
 
   const stringType = t(type === 'auto' ? 'Automatic' : 'Manual');
-
-  const game = <Game
-    controls='outside'
-    skipTypewriterWhenGoingBack={true}
-
-    $contextState={$contextState}
-
-    context={context}
-    store={useShared(KEY)}
-
-    isPreview={true}
-  />;
 
   const loadSave = () => {
     options.set(props.save)
@@ -108,14 +98,30 @@ const Save: VoidComponent<SaveProps> = (props) => {
 
     context.root = contentDocument.body;
 
-    contentDocument.body.appendChild(game as HTMLElement);
-
     setIframeLoaded(true);
   }
+
+  let dispose = noop;
 
   createEffect(() => {
     if (props.observed && iframeLoaded() && !previewStarted()) {
       setPreviewStarted(true);
+
+      dispose = render(() => {
+        return (
+          <Game
+            controls='outside'
+            skipTypewriterWhenGoingBack={true}
+
+            $contextState={$contextState}
+
+            context={context}
+            store={useShared(KEY)}
+
+            isPreview={true}
+          />
+        )
+      }, context.root);
 
       options.preview(props.save, KEY).then(() => {
         /**
@@ -192,6 +198,7 @@ const Save: VoidComponent<SaveProps> = (props) => {
 
   onCleanup(() => {
     clearTimeout(previewDoneTimeoutId);
+    dispose();
   });
 
   return (
@@ -225,13 +232,14 @@ const Save: VoidComponent<SaveProps> = (props) => {
           </Show>
         </Transition>
 
-        <iframe
-          loading="lazy"
-          role="button"
-          tabindex="-1"
-          class="saves__list-item__iframe"
-          ref={setIframe}
-        />
+        <Show when={props.observed} fallback={<div class="saves__list-item__iframe" />}>
+          <iframe
+            loading="lazy"
+            tabindex="-1"
+            class="saves__list-item__iframe"
+            ref={setIframe}
+          />
+        </Show>
       </div>
 
       <div class="saves__list-item__description">

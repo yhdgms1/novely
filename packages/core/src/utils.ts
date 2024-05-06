@@ -755,6 +755,190 @@ const getIntlLanguageDisplayName = (lang: Lang) => {
 	}
 }
 
+const createReferFunction = (story: Story) => {
+	const refer = (path: Path) => {
+		let current: any = story;
+		let precurrent: any = story;
+
+		const blocks: any[] = [];
+
+		for (const [type, val] of path) {
+			if (type === 'jump') {
+				precurrent = story;
+				current = current[val];
+			} else if (type === null) {
+				precurrent = current;
+				current = current[val];
+			} else if (type === 'choice') {
+				blocks.push(precurrent);
+				current = current[(val as number) + 1][1];
+			} else if (type === 'condition') {
+				blocks.push(precurrent);
+				current = current[2][val];
+			} else if (type === 'block') {
+				blocks.push(precurrent);
+				current = story[val];
+			} else if (type === 'block:exit' || type === 'choice:exit' || type === 'condition:exit') {
+				current = blocks.pop();
+			}
+		}
+
+		return current as Exclude<ValidAction, ValidAction[]>;
+	};
+
+	return refer;
+}
+
+type ReferFunction = ReturnType<typeof createReferFunction>;
+
+type ExitPathConfig = {
+	path: Path;
+	refer: ReferFunction;
+
+	onExitImpossible: () => void;
+}
+
+const exitPath = ({ path, refer, onExitImpossible }: ExitPathConfig) => {
+	const last = path.at(-1);
+	const ignore: ('choice:exit' | 'condition:exit' | 'block:exit')[] = [];
+
+	let wasExitImpossible = false;
+
+	/**
+	 * - should be an array
+	 * - first element is action name
+	 */
+	if (!isAction(refer(path))) {
+		if (last && isNull(last[0]) && isNumber(last[1])) {
+			last[1]--;
+		} else {
+			path.pop();
+		}
+	}
+
+	if (isExitImpossible(path)) {
+		const referred = refer(path);
+
+		if (isAction(referred) && isSkippedDuringRestore(referred[0])) {
+			onExitImpossible();
+		}
+
+		wasExitImpossible = true;
+
+		return {
+			exitImpossible: wasExitImpossible
+		}
+	}
+
+	for (let i = path.length - 1; i > 0; i--) {
+		const [name] = path[i];
+
+		/**
+		 * Remember already exited paths
+		 */
+		if (isBlockExitStatement(name)) {
+			ignore.push(name);
+		}
+
+		/**
+		 * Ignore everything that we do not need there
+		 */
+		if (!isBlockStatement(name)) continue;
+
+		/**
+		 * When we found an already exited path we remove it from the list
+		 */
+		if (ignore.at(-1)?.startsWith(name)) {
+			ignore.pop();
+			continue;
+		}
+
+		/**
+		 * Exit from the path
+		 */
+		path.push([`${name}:exit`]);
+
+		const prev = findLastPathItemBeforeItemOfType(path.slice(0, i + 1), name);
+
+		/**
+		 * When possible also go to the next action (or exit from one layer above)
+		 */
+		if (prev) path.push([null, prev[1] + 1]);
+
+		/**
+		 * If we added an `[null, int]` but it points not to action, then
+		 *
+		 * - remove that item
+		 * - close another block
+		 */
+		if (!isAction(refer(path))) {
+			path.pop();
+			continue;
+		}
+
+		break;
+	}
+
+	return {
+		exitImpossible: wasExitImpossible
+	}
+}
+
+const nextPath = (path: Path) => {
+	/**
+	 * Last path element
+	 */
+	const last = path.at(-1);
+
+	if (last && (isNull(last[0]) || last[0] === 'jump') && isNumber(last[1])) {
+		last[1]++;
+	} else {
+		path.push([null, 0]);
+	}
+
+	return path;
+}
+
+type FutureLookupOptions = {
+	path: Path;
+	refer: ReferFunction;
+
+	lookUntil: (action: Exclude<ValidAction, ValidAction[]>) => boolean;
+}
+
+const futureLookup = ({ path, refer, lookUntil }: FutureLookupOptions) => {
+	nextPath(path);
+
+	let action = refer(path);
+
+	while (true) {
+		let impossible = false;
+
+		if (action == undefined) {
+			exitPath({
+				path,
+				refer,
+				onExitImpossible: () => {
+					impossible = true;
+				}
+			})
+		}
+
+		if (impossible) {
+			break;
+		}
+
+		if (lookUntil(action)) {
+			break;
+		}
+
+		nextPath(path);
+		action = refer(path);
+	}
+
+	return action;
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -791,7 +975,11 @@ export {
 	getUrlFileExtension,
 	getResourseType,
 	capitalize,
-	getIntlLanguageDisplayName
+	getIntlLanguageDisplayName,
+	createReferFunction,
+	exitPath,
+	futureLookup,
+	nextPath
 };
 
 export type { MatchActionInit, ControlledPromise, MatchActionMapComplete }
