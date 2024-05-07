@@ -30,19 +30,17 @@ const allEmpty = (target: object | string | number | null | undefined) => {
     return true;
   }
 
-  for (const value of Object.values(target)) {
-    if (value && typeof value === 'object') {
-      if (!allEmpty(value)) {
+  if (Array.isArray(target) && target.length > 0) {
+    for (const inner of target) {
+      if (!allEmpty(inner)) {
         return false;
       }
     }
+  }
 
-    if (Array.isArray(value) && value.length > 0) {
-      for (const inner of value) {
-        if (!allEmpty(inner)) {
-          return false;
-        }
-      }
+  for (const value of Object.values(target)) {
+    if (!allEmpty(value)) {
+      return false;
     }
   }
 
@@ -246,9 +244,9 @@ const handleClearCustomAction = ($contextState: DeepAtom<ContextStateStore<Recor
 }
 
 const handleClearBlockingActionsExceptFor = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, preserve: "choice" | "dialog" | "input" | "text") => {
-  // todo: optimize by comparing should update or not
+  const current = $contextState.get()
 
-  if (preserve !== 'choice') {
+  if (preserve !== 'choice' && !allEmpty(current.choice)) {
     $contextState.mutate(
       (s) => s.choice,
       {
@@ -259,7 +257,7 @@ const handleClearBlockingActionsExceptFor = ($contextState: DeepAtom<ContextStat
     );
   }
 
-  if (preserve !== 'input') {
+  if (preserve !== 'input' && !allEmpty(current.input)) {
     $contextState.mutate(
       (s) => s.input,
       {
@@ -271,11 +269,11 @@ const handleClearBlockingActionsExceptFor = ($contextState: DeepAtom<ContextStat
     );
   }
 
-  if (preserve !== 'text') {
+  if (preserve !== 'text' && !allEmpty(current.text)) {
     $contextState.mutate((s) => s.text, { content: '' });
   }
 
-  if (preserve !== 'dialog') {
+  if (preserve !== 'dialog' && !allEmpty(current.dialog)) {
     $contextState.mutate(
       (s) => s.dialog,
       {

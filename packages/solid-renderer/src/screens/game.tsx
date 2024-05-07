@@ -381,7 +381,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 								? undefined
 								: data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
 					}}
-					content={text()!.content}
+					content={text().content}
 					ignore={(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview)}
 					speed={speed()}
 					ended={onWriterEnd(TextWriter.clear)}
