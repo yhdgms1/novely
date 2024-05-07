@@ -965,7 +965,7 @@ const novely = <
 				return c || '';
 			})();
 
-			ctx.clearAction('dialog');
+			ctx.clearBlockingActionsExceptFor('dialog');
 
 			ctx.dialog(
 				templateReplace(content, data),
@@ -1033,7 +1033,7 @@ const novely = <
 				throw new Error(`Running choice without variants to choose from, look at how to use Choice action properly [https://novely.pages.dev/guide/actions/choice#usage]`)
 			}
 
-			ctx.clearAction('choice');
+			ctx.clearBlockingActionsExceptFor('choice');
 
 			ctx.choices(templateReplace(question, data), transformedChoices, (selected) => {
 				if (!ctx.meta.preview) {
@@ -1127,7 +1127,7 @@ const novely = <
 			exit(true, false);
 		},
 		input({ ctx, data, forward }, [question, onInput, setup]) {
-			ctx.clearAction('input');
+			ctx.clearBlockingActionsExceptFor('input');
 
 			ctx.input(
 				templateReplace(question, data),
@@ -1179,7 +1179,7 @@ const novely = <
 				throw new Error(`Action Text was called with empty string or array`)
 			}
 
-			ctx.clearAction('text');
+			ctx.clearBlockingActionsExceptFor('text');
 
 			ctx.text(string, forward);
 		},

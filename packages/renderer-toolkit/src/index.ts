@@ -36,5 +36,5 @@ export {
   handleTextAction,
   handleInputAction,
   handleVibrateAction,
-  handleClearActionAction
+  handleClearBlockingActionsExceptFor
 } from './context/actions'

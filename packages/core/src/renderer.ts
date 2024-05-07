@@ -72,9 +72,9 @@ type Context = {
 	) => void;
 	/**
 	 * Clears all mentioned actions except for preserved one
-	 * @param preserve Action to preserve
+	 * @param preserve Action that should not be cleared
 	 */
-	clearAction: (preserve: 'dialog' | 'choice' | 'input' | 'text') => void;
+	clearBlockingActionsExceptFor: (preserve: 'dialog' | 'choice' | 'input' | 'text') => void;
 
 	text: (str: string, resolve: () => void) => void;
 	vibrate: (pattern: VibratePattern) => void;

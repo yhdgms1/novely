@@ -36,7 +36,7 @@ import {
 	handleTextAction,
 	handleInputAction,
 	handleVibrateAction,
-	handleClearActionAction
+	handleClearBlockingActionsExceptFor
 } from '@novely/renderer-toolkit'
 import { createEmitter } from './emitter';
 import { useContextState, removeContextState } from './context-state'
@@ -255,8 +255,8 @@ const createSolidRenderer = ({
 						clearCustom(fn) {
 							handleClearCustomAction($contextState, fn)
 						},
-						clearAction(name) {
-							handleClearActionAction($contextState, name)
+						clearBlockingActionsExceptFor(name) {
+							handleClearBlockingActionsExceptFor($contextState, name)
 						},
 						vibrate(pattern) {
 							handleVibrateAction(pattern)
