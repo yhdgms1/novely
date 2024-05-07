@@ -618,9 +618,18 @@ const novely = <
 			});
 		});
 
-		context.meta.restoring = context.meta.goingBack = false;
+		// todo: MAKE SURE THIS IS RIGHT
+		if (!context.meta.goingBack) {
+			/**
+			 * When not goingBack setting restoring to false is required to go forward
+			 * Because when restoring action do not call the resolve function which goes to next action but are controlled
+			 */
+			context.meta.restoring = false;
+		}
 
 		render(context);
+
+		context.meta.restoring = context.meta.goingBack = false;
 	};
 
 	const refer = createReferFunction(story);
