@@ -52,31 +52,13 @@ const Game: VoidComponent<GameProps> = (props) => {
 	const onChoicesButtonClick = ([disabled, i]: [boolean, number]) => {
 		if (disabled) return;
 
-		const resolve = choice().resolve!;
-
-		$contextState.setKey('choice', {
-			choices: [],
-			visible: false,
-			resolve: undefined,
-			label: '',
-		});
-
-		resolve(i);
+		choice().resolve?.(i);
 	};
 
 	const onInputButtonClick = () => {
 		if (input().error) return;
 
 		const { resolve, cleanup } = input();
-
-		$contextState.setKey('input', {
-			element: null,
-			label: '',
-			error: '',
-			visible: false,
-			cleanup: undefined,
-			resolve: undefined,
-		});
 
 		cleanup?.();
 		resolve?.();
@@ -107,26 +89,13 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 	const TextWriter = createTypewriter({
 		resolve() {
-			const resolve = text().resolve!;
-
-			$contextState.setKey('text', { content: '' });
-			resolve();
+			text().resolve?.();
 		},
 	});
 
 	const DialogWriter = createTypewriter({
 		resolve() {
-			const resolve = dialog().resolve!;
-
-			$contextState.setKey('dialog', {
-				content: '',
-				name: '',
-				miniature: {},
-				visible: false,
-				resolve: undefined,
-			});
-
-			resolve();
+			dialog().resolve?.();
 		},
 	});
 

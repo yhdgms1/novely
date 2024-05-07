@@ -19,7 +19,7 @@ import type {
 import type { Stored } from './store';
 import type { Context } from './renderer';
 import type { BaseTranslationStrings } from './translations';
-import type { ControlledPromise, MatchActionInit } from './utils';
+import type { ControlledPromise, MatchActionOptions } from './utils';
 import {
 	matchAction,
 	isEmpty,
@@ -847,7 +847,7 @@ const novely = <
 		nextPath(path);
 	};
 
-	const matchActionInit: MatchActionInit = {
+	const matchActionOptions: MatchActionOptions = {
 		getContext: renderer.getContext,
 		push(ctx) {
 			if (ctx.meta.restoring) return;
@@ -858,13 +858,13 @@ const novely = <
 		forward(ctx) {
 			if (!ctx.meta.preview) enmemory(ctx);
 
-			matchActionInit.push(ctx);
+			matchActionOptions.push(ctx);
 
 			if (!ctx.meta.preview) interactivity(true);
-		}
+		},
 	};
 
-	const match = matchAction(matchActionInit, {
+	const match = matchAction(matchActionOptions, {
 		wait({ ctx, push }, [time]) {
 			if (ctx.meta.restoring) return;
 
@@ -965,6 +965,8 @@ const novely = <
 				return c || '';
 			})();
 
+			ctx.clearAction('dialog');
+
 			ctx.dialog(
 				templateReplace(content, data),
 				templateReplace(name, data),
@@ -1030,6 +1032,8 @@ const novely = <
 			if (DEV && transformedChoices.length === 0) {
 				throw new Error(`Running choice without variants to choose from, look at how to use Choice action properly [https://novely.pages.dev/guide/actions/choice#usage]`)
 			}
+
+			ctx.clearAction('choice');
 
 			ctx.choices(templateReplace(question, data), transformedChoices, (selected) => {
 				if (!ctx.meta.preview) {
@@ -1123,6 +1127,8 @@ const novely = <
 			exit(true, false);
 		},
 		input({ ctx, data, forward }, [question, onInput, setup]) {
+			ctx.clearAction('input');
+
 			ctx.input(
 				templateReplace(question, data),
 				onInput,
@@ -1172,6 +1178,8 @@ const novely = <
 			if (DEV && string.length === 0) {
 				throw new Error(`Action Text was called with empty string or array`)
 			}
+
+			ctx.clearAction('text');
 
 			ctx.text(string, forward);
 		},

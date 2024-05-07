@@ -245,6 +245,49 @@ const handleClearCustomAction = ($contextState: DeepAtom<ContextStateStore<Recor
   if (data) data.clear();
 }
 
+const handleClearActionAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, preserve: "choice" | "dialog" | "input" | "text") => {
+  // todo: optimize by comparing should update or not
+
+  if (preserve !== 'choice') {
+    $contextState.mutate(
+      (s) => s.choice,
+      {
+        choices: [],
+        visible: false,
+        label: '',
+      }
+    );
+  }
+
+  if (preserve !== 'input') {
+    $contextState.mutate(
+      (s) => s.input,
+      {
+        element: null,
+        label: '',
+        visible: false,
+        error: '',
+      }
+    );
+  }
+
+  if (preserve !== 'text') {
+    $contextState.mutate((s) => s.text, { content: '' });
+  }
+
+  if (preserve !== 'dialog') {
+    $contextState.mutate(
+      (s) => s.dialog,
+      {
+        visible: false,
+        content: '',
+        name: '',
+        miniature: {}
+      }
+    );
+  }
+}
+
 const handleTextAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, content: string, resolve: () => void) => {
   $contextState.mutate((s) => s.text, { content, resolve });
 }
@@ -309,6 +352,7 @@ export {
   handleClearAction,
   handleCustomAction,
   handleClearCustomAction,
+  handleClearActionAction,
   handleTextAction,
   handleInputAction,
   handleVibrateAction

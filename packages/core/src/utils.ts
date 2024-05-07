@@ -5,6 +5,7 @@ import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE, AUDIO_
 import { STACK_MAP } from './shared';
 
 import { DEV } from 'esm-env';
+import { klona } from 'klona/json';
 
 type MatchActionParams = {
 	data: Record<string, unknown>
@@ -33,14 +34,14 @@ type MatchActionParameters = {
 	data: Record<string, unknown>;
 }
 
-type MatchActionInit = {
+type MatchActionOptions = {
 	push: (ctx: Context) => void;
 	forward: (ctx: Context) => void;
 
 	getContext: (name: string) => Context;
 }
 
-const matchAction = <M extends MatchActionMapComplete>({ getContext, push, forward }: MatchActionInit, values: M) => {
+const matchAction = <M extends MatchActionMapComplete>({ getContext, push, forward }: MatchActionOptions, values: M) => {
 	return (action: keyof MatchActionMapComplete, props: any, { ctx, data }: MatchActionParameters) => {
 		const context = typeof ctx === 'string' ? getContext(ctx) : ctx;
 
@@ -795,7 +796,7 @@ type ExitPathConfig = {
 	path: Path;
 	refer: ReferFunction;
 
-	onExitImpossible: () => void;
+	onExitImpossible?: () => void;
 }
 
 const exitPath = ({ path, refer, onExitImpossible }: ExitPathConfig) => {
@@ -820,7 +821,7 @@ const exitPath = ({ path, refer, onExitImpossible }: ExitPathConfig) => {
 		const referred = refer(path);
 
 		if (isAction(referred) && isSkippedDuringRestore(referred[0])) {
-			onExitImpossible();
+			onExitImpossible?.();
 		}
 
 		wasExitImpossible = true;
@@ -906,26 +907,26 @@ type FutureLookupOptions = {
 	lookUntil: (action: Exclude<ValidAction, ValidAction[]>) => boolean;
 }
 
+/**
+ * @deprecated
+ */
 const futureLookup = ({ path, refer, lookUntil }: FutureLookupOptions) => {
+	path = klona(path);
+
 	nextPath(path);
 
 	let action = refer(path);
 
 	while (true) {
-		let impossible = false;
-
 		if (action == undefined) {
-			exitPath({
+			const { exitImpossible } = exitPath({
 				path,
 				refer,
-				onExitImpossible: () => {
-					impossible = true;
-				}
 			})
-		}
 
-		if (impossible) {
-			break;
+			if (exitImpossible) {
+				break
+			}
 		}
 
 		if (lookUntil(action)) {
@@ -982,4 +983,4 @@ export {
 	nextPath
 };
 
-export type { MatchActionInit, ControlledPromise, MatchActionMapComplete }
+export type { MatchActionOptions, ControlledPromise, MatchActionMapComplete }

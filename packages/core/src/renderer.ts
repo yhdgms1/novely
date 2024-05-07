@@ -70,6 +70,11 @@ type Context = {
 	clearCustom: (
 		fn: CustomHandler<Lang, State>,
 	) => void;
+	/**
+	 * Clears all mentioned actions except for preserved one
+	 * @param preserve Action to preserve
+	 */
+	clearAction: (preserve: 'dialog' | 'choice' | 'input' | 'text') => void;
 
 	text: (str: string, resolve: () => void) => void;
 	vibrate: (pattern: VibratePattern) => void;
