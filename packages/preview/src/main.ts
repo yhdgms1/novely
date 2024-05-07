@@ -1,4 +1,4 @@
-import { novely, RU, EN } from '@novely/core';
+import { novely, RU, EN, extendAction } from '@novely/core';
 import { createSolidRenderer } from '@novely/solid-renderer';
 
 import { particles, hide as hideParticles } from '@novely/particles';
@@ -104,7 +104,11 @@ const engine = novely({
 	],
 });
 
-const { action } = engine;
+const action = extendAction(engine.action, {
+	particles: (options: Parameters<typeof particles>[0]) => {
+		return ['custom', particles(options)]
+	}
+})
 
 false && engine.script({
 	start: [
@@ -143,7 +147,7 @@ engine.script({
 			ru: 'Вы просыпаетесь, но больше не видите своей клавиатуры, вместо неё...',
 		}),
 		action.playMusic(sakura_girl),
-		action.custom(particles(snow)),
+		action.particles(snow),
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok'),
 		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),

@@ -81,6 +81,14 @@ type DeepPartial<T> = unknown extends T
 	    }
 	  : T;
 
+/**
+ *
+ */
+type Assign<A extends object, B extends object> = Pick<
+		A,
+		Exclude<keyof A, keyof B>
+	> & B;
+
 type ActionFN = DefaultActionProxy[keyof DefaultActionProxy];
 
 type NonEmptyRecord<T extends Record<PropertyKey, unknown>> = keyof T extends never ? never : T;
@@ -350,5 +358,6 @@ export type {
 	NovelyInit,
 	StateFunction,
 	TypeEssentials,
-	DefaultEmotions
+	DefaultEmotions,
+	Assign
 };
