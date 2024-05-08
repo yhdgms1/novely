@@ -618,7 +618,6 @@ const novely = <
 			});
 		});
 
-		// todo: MAKE SURE THIS IS RIGHT
 		if (!context.meta.goingBack) {
 			/**
 			 * When not goingBack setting restoring to false is required to go forward
@@ -974,7 +973,7 @@ const novely = <
 				return c || '';
 			})();
 
-			ctx.clearBlockingActionsExceptFor('dialog');
+			ctx.clearBlockingActions('dialog');
 
 			ctx.dialog(
 				templateReplace(content, data),
@@ -1042,7 +1041,7 @@ const novely = <
 				throw new Error(`Running choice without variants to choose from, look at how to use Choice action properly [https://novely.pages.dev/guide/actions/choice#usage]`)
 			}
 
-			ctx.clearBlockingActionsExceptFor('choice');
+			ctx.clearBlockingActions('choice');
 
 			ctx.choices(templateReplace(question, data), transformedChoices, (selected) => {
 				if (!ctx.meta.preview) {
@@ -1136,7 +1135,7 @@ const novely = <
 			exit(true, false);
 		},
 		input({ ctx, data, forward }, [question, onInput, setup]) {
-			ctx.clearBlockingActionsExceptFor('input');
+			ctx.clearBlockingActions('input');
 
 			ctx.input(
 				templateReplace(question, data),
@@ -1146,6 +1145,10 @@ const novely = <
 			);
 		},
 		custom({ ctx, push }, [handler]) {
+			if (handler.requireUserAction) {
+				ctx.clearBlockingActions(undefined)
+			}
+
 			const result = ctx.custom(handler, () => {
 				if (ctx.meta.restoring) return;
 
@@ -1188,7 +1191,7 @@ const novely = <
 				throw new Error(`Action Text was called with empty string or array`)
 			}
 
-			ctx.clearBlockingActionsExceptFor('text');
+			ctx.clearBlockingActions('text');
 
 			ctx.text(string, forward);
 		},

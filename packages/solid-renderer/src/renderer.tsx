@@ -36,7 +36,7 @@ import {
 	handleTextAction,
 	handleInputAction,
 	handleVibrateAction,
-	handleClearBlockingActionsExceptFor
+	handleClearBlockingActions
 } from '@novely/renderer-toolkit'
 import { createEmitter } from './emitter';
 import { useContextState, removeContextState } from './context-state'
@@ -156,18 +156,27 @@ const createSolidRenderer = ({
 								},
 								remove(className, style, duration, restoring) {
 									return new Promise((resolve) => {
+										const hide = () => {
+											$contextState.mutate((s) => s.characters[character]!, (prev) => {
+												return {
+													...prev,
+													visible: false
+												}
+											})
+										}
+
 										if (restoring) {
 											/**
 											 * Ignore remove animations, because it is not shown anyway
 											 */
-											$contextState.mutate((s) => s.characters[character]!.visible, false);
+											hide();
 											resolve();
 
 											return;
 										}
 
 										const timeoutId = setTimeout(() => {
-											$contextState.mutate((s) => s.characters[character]!.visible, false);
+											hide();
 											resolve();
 										}, duration);
 
@@ -178,8 +187,13 @@ const createSolidRenderer = ({
 											chars[character].canvas.className = className as string;
 										}
 
-										$contextState.mutate((s) => s.characters[character]!.style, style);
-										$contextState.mutate((s) => s.characters[character]!.hideTimeoutId, timeoutId);
+										$contextState.mutate((s) => s.characters[character]!, (prev) => {
+											return {
+												...prev,
+												style: style,
+												hideTimeoutId: timeoutId
+											}
+										});
 									})
 								},
 								animate(timeout, classes) {
@@ -255,8 +269,8 @@ const createSolidRenderer = ({
 						clearCustom(fn) {
 							handleClearCustomAction($contextState, fn)
 						},
-						clearBlockingActionsExceptFor(name) {
-							handleClearBlockingActionsExceptFor($contextState, name)
+						clearBlockingActions(name) {
+							handleClearBlockingActions($contextState, name)
 						},
 						vibrate(pattern) {
 							handleVibrateAction(pattern)

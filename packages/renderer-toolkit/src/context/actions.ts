@@ -243,7 +243,7 @@ const handleClearCustomAction = ($contextState: DeepAtom<ContextStateStore<Recor
   if (data) data.clear();
 }
 
-const handleClearBlockingActionsExceptFor = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, preserve: "choice" | "dialog" | "input" | "text") => {
+const handleClearBlockingActions = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, preserve?: "choice" | "dialog" | "input" | "text" | undefined) => {
   const current = $contextState.get()
 
   if (preserve !== 'choice' && !allEmpty(current.choice)) {
@@ -350,7 +350,7 @@ export {
   handleClearAction,
   handleCustomAction,
   handleClearCustomAction,
-  handleClearBlockingActionsExceptFor,
+  handleClearBlockingActions,
   handleTextAction,
   handleInputAction,
   handleVibrateAction
