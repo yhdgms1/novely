@@ -11,7 +11,8 @@ type NoUndefined<T> = T extends undefined ? never : T;
 type CreateSolidRendererOptions = NoUndefined<Parameters<typeof createSolidRenderer>[0]>;
 type SolidRenderer = ReturnType<typeof createSolidRenderer>;
 
-type NovelyParameters = Omit<Parameters<typeof createNovely>[0], 't9n' | 'renderer'>;
+type OriginalNovelyParameters = Parameters<typeof createNovely>[0];
+type NovelyParameters = Omit<OriginalNovelyParameters, 'translation' | 'renderer'>;
 
 declare global {
 	interface Window {
@@ -28,7 +29,7 @@ declare global {
 		options: NovelyParameters;
 
 		solidRenderer: SolidRenderer;
-		novely: ReturnType<typeof createNovely>;
+		engine: ReturnType<typeof createNovely>;
 	}
 }
 
@@ -63,7 +64,7 @@ Object.defineProperty(window, 'storageKey', {
 	},
 });
 
-let translation: NovelyParameters['translation'] | undefined;
+let translation: OriginalNovelyParameters['translation'] | undefined;
 
 Object.defineProperty(window, 'translation', {
 	get() {
@@ -95,15 +96,15 @@ Object.defineProperty(window, 'options', {
 
 		if (!window.solidRenderer) {
 			const message = ru
-				? `'solidRenderer' не определен. Скорее всего, вы удалили присвоение 'rendererOption'. Верните его обратно.`
-				: `'solidRenderer' is not defined. Most likely, you have deleted the 'rendererOption' assignment. Put it back.`;
+				? `'solidRenderer' не определен. Скорее всего, вы удалили присвоение 'rendererOptions'. Верните его обратно.`
+				: `'solidRenderer' is not defined. Most likely, you have deleted the 'rendererOptions' assignment. Put it back.`;
 
 			throw new Error(message);
 		}
 
 		options.storage ||= localStorageStorage({ key: storageKey });
 
-		window.novely = createNovely({
+		window.engine = createNovely({
 			...options,
 			translation,
 			renderer: window.solidRenderer.renderer,

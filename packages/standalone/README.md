@@ -24,12 +24,16 @@
 				characters: {},
 			};
 
-			const { action, withStory } = window.novely;
+			const { action, script } = window.engine;
 
-			withStory({
+			script({
 				start: [action.showBackground('black')],
 			});
 		</script>
 	</body>
 </html>
 ```
+
+## Information
+
+Used @core version is 0.33.0 and @solid-renderer is 0.30.0

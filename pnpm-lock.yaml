@@ -304,11 +304,11 @@ importers:
   packages/standalone:
     dependencies:
       '@novely/core':
-        specifier: latest
-        version: 0.29.2(klona@2.0.6)
+        specifier: workspace:*
+        version: link:../core
       '@novely/solid-renderer':
-        specifier: latest
-        version: 0.25.0(@novely/core@0.29.2(klona@2.0.6))(klona@2.0.6)(solid-js@1.8.17)
+        specifier: workspace:*
+        version: link:../solid-renderer
       modern-normalize:
         specifier: ~2.0.0
         version: 2.0.0
@@ -2572,16 +2572,6 @@ snapshots:
       '@novely/typewriter': 0.5.1
       retrieved: 0.1.0
       solid-js: 1.8.12
-    transitivePeerDependencies:
-      - klona
-
-  '@novely/solid-renderer@0.25.0(@novely/core@0.29.2(klona@2.0.6))(klona@2.0.6)(solid-js@1.8.17)':
-    dependencies:
-      '@novely/core': 0.29.2(klona@2.0.6)
-      '@novely/renderer-toolkit': 0.0.4(klona@2.0.6)
-      '@novely/typewriter': 0.5.1
-      retrieved: 0.1.0
-      solid-js: 1.8.17
     transitivePeerDependencies:
       - klona
 
