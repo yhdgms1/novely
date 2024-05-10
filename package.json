@@ -35,7 +35,9 @@
 		"dev:toolkit": "pnpm --filter=@novely/renderer-toolkit... --parallel dev",
 		"build:toolkit": "pnpm --filter=@novely/renderer-toolkit... --parallel build",
 		"dev:image-format-selector": "pnpm --filter=@novely/image-format-selector... --parallel dev",
-		"build:image-format-selector": "pnpm --filter=@novely/image-format-selector... --parallel build"
+		"build:image-format-selector": "pnpm --filter=@novely/image-format-selector... --parallel build",
+		"dev:moment-presser": "pnpm --filter=@novely/moment-presser... --parallel dev",
+		"build:moment-presser": "pnpm --filter=@novely/moment-presser... --parallel build"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.7.1"

@@ -1,0 +1,130 @@
+[data-id="moment-presser"] {
+  width: 100vw;
+  height: 100vh;
+
+  position: absolute;
+  z-index: 29;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+
+  backdrop-filter: blur(10px);
+}
+
+.preview [data-id="moment-presser"] {
+  width: 100%;
+  height: 100%;
+}
+
+[data-id="moment-presser"] canvas {
+  position: absolute;
+
+  margin-bottom: 4rem;
+
+  width: 50%;
+
+  mask-image: linear-gradient(180deg, #000 0%, #000 50%, transparent 100%);
+}
+
+@media (max-aspect-ratio: 0.8) {
+  [data-id="moment-presser"] canvas {
+    width: 100%;
+  }
+}
+
+.moment-presser-button-container {
+  position: absolute;
+
+  bottom: 0;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  gap: .7rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.moment-presser-button {
+  cursor: pointer;
+
+  background: var(--moment-presser-button-background, #6c8689);
+
+  width: 4rem;
+  height: 4rem;
+
+  border: none;
+
+  box-shadow: 0 0 0 .2rem var(--moment-presser-button-border, #b5ced1);
+
+  border-radius: 999rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  user-select: none;
+}
+
+.moment-presser-circle {
+  background: var(--moment-presser-circle-background, #3b4553);
+
+  width: 3rem;
+  height: 3rem;
+
+  box-shadow: 0 0 0 .2rem var(--moment-presser-circle-border, #3e4c53);
+
+  border-radius: 999rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--moment-presser-circle-color, #ffffc0);
+}
+
+.moment-presser-circle svg {
+  width: 2rem;
+  height: 2rem;
+
+  filter: drop-shadow(0 0 0.75rem var(--moment-presser-caption-color, #ffffc0));
+}
+
+.moment-presser-caption {
+  font-size: 1.3rem;
+
+  color: var(--moment-presser-caption-color, #ffffc0);
+}
+
+@media (max-aspect-ratio: 0.8) or ((min-aspect-ratio: 0.8) and (pointer: coarse)) {
+  .moment-presser-button-container {
+    transform: translate(-50%, -130%);
+  }
+
+  .moment-presser-button {
+    width: 3rem;
+    height: 3rem;
+
+    box-shadow: 0 0 0 .1rem var(--moment-presser-button-border, #b5ced1);
+  }
+
+  .moment-presser-circle {
+    width: 2.2rem;
+    height: 2.2rem;
+
+    box-shadow: 0 0 0 .1rem var(--moment-presser-circle-border, #3e4c53);
+  }
+
+  .moment-presser-circle svg {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  .moment-presser-caption {
+    display: none;
+  }
+}

@@ -58,6 +58,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
 				title={data.t('Settings')}
 				onClick={() => {
 					data.options.save('auto');
+					data.options.exit(true);
 					props.openSettings();
 				}}
 			>

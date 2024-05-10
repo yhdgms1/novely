@@ -8,6 +8,10 @@ import { show, animate, hide as hideRive, remove } from '@novely/rive';
 
 import { selectFormat, setPriority } from '@novely/image-format-selector'
 
+import '@novely/moment-presser/style.css';
+import { createMomentPresser } from '@novely/moment-presser';
+import type { CreateMomentPresserOptions } from '@novely/moment-presser';
+
 import outdoor from './assets/outdoor.png';
 import lily_ok from './assets/lily.png';
 
@@ -107,6 +111,21 @@ const engine = novely({
 const action = extendAction(engine.action, {
 	particles: (options: Parameters<typeof particles>[0]) => {
 		return ['custom', particles(options)]
+	},
+	momentPresser: (onPressed: CreateMomentPresserOptions<typeof engine.typeEssentials>['onPressed']) => {
+		const momentPresser = createMomentPresser<typeof engine.typeEssentials>({
+			onPressed: onPressed,
+			translation: {
+				ru: {
+					stop: 'Стоп'
+				},
+				en: {
+					stop: 'Stop'
+				}
+			}
+		})
+
+		return ['custom', momentPresser];
 	}
 })
 

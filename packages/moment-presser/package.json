@@ -1,0 +1,56 @@
+{
+	"name": "@novely/moment-presser",
+	"description": "Moment Presser Action",
+	"version": "0.1.0",
+	"type": "module",
+	"sideEffects": false,
+	"types": "./dist/index.d.ts",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		},
+		"./style.css": "./dist/index.css",
+		"./*": "./dist/*",
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"dev": "tsup --watch --dts",
+		"build": "tsup --dts"
+	},
+	"dependencies": {
+		"@novely/core": "workspace:*"
+	},
+	"devDependencies": {
+		"tsup": "^8.0.2",
+		"typescript": "^5.4.5"
+	},
+	"peerDependencies": {
+		"@novely/core": "*"
+	},
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/yhdgms1/novely/issues"
+	},
+	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/moment-presser",
+	"keywords": [
+		"novely"
+	],
+	"author": {
+		"name": "Artemiy Schukin",
+		"url": "https://github.com/yhdgms1"
+	},
+	"contributors": [],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/yhdgms1/novely.git"
+	},
+	"files": [
+		"dist/*"
+	]
+}

@@ -143,6 +143,19 @@ importers:
         specifier: ^5.4.5
         version: 5.4.5
 
+  packages/moment-presser:
+    dependencies:
+      '@novely/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      tsup:
+        specifier: ^8.0.2
+        version: 8.0.2(postcss@8.4.32)(typescript@5.4.5)
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
   packages/parser:
     devDependencies:
       tsup:
@@ -182,6 +195,9 @@ importers:
       '@novely/image-format-selector':
         specifier: workspace:*
         version: link:../image-format-selector
+      '@novely/moment-presser':
+        specifier: workspace:*
+        version: link:../moment-presser
       '@novely/particles':
         specifier: workspace:*
         version: link:../particles
