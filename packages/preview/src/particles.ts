@@ -45,32 +45,5 @@ export const snow = {
 			},
 		},
 	},
-	interactivity: {
-		detect_on: 'canvas',
-		events: {
-			onhover: {
-				enable: true,
-				mode: 'bubble',
-			},
-			onclick: {
-				enable: true,
-				mode: 'repulse',
-			},
-			resize: true,
-		},
-		modes: {
-			bubble: {
-				distance: 250,
-				size: 0,
-				duration: 2,
-				opacity: 0,
-				speed: 3,
-			},
-			repulse: {
-				distance: 400,
-				duration: 0.4,
-			},
-		},
-	},
 	retina_detect: true,
 } as const;

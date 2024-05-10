@@ -1,8 +1,8 @@
-import type { RecursivePartial, IOptions, Container } from 'tsparticles-engine';
+import type { RecursivePartial, IOptions, Container } from '@tsparticles/engine';
 import type { CustomHandler } from '@novely/core';
 
-import { tsParticles } from 'tsparticles-engine';
-import { loadSlim } from 'tsparticles-slim';
+import { tsParticles } from '@tsparticles/engine';
+import { loadSlim } from '@tsparticles/slim';
 
 let loaded = false;
 
@@ -12,7 +12,7 @@ type ParticlesOptions = RecursivePartial<IOptions>;
 
 const withDefault = (options: ParticlesOptions) => {
 	options.autoPlay ||= true;
-	options.fullScreen ||= { enable: true, zIndex: 2 };
+	options.fullScreen ||= { enable: true };
 
 	return options;
 };
@@ -25,7 +25,7 @@ const createUniqId = (() => {
 	}
 })();
 
-const particles = (options: ParticlesOptions): CustomHandler => {
+const showParticles = (options: ParticlesOptions): CustomHandler => {
 	const handler: CustomHandler = async ({ get, goingBack, preview }) => {
 		if (preview) return;
 
@@ -80,7 +80,15 @@ const particles = (options: ParticlesOptions): CustomHandler => {
 		/**
 		 * Use element
 		 */
-		const instance = await tsParticles.set(id, layer.element, withDefault(options))
+		const instance = await tsParticles.load({
+			id: id,
+			element: layer.element,
+			options: withDefault(options)
+		});
+
+		if (instance && instance.canvas.element) {
+			instance.canvas.element.style.setProperty('z-index', '2')
+		}
 
 		/**
 		 * Set the instance
@@ -95,7 +103,7 @@ const particles = (options: ParticlesOptions): CustomHandler => {
 	return handler;
 };
 
-const hide = () => {
+const hideParticles = () => {
 	const handler: CustomHandler = ({ get, preview }) => {
 		if (preview) return;
 
@@ -114,7 +122,7 @@ const hide = () => {
 		/**
 		 * Delete the layer
 		 */
-		layer.delete();
+		layer.remove();
 	};
 
 	handler.callOnlyLatest = true;
@@ -124,4 +132,4 @@ const hide = () => {
 	return handler;
 };
 
-export { particles, hide };
+export { showParticles, hideParticles };

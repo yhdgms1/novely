@@ -1,7 +1,7 @@
-import { novely, RU, EN, extendAction } from '@novely/core';
+import { novely, RU, EN, extendAction, TextContent, ValidAction } from '@novely/core';
 import { createSolidRenderer } from '@novely/solid-renderer';
 
-import { particles, hide as hideParticles } from '@novely/particles';
+import { showParticles, hideParticles } from '@novely/particles';
 import { snow } from './particles';
 
 import { show, animate, hide as hideRive, remove } from '@novely/rive';
@@ -109,8 +109,8 @@ const engine = novely({
 });
 
 const action = extendAction(engine.action, {
-	particles: (options: Parameters<typeof particles>[0]) => {
-		return ['custom', particles(options)]
+	particles: (options: Parameters<typeof showParticles>[0]) => {
+		return ['custom', showParticles(options)]
 	},
 	momentPresser: (onPressed: CreateMomentPresserOptions<typeof engine.typeEssentials>['onPressed']) => {
 		const momentPresser = createMomentPresser<typeof engine.typeEssentials>({
@@ -126,6 +126,12 @@ const action = extendAction(engine.action, {
 		})
 
 		return ['custom', momentPresser];
+	},
+	talk: (character: keyof NonNullable<typeof engine.typeEssentials.c> & string, text: TextContent<NonNullable<typeof engine.typeEssentials.l>, NonNullable<typeof engine.typeEssentials.s>>) => {
+		return [
+			['animateCharacter', character, 1000, 'animate__animated', 'animate__pulse'],
+			['say', character, text]
+		] as ValidAction[]
 	}
 })
 
@@ -169,22 +175,30 @@ engine.script({
 		action.particles(snow),
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok'),
-		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
 		// show('car', ({ init }) => {
 		// 	init({
 		// 		src: 'https://cdn.rive.app/animations/vehicles.riv',
 		// 	});
 		// }),
 		// animate('car', 'curves'),
-		action.say('Lily', {
+		// action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		// action.say('Lily', {
+		// 	en: 'Hii~',
+		// 	ru: 'Привет',
+		// }),
+		action.talk('Lily', {
 			en: 'Hii~',
-			ru: 'Привет',
+			ru: 'Привет!'
 		}),
-		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		action.say('Lily', {
+		action.talk('Lily', {
 			en: 'Iʼm going to tell you about the Novely engine',
 			ru: 'Я расскажу тебе про движок Novely',
 		}),
+		// action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		// action.say('Lily', {
+			// en: 'Iʼm going to tell you about the Novely engine',
+			// ru: 'Я расскажу тебе про движок Novely',
+		// }),
 		// animate('car', 'bounce'),
 		action.say('You', {
 			en: 'Great, something new. What kind of features does it offer?',

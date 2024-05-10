@@ -1,15 +1,11 @@
 # @novely/particles
 
-Эффект частиц как в Monogatari, но для Novely
-
-## Требования
-
-Для работы эффектов требуется установить [tsparticles-engine](https://www.npmjs.com/package/tsparticles-engine) и [tsparticles-slim](https://www.npmjs.com/package/tsparticles-slim)
+Эффект частиц на основе ts-particles
 
 ## Использование
 
 ```ts
-import { particles, hide } from '@novely/particles';
+import { showParticles, hideParticles } from '@novely/particles';
 
 const snow = {
   // Смотрите больше здесь
@@ -22,11 +18,11 @@ engine.withStory({
     /**
      * Показывает частицы
      */
-    engine.action.custom(particles(snow)),
+    engine.action.custom(showParticles(snow)),
     /**
      * Скрывает частицы
      */
-    engine.action.custom(hide()),
+    engine.action.custom(hideParticles()),
   ]
 });
 ```
