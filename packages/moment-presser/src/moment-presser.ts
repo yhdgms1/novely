@@ -37,7 +37,7 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
       if (!ctx || !staticCtx) return;
 
       const button = createButton({
-        label: lang === 'ru' ? 'Стоп' : 'Stop',
+        label: options.translation ? options.translation[lang].stop : 'Stop',
       })
 
       element.appendChild(canvas);

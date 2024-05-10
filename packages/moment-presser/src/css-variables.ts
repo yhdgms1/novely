@@ -12,7 +12,7 @@ const parseVariables = (element: HTMLElement) => {
   const style = getComputedStyle(element);
 
   const get = (property: string, fallback: string) => {
-    return style.getPropertyValue(property) || fallback;
+    return style.getPropertyValue(property).trim() || fallback;
   }
 
   return {
