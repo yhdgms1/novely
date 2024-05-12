@@ -1209,9 +1209,12 @@ const novely = <
 				}
 			});
 
-			if (!exitImpossible) {
-				render(ctx);
+			if (exitImpossible) {
+				ctx.clearBlockingActions(undefined);
+				return;
 			}
+
+			render(ctx);
 		},
 		preload({ ctx, push }, [source]) {
 			if (!ctx.meta.goingBack && !ctx.meta.restoring && !PRELOADED_ASSETS.has(source)) {

@@ -42,7 +42,8 @@ export type { BaseTranslationStrings } from './translations';
 export type { AllowedContent, PluralType, Pluralization, TranslationActions } from './translation';
 
 export type {
-	ConditionParams
+	ConditionParams,
+	InputHandler
 } from './type-utils';
 
 export { novely } from './novely';
