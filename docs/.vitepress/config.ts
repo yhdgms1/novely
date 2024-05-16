@@ -1,5 +1,5 @@
 import { defineConfig } from "vitepress";
-import fs from "fs";
+import fs from "node:fs";
 
 const grammar = JSON.parse(
   fs.readFileSync("./docs/.vitepress/novely.tmLanguage.json", "utf8")
@@ -105,7 +105,7 @@ export default defineConfig({
     ],
 
     footer: {
-      message: `Released under the ISC License.`,
+      message: 'Released under the ISC License.',
       copyright: "Copyright © 2023-present Artemiy Schukin & Contributors",
     },
   },
