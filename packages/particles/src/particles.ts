@@ -40,16 +40,16 @@ const showParticles = (options: ParticlesOptions): CustomHandler => {
 			loaded = true;
 		}
 
-		const layer = get(true);
+		const { element, clear, data } = get(true);
 
 		/**
 		 * Remove previous instance
 		 */
-		layer.clear(() => {
+		clear(() => {
 			/**
 			 * Get the instance
 			 */
-			const instance = layer.data().instance as Container;
+			const instance = data().instance as Container;
 
 			if (!instance) return;
 
@@ -61,39 +61,42 @@ const showParticles = (options: ParticlesOptions): CustomHandler => {
 			/**
 			 * Empty the `data`
 			 */
-			layer.data({});
+			data({});
 		});
 
-		const data = layer.data();
-		const optionsEqual = data.options === options;
+		const optionsEqual = data().options === options;
 
 		/**
 		 * Skip re-rendering if:
 		 * 1) Options has not changed and instance is present
 		 * 2) Options has not changed and we are goingBack
 		 */
-		if (optionsEqual && Boolean(data.instance)) return;
+		if (optionsEqual && Boolean(data().instance)) return;
 		if (optionsEqual && goingBack) return;
 
 		const id = createUniqId();
 
 		/**
-		 * Use element
+		 * We can not wait until particles is loaded
 		 */
-		const instance = await tsParticles.load({
-			id: id,
-			element: layer.element,
-			options: withDefault(options)
-		});
+		const load = async () => {
+			const instance = await tsParticles.load({
+				id: id,
+				element: element,
+				options: withDefault(options)
+			});
 
-		if (instance && instance.canvas.element) {
-			instance.canvas.element.style.setProperty('z-index', '2')
+			if (instance && instance.canvas.element) {
+				instance.canvas.element.style.setProperty('z-index', '2')
+			}
+
+			data({ instance, options });
 		}
 
 		/**
-		 * Set the instance
+		 * Should be safe because in restore only latest is called, and when playing it is not expected to change frequently
 		 */
-		layer.data({ instance, options });
+		void load();
 	};
 
 	handler.callOnlyLatest = handler.skipClearOnGoingBack = true;
