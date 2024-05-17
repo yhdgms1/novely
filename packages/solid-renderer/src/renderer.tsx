@@ -44,6 +44,7 @@ import { canvasDrawImages, createImage } from '$utils';
 import { PRELOADED_IMAGE_MAP, useShared } from './shared';
 import { createRootComponent } from './components/Root';
 import { createShowArbitraryCharacterAction } from './custom-actions';
+import { settingsIcons as settingsIconsDefault } from './constants'
 
 const { preloadAudioBlocking } = createAudioMisc();
 
@@ -52,13 +53,7 @@ const createSolidRenderer = ({
 	controls = 'outside',
 	skipTypewriterWhenGoingBack = true,
 	target = document.body,
-	settingsIcons = {
-		language: '🌎',
-		typewriter_speed: '⚡',
-		music_volume: '🎵',
-		sound_volume: '🔊',
-		voice_volume: '🗣️'
-	}
+	settingsIcons = settingsIconsDefault
 }: CreateSolidRendererOptions = {}) => {
 	const emitter = createEmitter<EmitterEventsMap>();
 
