@@ -84,15 +84,50 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 
 type CustomHandlerFunction<L extends string, S extends State> = (parameters: CustomHandlerFunctionParameters<L, S>) => Thenable<void>;
 
-type CustomHandler<L extends string = string, S extends State = State> = CustomHandlerFunction<L, S> & {
+type CustomHandlerCalling = {
+	/**
+	 * Call only the last custom action of this type or not. Does not affect other custom actions
+	 * @example
+	 * ```ts
+	 * ['custom', customSomething1]
+	 * ['custom', customSomething1]
+	 * ['custom', customSomething1] <-- Run only that
+	 * ```
+	 */
 	callOnlyLatest?: boolean;
+	/**
+	 * Manually check should be skipped or not during restore
+	 * @param getNext Function which will return next actions in queue
+	 */
+	skipOnRestore?: (getNext: () => Exclude<ValidAction, ValidAction[]>[]) => boolean;
+}
+
+type CustomHandlerInfo = CustomHandlerCalling & {
+	/**
+	 * When true interacting with it will be saved in history
+	 */
 	requireUserAction?: boolean;
+	/**
+	 * When player is going back we clear every custom action. But we can ignore clearing that.
+	 */
 	skipClearOnGoingBack?: boolean;
 
+	/**
+	 * Id by which we will determine what action is which
+	 *
+	 * It IS recommended to pass this property as it will speed up that check and make it more reliable
+	 */
 	id?: string | symbol;
 
+	/**
+	 * Key by which we will save the data in the `get` function provided to custom action.
+	 *
+	 * It can be a name of action or more specific thing. In example for custom `showCharacter` it may be `show-character-${character}
+	 */
 	key: string;
-};
+}
+
+type CustomHandler<L extends string = string, S extends State = State> = CustomHandlerFunction<L, S> & CustomHandlerInfo;
 
 interface ActionInputOnInputMeta<L extends string, S extends State> {
 	/**
@@ -290,5 +325,6 @@ export type {
 	ActionInputSetup,
 	CustomHandlerFunctionGetFn,
 	CustomHandlerFunctionParameters,
+	CustomHandlerInfo,
 	ConditionCheckFunction
 };

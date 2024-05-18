@@ -476,27 +476,41 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 		keep.add(action);
 
 		if (action === 'function' || action === 'custom') {
-			/**
-			 * When `callOnlyLatest` is `true`
-			 */
-			if (action === 'custom' && (params[0] as CustomHandler).callOnlyLatest) {
-				/**
-				 * We'll calculate it is `latest` or not
-				 */
-				const notLatest = next(i).some(([, func]) => {
-					if (!isFunction(func)) return false;
+			if (action === 'custom') {
+				const fn = params[0] as CustomHandler;
 
-					const c0 = func as CustomHandler;
-					const c1 = params[0] as CustomHandler;
+				if ('callOnlyLatest' in fn && fn.callOnlyLatest) {
+					/**
+					 * We'll calculate it is `latest` or not
+					 */
+					const notLatest = next(i).some(([, func]) => {
+						if (!isFunction(func)) return false;
 
-					// Also check for `undefined` so if two id's were undefined it would not be true
-					const isIdenticalID = Boolean(c0.id && c1.id && c0.id === c1.id);
-					const isIdenticalByReference = c0 === c1;
+						const c0 = func as CustomHandler;
+						const c1 = fn;
 
-					return isIdenticalID || isIdenticalByReference || str(c0) === str(c1);
-				});
+						// Also check for `undefined` so if two id's were undefined it would not be true
+						const isIdenticalID = Boolean(c0.id && c1.id && c0.id === c1.id);
+						const isIdenticalByReference = c0 === c1;
 
-				if (notLatest) continue;
+						return isIdenticalID || isIdenticalByReference || str(c0) === str(c1);
+					});
+
+					if (notLatest) continue;
+				} else if ('skipOnRestore' in fn && fn.skipOnRestore) {
+					let getNext = () => {
+						const nextActions = next(i);
+
+						// Not sure is creating a closure would be more efficient than slicing array or not
+						getNext = () => {
+							return nextActions
+						}
+
+						return nextActions;
+					}
+
+					if (fn.skipOnRestore(getNext)) continue;
+				}
 			}
 
 			processedQueue.push(item);
