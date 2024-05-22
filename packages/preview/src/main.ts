@@ -282,3 +282,27 @@ false && engine.script({
 		action.showBackground('hotpink')
 	]
 })
+
+false && engine.script({
+	start: [
+		action.particles(snow),
+		action.showBackground(outdoor),
+		action.showCharacter('Lily'),
+		action.input(
+			'Something',
+			({ error, input, value }) => {
+				input.value = input.value.trimStart();
+
+				error(input.validationMessage)
+
+				if (!input.validationMessage) {
+					console.log(value.trim())
+				}
+			},
+			(input) => {
+				input.setAttribute('minlength', '2')
+				input.setAttribute('maxlength', '20')
+			}
+		)
+	]
+})

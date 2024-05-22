@@ -303,12 +303,14 @@ const Game: VoidComponent<GameProps> = (props) => {
 					</span>
 					<div class="dialog-panel input-dialog-panel">
 						<label for="novely-input" class="input-dialog-label">
-							<span>{input().label}</span>
+							<span class="input-dialog-label-text">{input().label}</span>
 							{input().element}
-							<span aria-live="polite" aria-atomic="true">
-								{input().error}
-							</span>
 						</label>
+
+						<span class="input-dialog-label-text input-dialog-label__error" aria-live="polite" aria-atomic="true">
+							{input().error}
+						</span>
+
 						<button
 							type="submit"
 							class="button dialog-input__button"

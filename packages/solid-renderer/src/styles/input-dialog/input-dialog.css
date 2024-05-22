@@ -9,14 +9,21 @@
 	width: 100%;
 }
 
-.input-dialog-label > span {
+.input-dialog-label-text {
+	font-size: 1.2375rem;
+
 	margin: 0.4rem 0;
+
 	min-height: 1rem;
 	min-height: 1lh;
+
+	width: 40vw;
 
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 	-webkit-tap-highlight-color: transparent;
 	-webkit-touch-callout: none;
+
+	text-align: center;
 }
 
 .input-dialog-label > input {
@@ -24,7 +31,32 @@
 	max-width: 100%;
 }
 
+/* #checkbox start */
+
+.input-dialog-label:has(input[type="checkbox"]) {
+	gap: 1.25rem;
+
+	flex-direction: row;
+}
+
+.input-dialog-label:has(input[type="checkbox"]) .input-dialog-label-text {
+	width: auto;
+}
+
+.input-dialog-label > input[type="checkbox"] {
+	min-width: unset;
+}
+
+/* #checkbox end */
+
+.input-dialog-label__error {
+	min-height: 2rem;
+	min-height: 2lh;
+}
+
 .input-dialog-panel {
+	min-width: 35vw;
+
 	justify-content: center;
 	align-items: center;
 
@@ -39,4 +71,16 @@
 	background-color: var(--novely-input-dialog-background-color, #f092b4d8);
 	background-position: var(--novely-input-dialog-background-position, 0 0, 3.125rem 3.125rem);
 	background-size: var(--novely-input-dialog-background-size, 6.25rem 6.25rem);
+}
+
+
+@media (max-aspect-ratio: 0.8) {
+  .input-dialog-label-text {
+		width: calc(100vw - 0.5rem);
+	}
+
+	.input-dialog-label__error {
+		min-height: 3rem;
+		min-height: 3lh;
+	}
 }

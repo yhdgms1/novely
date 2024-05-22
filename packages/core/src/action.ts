@@ -324,6 +324,7 @@ export type {
 	BackgroundImage,
 	ActionInputSetup,
 	CustomHandlerFunctionGetFn,
+	CustomHandlerFunction,
 	CustomHandlerFunctionParameters,
 	CustomHandlerInfo,
 	ConditionCheckFunction
