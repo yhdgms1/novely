@@ -4,13 +4,14 @@ Input Box
 
 ## Parameters
 
-|   Name   |                                   Type                                   | Optional |             Description              |
-| :------: | :----------------------------------------------------------------------: | :------: | :----------------------------------: |
-| question |                                  string                                  |    ❌    |                What?                 |
-| onInput  |                       `(meta: InputMeta) => void`                        |    ❌    | Called when typing from the keyboard |
-|  setup   | `(input: HTMLInputElement, cleanup: (cb: (() => void)) => void) => void` |    ✔️    |     Helps you setup the `input`      |
+|   Name   |                         Type                         | Optional |             Description              |
+| :------: | :--------------------------------------------------: | :------: | :----------------------------------: |
+| question |                        string                        |    ❌    |                What?                 |
+| onInput  |             `(meta: InputMeta) => void`              |    ❌    | Called when typing from the keyboard |
+|  setup   | `(input: HTMLInputElement) => void \| (() => void))` |    ✔️    |     Helps you setup the `input`      |
 
 ::: details `InputMeta` type declaration
+
 ```ts
 interface InputMeta {
   /**
@@ -40,6 +41,7 @@ interface InputMeta {
   lang: string;
 }
 ```
+
 :::
 
 ## Usage
@@ -70,7 +72,7 @@ engine.script({
       ({ error, value }) => {
         // Do something
       },
-      (input, cleanup) => {
+      (input) => {
         const masked = new Maskito(input, {
           mask: ({ value }) => {
             const digitsCount = value.replace(/\D/g, "").length;
@@ -79,9 +81,10 @@ engine.script({
           },
         });
 
-        cleanup(() => {
+        // cleanup logic
+        return () => {
           masked.destroy();
-        });
+        }
       }
     ),
     action.input(
@@ -90,7 +93,7 @@ engine.script({
         /**
          * Update error message or hide it
          */
-        error(lang === 'en' ? 'Some error' : '%4#@!!');
+        error(lang === "en" ? "Some error" : "%4#@!!");
 
         /**
          * Update state, using sanitized value here for security reasons
