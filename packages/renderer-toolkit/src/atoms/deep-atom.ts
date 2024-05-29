@@ -11,21 +11,6 @@ type DeepAtom<T extends BaseDeepMap> = DeepMapStore<T> & {
   mutate: <$MutateValue>(getPath: ((object: T) => $MutateValue), setter: Setter<NoInfer<$MutateValue>>) => NoInfer<$MutateValue>;
 }
 
-/**
- * @link https://github.com/nanostores/nanostores/blob/56b0fbc7f51d94073191309376b9cf63948b2c91/deep-map/index.js#L9-L14
- */
-const getClonedOldValue = (atom: DeepAtom<BaseDeepMap>) => {
-  let oldValue
-
-  try {
-    oldValue = structuredClone(atom.value)
-  } catch {
-    oldValue = { ...atom.value }
-  }
-
-  return oldValue
-}
-
 const usePath = <$AtomValue extends BaseDeepMap, $MutateValue>(atomValue: $AtomValue, getPath: GetPath<$AtomValue, $MutateValue>) => {
   const targets = new Set();
   const path: PropertyKey[] = [];
@@ -94,8 +79,7 @@ const deepAtom = <$AtomValue extends BaseDeepMap>(init: $AtomValue): DeepAtom<$A
       return newValue;
     }
 
-    // @ts-expect-error They are not fully compatible but at least there is no error about something is "excessively deep and possibly infinite"
-    const oldMap = getClonedOldValue($atom);
+    const oldValue = $atom.value;
 
     /**
      * They split string and then call flatMap, but we are going to pass an array directly
@@ -112,9 +96,9 @@ const deepAtom = <$AtomValue extends BaseDeepMap>(init: $AtomValue): DeepAtom<$A
     }
 
     // @ts-expect-error Value is actually is not read-only
-    $atom.value = { ...setPath($atom.value, fakedPath, newValue) }
+    $atom.value = setPath($atom.value, fakedPath, newValue)
     // @ts-expect-error There is a hidden notify method
-    $atom.notify(oldMap, path.join('.'))
+    $atom.notify(oldValue, path.join('.'))
 
     return newValue;
   }

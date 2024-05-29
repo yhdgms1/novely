@@ -361,7 +361,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 			</Modal>
 
 			<div data-custom={true}>
-				<For each={customs()}>{(value) => value!.dom}</For>
+				<For each={customs()}>{(value) => value!.domNodes.element}</For>
 			</div>
 
 			<div

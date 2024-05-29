@@ -78,13 +78,17 @@ type ContextStateCustomHandler = {
    */
   fn: CustomHandler;
   /**
-   * Clear Function.
+   * Local Data
+   */
+  localData: any;
+  /**
+   * Cleanup function. Do not confuse with `clear`.
+   */
+  cleanup: () => void;
+  /**
+   * Clear Function. Removes the action.
    */
   clear: () => void;
-  /**
-   * HTML Root where custom action renders its content
-   */
-  dom: null | HTMLDivElement;
 }
 
 type ContextStateCustomHandlers = {
