@@ -302,6 +302,12 @@ false && engine.script({
 			(input) => {
 				input.setAttribute('minlength', '2')
 				input.setAttribute('maxlength', '20')
+
+				return () => {
+					// Useless because that input is removed anyway but the point is to cleanup in a returned function
+					input.removeAttribute('minlength')
+					input.removeAttribute('maxlength')
+				}
 			}
 		)
 	]

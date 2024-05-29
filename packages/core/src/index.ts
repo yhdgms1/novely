@@ -13,7 +13,8 @@ export type {
 	CustomHandlerFunctionParameters,
 	BackgroundImage,
 	ActionInputOnInputMeta,
-	ActionInputSetup
+	ActionInputSetup,
+	ActionInputSetupCleanup
 } from './action';
 export type { Emotions, Character } from './character';
 export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context } from './renderer';

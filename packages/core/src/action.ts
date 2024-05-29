@@ -188,7 +188,8 @@ type ConditionCheckFunction<S extends State, R extends string | true | false> = 
 
 type FunctionAction<L extends string, S extends State> = (props: FunctionActionProps<L, S>) => Thenable<void>;
 
-type ActionInputSetup = (input: HTMLInputElement, cleanup: (cb: () => void) => void) => void;
+type ActionInputSetupCleanup = () => void;
+type ActionInputSetup = (input: HTMLInputElement) => ActionInputSetupCleanup | void;
 
 type BackgroundImage = Partial<Record<'portrait' | 'landscape' | 'all', string>> & Record<string, string>;
 
@@ -323,9 +324,10 @@ export type {
 	ActionInputOnInputMeta,
 	BackgroundImage,
 	ActionInputSetup,
+	ActionInputSetupCleanup,
 	CustomHandlerFunctionGetFn,
 	CustomHandlerFunction,
 	CustomHandlerFunctionParameters,
 	CustomHandlerInfo,
-	ConditionCheckFunction
+	ConditionCheckFunction,
 };

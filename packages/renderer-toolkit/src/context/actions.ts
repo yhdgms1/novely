@@ -15,7 +15,7 @@ import type { DeepAtom } from '../atoms/deep-atom'
 
 import { vibrate } from './vibrate'
 import { useBackground } from './background'
-import { escapeHTML } from '../utils'
+import { escapeHTML, noop } from '../utils'
 
 const allEmpty = (target: object | string | number | null | undefined) => {
   if (typeof target === 'string') {
@@ -106,6 +106,12 @@ const handleClearAction = ($rendererState: DeepAtom<RendererStateStore<Record<Pr
         label: '',
       }
     );
+  }
+
+  const inputCleanup = $contextState.get().input.cleanup;
+
+  if (inputCleanup) {
+    inputCleanup();
   }
 
   if (!keep.has('input')) {
@@ -321,8 +327,6 @@ const handleInputAction = ($contextState: DeepAtom<ContextStateStore<Record<Prop
   // @ts-expect-error Type is actually correct
   !context.meta.preview && input.addEventListener('input', onInputHandler);
 
-  setup(input, (callback) => $contextState.mutate((s) => s.input.cleanup, () => callback));
-
   $contextState.mutate(
     (s) => s.input,
     {
@@ -330,6 +334,7 @@ const handleInputAction = ($contextState: DeepAtom<ContextStateStore<Record<Prop
       label,
       error: '',
       visible: true,
+      cleanup: setup(input) || noop,
       resolve,
     }
   );
