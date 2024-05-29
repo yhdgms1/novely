@@ -17,9 +17,9 @@ type MomentPresserOptions<$Lang extends Lang, $State extends State> = {
 }
 
 const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
-  const fn: CustomHandler = ({ get, lang, preview, state }) => {
+  const fn: CustomHandler = ({ getDomNodes, clear, remove, state, lang, flags: { preview } }) => {
     return new Promise(resolve => {
-      const { element, clear, remove } = get(true);
+      const { element } = getDomNodes(true);
 
       const canvas = document.createElement('canvas');
       const staticCanvas = document.createElement('canvas');

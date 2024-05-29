@@ -44,41 +44,68 @@ type CustomHandlerGetResultDataFunction = (data?: Record<string, unknown>) => Re
 
 type CustomHandlerGetResult<I extends boolean> = {
 	/**
-	 * Remove's custom handler instance
-	 */
-	remove: () => void;
-	/**
-	 * Данные
-	 */
-	data: CustomHandlerGetResultDataFunction;
-	/**
-	 * Элемент слоя
+	 * Element for the custom action to be rendered into
 	 */
 	element: I extends true ? HTMLDivElement : null;
 	/**
-	 * Корневой элемент Novely
+	 * Root node
 	 */
 	root: HTMLElement;
-	/**
-	 * Устанавливает обработчик очистки
-	 */
-	clear: (fn: () => void) => void;
-
-	__internals: {
-		ctx: Context;
-	}
 };
 
 type CustomHandlerFunctionGetFn = <I extends boolean = true>(insert?: I) => CustomHandlerGetResult<I>;
 
 type CustomHandlerFunctionParameters<L extends string, S extends State> = {
-	get: CustomHandlerFunctionGetFn;
+	/**
+	 * Returns:
+	 * - Root where entire novely is mounted
+	 * - Element in which custom action could be mounted
+	 *
+	 * @example
+	 * ```ts
+	 * // pass `true` to insert element to the DOM
+	 * const { root, element } = getDomNodes(true);
+	 * ```
+	 */
+	getDomNodes: CustomHandlerFunctionGetFn;
+
+	/**
+	 * Renderer Context
+	 */
+	rendererContext: Context;
+
+	/**
+	 * Function to work with custom action's state
+	 */
+	data: CustomHandlerGetResultDataFunction;
+
+	/**
+	 * Function to set cleanup handler
+	 */
+	clear: (fn: () => void) => void;
+
+	/**
+	 * Remove's custom handler instance
+	 */
+	remove: () => void;
+
+	/**
+	 * Context's state function
+	 */
 	state: StateFunction<S>;
 
-	restoring: boolean;
-	goingBack: boolean;
-	preview: boolean;
+	/**
+	 * Game flags (aka game states)
+	 */
+	flags: {
+		restoring: boolean;
+		goingBack: boolean;
+		preview: boolean;
+	}
 
+	/**
+	 * Game language
+	 */
 	lang: L;
 }
 

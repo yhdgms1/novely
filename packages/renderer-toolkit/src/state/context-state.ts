@@ -72,7 +72,7 @@ type ContextStateCustomHandler = {
   /**
    * Custom Actions has `get` function. It's return type should be cached
    */
-  getReturn: CustomHandlerGetResult<boolean>
+  domNodes: CustomHandlerGetResult<boolean>
   /**
    * Custom Handler function itself
    */

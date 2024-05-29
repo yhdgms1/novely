@@ -166,29 +166,20 @@ const handleClearAction = ($rendererState: DeepAtom<RendererStateStore<Record<Pr
 }
 
 /**
+ * @todo: get rid of this
+ */
+const __dataStorage = new WeakMap<Context, any>();
+
+/**
  * You MUST return value returned by this function
  */
 const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, options: RendererInit<any, any>, context: Context, fn: CustomHandler<string, State>, resolve: () => void) => {
-  const get = (insert = true) => {
+  const getDomNodes = (insert = true) => {
     const cached = $contextState.get().custom[fn.key]
 
     if (cached) {
-      return cached.getReturn
+      return cached.domNodes;
     }
-
-    /**
-     * `Clear` function
-     */
-    let clear = () => {};
-    let store = {};
-
-    /**
-     * Function that call the `Clear` defined by the action itself, and then deletes the layer
-     */
-    const clearManager = () => {
-      clear();
-      $contextState.mutate((s) => s.custom[fn.key], undefined);
-    };
 
     const createElement = () => {
       const div = document.createElement('div');
@@ -200,20 +191,9 @@ const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<Pro
 
     const element = insert ? createElement() : null;
 
-    const getReturn = {
+    const domNodes = {
       root: context.root,
       element,
-      remove: clearManager,
-      data(data: any) {
-        return data ? (store = data) : store;
-      },
-      clear(cb: () => void) {
-        clear = cb;
-      },
-
-      __internals: {
-        ctx: context
-      }
     }
 
     $contextState.mutate(
@@ -221,21 +201,67 @@ const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<Pro
       {
         dom: element,
         fn,
-        getReturn,
+        domNodes,
 
-        clear: clearManager,
+        clear: remove,
       }
     );
 
-    return getReturn
+    return domNodes
   };
 
+  /**
+   * Cleanup function
+   */
+  let clear = noop;
+
+  const setClear = (fn: typeof clear) => {
+    clear = fn;
+  }
+
+  /**
+   * Local data
+   *
+   * This thing is used to keep some state between custom action instances.
+   */
+  const data = (updatedData?: any) => {
+    if (updatedData) {
+      __dataStorage.set(context, updatedData);
+
+      return updatedData
+    }
+
+    return __dataStorage.get(context) || {};
+  }
+
+  /**
+   * Clear action and then remove it
+   */
+  const remove = () => {
+    __dataStorage.delete(context);
+    clear();
+    $contextState.mutate((s) => s.custom[fn.key], undefined);
+  };
+
+  /**
+   * Promise or void
+   */
   const result = fn({
-    ...context.meta,
+    flags: {
+      ...context.meta,
+    },
+
     lang: options.storageData.get().meta[0],
 
-    get: get as CustomHandlerFunctionGetFn,
-    state: options.getStateFunction(context.id)
+    state: options.getStateFunction(context.id),
+    data,
+
+    clear: setClear,
+    remove: remove,
+
+    rendererContext: context,
+
+    getDomNodes: getDomNodes
   });
 
   result ? result.then(resolve) : resolve();

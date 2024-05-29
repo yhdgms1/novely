@@ -26,7 +26,7 @@ const createUniqId = (() => {
 })();
 
 const showParticles = (options: ParticlesOptions): CustomHandler => {
-	const handler: CustomHandler = async ({ get, goingBack, preview }) => {
+	const handler: CustomHandler = async ({ clear, data, getDomNodes, flags: { goingBack, preview } }) => {
 		if (preview) return;
 
 		if (!loaded) {
@@ -40,7 +40,7 @@ const showParticles = (options: ParticlesOptions): CustomHandler => {
 			loaded = true;
 		}
 
-		const { element, clear, data } = get(true);
+		const { element } = getDomNodes(true);
 
 		/**
 		 * Remove previous instance
@@ -107,15 +107,13 @@ const showParticles = (options: ParticlesOptions): CustomHandler => {
 };
 
 const hideParticles = () => {
-	const handler: CustomHandler = ({ get, preview }) => {
+	const handler: CustomHandler = ({ data, remove, flags: { preview } }) => {
 		if (preview) return;
-
-		const layer = get(true);
 
 		/**
 		 * Get the instance
 		 */
-		const instance = layer.data().instance as Container;
+		const instance = data().instance as Container;
 
 		/**
 		 * Destroy it
@@ -125,7 +123,7 @@ const hideParticles = () => {
 		/**
 		 * Delete the layer
 		 */
-		layer.remove();
+		remove();
 	};
 
 	handler.callOnlyLatest = true;

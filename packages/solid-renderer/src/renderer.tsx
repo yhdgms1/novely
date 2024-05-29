@@ -195,9 +195,7 @@ const createSolidRenderer = ({
 									/**
 									 * Using custom action it is easier to make this action
 									 */
-									const handler: CustomHandler = ({ get }) => {
-										const { clear } = get(false);
-
+									const handler: CustomHandler = ({ clear }) => {
 										const target = this.canvas;
 
 										/**
