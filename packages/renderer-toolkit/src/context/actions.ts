@@ -170,10 +170,8 @@ const handleClearAction = ($rendererState: DeepAtom<RendererStateStore<Record<Pr
  */
 const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, options: RendererInit<any, any>, context: Context, fn: CustomHandler<string, State>, resolve: () => void) => {
   const getDomNodes = (insert = true) => {
-    const cached = $contextState.get().custom[fn.key]
-
-    if (cached) {
-      return cached.domNodes;
+    if ($contextState.get().custom[fn.key]!.domNodes.element) {
+      return $contextState.get().custom[fn.key]!.domNodes
     }
 
     const createElement = () => {
@@ -186,25 +184,12 @@ const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<Pro
 
     const element = insert ? createElement() : null;
 
-    const domNodes = {
-      root: context.root,
-      element,
-    }
-
     $contextState.mutate(
-      (s) => s.custom[fn.key],
-      {
-        fn,
-        domNodes,
+      (s) => s.custom[fn.key]!.domNodes.element,
+      element
+    )
 
-        localData: {},
-
-        cleanup: noop,
-        clear: remove,
-      }
-    );
-
-    return domNodes
+    return $contextState.get().custom[fn.key]!.domNodes;
   };
 
   const getStoredCustomAction = () => {
@@ -215,12 +200,10 @@ const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<Pro
    * Cleanup function
    */
   const setClear = (clear: typeof noop) => {
-    if (getStoredCustomAction()) {
-      $contextState.mutate(
-        (s) => s.custom[fn.key]!.cleanup,
-        () => clear
-      )
-    }
+    $contextState.mutate(
+      (s) => s.custom[fn.key]!.cleanup,
+      () => clear
+    )
   }
 
   /**
@@ -229,7 +212,7 @@ const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<Pro
    * This thing is used to keep some state between custom action instances.
    */
   const data = (updatedData?: any) => {
-    if (updatedData && getStoredCustomAction()) {
+    if (updatedData) {
       return $contextState.mutate(
         (s) => s.custom[fn.key]!.localData,
         updatedData
@@ -246,6 +229,24 @@ const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<Pro
     getStoredCustomAction()!.cleanup();
     $contextState.mutate((s) => s.custom[fn.key], undefined);
   };
+
+  if (!getStoredCustomAction()) {
+    $contextState.mutate(
+      (s) => s.custom[fn.key],
+      {
+        fn,
+        domNodes: {
+          root: context.root,
+          element: null,
+        },
+
+        localData: {},
+
+        cleanup: noop,
+        clear: remove,
+      }
+    );
+  }
 
   const result = fn({
     flags: {
@@ -273,7 +274,6 @@ const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<Pro
 const handleClearCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, fn: CustomHandler<string, State>) => {
   const data = $contextState.get().custom[fn.key];
 
-  console.log(data)
   if (data) data.clear();
 }
 
