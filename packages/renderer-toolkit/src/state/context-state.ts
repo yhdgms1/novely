@@ -70,9 +70,9 @@ type ContextStateCharacters = {
 
 type ContextStateCustomHandler = {
   /**
-   * Custom Actions has `get` function. It's return type should be cached
+   * Node in which custom action is rendered
    */
-  domNodes: CustomHandlerGetResult<boolean>
+  node: null | HTMLDivElement;
   /**
    * Custom Handler function itself
    */

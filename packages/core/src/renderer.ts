@@ -1,6 +1,6 @@
 import type { ActionInputSetup, ActionInputOnInputMeta, BackgroundImage, DefaultActionProxy, ValidAction, CustomHandler } from './action';
 import type { Character } from './character';
-import type { CoreData, Data, Lang, NovelyScreen, Save, State, StateFunction, StorageData, Thenable } from './types';
+import type { CoreData, Data, Lang, NovelyScreen, Save, State, StateFunction, StorageData } from './types';
 import type { BaseTranslationStrings } from './translations';
 import type { Stored } from './store';
 
@@ -28,9 +28,9 @@ type CustomActionHandle = {
 	 */
 	remove: () => void;
 	/**
-	 * Function that will give novely root and custom action root (element which you should add to the screen because custom actions rendered into that element)
+	 * Function that will give action root (element which you should add to the screen because custom actions rendered into that element)
 	 */
-	setDomNodes: (domNodes: { element: null | HTMLDivElement; root: HTMLElement }) => void;
+	setMountElement: (mountElement: null | HTMLDivElement) => void;
 	/**
 	 * Function that will give you clean function provided by custom action.
 	 */

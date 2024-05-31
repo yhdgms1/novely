@@ -173,25 +173,21 @@ const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<Pro
     $contextState.mutate(
       (s) => s.custom[fn.key],
       {
-        domNodes: {
-          element: null,
-          root: null as unknown as HTMLElement
-        },
+        fn,
+        node: null,
         clear: noop,
-        fn
       }
     )
   }
 
   return {
-    setDomNodes(domNodes) {
-      console.log(domNodes)
+    setMountElement(node) {
       $contextState.mutate(
         (s) => s.custom[fn.key]!,
         (state) => {
           return {
             ...state,
-            domNodes
+            node
           }
         }
       )

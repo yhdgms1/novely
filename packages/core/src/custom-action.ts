@@ -6,9 +6,9 @@ import { noop } from './utils';
 
 type CustomActionHolder = {
   /**
-   * Custom Actions has `get` function. It's return type should be cached
+   * Node in which custom action is rendered
    */
-  domNodes: CustomHandlerGetResult<boolean>
+  node: null | HTMLDivElement;
   /**
    * Custom Handler function itself
    */
@@ -51,10 +51,7 @@ const getHolderObject = (ctx: Context, fn: CustomHandler) => {
 
   const holder = {
     cleanup: noop,
-    domNodes: {
-      element: null,
-      root: null as unknown as HTMLElement
-    },
+    node: null,
     fn: fn,
     localData: {}
   } satisfies CustomActionHolder;
@@ -64,23 +61,25 @@ const getHolderObject = (ctx: Context, fn: CustomHandler) => {
   return holder;
 }
 
-const handleCustomAction = (ctx: Context, fn: CustomHandler, { lang, state, setDomNodes, setClear, remove: renderersRemove }: HandleCustomActionOptions) => {
+const handleCustomAction = (ctx: Context, fn: CustomHandler, { lang, state, setMountElement, setClear, remove: renderersRemove }: HandleCustomActionOptions) => {
   const holder = getHolderObject(ctx, fn);
 
-  const getDomNodes = (insert = true) => {
-    if (!holder.domNodes.root) {
-      holder.domNodes.root = ctx.root;
+  const getDomNodes = (insert = true): CustomHandlerGetResult<boolean> => {
+    if (holder.node || !insert) {
+      return {
+        element: holder.node,
+        root: ctx.root
+      }
     }
 
-    if (holder.domNodes.element || !insert) {
-      return holder.domNodes;
+    holder.node = insert ? createCustomActionNode(fn.key) : null;
+
+    setMountElement(holder.node);
+
+    return {
+      element: holder.node,
+      root: ctx.root
     }
-
-    holder.domNodes.element = insert ? createCustomActionNode(fn.key) : null;
-
-    setDomNodes(holder.domNodes);
-
-    return holder.domNodes;
   };
 
   const flags = {
@@ -91,11 +90,7 @@ const handleCustomAction = (ctx: Context, fn: CustomHandler, { lang, state, setD
     setClear(holder.cleanup = () => {
       func();
 
-      holder.domNodes = {
-        element: null,
-        root: ctx.root
-      };
-
+      holder.node = null;
       holder.cleanup = noop;
     });
   }
