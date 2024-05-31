@@ -2,7 +2,6 @@ import type {
 	Renderer,
 	RendererInit,
 	CharacterHandle,
-	CustomHandler,
 	Context,
 	Character,
 	Lang
@@ -32,7 +31,6 @@ import {
 	handleChoiceAction,
 	handleClearAction,
 	handleCustomAction,
-	handleClearCustomAction,
 	handleTextAction,
 	handleInputAction,
 	handleVibrateAction,
@@ -192,39 +190,22 @@ const createSolidRenderer = ({
 									})
 								},
 								animate(timeout, classes) {
-									/**
-									 * Using custom action it is easier to make this action
-									 */
-									const handler: CustomHandler = ({ clear }) => {
-										const target = this.canvas;
-
-										/**
-										 * Character is not found
-										 */
-										if (!target) return;
-
-										const classNames = classes.filter((className) => !target.classList.contains(className));
-
-										target.classList.add(...classNames);
-
-										const removeClassNames = () => {
-											target.classList.remove(...classNames);
-										}
-
-										const timeoutId = setTimeout(removeClassNames, timeout);
-
-										clear(() => {
-											removeClassNames();
-											clearTimeout(timeoutId);
-										});
-									};
+									const target = this.canvas;
 
 									/**
-									 * `callOnlyLatest` property will not have any effect, because `custom` is called directly
+									 * Character is not found
 									 */
-									handler.key = '@@internal-animate-character';
+									if (!target) return;
 
-									context.custom(handler, () => {});
+									const classNames = classes.filter((className) => !target.classList.contains(className));
+
+									target.classList.add(...classNames);
+
+									const removeClassNames = () => {
+										target.classList.remove(...classNames);
+									}
+
+									setTimeout(removeClassNames, timeout);
 								}
 							} satisfies CharacterHandle;
 
@@ -256,11 +237,8 @@ const createSolidRenderer = ({
 								resolve
 							);
 						},
-						custom(fn, resolve) {
-							return handleCustomAction($contextState, options, context, fn, resolve)
-						},
-						clearCustom(fn) {
-							handleClearCustomAction($contextState, fn)
+						custom(fn) {
+							return handleCustomAction($contextState, fn)
 						},
 						clearBlockingActions(name) {
 							handleClearBlockingActions($contextState, name)

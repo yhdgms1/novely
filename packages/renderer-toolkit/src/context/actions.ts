@@ -7,7 +7,7 @@ import type {
   State,
   ActionInputOnInputMeta,
 	ActionInputSetup,
-  CustomHandlerFunctionGetFn
+  CustomActionHandle
 } from '@novely/core'
 import type { ContextState, ContextStateStore } from '../state/context-state'
 import type { RendererStateStore } from '../state/renderer-state'
@@ -166,115 +166,51 @@ const handleClearAction = ($rendererState: DeepAtom<RendererStateStore<Record<Pr
 }
 
 /**
- * You MUST return value returned by this function
+ * You must return value returned by this function
  */
-const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, options: RendererInit<any, any>, context: Context, fn: CustomHandler<string, State>, resolve: () => void) => {
-  const getDomNodes = (insert = true) => {
-    if ($contextState.get().custom[fn.key]!.domNodes.element) {
-      return $contextState.get().custom[fn.key]!.domNodes
-    }
-
-    const createElement = () => {
-      const div = document.createElement('div');
-
-      div.setAttribute('data-id', fn.key);
-
-      return div;
-    }
-
-    const element = insert ? createElement() : null;
-
-    $contextState.mutate(
-      (s) => s.custom[fn.key]!.domNodes.element,
-      element
-    )
-
-    return $contextState.get().custom[fn.key]!.domNodes;
-  };
-
-  const getStoredCustomAction = () => {
-    return $contextState.get().custom[fn.key]
-  }
-
-  /**
-   * Cleanup function
-   */
-  const setClear = (clear: typeof noop) => {
-    $contextState.mutate(
-      (s) => s.custom[fn.key]!.cleanup,
-      () => clear
-    )
-  }
-
-  /**
-   * Local data
-   *
-   * This thing is used to keep some state between custom action instances.
-   */
-  const data = (updatedData?: any) => {
-    if (updatedData) {
-      return $contextState.mutate(
-        (s) => s.custom[fn.key]!.localData,
-        updatedData
-      )
-    }
-
-    return getStoredCustomAction()!.localData
-  }
-
-  /**
-   * Clear action and then remove it
-   */
-  const remove = () => {
-    getStoredCustomAction()!.cleanup();
-    $contextState.mutate((s) => s.custom[fn.key], undefined);
-  };
-
-  if (!getStoredCustomAction()) {
+const handleCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, fn: CustomHandler<string, State>): CustomActionHandle => {
+  if (!$contextState.get().custom[fn.key]) {
     $contextState.mutate(
       (s) => s.custom[fn.key],
       {
-        fn,
         domNodes: {
-          root: context.root,
           element: null,
+          root: null as unknown as HTMLElement
         },
-
-        localData: {},
-
-        cleanup: noop,
-        clear: remove,
+        clear: noop,
+        fn
       }
-    );
+    )
   }
 
-  const result = fn({
-    flags: {
-      ...context.meta,
+  return {
+    setDomNodes(domNodes) {
+      console.log(domNodes)
+      $contextState.mutate(
+        (s) => s.custom[fn.key]!,
+        (state) => {
+          return {
+            ...state,
+            domNodes
+          }
+        }
+      )
     },
-
-    lang: options.storageData.get().meta[0],
-
-    state: options.getStateFunction(context.id),
-    data,
-
-    clear: setClear,
-    remove: remove,
-
-    rendererContext: context,
-
-    getDomNodes: getDomNodes as CustomHandlerFunctionGetFn
-  });
-
-  result ? result.then(resolve) : resolve();
-
-  return result;
-}
-
-const handleClearCustomAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, fn: CustomHandler<string, State>) => {
-  const data = $contextState.get().custom[fn.key];
-
-  if (data) data.clear();
+    setClear(clear) {
+      $contextState.mutate(
+        (s) => s.custom[fn.key]!,
+        (state) => {
+          return {
+            ...state,
+            clear
+          }
+        }
+      )
+    },
+    remove() {
+      $contextState.mutate((s) => s.custom[fn.key], undefined);
+    }
+  }
 }
 
 const handleClearBlockingActions = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, preserve?: "choice" | "dialog" | "input" | "text" | undefined) => {
@@ -382,7 +318,6 @@ export {
   handleChoiceAction,
   handleClearAction,
   handleCustomAction,
-  handleClearCustomAction,
   handleClearBlockingActions,
   handleTextAction,
   handleInputAction,

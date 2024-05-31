@@ -18,86 +18,88 @@ type MomentPresserOptions<$Lang extends Lang, $State extends State> = {
 
 const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
   const fn: CustomHandler = ({ getDomNodes, clear, remove, state, lang, flags: { preview } }) => {
-    return new Promise(resolve => {
-      const { element } = getDomNodes(true);
+    const { promise, resolve } = Promise.withResolvers<void>();
 
-      const canvas = document.createElement('canvas');
-      const staticCanvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const staticCtx = staticCanvas.getContext('2d');
+    const { element } = getDomNodes(true);
 
-      canvas.width = staticCanvas.width = element.getBoundingClientRect().width * devicePixelRatio;
-      canvas.height = staticCanvas.height = canvas.width / 2;
+    const canvas = document.createElement('canvas');
+    const staticCanvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const staticCtx = staticCanvas.getContext('2d');
 
-      /**
-       * Позиционируем так, чтобы не перекрывался бегунок
-       */
-      staticCanvas.style.zIndex = '-1';
+    canvas.width = staticCanvas.width = element.getBoundingClientRect().width * devicePixelRatio;
+    canvas.height = staticCanvas.height = canvas.width / 2;
 
-      if (!ctx || !staticCtx) return;
+    /**
+     * Позиционируем так, чтобы не перекрывался бегунок
+     */
+    staticCanvas.style.zIndex = '-1';
 
-      const button = createButton({
-        label: options.translation ? options.translation[lang].stop : 'Stop',
-      })
+    if (!ctx || !staticCtx) return;
 
-      element.appendChild(canvas);
-      element.appendChild(staticCanvas);
-      element.appendChild(button);
-
-      const fontSize = Number.parseFloat(getComputedStyle(element).fontSize);
-      const variables = parseVariables(element);
-
-      const { stop, getState } = startRender({
-        variables,
-        fontSize,
-
-        preview,
-
-        canvas,
-        ctx,
-
-        staticCanvas,
-        staticCtx,
-
-        set: (start) => {
-          state({ $$momentPresserStart: start });
-        },
-        get: () => {
-          return state().$$momentPresserStart;
-        }
-      });
-
-      const cleanup = once(() => {
-        stop();
-
-        button.removeEventListener('click', onButtonClick)
-
-        canvas.remove();
-        staticCanvas.remove();
-        button.remove();
-      })
-
-      const onButtonClick = once(() => {
-        if (preview) return;
-
-        options.onPressed?.(state, getState());
-
-        state({ $$momentPresserStart: undefined });
-
-        cleanup();
-        resolve();
-
-        remove();
-      })
-
-      button.addEventListener('click', onButtonClick)
-
-      clear(cleanup)
-
-      if (preview) {
-        resolve();
-      }
+    const button = createButton({
+      label: options.translation ? options.translation[lang].stop : 'Stop',
     })
+
+    element.appendChild(canvas);
+    element.appendChild(staticCanvas);
+    element.appendChild(button);
+
+    const fontSize = Number.parseFloat(getComputedStyle(element).fontSize);
+    const variables = parseVariables(element);
+
+    const { stop, getState } = startRender({
+      variables,
+      fontSize,
+
+      preview,
+
+      canvas,
+      ctx,
+
+      staticCanvas,
+      staticCtx,
+
+      set: (start) => {
+        state({ $$momentPresserStart: start });
+      },
+      get: () => {
+        return state().$$momentPresserStart;
+      }
+    });
+
+    const cleanup = once(() => {
+      stop();
+
+      button.removeEventListener('click', onButtonClick)
+
+      canvas.remove();
+      staticCanvas.remove();
+      button.remove();
+    })
+
+    const onButtonClick = once(() => {
+      if (preview) return;
+
+      options.onPressed?.(state, getState());
+
+      state({ $$momentPresserStart: undefined });
+
+      cleanup();
+      resolve();
+
+      remove();
+    })
+
+    button.addEventListener('click', onButtonClick)
+
+    clear(cleanup)
+
+    if (preview) {
+      resolve();
+    }
+
+    return promise;
   }
 
   fn.id = MOMENT_PRESSER_ID;

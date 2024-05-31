@@ -22,6 +22,21 @@ interface CharacterHandle {
 	emotions: Record<string, HTMLImageElement[]>;
 }
 
+type CustomActionHandle = {
+	/**
+	 * Function to remove custom action from screen (and from your state if any completely)
+	 */
+	remove: () => void;
+	/**
+	 * Function that will give novely root and custom action root (element which you should add to the screen because custom actions rendered into that element)
+	 */
+	setDomNodes: (domNodes: { element: null | HTMLDivElement; root: HTMLElement }) => void;
+	/**
+	 * Function that will give you clean function provided by custom action.
+	 */
+	setClear: (clear: () => void) => void;
+}
+
 type AudioHandle = {
 	stop: () => void;
 	pause: () => void;
@@ -63,13 +78,7 @@ type Context = {
 		},
 		resolve: () => void
 	) => void;
-	custom: (
-		fn: CustomHandler<Lang, State>,
-		push: () => void,
-	) => Thenable<void>;
-	clearCustom: (
-		fn: CustomHandler<Lang, State>,
-	) => void;
+	custom: (fn: CustomHandler<Lang, State>) => CustomActionHandle;
 	/**
 	 * Clears all mentioned actions except for preserved one
 	 * @param preserve Action that should not be cleared
@@ -211,4 +220,4 @@ type RendererInit<$Language extends Lang, $Characters extends Record<string, Cha
 	getLanguageDisplayName: (lang: Lang) => string;
 };
 
-export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context };
+export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context, CustomActionHandle };

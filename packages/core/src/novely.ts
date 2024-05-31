@@ -45,6 +45,7 @@ import {
 	createReferFunction,
 	exitPath,
 	nextPath,
+	isPromise,
 } from './utils';
 import { dequal } from 'dequal/lite';
 import { store } from './store';
@@ -52,6 +53,7 @@ import { deepmerge } from '@novely/deepmerge';
 import { klona } from 'klona/json';
 import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, MAIN_CONTEXT_KEY } from './constants';
 import { replace as replaceTranslation, flattenAllowedContent } from './translation';
+import { handleCustomAction, getCustomActionHolder } from './custom-action'
 import { localStorageStorage } from './storage';
 import { setupBrowserVisibilityChangeListeners } from './browser';
 import pLimit from 'p-limit';
@@ -582,7 +584,7 @@ const novely = <
 				 * from future in the past
 				 */
 				if (action === 'custom') {
-					context.clearCustom(fn);
+					getCustomActionHolder(context, fn).cleanup();
 				}
 			}
 		}
@@ -1144,21 +1146,36 @@ const novely = <
 				forward
 			);
 		},
-		custom({ ctx, push }, [handler]) {
-			if (handler.requireUserAction) {
+		custom({ ctx, push }, [fn]) {
+			if (fn.requireUserAction) {
 				ctx.clearBlockingActions(undefined)
 			}
 
-			const result = ctx.custom(handler, () => {
+			const next = () => {
 				if (ctx.meta.restoring) return;
 
-				if (handler.requireUserAction && !ctx.meta.preview) {
+				if (fn.requireUserAction && !ctx.meta.preview) {
 					enmemory(ctx);
 					interactivity(true);
 				}
 
 				push();
-			});
+			}
+
+			const state = getStateFunction(ctx);
+			const lang = storageData.get().meta[0]
+
+			const result = handleCustomAction(ctx, fn, {
+				...ctx.custom(fn),
+				state,
+				lang,
+			})
+
+			if (isPromise(result)) {
+				result.then(next)
+			} else {
+				next()
+			}
 
 			return result;
 		},

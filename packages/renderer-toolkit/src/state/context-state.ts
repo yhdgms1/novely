@@ -78,14 +78,6 @@ type ContextStateCustomHandler = {
    */
   fn: CustomHandler;
   /**
-   * Local Data
-   */
-  localData: any;
-  /**
-   * Cleanup function. Do not confuse with `clear`.
-   */
-  cleanup: () => void;
-  /**
    * Clear Function. Removes the action.
    */
   clear: () => void;
@@ -334,5 +326,6 @@ export { createContextStateRoot }
 export type {
   ContextStateStore,
   ContextState,
-  ContextStateCharacter
+  ContextStateCharacter,
+  ContextStateCustomHandler
 }

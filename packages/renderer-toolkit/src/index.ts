@@ -7,7 +7,7 @@ export { deepAtom } from './atoms/deep-atom'
 export type { DeepAtom } from './atoms/deep-atom'
 
 export { createContextStateRoot } from './state/context-state'
-export type { ContextStateStore, ContextState, ContextStateCharacter } from './state/context-state'
+export type { ContextStateStore, ContextState, ContextStateCharacter, ContextStateCustomHandler } from './state/context-state'
 
 export { createRendererState } from './state/renderer-state'
 export type { RendererState, RendererStateStore } from './state/renderer-state'
@@ -32,7 +32,6 @@ export {
   handleChoiceAction,
   handleClearAction,
   handleCustomAction,
-  handleClearCustomAction,
   handleTextAction,
   handleInputAction,
   handleVibrateAction,

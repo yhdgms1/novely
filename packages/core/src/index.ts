@@ -17,7 +17,7 @@ export type {
 	ActionInputSetupCleanup
 } from './action';
 export type { Emotions, Character } from './character';
-export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context } from './renderer';
+export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context, CustomActionHandle } from './renderer';
 export type { Storage } from './storage';
 export type {
 	Thenable,
