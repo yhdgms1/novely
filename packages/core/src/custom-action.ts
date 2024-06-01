@@ -18,7 +18,7 @@ type CustomActionHolder = {
    */
   localData: any;
   /**
-   * Cleanup function. Do not confuse with `clear`.
+   * Cleanup function. Provided by custom action.
    */
   cleanup: () => void;
 }
@@ -42,7 +42,7 @@ const createCustomActionNode = (id: string) => {
   return div;
 }
 
-const getHolderObject = (ctx: Context, fn: CustomHandler) => {
+const getCustomActionHolder = (ctx: Context, fn: CustomHandler) => {
   const cached = CUSTOM_ACTION_MAP.get(ctx.id + fn.key);
 
   if (cached) {
@@ -62,7 +62,11 @@ const getHolderObject = (ctx: Context, fn: CustomHandler) => {
 }
 
 const handleCustomAction = (ctx: Context, fn: CustomHandler, { lang, state, setMountElement, setClear, remove: renderersRemove }: HandleCustomActionOptions) => {
-  const holder = getHolderObject(ctx, fn);
+  const holder = getCustomActionHolder(ctx, fn);
+
+  const flags = {
+    ...ctx.meta
+  };
 
   const getDomNodes = (insert = true): CustomHandlerGetResult<boolean> => {
     if (holder.node || !insert) {
@@ -82,16 +86,21 @@ const handleCustomAction = (ctx: Context, fn: CustomHandler, { lang, state, setM
     }
   };
 
-  const flags = {
-    ...ctx.meta
-  };
-
   const clear = (func: typeof noop) => {
+    /**
+     * We wrap original cleanup to achieve these goals:
+     *
+     * - when cleaned up function will not be called again
+     * - when cleaned up renderer will get updated element
+     */
     setClear(holder.cleanup = () => {
       func();
 
       holder.node = null;
       holder.cleanup = noop;
+
+      setMountElement(null);
+      setClear(noop);
     });
   }
 
@@ -125,5 +134,5 @@ const handleCustomAction = (ctx: Context, fn: CustomHandler, { lang, state, setM
   });
 }
 
-export { getHolderObject as getCustomActionHolder, handleCustomAction }
+export { getCustomActionHolder, handleCustomAction }
 export type { CustomActionHolder, HandleCustomActionOptions }

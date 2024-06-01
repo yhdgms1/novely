@@ -4,6 +4,7 @@ import type {
 	Story,
 	ValidAction,
 	TextContent,
+	CustomHandler,
 } from './action';
 import type {
 	Save,
@@ -806,6 +807,10 @@ const novely = <
 		return capitalize(language.nameOverride || getIntlLanguageDisplayName(lang));
 	}
 
+	const clearCustomAction = (ctx: Context, fn: CustomHandler) => {
+		getCustomActionHolder(ctx, fn).cleanup();
+	}
+
 	const renderer = createRenderer({
 		mainContextKey: MAIN_CONTEXT_KEY,
 
@@ -820,6 +825,7 @@ const novely = <
 		preview,
 		removeContext,
 		getStateFunction,
+		clearCustomAction,
 		languages,
 		storageData: storageData as unknown as Stored<StorageData<string, Data>>,
 		coreData,
@@ -1151,17 +1157,6 @@ const novely = <
 				ctx.clearBlockingActions(undefined)
 			}
 
-			const next = () => {
-				if (ctx.meta.restoring) return;
-
-				if (fn.requireUserAction && !ctx.meta.preview) {
-					enmemory(ctx);
-					interactivity(true);
-				}
-
-				push();
-			}
-
 			const state = getStateFunction(ctx);
 			const lang = storageData.get().meta[0]
 
@@ -1171,10 +1166,21 @@ const novely = <
 				lang,
 			})
 
-			if (isPromise(result)) {
-				result.then(next)
-			} else {
-				next()
+			const next = () => {
+				if (fn.requireUserAction && !ctx.meta.preview) {
+					enmemory(ctx);
+					interactivity(true);
+				}
+
+				push();
+			}
+
+			if (!ctx.meta.restoring) {
+				if (isPromise(result)) {
+					result.then(next)
+				} else {
+					next()
+				}
 			}
 
 			return result;

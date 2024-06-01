@@ -90,7 +90,7 @@ const handleChoiceAction = ($contextState: DeepAtom<ContextStateStore<Record<Pro
   );
 }
 
-const handleClearAction = ($rendererState: DeepAtom<RendererStateStore<Record<PropertyKey, unknown>>>, $contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, context: Context, keep: Set<keyof DefaultActionProxy>, keepCharacters: Set<string>) => {
+const handleClearAction = ($rendererState: DeepAtom<RendererStateStore<Record<PropertyKey, unknown>>>, $contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, options: RendererInit<any, any>, context: Context, keep: Set<keyof DefaultActionProxy>, keepCharacters: Set<string>) => {
   $rendererState.mutate((s) => s.exitPromptShown, false);
 
   if (!keep.has('showBackground')) {
@@ -156,11 +156,11 @@ const handleClearAction = ($rendererState: DeepAtom<RendererStateStore<Record<Pr
     }
   }
 
-  for (const [id, handler] of Object.entries(custom)) {
-    if (!handler) continue;
-    if (context.meta.goingBack && handler.fn.skipClearOnGoingBack) continue;
+  for (const [id, obj] of Object.entries(custom)) {
+    if (!obj) continue;
+    if (context.meta.goingBack && obj.fn.skipClearOnGoingBack) continue;
 
-    handler.clear();
+    options.clearCustomAction(context, obj.fn);
     $contextState.mutate((s) => s.custom[id], undefined);
   }
 }

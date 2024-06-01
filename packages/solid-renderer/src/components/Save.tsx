@@ -149,7 +149,7 @@ const Save: VoidComponent<SaveProps> = (props) => {
       if (!custom) continue;
 
       try {
-        custom.clear();
+        options.clearCustomAction(context, custom.fn);
       } catch {}
     }
 

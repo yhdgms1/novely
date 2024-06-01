@@ -220,7 +220,7 @@ const createSolidRenderer = ({
 							handleChoiceAction($contextState, label, choices, resolve)
 						},
 						clear(keep, keepCharacters, keepAudio, resolve) {
-							handleClearAction($rendererState, $contextState, context, keep, keepCharacters)
+							handleClearAction($rendererState, $contextState, options, context, keep, keepCharacters)
 
 							audio.clear(keepAudio);
 

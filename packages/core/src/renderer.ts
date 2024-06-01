@@ -217,6 +217,8 @@ type RendererInit<$Language extends Lang, $Characters extends Record<string, Cha
 
 	getStateFunction: (context: string) => StateFunction<State>;
 
+	clearCustomAction: (ctx: Context, customAction: CustomHandler) => void;
+
 	getLanguageDisplayName: (lang: Lang) => string;
 };
 
