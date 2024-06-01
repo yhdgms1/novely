@@ -16,13 +16,10 @@ type ShowArbitraryCharacterParams<$Characters extends Record<string, Character<L
 
 const createShowArbitraryCharacterAction = <$Characters extends Record<string, Character>>(_: $Characters) => {
   const showArbitraryCharacter = <$Character extends keyof $Characters>(params: ShowArbitraryCharacterParams<$Characters, $Character>) => {
-    const handler: CustomHandler = ({ get }) => {
-      const { __internals } = get(false);
-      const { ctx } = __internals;
+    const handler: CustomHandler = ({ rendererContext }) => {
+      const handle = rendererContext.character(params.id);
 
-      const handle = ctx.character(params.id);
-
-      handle.append(params.classes, params.style, ctx.meta.restoring);
+      handle.append(params.classes, params.style, rendererContext.meta.restoring);
       handle.emotion(params.emotion, true);
 
       const extension = (e => Array.isArray(e) ? e : [e])(params.extendWith());
