@@ -14,11 +14,6 @@ type CustomHandlerGetResultDataFunction = {
 };
 
 type CustomHandlerGetResult<I extends boolean> = {
-	delete: () => void;
-	/**
-	 * Get or set data
-	 */
-	data: CustomHandlerGetResultDataFunction;
 	/**
 	 * <div data-id={string}></div> element if `I` is true
 	 */
@@ -27,21 +22,36 @@ type CustomHandlerGetResult<I extends boolean> = {
 	 * Root Novely's element
 	 */
 	root: HTMLElement;
-	/**
-	 * Set's clear function (this is called when action should be cleared)
-	 */
-	clear: (fn: () => void) => void;
 };
 
 type CustomHandlerFunctionGetFn = <I extends boolean = true>(insert?: I) => CustomHandlerGetResult<I>;
 
 type CustomHandlerFunctionParameters = {
-	get: CustomHandlerFunctionGetFn;
+	getDomNodes: CustomHandlerFunctionGetFn;
 
-	goingBack: boolean;
-	preview: boolean;
+  flags: {
+    goingBack: boolean;
+	  preview: boolean;
+    restoring: boolean;
+  }
 
 	lang: string;
+
+  rendererContext: Context;
+
+	/**
+	 * Set's clear function (this is called when action should be cleared)
+	 */
+	clear: (fn: () => void) => void;
+  /**
+   * Removes saved data, removes dom nodes, calls clear function
+   */
+  remove: () => void;
+
+	/**
+	 * Get or set data
+	 */
+	data: CustomHandlerGetResultDataFunction;
 }
 
 type CustomHandlerFunction = (parameters: CustomHandlerFunctionParameters) => Thenable<void>;
@@ -60,7 +70,13 @@ type CustomHandler = CustomHandlerFunction & {
 ## Usage
 
 ```ts
-const action: CustomHandler = ({ get, goingBack, preview, lang }) => {
+const action: CustomHandler = ({ data, clear, remove, getDomNodes, flags, lang }) => {
+  const {
+    goingBack,
+    preview,
+    restoring
+  } = flags;
+
   /**
    * Preview is an environment in the saves page
    */
@@ -69,41 +85,39 @@ const action: CustomHandler = ({ get, goingBack, preview, lang }) => {
   /**
    * @param insert Insert the Node to DOM or not. Not needed when you'r action does not render something
    */
-  const layer = get(true);
+  const { element, root } = getDomNodes(true);
 
   /**
    * Root Novely Node
    */
-  layer.root;
+  root;
 
   /**
-   * When `insert` is true, then HTMLElement, `null` otherwise
+   * When `insert` is true, then HTMLDivElement, `null` otherwise
    */
-  layer.element;
+  element;
 
   /**
    * Call without arguments to read the data
    */
-  if (layer.data().notification) {
+  if (data().notification) {
     /**
      * Provide an argument to write the data
      */
-    layer.data({});
+    data({});
   }
 
   /**
    * Set the function that would be called when action would be cleared
    */
-  layer.clear(() => {
-    layer.data().notification?.destroy();
+  clear(() => {
+    data().notification?.destroy();
   });
 
   /**
    * Delete the action data and element
-   *
-   * Could be used as pair of create-action and remove-action
    */
-  layer.delete();
+  remove();
 
   if (goingBack) {
     // Player pressed the `Back` button
@@ -149,4 +163,4 @@ engine.script({
 });
 ```
 
-Novely itself uses that api in [video](https://github.com/yhdgms1/novely/tree/main/packages/video) and [particles](https://github.com/yhdgms1/novely/tree/main/packages/particles) custom actions.
+Novely itself uses custom action in [particles](https://github.com/yhdgms1/novely/tree/main/packages/particles).
