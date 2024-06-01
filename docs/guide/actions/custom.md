@@ -8,74 +8,83 @@ Action that lets you define custom actions
 | :-----: | :-----------: | :------: | :-----------: |
 | handler | CustomHandler |    ❌    | Custom Action |
 
+::: details type declarations
 ```ts
 type CustomHandlerGetResultDataFunction = {
-	(data?: Record<string, unknown>): Record<string, unknown>;
+  (data?: Record<string, unknown>): Record<string, unknown>;
 };
 
 type CustomHandlerGetResult<I extends boolean> = {
-	/**
-	 * <div data-id={string}></div> element if `I` is true
-	 */
-	element: I extends true ? HTMLDivElement : null;
-	/**
-	 * Root Novely's element
-	 */
-	root: HTMLElement;
+  /**
+   * <div data-id={string}></div> element if `I` is true
+   */
+  element: I extends true ? HTMLDivElement : null;
+  /**
+   * Root Novely's element
+   */
+  root: HTMLElement;
 };
 
-type CustomHandlerFunctionGetFn = <I extends boolean = true>(insert?: I) => CustomHandlerGetResult<I>;
+type CustomHandlerFunctionGetFn = <I extends boolean = true>(
+  insert?: I
+) => CustomHandlerGetResult<I>;
 
 type CustomHandlerFunctionParameters = {
-	getDomNodes: CustomHandlerFunctionGetFn;
+  getDomNodes: CustomHandlerFunctionGetFn;
 
   flags: {
     goingBack: boolean;
-	  preview: boolean;
+    preview: boolean;
     restoring: boolean;
-  }
+  };
 
-	lang: string;
+  lang: string;
 
   rendererContext: Context;
 
-	/**
-	 * Set's clear function (this is called when action should be cleared)
-	 */
-	clear: (fn: () => void) => void;
+  /**
+   * Set's clear function (this is called when action should be cleared)
+   */
+  clear: (fn: () => void) => void;
   /**
    * Removes saved data, removes dom nodes, calls clear function
    */
   remove: () => void;
 
-	/**
-	 * Get or set data
-	 */
-	data: CustomHandlerGetResultDataFunction;
-}
+  /**
+   * Get or set data
+   */
+  data: CustomHandlerGetResultDataFunction;
+};
 
-type CustomHandlerFunction = (parameters: CustomHandlerFunctionParameters) => Thenable<void>;
+type CustomHandlerFunction = (
+  parameters: CustomHandlerFunctionParameters
+) => Thenable<void>;
 
 type CustomHandler = CustomHandlerFunction & {
-	callOnlyLatest?: boolean;
-	requireUserAction?: boolean;
-	skipClearOnGoingBack?: boolean;
+  callOnlyLatest?: boolean;
+  requireUserAction?: boolean;
+  skipClearOnGoingBack?: boolean;
 
-	id?: string | symbol;
+  id?: string | symbol;
 
-	key: string;
+  key: string;
 };
 ```
+:::
 
 ## Usage
 
 ```ts
-const action: CustomHandler = ({ data, clear, remove, getDomNodes, flags, lang }) => {
-  const {
-    goingBack,
-    preview,
-    restoring
-  } = flags;
+const action: CustomHandler = ({
+  data,
+  clear,
+  remove,
+  getDomNodes,
+  flags,
+  lang,
+}) => {
+  const { goingBack, preview, restoring } = flags;
 
   /**
    * Preview is an environment in the saves page
@@ -123,8 +132,8 @@ const action: CustomHandler = ({ data, clear, remove, getDomNodes, flags, lang }
     // Player pressed the `Back` button
   }
 
-  if (lang === 'RU_ru') {
-    console.log('Russian detected')
+  if (lang === "RU_ru") {
+    console.log("Russian detected");
   }
 };
 
@@ -132,12 +141,12 @@ const action: CustomHandler = ({ data, clear, remove, getDomNodes, flags, lang }
 /**
  * Key under which data from `get` function will be stored
  */
-action.key = 'notifications';
+action.key = "notifications";
 
 /**
  * This is used to know which action is which
  */
-action.id = Symbol('notification');
+action.id = Symbol("notification");
 
 /**
  * Let's imagine you'r action show's some notifications
