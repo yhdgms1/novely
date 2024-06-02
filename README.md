@@ -1,4 +1,4 @@
-# [Novely](https://novely.pages.dev)
+# [Novely](https://novely.deno.dev)
 
 Novel Engine for creating interactive stories
 
@@ -8,11 +8,11 @@ Novel Engine for creating interactive stories
 
 ## Installation
 
-- [Getting Started](https://novely.pages.dev/guide/getting-started.html)
+- [Getting Started](https://novely.deno.dev/guide/getting-started.html)
 
 ## Documentation
 
-You can find documentation on the [website](https://novely.pages.dev/guide/getting-started.html).
+You can find documentation on the [website](https://novely.deno.dev/guide/getting-started.html).
 
 ## Examples
 
@@ -23,7 +23,9 @@ import { novely, EN } from '@novely/core';
 const engine = novely({
   renderer: createSolidRenderer().renderer,
   translation: {
-    internal: EN
+    en: {
+      internal: EN
+    }
   },
   characters: {
     Natsuki: {
@@ -51,7 +53,7 @@ We have a [Discord](https://discord.gg/h2U63hx4GR) server
 
 ## Demo
 
-You can see working demo [here](https://novely-demo.pages.dev/)
+You can see working demo [here](https://novely-demo.deno.dev/)
 
 ## License
 
