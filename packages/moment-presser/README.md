@@ -1,5 +1,11 @@
 # @novely/moment-presser
 
+Moment Presser is a custom action that requires an action from player. Specifically, pressing on button in time. When the moving indicator falls into the narrowest zone, a function is called, to which the state 'PERFECT' is passed, if the zone is thicker — 'PASS', and if it does not hit — 'MISS'. When the income reaches the end, the indicator returns back, and then moves forward again.
+
+<div style="width: 100%; display: flex; justify-content: flex-start;">
+  <img alt="" src="./preview.jpg" style="max-height: 20vh; max-width: 100vw;" />
+</div>
+
 ## Usage
 
 ```ts
@@ -22,6 +28,18 @@ const action = extendAction(engine.action, {
 
 		return ['custom', momentPresser];
 	}
+})
+
+engine.script({
+  start: [
+    // you'r story goes here
+    action.momentPresser((state, presserState) => {
+      console.log(presserState) // 'PERFECT' | 'PASS' | 'MISS'
+
+      // Function to receive or set state, see: https://novely.deno.dev/guide/state.html
+      state()
+    })
+  ]
 })
 ```
 
