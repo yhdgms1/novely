@@ -165,7 +165,10 @@ engine.script({
 			[
 				'First',
 				[
-					action.showBackground('https://catherineasquithgallery.com/uploads/posts/2021-02/1612803121_135-p-nezhno-goluboi-fon-anime-193.jpg')
+					action.showBackground('https://catherineasquithgallery.com/uploads/posts/2021-02/1612803121_135-p-nezhno-goluboi-fon-anime-193.jpg'),
+					action.function(() => {
+						console.log('FUNCTIONING')
+					})
 				]
 			],
 			[
@@ -182,7 +185,9 @@ engine.script({
 		action.showBackground('black'),
 		action.text('Fourth'),
 		action.block('green'),
-		action.text('Fifth')
+		action.text('Fifth'),
+		action.showBackground('black'),
+		action.text('Sixth')
 	],
 	green: [
 		action.showBackground('green')

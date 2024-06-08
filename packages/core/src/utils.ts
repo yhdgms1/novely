@@ -352,7 +352,7 @@ const getActionsFromPath = (story: Story, path: Path, filter: boolean) => {
 	/**
 	 * Should we ignore some actions
 	 */
-	let ignoreNested = false;
+	let ignoreNestedBefore: null | PathItem[0] = null;
 	/**
 	 * Current item of type `[null, int]`
 	 */
@@ -393,12 +393,12 @@ const getActionsFromPath = (story: Story, path: Path, filter: boolean) => {
 
 				let startIndex = 0;
 
-				if (ignoreNested) {
-					const prev = findLastPathItemBeforeItemOfType(path.slice(0, index), 'block');
+				if (ignoreNestedBefore) {
+					const prev = findLastPathItemBeforeItemOfType(path.slice(0, index), ignoreNestedBefore)
 
 					if (prev) {
 						startIndex = prev[1];
-						ignoreNested = false;
+						ignoreNestedBefore = null;
 					}
 				}
 
@@ -448,7 +448,7 @@ const getActionsFromPath = (story: Story, path: Path, filter: boolean) => {
 			current = story[val];
 		} else if (type === 'block:exit' || type === 'choice:exit' || type === 'condition:exit') {
 			current = blocks.pop();
-			ignoreNested = true;
+			ignoreNestedBefore = type.slice(0, -5) as PathItem[0]
 		}
 	}
 
