@@ -150,6 +150,15 @@ const novely = <
 		ASSETS_TO_PRELOAD.clear();
 	}
 
+	/**
+	 * Adds asset to `ASSETS_TO_PRELOAD` firstly checking if is was already preloaded
+	 */
+	const assetsToPreloadAdd = (asset: string) => {
+		if (!PRELOADED_ASSETS.has(asset)) {
+			ASSETS_TO_PRELOAD.add(asset)
+		}
+	}
+
 	const scriptBase = async (part: Story) => {
 		Object.assign(story, flattenStory(part));
 
@@ -221,14 +230,14 @@ const novely = <
 			 * Parameter is a `Record<'CSS Media', string>`
 			 */
 			if (isImageAsset(props[0])) {
-				ASSETS_TO_PRELOAD.add(props[0]);
+				assetsToPreloadAdd(props[0]);
 			}
 
 			if (props[0] && typeof props[0] === 'object') {
 				for (const value of Object.values(props[0])) {
 					if (!isImageAsset(value)) continue;
 
-					ASSETS_TO_PRELOAD.add(value);
+					assetsToPreloadAdd(value);
 				}
 			}
 		}
@@ -237,7 +246,7 @@ const novely = <
 		 * Here "stop" action also matches condition, but because `ASSETS_TO_PRELOAD` is a Set, there is no problem
 		 */
 		if (isAudioAction(action) && isString(props[0])) {
-			ASSETS_TO_PRELOAD.add(props[0])
+			assetsToPreloadAdd(props[0])
 		}
 
 		/**
@@ -248,10 +257,10 @@ const novely = <
 
 			if (Array.isArray(images)) {
 				for (const asset of images) {
-					ASSETS_TO_PRELOAD.add(asset);
+					assetsToPreloadAdd(asset);
 				}
 			} else {
-				ASSETS_TO_PRELOAD.add(images)
+				assetsToPreloadAdd(images)
 			}
 		}
 	}
@@ -632,7 +641,6 @@ const novely = <
 
 			const [action, ...props] = item;
 
-
 			return match(action, props, {
 				ctx: context,
 				data: latest[1]
@@ -911,7 +919,7 @@ const novely = <
 					checkAndAddToPreloadingList(action, props as any);
 				}
 
-				const { preloadAudioBlocking, preloadImage } = renderer.misc;
+				const { preloadAudioBlocking, preloadImageBlocking } = renderer.misc;
 
 				ASSETS_TO_PRELOAD.forEach(async (asset) => {
 					ASSETS_TO_PRELOAD.delete(asset);
@@ -920,12 +928,18 @@ const novely = <
 
 					switch (type) {
 						case 'audio': {
-							preloadAudioBlocking(asset);
+							preloadAudioBlocking(asset).then(() => {
+								PRELOADED_ASSETS.add(asset)
+							});
+
 							break;
 						}
 
 						case 'image': {
-							preloadImage(asset);
+							preloadImageBlocking(asset).then(() => {
+								PRELOADED_ASSETS.add(asset)
+							});
+
 							break;
 						}
 					}
