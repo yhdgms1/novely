@@ -144,9 +144,9 @@ const Game: VoidComponent<GameProps> = (props) => {
 					let img = PRELOADED_IMAGE_MAP.get(src);
 
 					if (img) {
-						const clone = img.cloneNode(true) as HTMLImageElement;
+						const image = img.isConnected ? img.cloneNode(true) as HTMLImageElement : img;
 
-						return Object.assign(clone, {
+						return Object.assign(image, {
 							className: 'background'
 						});
 					}
