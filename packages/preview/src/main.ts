@@ -175,7 +175,17 @@ engine.script({
 				]
 			]
 		),
-		action.text('Third')
+		action.text('Third'),
+		action.jump('n2')
+	],
+	n2: [
+		action.showBackground('black'),
+		action.text('Fourth'),
+		action.block('green'),
+		action.text('Fifth')
+	],
+	green: [
+		action.showBackground('green')
 	]
 })
 

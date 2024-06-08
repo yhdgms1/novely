@@ -23,7 +23,7 @@ const Saves: VoidComponent = () => {
 	 */
 	const [observedTargets, setObservedTargets] = createSignal<number[][]>([]);
 
-	const saves = () => storageData().saves;
+	const saves = () => storageData().saves.slice().reverse();
 	const language = () => storageData().meta[0];
 
 	const processed = new Set<Element>();

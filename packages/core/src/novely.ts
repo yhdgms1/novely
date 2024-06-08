@@ -118,6 +118,38 @@ const novely = <
 		return times.add(value), value;
 	};
 
+	const handleAssetsPreloading = async () => {
+		const { preloadAudioBlocking, preloadImageBlocking } = renderer.misc;
+
+		const list = mapSet(ASSETS_TO_PRELOAD, (asset) => {
+			return limitAssetsDownload(async () => {
+				const type = await getResourseType(request, asset);
+
+				switch (type) {
+					case 'audio': {
+						await preloadAudioBlocking(asset);
+						break;
+					}
+
+					case 'image': {
+						await preloadImageBlocking(asset);
+						break;
+					}
+				}
+			})
+		});
+
+		/**
+		 * `allSettled` is used because even if error happens game should run
+		 *
+		 * Ideally, there could be a notification for player, maybe developer could be also notified
+		 * But I don't think it's really needed
+		 */
+		await Promise.allSettled(list);
+
+		ASSETS_TO_PRELOAD.clear();
+	}
+
 	const scriptBase = async (part: Story) => {
 		Object.assign(story, flattenStory(part));
 
@@ -140,36 +172,8 @@ const novely = <
 				renderer.ui.showLoading();
 			}
 
-			const { preloadAudioBlocking, preloadImageBlocking } = renderer.misc;
-
-			const list = mapSet(ASSETS_TO_PRELOAD, (asset) => {
-				return limitAssetsDownload(async () => {
-					const type = await getResourseType(request, asset);
-
-					switch (type) {
-						case 'audio': {
-							await preloadAudioBlocking(asset);
-							break;
-						}
-
-						case 'image': {
-							await preloadImageBlocking(asset);
-							break;
-						}
-					}
-				})
-			});
-
-			/**
-			 * `allSettled` is used because even if error happens game should run
-			 *
-			 * Ideally, there could be a notification for player, maybe developer could be also notified
-			 * But I don't think it's really needed
-			 */
-			await Promise.allSettled(list);
+			await handleAssetsPreloading()
 		}
-
-		ASSETS_TO_PRELOAD.clear();
 
 		await dataLoaded.promise;
 
@@ -207,6 +211,51 @@ const novely = <
 		return limitScript(() => scriptBase(part));
 	}
 
+
+	const checkAndAddToPreloadingList = <Action extends keyof Actions & string>(action: Action, props: Parameters<Actions[Action]>) => {
+		if (action === 'showBackground') {
+			/**
+			 * There are two types of showBackground currently
+			 *
+			 * Parameter is a `string`
+			 * Parameter is a `Record<'CSS Media', string>`
+			 */
+			if (isImageAsset(props[0])) {
+				ASSETS_TO_PRELOAD.add(props[0]);
+			}
+
+			if (props[0] && typeof props[0] === 'object') {
+				for (const value of Object.values(props[0])) {
+					if (!isImageAsset(value)) continue;
+
+					ASSETS_TO_PRELOAD.add(value);
+				}
+			}
+		}
+
+		/**
+		 * Here "stop" action also matches condition, but because `ASSETS_TO_PRELOAD` is a Set, there is no problem
+		 */
+		if (isAudioAction(action) && isString(props[0])) {
+			ASSETS_TO_PRELOAD.add(props[0])
+		}
+
+		/**
+		 * Load characters
+		 */
+		if (action === 'showCharacter' && isString(props[0]) && isString(props[1])) {
+			const images = characters[props[0]].emotions[props[1]];
+
+			if (Array.isArray(images)) {
+				for (const asset of images) {
+					ASSETS_TO_PRELOAD.add(asset);
+				}
+			} else {
+				ASSETS_TO_PRELOAD.add(images)
+			}
+		}
+	}
+
 	const action = new Proxy({} as Actions, {
 		get<Action extends keyof Actions & string>(_: unknown, action: Action) {
 			if (action in renderer.actions) {
@@ -214,51 +263,11 @@ const novely = <
 			}
 
 			return (...props: Parameters<Actions[Action]>) => {
-				// todo: figure out how to preload audio
+				// todo: figure out how to preload voices
 				// preloading every languages especially in browser (not in Electron or Tauri, however, this is thill is browser, but there is no huge latency) is not effective
 
 				if (preloadAssets === 'blocking') {
-					if (action === 'showBackground') {
-						/**
-						 * There are two types of showBackground currently
-						 *
-						 * Parameter is a `string`
-						 * Parameter is a `Record<'CSS Media', string>`
-						 */
-						if (isImageAsset(props[0])) {
-							ASSETS_TO_PRELOAD.add(props[0]);
-						}
-
-						if (props[0] && typeof props[0] === 'object') {
-							for (const value of Object.values(props[0])) {
-								if (!isImageAsset(value)) continue;
-
-								ASSETS_TO_PRELOAD.add(value);
-							}
-						}
-					}
-
-					/**
-					 * Here "stop" action also matches condition, but because `ASSETS_TO_PRELOAD` is a Set, there is no problem
-					 */
-					if (isAudioAction(action) && isString(props[0])) {
-						ASSETS_TO_PRELOAD.add(props[0])
-					}
-
-					/**
-					 * Load characters
-					 */
-					if (action === 'showCharacter' && isString(props[0]) && isString(props[1])) {
-						const images = characters[props[0]].emotions[props[1]];
-
-						if (Array.isArray(images)) {
-							for (const asset of images) {
-								ASSETS_TO_PRELOAD.add(asset);
-							}
-						} else {
-							ASSETS_TO_PRELOAD.add(images)
-						}
-					}
+					checkAndAddToPreloadingList(action, props)
 				}
 
 				return [action, ...props] as ValidAction;
@@ -887,16 +896,42 @@ const novely = <
 			if (!ctx.meta.preview) interactivity(true);
 		},
 		onBeforeActionCall({ action, props, ctx }) {
-			// if (preloadAssets !== 'automatic') return;
-			// if (ctx.meta.preview || ctx.meta.restoring) return;
-			// if (!isBlockingAction([action, ...props] as unknown as Exclude<ValidAction, ValidAction[]>)) return;
+			if (preloadAssets !== 'automatic') return;
+			if (ctx.meta.preview || ctx.meta.restoring) return;
+			if (!isBlockingAction([action, ...props] as unknown as Exclude<ValidAction, ValidAction[]>)) return;
 
-			// const collection = collectActionsBeforeBlockingAction({
-			// 	path: nextPath(klona(useStack(ctx).value[0])),
-			// 	refer
-			// })
+			try {
+				const collection = collectActionsBeforeBlockingAction({
+					path: nextPath(klona(useStack(ctx).value[0])),
+					refer
+				})
 
-			// console.log(collection)
+				for (const [action, ...props] of collection) {
+					checkAndAddToPreloadingList(action, props as any);
+				}
+
+				const { preloadAudioBlocking, preloadImage } = renderer.misc;
+
+				ASSETS_TO_PRELOAD.forEach(async (asset) => {
+					ASSETS_TO_PRELOAD.delete(asset);
+
+					const type = await getResourseType(request, asset);
+
+					switch (type) {
+						case 'audio': {
+							preloadAudioBlocking(asset);
+							break;
+						}
+
+						case 'image': {
+							preloadImage(asset);
+							break;
+						}
+					}
+				})
+			} catch (cause) {
+				console.error(cause);
+			}
 		}
 	};
 
@@ -1260,6 +1295,10 @@ const novely = <
 			render(ctx);
 		},
 		preload({ ctx, push }, [source]) {
+			if (DEV && preloadAssets !== 'lazy') {
+				console.error(`You do not need a preload action becase "preloadAssets" strategy was set to "${preloadAssets}"`)
+			}
+
 			if (!ctx.meta.goingBack && !ctx.meta.restoring && !PRELOADED_ASSETS.has(source)) {
 				/**
 				 * Make image load

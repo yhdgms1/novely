@@ -38,7 +38,7 @@ import {
 } from '@novely/renderer-toolkit'
 import { createEmitter } from './emitter';
 import { useContextState, removeContextState } from './context-state'
-import { canvasDrawImages, createImage } from '$utils';
+import { canvasDrawImages, createImage, isCSSImage } from '$utils';
 import { PRELOADED_IMAGE_MAP, useShared } from './shared';
 import { createRootComponent } from './components/Root';
 import { createShowArbitraryCharacterAction } from './custom-actions';
@@ -81,6 +81,8 @@ const createSolidRenderer = ({
 
 						background(background) {
 							handleBackgroundAction($contextState, background, (bg) => {
+								if (!isCSSImage(bg)) return;
+
 								renderer.misc.preloadImage(bg);
 							})
 						},

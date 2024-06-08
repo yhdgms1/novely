@@ -111,7 +111,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 		}
 	});
 
-	const bg = createMemo(() => {
+	const bg = () => {
 		const bg = background().background;
 		const isImage = isCSSImage(bg);
 
@@ -119,7 +119,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 			'background-image': isImage ? bg : undefined,
 			'background-color': isImage ? undefined : bg,
 		}
-	})
+	}
 
 	const charactersCount = createMemo(() => {
 		return Object.values(characters()).reduce((acc, c) => {
@@ -139,9 +139,9 @@ const Game: VoidComponent<GameProps> = (props) => {
 				'preview': props.isPreview
 			}}
 		>
-			<Show when={bg()['background-image']} fallback={<div class="background" style={bg()} />}>
+			<Show when={bg()['background-image']} fallback={<div class="background" style={bg()} />} keyed>
 				{src => {
-					let img = PRELOADED_IMAGE_MAP.get(src());
+					let img = PRELOADED_IMAGE_MAP.get(src);
 
 					if (img) {
 						const clone = img.cloneNode(true) as HTMLImageElement;
@@ -151,10 +151,10 @@ const Game: VoidComponent<GameProps> = (props) => {
 						});
 					}
 
-					img = createImage(src());
+					img = createImage(src);
 
 					img.addEventListener('load', () => {
-						PRELOADED_IMAGE_MAP.set(src(), img);
+						PRELOADED_IMAGE_MAP.set(src, img);
 					});
 
 					return Object.assign(img, {

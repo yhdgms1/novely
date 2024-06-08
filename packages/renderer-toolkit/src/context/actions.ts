@@ -75,7 +75,12 @@ const handleBackgroundAction = ($contextState: DeepAtom<ContextStateStore<Record
     onChange?.(value);
   })
 
-  $contextState.mutate((s) => s.background.clear, () => dispose);
+  $contextState.mutate((s) => s.background, (prev) => {
+    return {
+      ...prev,
+      clear: dispose
+    }
+  });
 }
 
 const handleDialogAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, content: string, name: string, character: string | undefined, emotion: string | undefined, resolve: () => void) => {

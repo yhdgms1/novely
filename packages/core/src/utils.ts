@@ -711,6 +711,15 @@ const fetchContentType = async (request: typeof fetch, url: string) => {
 }
 
 const getResourseType = async (request: typeof fetch, url: string) => {
+	/**
+	 * If url is not http we should not check
+	 *
+	 * startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data')
+	 */
+	if (!isCSSImage(url)) {
+		return 'other'
+	}
+
 	const extension = getUrlFileExtension(url);
 
 	if (HOWLER_SUPPORTED_FILE_FORMATS.has(extension as any)) {
@@ -963,7 +972,6 @@ const collectActionsBeforeBlockingAction = ({ path, refer }: CollectActionsBefor
 		if (isBlockingAction(action)) {
 			const [name, ...props] = action;
 
-			// todo: support block, condition
 			if (name === 'choice') {
 				const choiceProps = props as unknown as GetActionParameters<'Choice'>;
 
@@ -986,6 +994,22 @@ const collectActionsBeforeBlockingAction = ({ path, refer }: CollectActionsBefor
 
 					collection.push(...innerActions);
 				}
+			} else if (name === 'condition') {
+				const conditionProps = props as unknown as GetActionParameters<'Condition'>;
+				const conditions = Object.keys(conditionProps[1]);
+
+				for (const condition of conditions) {
+					const virtualPath = klona(path)
+
+					virtualPath.push(['condition', condition], [null, 0])
+
+					const innerActions = collectActionsBeforeBlockingAction({
+						path: virtualPath,
+						refer
+					});
+
+					collection.push(...innerActions);
+				}
 			}
 
 			break;
@@ -993,7 +1017,17 @@ const collectActionsBeforeBlockingAction = ({ path, refer }: CollectActionsBefor
 
 		collection.push(action)
 
-		nextPath(path);
+		/**
+		 * These special actions requires path change
+		 */
+		if (action[0] === 'jump') {
+			path = [['jump', action[1]], [null, 0]]
+		} else if (action[0] == 'block') {
+			path.push(['block', action[1]], [null, 0])
+		} else {
+			nextPath(path);
+		}
+
 		action = refer(path);
 	}
 
