@@ -93,7 +93,7 @@ const engine = novely({
 
 	initialScreen: 'mainmenu',
 
-	preloadAssets: 'lazy',
+	preloadAssets: 'automatic',
 
 	askBeforeExit: false,
 
@@ -155,6 +155,31 @@ false && engine.script({
 })
 
 engine.script({
+	start: [
+		action.text('First'),
+		action.showBackground(outdoor),
+		action.playMusic(sakura_girl),
+		action.text('Second'),
+		action.choice(
+			'Select',
+			[
+				'First',
+				[
+					action.showBackground('https://catherineasquithgallery.com/uploads/posts/2021-02/1612803121_135-p-nezhno-goluboi-fon-anime-193.jpg')
+				]
+			],
+			[
+				'Second',
+				[
+					action.showBackground('https://catherineasquithgallery.com/uploads/posts/2021-03/1615816442_4-p-fon-anime-4.jpg')
+				]
+			]
+		),
+		action.text('Third')
+	]
+})
+
+false && engine.script({
 	'block:adv': [
 		action.condition(() => true, {
 			true: [

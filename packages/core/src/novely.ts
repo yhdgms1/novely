@@ -28,7 +28,6 @@ import {
 	throttle,
 	isFunction,
 	createControlledPromise,
-	isSkippedDuringRestore,
 	isAction,
 	noop,
 	flattenStory,
@@ -40,13 +39,14 @@ import {
 	isString,
 	isImageAsset,
 	getResourseType,
-	isUserRequiredAction,
 	capitalize,
 	getIntlLanguageDisplayName,
 	createReferFunction,
 	exitPath,
 	nextPath,
 	isPromise,
+	isBlockingAction,
+	collectActionsBeforeBlockingAction,
 } from './utils';
 import { dequal } from 'dequal/lite';
 import { store } from './store';
@@ -179,7 +179,7 @@ const novely = <
 			initialScreenWasShown = true;
 
 			if (initialScreen === 'game') {
-				restore();
+				restore(undefined);
 			} else {
 				renderer.ui.showScreen(initialScreen);
 			}
@@ -485,7 +485,15 @@ const novely = <
 			});
 		}
 
-		restore(save);
+		const context = renderer.getContext(MAIN_CONTEXT_KEY);
+		const stack = useStack(context);
+
+		stack.value = save;
+		context.meta.restoring = context.meta.goingBack = false;
+
+		renderer.ui.showScreen('game');
+
+		render(context);
 	};
 
 	/**
@@ -504,7 +512,7 @@ const novely = <
 	/**
 	 * Restore save or if none is passed then look for latest save, if there is no saves will create a new save
 	 */
-	const restore = async (save?: Save) => {
+	const restore = async (save: Save | undefined) => {
 		if (isEmpty(story)) {
 			if (DEV) {
 				throw new Error('Story is empty. You should call an `enine.script` function [https://novely.pages.dev/guide/story.html]')
@@ -600,8 +608,8 @@ const novely = <
 			});
 		}
 
-		const lastQueueItem = queue.at(-1) || []
-		const lastQueueItemRequiresUserAction = isSkippedDuringRestore(lastQueueItem[0]) || isUserRequiredAction(lastQueueItem)
+		const lastQueueItem = queue.at(-1)
+		const lastQueueItemRequiresUserAction = lastQueueItem && isBlockingAction(lastQueueItem)
 
 		await run((item) => {
 			if (!latest) return;
@@ -878,6 +886,18 @@ const novely = <
 
 			if (!ctx.meta.preview) interactivity(true);
 		},
+		onBeforeActionCall({ action, props, ctx }) {
+			// if (preloadAssets !== 'automatic') return;
+			// if (ctx.meta.preview || ctx.meta.restoring) return;
+			// if (!isBlockingAction([action, ...props] as unknown as Exclude<ValidAction, ValidAction[]>)) return;
+
+			// const collection = collectActionsBeforeBlockingAction({
+			// 	path: nextPath(klona(useStack(ctx).value[0])),
+			// 	refer
+			// })
+
+			// console.log(collection)
+		}
 	};
 
 	const match = matchAction(matchActionOptions, {

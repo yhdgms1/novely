@@ -290,7 +290,7 @@ interface NovelyInit<
 	/**
 	 * @default "lazy"
 	 */
-	preloadAssets?: 'lazy' | 'blocking';
+	preloadAssets?: 'lazy' | 'blocking' | 'automatic';
 	/**
 	 * Fetching function
 	 */

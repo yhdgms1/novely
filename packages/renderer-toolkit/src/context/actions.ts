@@ -53,14 +53,25 @@ const handleBackgroundAction = ($contextState: DeepAtom<ContextStateStore<Record
   clear && clear();
 
   if (typeof background === 'string') {
-    $contextState.mutate((s) => s.background.background, background);
+    $contextState.mutate((s) => s.background!, (prev) => {
+      return {
+        ...prev,
+        background
+      }
+    });
+
     onChange?.(background);
 
     return;
   }
 
   const { dispose } = useBackground(background, (value) => {
-    $contextState.mutate((s) => s.background.background, value);
+    $contextState.mutate((s) => s.background, (prev) => {
+      return {
+        ...prev,
+        background: value
+      }
+    });
     onChange?.(value);
   })
 

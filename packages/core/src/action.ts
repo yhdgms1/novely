@@ -357,4 +357,5 @@ export type {
 	CustomHandlerFunctionParameters,
 	CustomHandlerInfo,
 	ConditionCheckFunction,
+	ChoiceCheckFunction
 };

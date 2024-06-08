@@ -1,5 +1,5 @@
-import type { DefaultActionProxy, CustomHandler, Story, ValidAction } from './action';
-import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, Lang } from './types';
+import type { DefaultActionProxy, CustomHandler, Story, ValidAction, GetActionParameters, TextContent, ChoiceCheckFunction } from './action';
+import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, Lang, State } from './types';
 import type { Context, Renderer } from './renderer';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE, AUDIO_ACTIONS, HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from './constants';
 import { STACK_MAP } from './shared';
@@ -39,11 +39,24 @@ type MatchActionOptions = {
 	forward: (ctx: Context) => void;
 
 	getContext: (name: string) => Context;
+
+	onBeforeActionCall: (payload: { action: keyof MatchActionMapComplete, props: Parameters<DefaultActionProxy[keyof MatchActionMapComplete]>; ctx: Context }) => void;
 }
 
-const matchAction = <M extends MatchActionMapComplete>({ getContext, push, forward }: MatchActionOptions, values: M) => {
+const matchAction = <M extends MatchActionMapComplete>({ getContext, onBeforeActionCall, push, forward }: MatchActionOptions, values: M) => {
 	return (action: keyof MatchActionMapComplete, props: any, { ctx, data }: MatchActionParameters) => {
 		const context = typeof ctx === 'string' ? getContext(ctx) : ctx;
+
+		/**
+		 * We ignore `say` action because it calls `dialog` action
+		 */
+		if (action !== 'say') {
+			onBeforeActionCall({
+				action,
+				props,
+				ctx: context
+			})
+		}
 
 		return values[action]({
 			ctx: context,
@@ -914,20 +927,20 @@ const nextPath = (path: Path) => {
 	return path;
 }
 
-type FutureLookupOptions = {
-	path: Path;
-	refer: ReferFunction;
-
-	lookUntil: (action: Exclude<ValidAction, ValidAction[]>) => boolean;
+/**
+ * Is custom and requires user action or skipped during restoring
+ */
+const isBlockingAction = (action: Exclude<ValidAction, ValidAction[]>) => {
+	return isUserRequiredAction(action) || (isSkippedDuringRestore(action[0]) && action[0] !== 'vibrate')
 }
 
-/**
- * @deprecated
- */
-const futureLookup = ({ path, refer, lookUntil }: FutureLookupOptions) => {
-	path = klona(path);
+type CollectActionsBeforeBlockingActionOptions = {
+	path: Path;
+	refer: ReferFunction;
+}
 
-	nextPath(path);
+const collectActionsBeforeBlockingAction = ({ path, refer }: CollectActionsBeforeBlockingActionOptions) => {
+	const collection: Exclude<ValidAction, ValidAction[]>[] = []
 
 	let action = refer(path);
 
@@ -943,15 +956,48 @@ const futureLookup = ({ path, refer, lookUntil }: FutureLookupOptions) => {
 			}
 		}
 
-		if (lookUntil(action)) {
+		if (!action) {
 			break;
 		}
+
+		if (isBlockingAction(action)) {
+			const [name, ...props] = action;
+
+			// todo: support block, condition
+			if (name === 'choice') {
+				const choiceProps = props as unknown as GetActionParameters<'Choice'>;
+
+				for (let i = 0; i < choiceProps.length; i++) {
+					const branchContent = choiceProps[i];
+
+					/**
+					 * This is a title
+					 */
+					if (!Array.isArray(branchContent)) continue;
+
+					const virtualPath = klona(path)
+
+					virtualPath.push(['choice', i], [null, 0])
+
+					const innerActions = collectActionsBeforeBlockingAction({
+						path: virtualPath,
+						refer
+					});
+
+					collection.push(...innerActions);
+				}
+			}
+
+			break;
+		}
+
+		collection.push(action)
 
 		nextPath(path);
 		action = refer(path);
 	}
 
-	return action;
+	return collection;
 }
 
 export {
@@ -993,8 +1039,9 @@ export {
 	getIntlLanguageDisplayName,
 	createReferFunction,
 	exitPath,
-	futureLookup,
-	nextPath
+	collectActionsBeforeBlockingAction,
+	nextPath,
+	isBlockingAction
 };
 
 export type { MatchActionOptions, ControlledPromise, MatchActionMapComplete }
