@@ -137,25 +137,6 @@ const action = extendAction(engine.action, {
 
 false && engine.script({
 	start: [
-		action.preload(outdoor),
-		action.text('Нажимайте на текст для продолжения'),
-		action.playMusic(sakura_girl),
-		action.showBackground(outdoor),
-		action.showCharacter('Lily'),
-		action.voice(voice1),
-		action.animateCharacter('Lily', 'animate__animated animate__pulse'),
-		action.say('Lily', 'Ну привет, мальчик-неудачник'),
-		action.voice(voice2),
-		action.animateCharacter('Lily', 'animate__animated animate__pulse'),
-		action.say('Lily', 'Как же ты ничтожен...'),
-		action.voice(voice3),
-		action.animateCharacter('Lily', 'animate__animated animate__pulse'),
-		action.say('Lily', 'Потому что ты не достоин!'),
-	]
-})
-
-false && engine.script({
-	start: [
 		action.playMusic(sakura_girl),
 		action.particles(snow),
 		action.showBackground(outdoor),
@@ -175,7 +156,7 @@ false && engine.script({
 	]
 })
 
-engine.script({
+false && engine.script({
 	'block:adv': [
 		action.condition(() => true, {
 			true: [
@@ -259,16 +240,6 @@ engine.script({
 		action.end(),
 	],
 });
-
-false && engine.script({
-	another: [
-		action.showBackground(outdoor),
-		action.say('Lily', {
-			en: 'Part 2 Comes',
-			ru: 'Часть 2'
-		}),
-	]
-})
 
 false && engine.script({
 	start: [
