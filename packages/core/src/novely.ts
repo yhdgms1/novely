@@ -240,6 +240,8 @@ const novely = <
 					assetsToPreloadAdd(value);
 				}
 			}
+
+			return;
 		}
 
 		/**
@@ -247,6 +249,7 @@ const novely = <
 		 */
 		if (isAudioAction(action) && isString(props[0])) {
 			assetsToPreloadAdd(props[0])
+			return;
 		}
 
 		/**
@@ -261,6 +264,14 @@ const novely = <
 				}
 			} else {
 				assetsToPreloadAdd(images)
+			}
+
+			return;
+		}
+
+		if (action === 'custom' && props[0].assets && props[0].assets.length > 0) {
+			for (const asset of props[0].assets) {
+				assetsToPreloadAdd(asset);
 			}
 		}
 	}
@@ -1262,18 +1273,16 @@ const novely = <
 		next({ push }) {
 			push();
 		},
-		animateCharacter({ ctx, push }, [character, timeout, ...classes]) {
+		animateCharacter({ ctx, push }, [character, className]) {
+			const classes = className.split(' ');
+
 			if (DEV && classes.length === 0) {
 				throw new Error('Attempt to use AnimateCharacter without classes. Classes should be provided [https://novely.pages.dev/guide/actions/animateCharacter.html]')
 			}
 
-			if (DEV && (timeout <= 0 || !Number.isFinite(timeout) || Number.isNaN(timeout))) {
-				throw new Error('Attempt to use AnimateCharacter with unacceptable timeout. It should be finite and greater than zero')
-			}
-
 			if (ctx.meta.preview) return;
 
-			ctx.character(character).animate(timeout, classes);
+			ctx.character(character).animate(classes);
 
 			push();
 		},

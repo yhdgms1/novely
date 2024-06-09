@@ -17,7 +17,7 @@ interface CharacterHandle {
 		restoring?: boolean
 	) => Promise<void>;
 
-	animate: (timeout: number, classes: string[]) => void;
+	animate: (classes: string[]) => void;
 
 	emotions: Record<string, HTMLImageElement[]>;
 }

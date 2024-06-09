@@ -41,7 +41,7 @@ import { useContextState, removeContextState } from './context-state'
 import { canvasDrawImages, createImage, isCSSImage } from '$utils';
 import { PRELOADED_IMAGE_MAP, useShared } from './shared';
 import { createRootComponent } from './components/Root';
-import { createShowArbitraryCharacterAction } from './custom-actions';
+import { createShowArbitraryCharacterAction, hideImage, showImage } from './custom-actions';
 import { settingsIcons as settingsIconsDefault } from './constants'
 
 const { preloadAudioBlocking } = createAudioMisc();
@@ -191,7 +191,7 @@ const createSolidRenderer = ({
 										});
 									})
 								},
-								animate(timeout, classes) {
+								animate(classes) {
 									const target = this.canvas;
 
 									/**
@@ -203,11 +203,11 @@ const createSolidRenderer = ({
 
 									target.classList.add(...classNames);
 
-									const removeClassNames = () => {
+									const onAnimationEnd = () => {
 										target.classList.remove(...classNames);
 									}
 
-									setTimeout(removeClassNames, timeout);
+									target.addEventListener('animationend', onAnimationEnd, { once: true })
 								}
 							} satisfies CharacterHandle;
 
@@ -357,7 +357,9 @@ const createSolidRenderer = ({
 					preloadAudioBlocking
 				},
 				actions: {
-					showArbitraryCharacter: createShowArbitraryCharacterAction(options.characters)
+					showArbitraryCharacter: createShowArbitraryCharacterAction(options.characters),
+					showImage: showImage,
+					hideImage: hideImage
 				}
 			} satisfies Renderer;
 

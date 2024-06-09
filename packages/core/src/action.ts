@@ -40,7 +40,7 @@ type TextContent<L extends string, S extends State> = string | ((state: S) => st
 
 type FunctionableValue<T> = T | (() => T);
 
-type CustomHandlerGetResultDataFunction = (data?: Record<string, unknown>) => Record<string, unknown>;
+type CustomHandlerGetResultDataFunction = <T = Record<string, unknown>>(data?: T) => T;
 
 type CustomHandlerGetResult<I extends boolean> = {
 	/**
@@ -131,6 +131,10 @@ type CustomHandlerCalling = {
 
 type CustomHandlerInfo = CustomHandlerCalling & {
 	/**
+	 * Assets (pictures, audio files) used by action
+	 */
+	assets?: string[];
+	/**
 	 * When true interacting with it will be saved in history
 	 */
 	requireUserAction?: boolean;
@@ -141,10 +145,8 @@ type CustomHandlerInfo = CustomHandlerCalling & {
 
 	/**
 	 * Id by which we will determine what action is which
-	 *
-	 * It IS recommended to pass this property as it will speed up that check and make it more reliable
 	 */
-	id?: string | symbol;
+	id: string | symbol;
 
 	/**
 	 * Key by which we will save the data in the `get` function provided to custom action.
@@ -307,7 +309,7 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 		duration?: number,
 	) => ValidAction;
 
-	animateCharacter: (character: keyof Characters, timeout: number, ...classes: string[]) => ValidAction;
+	animateCharacter: (character: keyof Characters, classes: string) => ValidAction;
 
 	wait: (time: number | ((state: State) => number)) => ValidAction;
 

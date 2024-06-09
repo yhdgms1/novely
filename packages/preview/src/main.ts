@@ -129,7 +129,7 @@ const action = extendAction(engine.action, {
 	},
 	talk: (character: keyof NonNullable<typeof engine.typeEssentials.c> & string, text: TextContent<NonNullable<typeof engine.typeEssentials.l>, NonNullable<typeof engine.typeEssentials.s>>) => {
 		return [
-			['animateCharacter', character, 1000, 'animate__animated', 'animate__pulse'],
+			['animateCharacter', character, 'animate__animated animate__pulse'],
 			['say', character, text]
 		] as ValidAction[]
 	}
@@ -143,58 +143,39 @@ false && engine.script({
 		action.showBackground(outdoor),
 		action.showCharacter('Lily'),
 		action.voice(voice1),
-		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		action.animateCharacter('Lily', 'animate__animated animate__pulse'),
 		action.say('Lily', 'Ну привет, мальчик-неудачник'),
 		action.voice(voice2),
-		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		action.animateCharacter('Lily', 'animate__animated animate__pulse'),
 		action.say('Lily', 'Как же ты ничтожен...'),
 		action.voice(voice3),
-		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		action.animateCharacter('Lily', 'animate__animated animate__pulse'),
 		action.say('Lily', 'Потому что ты не достоин!'),
 	]
 })
 
-engine.script({
+false && engine.script({
 	start: [
-		action.text('First'),
-		action.showBackground(outdoor),
 		action.playMusic(sakura_girl),
-		action.text('Second'),
-		action.choice(
-			'Select',
-			[
-				'First',
-				[
-					action.showBackground('https://catherineasquithgallery.com/uploads/posts/2021-02/1612803121_135-p-nezhno-goluboi-fon-anime-193.jpg'),
-					action.function(() => {
-						console.log('FUNCTIONING')
-					})
-				]
-			],
-			[
-				'Second',
-				[
-					action.showBackground('https://catherineasquithgallery.com/uploads/posts/2021-03/1615816442_4-p-fon-anime-4.jpg')
-				]
-			]
-		),
-		action.text('Third'),
-		action.jump('n2')
-	],
-	n2: [
-		action.showBackground('black'),
-		action.text('Fourth'),
-		action.block('green'),
-		action.text('Fifth'),
-		action.showBackground('black'),
-		action.text('Sixth')
-	],
-	green: [
-		action.showBackground('green')
+		action.particles(snow),
+		action.showBackground(outdoor),
+		show('car', ({ init }) => {
+			init({
+				src: 'https://cdn.rive.app/animations/vehicles.riv',
+			});
+		}),
+		animate('car', 'curves'),
+		action.text('Bounce'),
+		animate('car', 'bounce'),
+		action.text('What about idle?'),
+		animate('car', 'idle'),
+		action.text('Go now'),
+		remove('car'),
+		action.text('The end?')
 	]
 })
 
-false && engine.script({
+engine.script({
 	'block:adv': [
 		action.condition(() => true, {
 			true: [
@@ -206,7 +187,7 @@ false && engine.script({
 		}),
 	],
 	start: [
-		action.preload(outdoor),
+		action.next(),
 		action.text({
 			en: 'You wake up, but do not see your keyboard anymore, instead...',
 			ru: 'Вы просыпаетесь, но больше не видите своей клавиатуры, вместо неё...',
@@ -215,17 +196,6 @@ false && engine.script({
 		action.particles(snow),
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok'),
-		// show('car', ({ init }) => {
-		// 	init({
-		// 		src: 'https://cdn.rive.app/animations/vehicles.riv',
-		// 	});
-		// }),
-		// animate('car', 'curves'),
-		// action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		// action.say('Lily', {
-		// 	en: 'Hii~',
-		// 	ru: 'Привет',
-		// }),
 		action.talk('Lily', {
 			en: 'Hii~',
 			ru: 'Привет!'
@@ -234,24 +204,16 @@ false && engine.script({
 			en: 'Iʼm going to tell you about the Novely engine',
 			ru: 'Я расскажу тебе про движок Novely',
 		}),
-		// action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
-		// action.say('Lily', {
-			// en: 'Iʼm going to tell you about the Novely engine',
-			// ru: 'Я расскажу тебе про движок Novely',
-		// }),
-		// animate('car', 'bounce'),
 		action.say('You', {
 			en: 'Great, something new. What kind of features does it offer?',
 			ru: 'Отлично, что-то новое. Какие возможности он дает?',
 		}),
-		// animate('car', 'idle'),
-		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		action.animateCharacter('Lily', 'animate__animated animate__pulse'),
 		action.say('Lily', {
 			en: 'Novely has many features: multi-language support, TypeScript support, and it is open source, multi-platform and lightweight.',
 			ru: 'У Novely есть много преимуществ: поддержка нескольких языков, типизация на TypeScript, открытый исходный код, мультплатформенность и легковесность.',
 		}),
-		// remove('car'),
-		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		action.animateCharacter('Lily', 'animate__animated animate__pulse'),
 		action.say('Lily', {
 			en: 'As a result, it can be used to create interactive stories and short stories with a minimum of effort.',
 			ru: 'В итоге с его помощью можно создавать интерактивные истории и новеллы с минимумом усилий.',
@@ -260,12 +222,12 @@ false && engine.script({
 			en: 'Sounds promising. How easy is it to use?',
 			ru: 'Звучит многообещающе. Насколько просто им пользоваться?',
 		}),
-		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		action.animateCharacter('Lily', 'animate__animated animate__pulse'),
 		action.say('Lily', {
 			en: "The Novely API is very simple and intuitive, so even a little programming experience is enough to start creating visual novels. And once you've studied the documentation, you'll get the hang of it!",
 			ru: 'API Novely очень простой и интуитивный, так что даже небольшой опыт в программировании подойдёт чтобы начать создавать визуальные новеллы. А уж после изучения документации всё получится!',
 		}),
-		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		action.animateCharacter('Lily', 'animate__animated animate__pulse'),
 		action.say('Lily', {
 			en: 'By the way, how old are you?',
 			ru: 'Кстати, сколько тебе лет?',
@@ -285,7 +247,7 @@ false && engine.script({
 				input.setAttribute('max', '99');
 			},
 		),
-		action.animateCharacter('Lily', 1000, 'animate__animated', 'animate__pulse'),
+		action.animateCharacter('Lily', 'animate__animated animate__pulse'),
 		action.say('Lily', {
 			en: "Ah, {{age}} {{age@years}} old? It's a wonderful age",
 			ru: 'Ох, {{age}} {{age@years}}? Это прекрасный возраст',

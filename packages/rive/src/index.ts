@@ -1,4 +1,4 @@
-import type { CustomHandler } from '@novely/core';
+import type { CustomHandler, ValidAction } from '@novely/core';
 
 import * as rive from '@rive-app/canvas';
 import { createCanvas2D } from './helpers';
@@ -139,7 +139,7 @@ const show = (id: Id, setup: Setup) => {
 	handler.skipClearOnGoingBack = true;
 	handler.key = 'rive-' + id;
 
-	return ['custom', handler] as unknown as ['custom', [CustomHandler]];
+	return ['custom', handler] as ValidAction;
 };
 
 const animate = (id: Id, name: string) => {
@@ -168,7 +168,7 @@ const animate = (id: Id, name: string) => {
 	handler.skipClearOnGoingBack = true;
 	handler.key = 'rive-' + id;
 
-	return ['custom', handler] as unknown as ['custom', [CustomHandler]];
+	return ['custom', handler] as ValidAction;
 };
 
 const hide = (id: Id) => {
@@ -195,7 +195,7 @@ const hide = (id: Id) => {
 	handler.skipClearOnGoingBack = true;
 	handler.key = 'rive-' + id;
 
-	return ['custom', handler] as unknown as ['custom', [CustomHandler]];
+	return ['custom', handler] as ValidAction;
 };
 
 const remove = (id: Id) => {
@@ -221,7 +221,7 @@ const remove = (id: Id) => {
 	handler.skipClearOnGoingBack = true;
 	handler.key = 'rive-' + id;
 
-	return ['custom', handler] as unknown as ['custom', [CustomHandler]];
+	return ['custom', handler] as ValidAction;
 };
 
 export { show, animate, hide, remove };

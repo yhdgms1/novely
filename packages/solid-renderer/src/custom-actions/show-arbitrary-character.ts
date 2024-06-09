@@ -1,5 +1,5 @@
 import type { CustomHandler, ValidAction, Character, Lang } from "@novely/core";
-import { PRELOADED_IMAGE_MAP } from './shared';
+import { PRELOADED_IMAGE_MAP } from '../shared';
 import { canvasDrawImages, createImage } from "$utils";
 
 const SHOW_ARBITARY_CHARACTER = Symbol();
