@@ -110,6 +110,7 @@ const novely = <
 	const dataLoaded = createControlledPromise();
 
 	let initialScreenWasShown = false;
+	let destroyed = false;
 
 	/**
 	 * Saves timestamps created in this session
@@ -160,6 +161,11 @@ const novely = <
 	}
 
 	const scriptBase = async (part: Story) => {
+		/**
+		 * In case script was called after destroy
+		 */
+		if (destroyed) return;
+
 		Object.assign(story, flattenStory(part));
 
 		let loadingIsShown = false;
@@ -1441,6 +1447,21 @@ const novely = <
 		return coreData.get().dataLoaded ? klona(storageData.get()) : null;
 	}
 
+	const setStorageData = (data: StorageData<$Language, $Data>) => {
+		/**
+		 * After destroy data is not updated
+		 */
+		if (destroyed) {
+			if (DEV) {
+				throw new Error(`function \`setStorageData\` was called after novely instance was destroyed.`)
+			}
+
+			return;
+		}
+
+		storageData.set(data);
+	}
+
 	return {
 		/**
 		 * Function to set game script
@@ -1527,6 +1548,8 @@ const novely = <
 			UIInstance.unmount();
 
 			unsubscribeFromBrowserVisibilityChange();
+
+			destroyed = true;
 		},
 		/**
 		 * Funtion to get current storage data
@@ -1536,7 +1559,24 @@ const novely = <
 		 * const currentStorageData = engine.getCurrentStorageData();
 		 * ```
 		 */
-		getCurrentStorageData
+		getCurrentStorageData,
+		/**
+		 * Function to set storage data. Using this function is not recommended.
+		 *
+		 * @deprecated
+		 * @example
+		 * ```ts
+		 * const currentStorageData = engine.getCurrentStorageData();
+		 *
+		 * if (currentStorageData) {
+		 *   // update music volume
+		 *   currentStorageData.meta[2] = 1;
+		 *
+		 *   setStorageData(currentStorageData)
+		 * }
+		 * ```
+		 */
+		setStorageData
 	};
 };
 

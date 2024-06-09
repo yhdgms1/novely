@@ -44,7 +44,9 @@ export type { AllowedContent, PluralType, Pluralization, TranslationActions } fr
 
 export type {
 	ConditionParams,
-	InputHandler
+	InputHandler,
+	FunctionParams,
+	ChoiceParams
 } from './type-utils';
 
 export { novely } from './novely';
