@@ -4,11 +4,10 @@ Animates the character
 
 ## Parameters
 
-|    Name    |   Type   | Optional |                  Description                  |
-| :--------: | :------: | :------: | :-------------------------------------------: |
-| character  |  string  |    ❌    |                   Person ID                   |
-|  timeout   |  number  |    ❌    | Timeout after that `classes` would be removed |
-| ...classes | string[] |    ❌    |               Element.className               |
+|   Name    |  Type  | Optional |    Description    |
+| :-------: | :----: | :------: | :---------------: |
+| character | string |    ❌    |     Person ID     |
+| className | number |    ❌    | Element.className |
 
 ## Usage
 
@@ -22,8 +21,7 @@ engine.script({
     engine.action.say('Naruto', 'S-sakura-chan...')
     engine.action.animateCharacter(
       "Naruto",
-      500,
-      'pulse-animation-500-ms'
+      'animated pulse-animation-500-ms'
     ),
   ],
 });

@@ -149,6 +149,11 @@ action.key = "notifications";
 action.id = Symbol("notification");
 
 /**
+ * Assets (pictures urls) if any is rendered
+ */
+action.assets = []
+
+/**
  * Let's imagine you'r action show's some notifications
  * When restoring game action would be called lots of times and lots of notifications will be shown
  * But `callOnlyLatest` will make novely call only latest action of that type.
