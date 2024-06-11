@@ -1,10 +1,6 @@
 import type { CustomHandler, ValidAction } from "@novely/core";
 import { noop } from "@novely/renderer-toolkit";
 
-// todo: use for images
-// import { PRELOADED_IMAGE_MAP } from '../shared';
-// import { canvasDrawImages, createImage } from "$utils";
-
 const SHOW_IMAGE = Symbol();
 
 type ShowImageParams = {
@@ -27,7 +23,7 @@ type ShowImageData = {
 }
 
 const showImage = (source: string, params: ShowImageParams = {}) => {
-  const handler: CustomHandler = ({ getDomNodes, clear, flags, data }) => {
+  const handler: CustomHandler = ({ getDomNodes, clear, flags, data, rendererContext }) => {
     const { promise, resolve } = Promise.withResolvers<void>()
     const { element } = getDomNodes(true);
 
@@ -61,7 +57,9 @@ const showImage = (source: string, params: ShowImageParams = {}) => {
 
       clearAnimation = () => {
         image.classList.remove(...classes);
+
         if (params.await) {
+          rendererContext.clearBlockingActions(undefined);
           resolve();
         }
       }
@@ -98,7 +96,7 @@ type HideImageParams = {
 }
 
 const hideImage = (source: string, params: HideImageParams = {}) => {
-  const handler: CustomHandler = async ({ data }) => {
+  const handler: CustomHandler = async ({ data, rendererContext }) => {
     const { promise, resolve } = Promise.withResolvers<void>();
 
     const { image, in: inClasses } = data<ShowImageData>()
@@ -123,6 +121,7 @@ const hideImage = (source: string, params: HideImageParams = {}) => {
         image.classList.remove(...classes)
 
         if (params.await) {
+          rendererContext.clearBlockingActions(undefined);
           resolve();
         }
       }

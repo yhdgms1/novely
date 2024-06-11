@@ -100,45 +100,58 @@ const Save: VoidComponent<SaveProps> = (props) => {
     setIframeLoaded(true);
   }
 
-  createEffect(() => {
-    if (props.observed && iframeLoaded() && !previewStarted()) {
-      setPreviewStarted(true);
+  createEffect(async () => {
+    const ready = props.observed && iframeLoaded() && !previewStarted();
 
-      options.preview(props.save, KEY).then(() => {
-        /**
-         * Right now there is no way to know that everything is loaded (including characters)
-         * We only check background here
-         */
-        const background = useContextState(KEY).get().background.background;
+    if (!ready) return;
 
-        if (!background || !isCSSImage(background)) {
-          return previewDone();
-        }
+    setPreviewStarted(true);
 
-        if (PRELOADED_IMAGE_MAP.has(background)) {
-          return previewDone();
-        }
+    /**
+     * Will not wait more than one second, that's already enough
+     */
+    setTimeout(() => {
+      previewDone();
+    }, 1000);
 
-        const backgroundElement = context.root.querySelector<HTMLImageElement>('img.background');
+    try {
+      await options.preview(props.save, KEY);
 
-        if (!backgroundElement) {
-          return previewDone();
-        }
+      /**
+       * Right now there is no way to know that everything is loaded (including characters)
+       * We only check background here
+       */
+      const background = useContextState(KEY).get().background.background;
 
-        if (backgroundElement.complete && backgroundElement.naturalHeight !== 0) {
-          return previewDone();
-        }
+      if (!background || !isCSSImage(background)) {
+        return previewDone();
+      }
 
-        const onLoadingStatusChange = () => {
-          backgroundElement.removeEventListener('load', onLoadingStatusChange);
-          backgroundElement.removeEventListener('error', onLoadingStatusChange);
+      if (PRELOADED_IMAGE_MAP.has(background)) {
+        return previewDone();
+      }
 
-          previewDone();
-        }
+      const backgroundElement = context.root.querySelector<HTMLImageElement>('img.background');
 
-        backgroundElement.addEventListener('load', onLoadingStatusChange);
-        backgroundElement.addEventListener('error', onLoadingStatusChange);
-      })
+      if (!backgroundElement) {
+        return previewDone();
+      }
+
+      if (backgroundElement.complete && backgroundElement.naturalHeight !== 0) {
+        return previewDone();
+      }
+
+      const onLoadingStatusChange = () => {
+        backgroundElement.removeEventListener('load', onLoadingStatusChange);
+        backgroundElement.removeEventListener('error', onLoadingStatusChange);
+
+        previewDone();
+      }
+
+      backgroundElement.addEventListener('load', onLoadingStatusChange);
+      backgroundElement.addEventListener('error', onLoadingStatusChange);
+    } catch {
+      return previewDone()
     }
   })
 
