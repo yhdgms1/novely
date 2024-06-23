@@ -4,10 +4,10 @@ import type { SolidRendererStore } from '../renderer';
 import type { ContextStateStore, DeepAtom } from '@novely/renderer-toolkit'
 
 import { createSignal, untrack, For, Show, createUniqueId, createEffect, createMemo, from } from 'solid-js';
-import { Character, DialogName, Modal, Icon, ControlPanelButtons, createTypewriter } from '$components';
+import { Character, DialogName, Modal, Icon, ControlPanelButtons, createTypewriter, Canvas } from '$components';
 import { clickOutside } from '$actions';
 import { useData } from '$context';
-import { canvasDrawImages, createImage, isCSSImage, onKey } from '$utils';
+import { canvasDrawImages, createImage, imageLoaded, isCSSImage, onKey } from '$utils';
 import { destructure } from "@solid-primitives/destructure";
 import { PRELOADED_IMAGE_MAP } from '../shared'
 
@@ -26,6 +26,11 @@ interface GameProps {
 }
 
 const Game: VoidComponent<GameProps> = (props) => {
+	const [backgroundRef, setBackgroundRef] = createSignal<HTMLCanvasElement>();
+	const backgroundRenderingContext = createMemo(() => {
+		return backgroundRef()?.getContext('2d') ?? null;
+	})
+
 	const data = useData();
 
 	const { $contextState } = props;
@@ -111,16 +116,6 @@ const Game: VoidComponent<GameProps> = (props) => {
 		}
 	});
 
-	const bg = () => {
-		const bg = background().background;
-		const isImage = isCSSImage(bg);
-
-		return {
-			'background-image': isImage ? bg : undefined,
-			'background-color': isImage ? undefined : bg,
-		}
-	}
-
 	const charactersCount = createMemo(() => {
 		return Object.values(characters()).reduce((acc, c) => {
 			if (c && c.visible) {
@@ -139,29 +134,39 @@ const Game: VoidComponent<GameProps> = (props) => {
 				'preview': props.isPreview
 			}}
 		>
-			<Show when={bg()['background-image']} fallback={<div class="background" style={bg()} />} keyed>
-				{src => {
-					let img = PRELOADED_IMAGE_MAP.get(src);
+			<Canvas
+				class="background"
+				resize={false}
+				render={async (canvas, ctx, abortSignal) => {
+					// todo: check it actually work
+					abortSignal.throwIfAborted();
 
-					if (img) {
-						const image = img.isConnected ? img.cloneNode(true) as HTMLImageElement : img;
+					const bg = background().background;
+					const isColor = !isCSSImage(bg);
 
-						return Object.assign(image, {
-							className: 'background'
-						});
+					if (isColor) {
+						ctx.fillStyle = bg;
+						ctx.fillRect(0, 0, canvas.width, canvas.height);
+					} else {
+						const img = PRELOADED_IMAGE_MAP.get(bg) || createImage(bg);
+
+						/**
+						 * todo: fix race
+						 */
+						await imageLoaded(img);
+
+
+						if (!PRELOADED_IMAGE_MAP.has(bg)) {
+							PRELOADED_IMAGE_MAP.set(bg, img);
+						}
+
+						canvas.width = img.width;
+						canvas.height = img.height;
+
+						ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 					}
-
-					img = createImage(src);
-
-					img.addEventListener('load', () => {
-						PRELOADED_IMAGE_MAP.set(src, img);
-					});
-
-					return Object.assign(img, {
-						className: 'background'
-					});
 				}}
-			</Show>
+			/>
 
 			<div
 				data-characters={true}

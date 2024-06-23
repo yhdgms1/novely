@@ -38,6 +38,28 @@ const createImage = (src: string) => {
 	return img;
 };
 
+const imageLoaded = (image: HTMLImageElement) => {
+	const { promise, resolve } = Promise.withResolvers<boolean>();
+
+	if (image.complete && image.naturalHeight !== 0) {
+		return resolve(true);
+	}
+
+	image.addEventListener('load', () => {
+		resolve(true);
+	});
+
+	image.addEventListener('abort', () => {
+		resolve(false);
+	})
+
+	image.addEventListener('error', () => {
+		resolve(false);
+	})
+
+	return promise;
+}
+
 const createCanvas = () => {
 	return document.createElement('canvas');
 }
@@ -143,5 +165,6 @@ export {
 	findLast,
 	simple,
 	getDocumentStyles,
-	once
+	once,
+	imageLoaded
 };

@@ -118,38 +118,9 @@ const Save: VoidComponent<SaveProps> = (props) => {
       await options.preview(props.save, KEY);
 
       /**
-       * Right now there is no way to know that everything is loaded (including characters)
-       * We only check background here
+       * todo: check assets loading here
        */
-      const background = useContextState(KEY).get().background.background;
-
-      if (!background || !isCSSImage(background)) {
-        return previewDone();
-      }
-
-      if (PRELOADED_IMAGE_MAP.has(background)) {
-        return previewDone();
-      }
-
-      const backgroundElement = context.root.querySelector<HTMLImageElement>('img.background');
-
-      if (!backgroundElement) {
-        return previewDone();
-      }
-
-      if (backgroundElement.complete && backgroundElement.naturalHeight !== 0) {
-        return previewDone();
-      }
-
-      const onLoadingStatusChange = () => {
-        backgroundElement.removeEventListener('load', onLoadingStatusChange);
-        backgroundElement.removeEventListener('error', onLoadingStatusChange);
-
-        previewDone();
-      }
-
-      backgroundElement.addEventListener('load', onLoadingStatusChange);
-      backgroundElement.addEventListener('error', onLoadingStatusChange);
+      return previewDone();
     } catch {
       return previewDone()
     }
