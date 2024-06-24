@@ -4,10 +4,10 @@ import { Portal } from 'solid-js/web';
 import { Show, createSignal, createEffect, onCleanup, untrack } from 'solid-js';
 import { Transition } from 'solid-transition-group';
 import { useData } from '$context';
-import { capitalize, getDocumentStyles, isCSSImage, once } from '$utils';
+import { capitalize, getDocumentStyles, once } from '$utils';
 import { createRetrieved } from "retrieved";
 import { removeContextState, useContextState } from '../context-state'
-import { useShared, removeShared, PRELOADED_IMAGE_MAP } from '../shared';
+import { useShared, removeShared } from '../shared';
 import { Game } from '$screens';
 
 /**
