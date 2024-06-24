@@ -26,11 +26,6 @@ interface GameProps {
 }
 
 const Game: VoidComponent<GameProps> = (props) => {
-	const [backgroundRef, setBackgroundRef] = createSignal<HTMLCanvasElement>();
-	const backgroundRenderingContext = createMemo(() => {
-		return backgroundRef()?.getContext('2d') ?? null;
-	})
-
 	const data = useData();
 
 	const { $contextState } = props;
@@ -137,10 +132,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 			<Canvas
 				class="background"
 				resize={false}
-				render={async (canvas, ctx, abortSignal) => {
-					// todo: check it actually work
-					abortSignal.throwIfAborted();
-
+				render={async (canvas, ctx) => {
 					const bg = background().background;
 					const isColor = !isCSSImage(bg);
 
@@ -150,14 +142,17 @@ const Game: VoidComponent<GameProps> = (props) => {
 					} else {
 						const img = PRELOADED_IMAGE_MAP.get(bg) || createImage(bg);
 
-						/**
-						 * todo: fix race
-						 */
 						await imageLoaded(img);
-
 
 						if (!PRELOADED_IMAGE_MAP.has(bg)) {
 							PRELOADED_IMAGE_MAP.set(bg, img);
+						}
+
+						/**
+						 * Prevent race of promises
+						 */
+						if (bg !== background().background) {
+							return;
 						}
 
 						canvas.width = img.width;

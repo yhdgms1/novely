@@ -5,7 +5,7 @@ type NativeCanvasProps = JSX.CanvasHTMLAttributes<HTMLCanvasElement>;
 type CanvasProps = Omit<NativeCanvasProps, 'ref'> & {
   resize?: boolean;
 
-  render: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, signal: AbortSignal) => void;
+  render: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => void;
 };
 
 const Canvas: VoidComponent<CanvasProps> = (props) => {
@@ -14,18 +14,13 @@ const Canvas: VoidComponent<CanvasProps> = (props) => {
   const [canvas, setCanvas] = createSignal<HTMLCanvasElement>();
   const ctx = createMemo(() => canvas()?.getContext('2d'));
 
-  let abortController = new AbortController();
-
   createEffect(() => {
     const canvasElement = canvas();
     const canvasContext = ctx();
 
     if (canvasElement && canvasContext) {
-      abortController.abort();
-      abortController = new AbortController();
-
       try {
-        local.render(canvasElement, canvasContext, abortController.signal)
+        local.render(canvasElement, canvasContext)
       } catch {}
     }
   })
@@ -42,11 +37,8 @@ const Canvas: VoidComponent<CanvasProps> = (props) => {
 
       if (canvasContext) {
         untrack(() => {
-          abortController.abort();
-          abortController = new AbortController();
-
           try {
-            local.render(canvasElement, canvasContext, abortController.signal)
+            local.render(canvasElement, canvasContext)
           } catch {}
         });
       }
