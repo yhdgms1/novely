@@ -42,7 +42,9 @@ const imageLoaded = (image: HTMLImageElement) => {
 	const { promise, resolve } = Promise.withResolvers<boolean>();
 
 	if (image.complete && image.naturalHeight !== 0) {
-		return resolve(true);
+		resolve(true);
+
+		return promise;
 	}
 
 	image.addEventListener('load', async () => {
@@ -75,30 +77,21 @@ const getContext = (canvas: HTMLCanvasElement) => {
 /**
  * Draws passed `images` array on a `canvas`
  */
-const canvasDrawImages = (canvas = createCanvas(), ctx = getContext(canvas), images: HTMLImageElement[],) => {
-	let set = false;
+const canvasDrawImages = async (canvas = createCanvas(), ctx = getContext(canvas), images: HTMLImageElement[]) => {
+	await Promise.allSettled(images.map(image => imageLoaded(image)));
+
+	if (canvas.dataset.resized === 'false' || !canvas.dataset.resized) {
+		const sizesSorted = images.slice().sort((a, b) => b.width - a.width);
+		const sizes = sizesSorted[0];
+
+		canvas.width = sizes.naturalWidth;
+		canvas.height = sizes.naturalHeight;
+
+		canvas.dataset.resized = 'true';
+	}
 
 	for (const image of images) {
-		const isLoaded = image.complete && image.naturalHeight !== 0;
-
-		const draw = () => {
-			if (!set) {
-				set = true;
-
-				if (canvas.dataset.resized === 'false' || !canvas.dataset.resized) {
-					canvas.width = image.naturalWidth;
-					canvas.height = image.naturalHeight;
-
-					canvas.dataset.resized = 'true';
-				}
-			}
-
-			ctx.drawImage(image, 0, 0);
-
-			image.removeEventListener('load', draw);
-		};
-
-		isLoaded ? draw() : image.addEventListener('load', draw);
+		ctx.drawImage(image, 0, 0);
 	}
 
 	return [canvas, ctx] as const;

@@ -1,8 +1,13 @@
 import type { BaseDeepMap, DeepMapStore } from 'nanostores'
-import type { NoInfer } from '../types';
 import { deepMap, setPath } from 'nanostores'
 
 type AnyFunction = (...args: any[]) => any;
+
+/**
+ * @deprecated
+ * @todo remove it
+ */
+type NoInfer<T> = [T][T extends any ? 0 : never];
 
 type GetPath<$AtomValue extends object, $MutateValue> = (object: $AtomValue) => $MutateValue;
 type Setter<T> = T extends AnyFunction ? () => T : (T | ((prev: T) => T))

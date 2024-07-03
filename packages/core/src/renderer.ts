@@ -1,6 +1,6 @@
 import type { ActionInputSetup, ActionInputOnInputMeta, BackgroundImage, DefaultActionProxy, ValidAction, CustomHandler } from './action';
 import type { Character } from './character';
-import type { CoreData, Data, Lang, NovelyScreen, Save, State, StateFunction, StorageData } from './types';
+import type { CharacterAssetSizes, CoreData, Data, Lang, NovelyScreen, Save, State, StateFunction, StorageData } from './types';
 import type { BaseTranslationStrings } from './translations';
 import type { Stored } from './store';
 
@@ -183,6 +183,7 @@ type Renderer = {
 
 type RendererInit<$Language extends Lang, $Characters extends Record<string, Character<$Language>>> = {
 	characters: $Characters;
+	characterAssetSizes: CharacterAssetSizes<$Characters>;
 
 	set: (save: Save<State>) => Promise<void>;
 	restore: (save?: Save<State>) => Promise<void>;

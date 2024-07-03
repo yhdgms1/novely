@@ -66,7 +66,7 @@ const createSolidRenderer = ({
 		emitter,
 
 		renderer<$Language extends Lang, $Characters extends Record<string, Character<$Language>>>(options: RendererInit<$Language, $Characters>) {
-			const { characters } = options;
+			const { characters, characterAssetSizes } = options;
 
 			const { root, setRoot } = createRootSetter(() => renderer.getContext(options.mainContextKey));
 
@@ -122,6 +122,15 @@ const createSolidRenderer = ({
 										 * Will resize canvas to image size
 										 */
 										canvas.dataset.resized = 'false';
+
+										const sizes = characterAssetSizes[character];
+
+										if (sizes) {
+											canvas.width = sizes.width;
+											canvas.height = sizes.height;
+
+											canvas.dataset.resized = 'true';
+										}
 
 										canvasDrawImages(canvas, canvasContext, stored);
 									}

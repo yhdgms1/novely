@@ -70,6 +70,7 @@ const novely = <
 	$Actions extends Record<string, (...args: any[]) => ValidAction>
 >({
 	characters,
+	characterAssetSizes = {},
 	defaultEmotions = {},
 	storage = localStorageStorage({ key: 'novely-game-storage' }),
 	storageDelay = Promise.resolve(),
@@ -858,6 +859,7 @@ const novely = <
 		mainContextKey: MAIN_CONTEXT_KEY,
 
 		characters,
+		characterAssetSizes,
 		set,
 		restore,
 		save,

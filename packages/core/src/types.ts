@@ -8,8 +8,6 @@ import type {	getLanguage as defaultGetLanguage } from './utils';
 
 type Thenable<T> = T | Promise<T>;
 
-type NoInfer<T> = [T][T extends any ? 0 : never];
-
 type PathItem =
 	| [null, number | string]
 	| ['jump', string]
@@ -131,6 +129,13 @@ type DefaultEmotions<$Characters extends Record<string, Character<Lang>>> = {
 	[Character in keyof $Characters]?: (keyof $Characters[Character]['emotions'] & string)
 }
 
+type CharacterAssetSizes<$Characters extends Record<string, Character<Lang>>> = {
+	[Character in keyof $Characters]?: {
+		width: number;
+		height: number;
+	}
+}
+
 interface NovelyInit<
 	$Language extends Lang,
 	$Characters extends Record<string, Character<NoInfer<$Language>>>,
@@ -185,6 +190,32 @@ interface NovelyInit<
 	 * ```
 	 */
 	defaultEmotions?: DefaultEmotions<NoInfer<$Characters>>;
+	/**
+	 * Character asset sizes. We need width-height pair to render character, but we get it only after the assets are loaded. However, using that option we can use width-height before load.
+	 * @example
+	 * ```
+	 * import peter_the_great from './assets/peter_the_great.png?width=800&height=1200';
+	 *
+	 * const engine = novely({
+	 *   characters: {
+	 *     Peter: {
+	 *       name: 'Peter',
+	 *       color: '#c04931',
+	 *       emotions: {
+	 *         normal: peter_the_great
+	 *       }
+	 *     }
+	 *   },
+	 *   characterAssetSizes: {
+	 *     Peter: {
+	 *       width: 800,
+	 *       height: 1200
+	 *     }
+	 *   }
+	 * })
+	 * ```
+	 */
+	characterAssetSizes?: CharacterAssetSizes<NoInfer<$Characters>>;
 	/**
 	 * An object that provides access to the game's storage system.
 	 * @default localStorage // at key `novely-game-storage`
@@ -359,5 +390,6 @@ export type {
 	StateFunction,
 	TypeEssentials,
 	DefaultEmotions,
-	Assign
+	Assign,
+	CharacterAssetSizes
 };
