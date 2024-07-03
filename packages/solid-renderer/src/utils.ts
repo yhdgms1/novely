@@ -45,7 +45,11 @@ const imageLoaded = (image: HTMLImageElement) => {
 		return resolve(true);
 	}
 
-	image.addEventListener('load', () => {
+	image.addEventListener('load', async () => {
+		if (image.decode) {
+			await image.decode().catch(() => {})
+		}
+
 		resolve(true);
 	});
 
