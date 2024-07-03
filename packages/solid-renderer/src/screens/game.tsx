@@ -226,7 +226,9 @@ const Game: VoidComponent<GameProps> = (props) => {
 									 */
 									if ('src' in image) return image;
 
-									const [canvas] = canvasDrawImages(undefined, undefined, Object.values(image));
+									const canvas = document.createElement('canvas');
+
+									canvasDrawImages(canvas, undefined, Object.values(image));
 
 									return canvas;
 								}}
