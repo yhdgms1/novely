@@ -181,6 +181,13 @@ type Renderer = {
 	removeContext: (context: string) => void;
 };
 
+type RendererInitPreviewReturn = {
+	/**
+	 * Assets that was used in game preview
+	 */
+	assets: string[];
+}
+
 type RendererInit<$Language extends Lang, $Characters extends Record<string, Character<$Language>>> = {
 	characters: $Characters;
 	characterAssetSizes: CharacterAssetSizes<$Characters>;
@@ -212,7 +219,7 @@ type RendererInit<$Language extends Lang, $Characters extends Record<string, Cha
 	 */
 	mainContextKey: string;
 
-	preview: (save: Save<State>, name: string) => Promise<void>;
+	preview: (save: Save<State>, name: string) => Promise<RendererInitPreviewReturn>;
 
 	removeContext: (name: string) => void;
 
@@ -223,4 +230,4 @@ type RendererInit<$Language extends Lang, $Characters extends Record<string, Cha
 	getLanguageDisplayName: (lang: Lang) => string;
 };
 
-export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context, CustomActionHandle };
+export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context, CustomActionHandle, RendererInitPreviewReturn };

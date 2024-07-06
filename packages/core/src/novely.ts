@@ -18,7 +18,7 @@ import type {
 	TypeEssentials
 } from './types';
 import type { Stored } from './store';
-import type { Context } from './renderer';
+import type { Context, RendererInitPreviewReturn } from './renderer';
 import type { BaseTranslationStrings } from './translations';
 import type { ControlledPromise, MatchActionOptions } from './utils';
 import {
@@ -227,8 +227,13 @@ const novely = <
 		return limitScript(() => scriptBase(part));
 	}
 
-
-	const checkAndAddToPreloadingList = <Action extends keyof Actions & string>(action: Action, props: Parameters<Actions[Action]>) => {
+	/**
+	 * @param action Action name
+	 * @param props Action props
+	 * @param doAction Function to handle asset preloading. By default adds asset to preloading list
+	 * @todo Better naming
+	 */
+	const assetPreloadingCheck = <Action extends keyof Actions & string>(action: Action, props: Parameters<Actions[Action]>, doAction = assetsToPreloadAdd) => {
 		if (action === 'showBackground') {
 			/**
 			 * There are two types of showBackground currently
@@ -237,14 +242,14 @@ const novely = <
 			 * Parameter is a `Record<'CSS Media', string>`
 			 */
 			if (isImageAsset(props[0])) {
-				assetsToPreloadAdd(props[0]);
+				doAction(props[0]);
 			}
 
 			if (props[0] && typeof props[0] === 'object') {
 				for (const value of Object.values(props[0])) {
 					if (!isImageAsset(value)) continue;
 
-					assetsToPreloadAdd(value);
+					doAction(value);
 				}
 			}
 
@@ -255,7 +260,7 @@ const novely = <
 		 * Here "stop" action also matches condition, but because `ASSETS_TO_PRELOAD` is a Set, there is no problem
 		 */
 		if (isAudioAction(action) && isString(props[0])) {
-			assetsToPreloadAdd(props[0])
+			doAction(props[0])
 			return;
 		}
 
@@ -267,10 +272,10 @@ const novely = <
 
 			if (Array.isArray(images)) {
 				for (const asset of images) {
-					assetsToPreloadAdd(asset);
+					doAction(asset);
 				}
 			} else {
-				assetsToPreloadAdd(images)
+				doAction(images)
 			}
 
 			return;
@@ -278,7 +283,7 @@ const novely = <
 
 		if (action === 'custom' && props[0].assets && props[0].assets.length > 0) {
 			for (const asset of props[0].assets) {
-				assetsToPreloadAdd(asset);
+				doAction(asset);
 			}
 		}
 	}
@@ -294,7 +299,7 @@ const novely = <
 				// preloading every languages especially in browser (not in Electron or Tauri, however, this is thill is browser, but there is no huge latency) is not effective
 
 				if (preloadAssets === 'blocking') {
-					checkAndAddToPreloadingList(action, props)
+					assetPreloadingCheck(action, props)
 				}
 
 				return [action, ...props] as ValidAction;
@@ -778,10 +783,16 @@ const novely = <
 	};
 
 	/**
-	 * Execute save in context at `name`
+	 * Execute save in context named `name`
+	 * @param save Save
+	 * @param name Context name
 	 */
-	const preview = async (save: Save, name: string) => {
-		if (isEmpty(story)) return;
+	const preview = async (save: Save, name: string): Promise<RendererInitPreviewReturn> => {
+		if (isEmpty(story)) {
+			return Promise.resolve({
+				assets: [],
+			})
+		}
 
 		const [path, data] = save;
 
@@ -798,18 +809,26 @@ const novely = <
 			skip: EMPTY_SET,
 		});
 
-		useStack(ctx).push(klona(save))
+		useStack(ctx).push(klona(save));
+
+		const assets: string[] = [];
 
 		await processor.run(([action, ...props]) => {
 			if (isAudioAction(action)) return;
 			if (action === 'vibrate') return;
 			if (action === 'end') return;
 
+			assetPreloadingCheck(action, props as any, assets.push.bind(assets));
+
 			return match(action, props, {
 				ctx,
 				data,
 			});
 		});
+
+		return {
+			assets,
+		}
 	}
 
 	const removeContext = (name: string) => {
@@ -935,7 +954,7 @@ const novely = <
 				})
 
 				for (const [action, ...props] of collection) {
-					checkAndAddToPreloadingList(action, props as any);
+					assetPreloadingCheck(action, props as any);
 				}
 
 				const { preloadAudioBlocking, preloadImageBlocking } = renderer.misc;
