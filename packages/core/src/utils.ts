@@ -2,7 +2,7 @@ import type { DefaultActionProxy, CustomHandler, Story, ValidAction, GetActionPa
 import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, Lang, State } from './types';
 import type { Context, Renderer } from './renderer';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE, AUDIO_ACTIONS, HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from './constants';
-import { STACK_MAP } from './shared';
+import { RESOURCE_TYPE_CACHE, STACK_MAP } from './shared';
 
 import { DEV } from 'esm-env';
 import { klona } from 'klona/json';
@@ -712,22 +712,35 @@ const fetchContentType = async (request: typeof fetch, url: string) => {
 
 const getResourseType = async (request: typeof fetch, url: string) => {
 	/**
+	 * Simple caching. Will be useful in case of network requests.
+	 */
+	if (RESOURCE_TYPE_CACHE.has(url)) {
+		return RESOURCE_TYPE_CACHE.get(url)!;
+	}
+
+	const encache = (value: "image" | "audio" | "other") => {
+		RESOURCE_TYPE_CACHE.set(url, value);
+
+		return value;
+	}
+
+	/**
 	 * If url is not http we should not check
 	 *
 	 * startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data')
 	 */
 	if (!isCSSImage(url)) {
-		return 'other'
+		return encache('other')
 	}
 
 	const extension = getUrlFileExtension(url);
 
 	if (HOWLER_SUPPORTED_FILE_FORMATS.has(extension as any)) {
-		return 'audio'
+		return encache('audio')
 	}
 
 	if (SUPPORTED_IMAGE_FILE_FORMATS.has(extension as any)) {
-		return 'image'
+		return encache('image')
 	}
 
 	/**
@@ -737,36 +750,14 @@ const getResourseType = async (request: typeof fetch, url: string) => {
 	const contentType = await fetchContentType(request, url);
 
 	if (contentType.includes('audio')) {
-		return 'audio'
+		return encache('audio')
 	}
 
 	if (contentType.includes('image')) {
-		return 'image'
+		return encache('image')
 	}
 
-	return 'other'
-}
-
-/**
- * Simple cache by key. Without revalidation. Never stale.
- *
- * todo: use where it needed
- */
-const cache = <T>() => {
-  const cache = new Map<string, T>()
-
-	const get = (key: string, fn: () => T) => {
-		let value = cache.get(key);
-
-		if (!value) {
-			value = fn();
-			cache.set(key, value);
-		}
-
-		return value;
-	}
-
-  return get;
+	return encache('other')
 }
 
 /**

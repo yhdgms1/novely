@@ -115,7 +115,9 @@ const Save: VoidComponent<SaveProps> = (props) => {
     }, 1000);
 
     try {
-      await options.preview(props.save, KEY);
+      const { assets } = await options.preview(props.save, KEY);
+
+      assets;
 
       /**
        * todo: check assets loading here
