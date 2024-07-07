@@ -874,6 +874,10 @@ const novely = <
 		getCustomActionHolder(ctx, fn).cleanup();
 	}
 
+	const getResourseTypeForRenderer = (url: string) => {
+		return getResourseType(request, url);
+	}
+
 	const renderer = createRenderer({
 		mainContextKey: MAIN_CONTEXT_KEY,
 
@@ -894,7 +898,9 @@ const novely = <
 		storageData: storageData as unknown as Stored<StorageData<string, Data>>,
 		coreData,
 
-		getLanguageDisplayName
+		getLanguageDisplayName,
+
+		getResourseType: getResourseTypeForRenderer
 	});
 
 	const useStack = createUseStackFunction(renderer);

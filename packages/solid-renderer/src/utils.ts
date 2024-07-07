@@ -1,4 +1,5 @@
 import { untrack, batch } from 'solid-js';
+import { PRELOADED_IMAGE_MAP, PRELOADING_IMAGE_MAP } from './shared';
 
 const findLastIndex = <T>(array: T[], fn: (this: T[], item: T, index: number, array: T[]) => boolean) => {
 	for (let i = array.length - 1; i >= 0; i--) {
@@ -64,6 +65,62 @@ const imageLoaded = (image: HTMLImageElement) => {
 	})
 
 	return promise;
+}
+
+/**
+ * Uses `PRELOADING_IMAGE_MAP` and `PRELOADED_IMAGE_MAP` for asset caching.
+ * @param src Image source
+ * @returns Loaded image
+ */
+const imagePreloadWithCaching = async (src: string) => {
+	if (PRELOADING_IMAGE_MAP.has(src)) {
+		const image = PRELOADING_IMAGE_MAP.get(src)!;
+
+		await imageLoaded(image);
+
+		PRELOADING_IMAGE_MAP.delete(src);
+		PRELOADED_IMAGE_MAP.set(src, image);
+
+		return image;
+	}
+
+	if (PRELOADED_IMAGE_MAP.has(src)) {
+		const image = PRELOADED_IMAGE_MAP.get(src)!;
+
+		return image;
+	}
+
+	const image = createImage(src);
+
+	PRELOADING_IMAGE_MAP.set(src, image);
+
+	await imageLoaded(image);
+
+	PRELOADING_IMAGE_MAP.delete(src);
+	PRELOADED_IMAGE_MAP.set(src, image);
+
+	return image;
+}
+
+/**
+ * Takes images from `PRELOADING_IMAGE_MAP` and `PRELOADED_IMAGE_MAP` cache. When no images were cached adds images to `PRELOADING_IMAGE_MAP`.
+ * @param src Image source
+ * @returns Image, load status is unknown
+ */
+const imagePreloadWithCachingNotComplete = (src: string) => {
+	if (PRELOADING_IMAGE_MAP.has(src)) {
+		PRELOADING_IMAGE_MAP.get(src)!;
+	}
+
+	if (PRELOADED_IMAGE_MAP.has(src)) {
+		return PRELOADED_IMAGE_MAP.get(src)!;
+	}
+
+	const image = createImage(src);
+
+	PRELOADING_IMAGE_MAP.set(src, image);
+
+	return image;
 }
 
 const createCanvas = () => {
@@ -163,5 +220,7 @@ export {
 	simple,
 	getDocumentStyles,
 	once,
-	imageLoaded
+	imageLoaded,
+	imagePreloadWithCaching,
+	imagePreloadWithCachingNotComplete
 };

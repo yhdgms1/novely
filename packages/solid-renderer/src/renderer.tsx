@@ -38,8 +38,8 @@ import {
 } from '@novely/renderer-toolkit'
 import { createEmitter } from './emitter';
 import { useContextState, removeContextState } from './context-state'
-import { canvasDrawImages, createImage, isCSSImage } from '$utils';
-import { PRELOADED_IMAGE_MAP, useShared } from './shared';
+import { canvasDrawImages, imagePreloadWithCaching, imagePreloadWithCachingNotComplete, isCSSImage } from '$utils';
+import { useShared } from './shared';
 import { createRootComponent } from './components/Root';
 import { createShowArbitraryCharacterAction, hideImage, showImage } from './custom-actions';
 import { settingsIcons as settingsIconsDefault } from './constants'
@@ -107,9 +107,7 @@ const createSolidRenderer = ({
 										const characterEmotion = characters[character].emotions[emotion];
 										const emotionData = (unknown => Array.isArray(unknown) ? unknown : [unknown])(characterEmotion);
 
-										stored = this.emotions[emotion] = emotionData.map(src => {
-											return PRELOADED_IMAGE_MAP.get(src) || createImage(src);
-										});
+										stored = this.emotions[emotion] = emotionData.map(src => imagePreloadWithCachingNotComplete(src));
 									}
 
 									if (shouldRender && stored) {
@@ -345,23 +343,8 @@ const createSolidRenderer = ({
 
 						return src;
 					},
-					preloadImageBlocking: (src) => {
-						const img = createImage(src);
-
-						return new Promise<any>((resolve) => {
-							const done = () => {
-								PRELOADED_IMAGE_MAP.set(src, img);
-								resolve(1);
-							}
-
-							if (img.complete && img.naturalHeight !== 0) {
-								done()
-							}
-
-							img.addEventListener('load', done);
-							img.addEventListener('abort', done);
-							img.addEventListener('error', done);
-						});
+					preloadImageBlocking: async (src) => {
+						await imagePreloadWithCaching(src);
 					},
 					preloadAudioBlocking
 				},

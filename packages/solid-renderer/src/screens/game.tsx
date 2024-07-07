@@ -7,9 +7,8 @@ import { createSignal, untrack, For, Show, createUniqueId, createEffect, createM
 import { Character, DialogName, Modal, Icon, ControlPanelButtons, createTypewriter, Canvas } from '$components';
 import { clickOutside } from '$actions';
 import { useData } from '$context';
-import { canvasDrawImages, createImage, imageLoaded, isCSSImage, onKey } from '$utils';
+import { canvasDrawImages, imagePreloadWithCaching, isCSSImage, onKey } from '$utils';
 import { destructure } from "@solid-primitives/destructure";
-import { PRELOADED_IMAGE_MAP } from '../shared'
 
 interface GameProps {
 	context: Context;
@@ -140,13 +139,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 						ctx.fillStyle = bg;
 						ctx.fillRect(0, 0, canvas.width, canvas.height);
 					} else {
-						const img = PRELOADED_IMAGE_MAP.get(bg) || createImage(bg);
-
-						await imageLoaded(img);
-
-						if (!PRELOADED_IMAGE_MAP.has(bg)) {
-							PRELOADED_IMAGE_MAP.set(bg, img);
-						}
+						const img = await imagePreloadWithCaching(bg);
 
 						/**
 						 * Prevent race of promises

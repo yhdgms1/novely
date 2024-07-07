@@ -4,7 +4,7 @@ import { Portal } from 'solid-js/web';
 import { Show, createSignal, createEffect, onCleanup, untrack } from 'solid-js';
 import { Transition } from 'solid-transition-group';
 import { useData } from '$context';
-import { capitalize, getDocumentStyles, once } from '$utils';
+import { capitalize, getDocumentStyles, imagePreloadWithCaching, once } from '$utils';
 import { createRetrieved } from "retrieved";
 import { removeContextState, useContextState } from '../context-state'
 import { useShared, removeShared } from '../shared';
@@ -117,14 +117,29 @@ const Save: VoidComponent<SaveProps> = (props) => {
     try {
       const { assets } = await options.preview(props.save, KEY);
 
-      assets;
-
       /**
-       * todo: check assets loading here
+       * Less promises
        */
-      return previewDone();
+      if (assets.length === 0) {
+        return previewDone();
+      }
+
+      console.time('load images ' + KEY)
+      const promises = assets.map(async (asset) => {
+        const type = await options.getResourseType(asset);
+
+        if (type === 'image') {
+          await imagePreloadWithCaching(asset);
+        }
+      });
+
+
+      await Promise.allSettled(promises);
+      console.timeEnd('load images ' + KEY)
+
+      previewDone();
     } catch {
-      return previewDone()
+      previewDone()
     }
   })
 

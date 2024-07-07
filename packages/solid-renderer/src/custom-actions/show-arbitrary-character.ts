@@ -1,6 +1,5 @@
 import type { CustomHandler, ValidAction, Character, Lang } from "@novely/core";
-import { PRELOADED_IMAGE_MAP } from '../shared';
-import { canvasDrawImages, createImage } from "$utils";
+import { canvasDrawImages, imagePreloadWithCachingNotComplete } from "$utils";
 
 const SHOW_ARBITARY_CHARACTER = Symbol();
 
@@ -24,7 +23,7 @@ const createShowArbitraryCharacterAction = <$Characters extends Record<string, C
 
       const extension = (e => Array.isArray(e) ? e : [e])(params.extendWith());
 
-      canvasDrawImages(handle.canvas, handle.ctx, extension.map((src) => PRELOADED_IMAGE_MAP.get(src) || createImage(src)));
+      canvasDrawImages(handle.canvas, handle.ctx, extension.map((src) => imagePreloadWithCachingNotComplete(src)));
     }
 
     handler.id = SHOW_ARBITARY_CHARACTER;
