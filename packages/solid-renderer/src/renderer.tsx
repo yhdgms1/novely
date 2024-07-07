@@ -121,15 +121,6 @@ const createSolidRenderer = ({
 										 */
 										canvas.dataset.resized = 'false';
 
-										const sizes = characterAssetSizes[character];
-
-										if (sizes) {
-											canvas.width = sizes.width;
-											canvas.height = sizes.height;
-
-											canvas.dataset.resized = 'true';
-										}
-
 										if (root() !== context.root) {
 											const { clientWidth: mainClientWidth, clientHeight: mainClientHeight } = root();
 											const { clientWidth: contextClientWidth, clientHeight: contextClientHeight } = context.root;
@@ -142,6 +133,17 @@ const createSolidRenderer = ({
 											canvas.dataset.scaleBy = (1 / maxFactor).toFixed(3);
 										} else {
 											canvas.dataset.scalyBy = '1';
+										}
+
+										const sizes = characterAssetSizes[character];
+
+										if (sizes) {
+											const scaleBy = canvas.dataset.scaleBy ? Number(canvas.dataset.scaleBy) : 1;
+
+											canvas.width = Math.min(sizes.width * scaleBy * 2, sizes.width);
+											canvas.height = Math.min(sizes.height * scaleBy * 2, sizes.height);
+
+											canvas.dataset.resized = 'true';
 										}
 
 										canvasDrawImages(canvas, canvasContext, stored);
