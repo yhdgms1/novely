@@ -148,10 +148,15 @@ const Game: VoidComponent<GameProps> = (props) => {
 							return;
 						}
 
-						canvas.width = img.width;
-						canvas.height = img.height;
+						const { clientWidth, clientHeight } = props.context.root;
 
-						ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+						const w = Math.ceil(Math.min(clientWidth, img.width));
+						const h = Math.ceil(Math.min(clientHeight, img.height));
+
+						canvas.width = w;
+						canvas.height = h;
+
+						ctx.drawImage(img, 0, 0, w, h);
 					}
 				}}
 			/>

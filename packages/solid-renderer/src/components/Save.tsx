@@ -135,7 +135,6 @@ const Save: VoidComponent<SaveProps> = (props) => {
         }
       });
 
-
       await Promise.allSettled(promises);
 
       previewDone();
