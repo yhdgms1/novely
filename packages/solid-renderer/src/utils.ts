@@ -146,8 +146,8 @@ const canvasDrawImages = async (canvas = createCanvas(), ctx = getContext(canvas
 		/**
 		 * Scale down, but not so much
 		 */
-		canvas.width = Math.min(sizes.naturalWidth * scaleBy * 2, sizes.naturalWidth);
-		canvas.height = Math.min(sizes.naturalHeight * scaleBy * 2, sizes.naturalHeight);
+		canvas.width = Math.min(sizes.naturalWidth * scaleBy * 2, sizes.naturalWidth) * devicePixelRatio;
+		canvas.height = Math.min(sizes.naturalHeight * scaleBy * 2, sizes.naturalHeight) * devicePixelRatio;
 
 		canvas.dataset.resized = 'true';
 	}

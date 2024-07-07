@@ -140,8 +140,8 @@ const createSolidRenderer = ({
 										if (sizes) {
 											const scaleBy = canvas.dataset.scaleBy ? Number(canvas.dataset.scaleBy) : 1;
 
-											canvas.width = Math.min(sizes.width * scaleBy * 2, sizes.width);
-											canvas.height = Math.min(sizes.height * scaleBy * 2, sizes.height);
+											canvas.width = Math.min(sizes.width * scaleBy * 2, sizes.width) * devicePixelRatio;
+											canvas.height = Math.min(sizes.height * scaleBy * 2, sizes.height) * devicePixelRatio;
 
 											canvas.dataset.resized = 'true';
 										}

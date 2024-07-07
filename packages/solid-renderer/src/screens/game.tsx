@@ -148,15 +148,14 @@ const Game: VoidComponent<GameProps> = (props) => {
 							return;
 						}
 
-						const { clientWidth, clientHeight } = props.context.root;
+						const { clientWidth, clientHeight } = context.root;
 
-						const w = Math.ceil(Math.min(clientWidth, img.width));
-						const h = Math.ceil(Math.min(clientHeight, img.height));
+						const maxFactor = 1 / Math.ceil(Math.max(img.width / clientWidth, img.height / clientHeight));
 
-						canvas.width = w;
-						canvas.height = h;
+						canvas.width = Math.min(img.width * maxFactor, img.width) * devicePixelRatio;
+						canvas.height = Math.min(img.height * maxFactor, img.height) * devicePixelRatio;
 
-						ctx.drawImage(img, 0, 0, w, h);
+						ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 					}
 				}}
 			/>
