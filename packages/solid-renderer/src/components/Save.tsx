@@ -124,7 +124,9 @@ const Save: VoidComponent<SaveProps> = (props) => {
         return previewDone();
       }
 
-      console.time('load images ' + KEY)
+      /**
+       * No reason to limit parallel execution. But it can be done.
+       */
       const promises = assets.map(async (asset) => {
         const type = await options.getResourseType(asset);
 
@@ -135,7 +137,6 @@ const Save: VoidComponent<SaveProps> = (props) => {
 
 
       await Promise.allSettled(promises);
-      console.timeEnd('load images ' + KEY)
 
       previewDone();
     } catch {
