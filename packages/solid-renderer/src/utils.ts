@@ -141,14 +141,22 @@ const canvasDrawImages = async (canvas = createCanvas(), ctx = getContext(canvas
 		const sizesSorted = images.slice().sort((a, b) => b.width - a.width);
 		const sizes = sizesSorted[0];
 
-		canvas.width = sizes.naturalWidth;
-		canvas.height = sizes.naturalHeight;
+		const scaleBy = canvas.dataset.scaleBy ? Number(canvas.dataset.scaleBy) : 1;
+
+		/**
+		 * Scale down, but not so much
+		 */
+		canvas.width = Math.min(sizes.naturalWidth * scaleBy * 2, sizes.naturalWidth);
+		canvas.height = Math.min(sizes.naturalHeight * scaleBy * 2, sizes.naturalHeight);
 
 		canvas.dataset.resized = 'true';
 	}
 
 	for (const image of images) {
-		ctx.drawImage(image, 0, 0);
+		/**
+		 * In case images has different size, images with smaller size will be stretched to the canvas size
+		 */
+		ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 	}
 
 	return [canvas, ctx] as const;

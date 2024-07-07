@@ -130,6 +130,20 @@ const createSolidRenderer = ({
 											canvas.dataset.resized = 'true';
 										}
 
+										if (root() !== context.root) {
+											const { clientWidth: mainClientWidth, clientHeight: mainClientHeight } = root();
+											const { clientWidth: contextClientWidth, clientHeight: contextClientHeight } = context.root;
+
+											const widthFactor = mainClientWidth / contextClientWidth;
+											const heightFactor = mainClientHeight / contextClientHeight;
+
+											const maxFactor = Math.ceil(Math.max(widthFactor, heightFactor));
+
+											canvas.dataset.scaleBy = (1 / maxFactor).toFixed(3);
+										} else {
+											canvas.dataset.scalyBy = '1';
+										}
+
 										canvasDrawImages(canvas, canvasContext, stored);
 									}
 								},
