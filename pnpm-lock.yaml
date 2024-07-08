@@ -26,9 +26,6 @@ importers:
       '@novely/deepmerge':
         specifier: workspace:*
         version: link:../deepmerge
-      '@ungap/with-resolvers':
-        specifier: ^0.1.0
-        version: 0.1.0
       dequal:
         specifier: ^2.0.3
         version: 2.0.3

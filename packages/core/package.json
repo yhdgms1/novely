@@ -30,7 +30,6 @@
 	},
 	"dependencies": {
 		"@novely/deepmerge": "workspace:*",
-		"@ungap/with-resolvers": "^0.1.0",
 		"dequal": "^2.0.3",
 		"esm-env": "^1.0.0",
 		"klona": "^2.0.6",
