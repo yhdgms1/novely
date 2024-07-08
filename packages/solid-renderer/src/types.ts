@@ -50,7 +50,12 @@ type CreateSolidRendererOptions = {
    * @default document.body
    */
   target?: MountableElement;
-  settingsIcons?: SettingsIcons
+  settingsIcons?: SettingsIcons;
+  /**
+   * Show audio settings in settings menu?
+   * @default true
+   */
+  showAudioSettings?: boolean
 }
 
 type EmitterEventsMap = {

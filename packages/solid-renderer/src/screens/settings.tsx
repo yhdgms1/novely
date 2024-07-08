@@ -7,6 +7,8 @@ import type { SettingsIcons } from '../types';
 
 interface SettingsProps {
 	icons: SettingsIcons
+
+	showAudioSettings: boolean
 }
 
 const Settings: VoidComponent<SettingsProps> = (props) => {
@@ -105,7 +107,11 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 					</div>
 				</div>
 
-				<div>
+				<div
+					classList={{
+						"settings-hidden": !props.showAudioSettings
+					}}
+				>
 					<div class="range">
 						<label class="range__label" for={musicVolumeSelectID}>
 							<span class="range__label__icon" aria-hidden={true} innerHTML={props.icons.music_volume} /> {t('MusicVolume')}
