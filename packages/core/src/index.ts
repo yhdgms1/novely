@@ -1,3 +1,5 @@
+import './polyfills';
+
 export type {
 	ValidAction,
 	Story,

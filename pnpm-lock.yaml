@@ -26,6 +26,9 @@ importers:
       '@novely/deepmerge':
         specifier: workspace:*
         version: link:../deepmerge
+      '@ungap/with-resolvers':
+        specifier: ^0.1.0
+        version: 0.1.0
       dequal:
         specifier: ^2.0.3
         version: 2.0.3
@@ -296,23 +299,23 @@ importers:
         version: link:../typewriter
       '@solid-primitives/destructure':
         specifier: ^0.1.17
-        version: 0.1.17(solid-js@1.8.17)
+        version: 0.1.17(solid-js@1.8.18)
       retrieved:
         specifier: ^0.1.0
         version: 0.1.0
       solid-js:
-        specifier: 1.8.17
-        version: 1.8.17
+        specifier: 1.8.18
+        version: 1.8.18
       solid-transition-group:
         specifier: ^0.2.3
-        version: 0.2.3(solid-js@1.8.17)
+        version: 0.2.3(solid-js@1.8.18)
     devDependencies:
       esbuild:
         specifier: ^0.20.2
         version: 0.20.2
       esbuild-plugin-solid:
         specifier: ^0.5.0
-        version: 0.5.0(esbuild@0.20.2)(solid-js@1.8.17)
+        version: 0.5.0(esbuild@0.20.2)(solid-js@1.8.18)
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -334,7 +337,7 @@ importers:
         version: 0.20.2
       esbuild-plugin-solid:
         specifier: ^0.5.0
-        version: 0.5.0(esbuild@0.20.2)(solid-js@1.8.17)
+        version: 0.5.0(esbuild@0.20.2)(solid-js@1.8.18)
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -1856,8 +1859,8 @@ packages:
   solid-js@1.8.12:
     resolution: {integrity: sha512-sLE/i6M9FSWlov3a2pTC5ISzanH2aKwqXTZj+bbFt4SUrVb4iGEa7fpILBMOxsQjkv3eXqEk6JVLlogOdTe0UQ==}
 
-  solid-js@1.8.17:
-    resolution: {integrity: sha512-E0FkUgv9sG/gEBWkHr/2XkBluHb1fkrHywUgA6o6XolPDCJ4g1HaLmQufcBBhiF36ee40q+HpG/vCZu7fLpI3Q==}
+  solid-js@1.8.18:
+    resolution: {integrity: sha512-cpkxDPvO/AuKBugVv6xKFd1C9VC0XZMu4VtF56IlHoux8HgyW44uqNSWbozMnVcpIzHIhS3vVXPAVZYM26jpWw==}
 
   solid-js@1.8.5:
     resolution: {integrity: sha512-xvtJvzJzWbsn35oKFhW9kNwaxG1Z/YLMsDp4tLVcYZTMPzvzQ8vEZuyDQ6nt7xDArVgZJ7TUFrJUwrui/oq53A==}
@@ -2736,23 +2739,23 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.5.0':
     optional: true
 
-  '@solid-primitives/destructure@0.1.17(solid-js@1.8.17)':
+  '@solid-primitives/destructure@0.1.17(solid-js@1.8.18)':
     dependencies:
-      '@solid-primitives/utils': 6.2.3(solid-js@1.8.17)
-      solid-js: 1.8.17
+      '@solid-primitives/utils': 6.2.3(solid-js@1.8.18)
+      solid-js: 1.8.18
 
-  '@solid-primitives/refs@1.0.8(solid-js@1.8.17)':
+  '@solid-primitives/refs@1.0.8(solid-js@1.8.18)':
     dependencies:
-      '@solid-primitives/utils': 6.2.3(solid-js@1.8.17)
-      solid-js: 1.8.17
+      '@solid-primitives/utils': 6.2.3(solid-js@1.8.18)
+      solid-js: 1.8.18
 
-  '@solid-primitives/transition-group@1.0.5(solid-js@1.8.17)':
+  '@solid-primitives/transition-group@1.0.5(solid-js@1.8.18)':
     dependencies:
-      solid-js: 1.8.17
+      solid-js: 1.8.18
 
-  '@solid-primitives/utils@6.2.3(solid-js@1.8.17)':
+  '@solid-primitives/utils@6.2.3(solid-js@1.8.18)':
     dependencies:
-      solid-js: 1.8.17
+      solid-js: 1.8.18
 
   '@tsparticles/basic@3.3.0':
     dependencies:
@@ -3090,13 +3093,13 @@ snapshots:
 
   electron-to-chromium@1.4.440: {}
 
-  esbuild-plugin-solid@0.5.0(esbuild@0.20.2)(solid-js@1.8.17):
+  esbuild-plugin-solid@0.5.0(esbuild@0.20.2)(solid-js@1.8.18):
     dependencies:
       '@babel/core': 7.22.5
       '@babel/preset-typescript': 7.22.5(@babel/core@7.22.5)
       babel-preset-solid: 1.7.4(@babel/core@7.22.5)
       esbuild: 0.20.2
-      solid-js: 1.8.17
+      solid-js: 1.8.18
     transitivePeerDependencies:
       - supports-color
 
@@ -3526,7 +3529,7 @@ snapshots:
       seroval: 1.0.4
       seroval-plugins: 1.0.4(seroval@1.0.4)
 
-  solid-js@1.8.17:
+  solid-js@1.8.18:
     dependencies:
       csstype: 3.1.2
       seroval: 1.0.4
@@ -3544,11 +3547,11 @@ snapshots:
       '@babel/types': 7.22.5
       solid-js: 1.8.5
 
-  solid-transition-group@0.2.3(solid-js@1.8.17):
+  solid-transition-group@0.2.3(solid-js@1.8.18):
     dependencies:
-      '@solid-primitives/refs': 1.0.8(solid-js@1.8.17)
-      '@solid-primitives/transition-group': 1.0.5(solid-js@1.8.17)
-      solid-js: 1.8.17
+      '@solid-primitives/refs': 1.0.8(solid-js@1.8.18)
+      '@solid-primitives/transition-group': 1.0.5(solid-js@1.8.18)
+      solid-js: 1.8.18
 
   source-map-js@1.0.2: {}
 
