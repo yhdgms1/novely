@@ -1,14 +1,17 @@
 const vibrationPossible = /* @__PURE__ */ (() => {
-	let can = false;
+	let possible = false;
 
 	const onPointerDown = () => {
-		can = true;
-		document.removeEventListener('pointerdown', onPointerDown);
+		possible = true;
 	};
 
-	document.addEventListener('pointerdown', onPointerDown);
+	const isPossible = () => {
+		return possible;
+	};
 
-	return () => can;
+	document.addEventListener('pointerdown', onPointerDown, { once: true });
+
+	return isPossible;
 })();
 
 /**
