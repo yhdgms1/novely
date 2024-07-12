@@ -24,8 +24,11 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
 
     const canvas = document.createElement('canvas');
     const staticCanvas = document.createElement('canvas');
+
     const ctx = canvas.getContext('2d');
     const staticCtx = staticCanvas.getContext('2d');
+
+    if (!ctx || !staticCtx) return;
 
     canvas.width = staticCanvas.width = element.getBoundingClientRect().width * devicePixelRatio;
     canvas.height = staticCanvas.height = canvas.width / 2;
@@ -34,8 +37,6 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
      * Позиционируем так, чтобы не перекрывался бегунок
      */
     staticCanvas.style.zIndex = '-1';
-
-    if (!ctx || !staticCtx) return;
 
     const button = createButton({
       label: options.translation ? options.translation[lang].stop : 'Stop',
@@ -54,10 +55,7 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
 
       preview,
 
-      canvas,
       ctx,
-
-      staticCanvas,
       staticCtx,
 
       set: (start) => {

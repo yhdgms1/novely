@@ -38,9 +38,9 @@ const getAngle = (at: number) => {
   return st + ((ed - st) * at);
 }
 
-const arc = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, radius: number, start: number, end: number, width: number, color: string) => {
-  const cx = canvas.width / 2;
-  const cy = canvas.height;
+const arc = (ctx: CanvasRenderingContext2D, radius: number, start: number, end: number, width: number, color: string) => {
+  const cx = ctx.canvas.width / 2;
+  const cy = ctx.canvas.height;
 
   ctx.beginPath();
   ctx.arc(cx, cy, radius, start, end);
@@ -53,30 +53,30 @@ type RenderStaticCicleObjects = {
   variables: Variables;
   fontSize: number;
 
-  canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
 
   get: () => number | undefined;
 }
 
-const renderStaticObjects = ({ canvas, ctx, fontSize, variables, get }: RenderStaticCicleObjects) => {
+const renderStaticObjects = ({ ctx, fontSize, variables, get }: RenderStaticCicleObjects) => {
+  const { width: canvasWidth, height: canvasHeight } = ctx.canvas;
   const { innerStart, innerEnd, outerStart, outerEnd } = createTarget(get());
   const rem = createRem(fontSize);
 
   const strokeWidth = rem(6.125);
 
-  const d = max(canvas.width, canvas.height)
+  const d = max(canvasWidth, canvasHeight)
   const r = d / 2 - strokeWidth;
 
-  const cx = canvas.width / 2;
-  const cy = canvas.height;
+  const cx = canvasWidth / 2;
+  const cy = canvasHeight;
 
   // Main Arc
-  arc(canvas, ctx, r, PI, TWO_PI, strokeWidth, variables.mainArcBackground)
+  arc(ctx, r, PI, TWO_PI, strokeWidth, variables.mainArcBackground)
   // Inner Arc
-  arc(canvas, ctx, r - strokeWidth / 2 - rem(0.313), PI, TWO_PI, rem(0.313), variables.innerArcBackground)
+  arc(ctx, r - strokeWidth / 2 - rem(0.313), PI, TWO_PI, rem(0.313), variables.innerArcBackground)
   // Outer Arc
-  arc(canvas, ctx, r + strokeWidth / 2 + rem(0.313), PI, TWO_PI, rem(0.313), variables.outerArcBackground)
+  arc(ctx, r + strokeWidth / 2 + rem(0.313), PI, TWO_PI, rem(0.313), variables.outerArcBackground)
 
   const pillarWidth = rem(0.25);
   const pillarHeight = strokeWidth - rem(0.625);
@@ -103,9 +103,9 @@ const renderStaticObjects = ({ canvas, ctx, fontSize, variables, get }: RenderSt
   }
 
   // Outer Golden
-  arc(canvas, ctx, r, outerStart, outerEnd, strokeWidth, variables.wideMatchZoneBackground)
+  arc(ctx, r, outerStart, outerEnd, strokeWidth, variables.wideMatchZoneBackground)
   // Inner Golden
-  arc(canvas, ctx, r, innerStart, innerEnd, strokeWidth, variables.narrowMatchZoneBackground)
+  arc(ctx, r, innerStart, innerEnd, strokeWidth, variables.narrowMatchZoneBackground)
 }
 
 type StartRenderOptions = {
@@ -114,17 +114,14 @@ type StartRenderOptions = {
 
   preview: boolean;
 
-  canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-
-  staticCanvas: HTMLCanvasElement;
   staticCtx: CanvasRenderingContext2D;
 
   set: (start: number) => void;
   get: () => number | undefined;
 }
 
-const startRender = ({ preview, canvas, ctx, staticCanvas, staticCtx, fontSize, variables, set, get }: StartRenderOptions) => {
+const startRender = ({ preview, ctx, staticCtx, fontSize, variables, set, get }: StartRenderOptions) => {
   let position = 0
   let direction: 'right' | 'left' = 'right'
 
@@ -138,7 +135,6 @@ const startRender = ({ preview, canvas, ctx, staticCanvas, staticCtx, fontSize, 
     variables,
     fontSize,
 
-    canvas: staticCanvas,
     ctx: staticCtx,
 
     get
@@ -160,13 +156,15 @@ const startRender = ({ preview, canvas, ctx, staticCanvas, staticCtx, fontSize, 
   const strokeWidth = rem(6.125);
 
   const stop = scheldue((_, dtm) => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const { width: canvasWidth, height: canvasHeight } = ctx.canvas;
 
-    const d = max(canvas.width, canvas.height)
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    const d = max(canvasWidth, canvasHeight)
     const r = d / 2 - strokeWidth;
 
-    const cx = canvas.width / 2;
-    const cy = canvas.height;
+    const cx = canvasWidth / 2;
+    const cy = canvasHeight;
 
     const pillarWidth = rem(0.25);
     const pillarHeight = strokeWidth - rem(0.625);
