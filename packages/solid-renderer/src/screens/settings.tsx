@@ -1,9 +1,10 @@
 import type { VoidComponent, JSX } from 'solid-js';
-
-import { For, createUniqueId } from 'solid-js';
-import { useData } from '$context';
 import type { TypewriterSpeed } from '@novely/core';
 import type { SettingsIcons } from '../types';
+
+import { For } from 'solid-js';
+import { useData } from '$context';
+import { Range, Select } from '$components';
 
 interface SettingsProps {
 	icons: SettingsIcons
@@ -47,12 +48,6 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 		return fn;
 	}
 
-	const languageSelectID = createUniqueId();
-	const speedSelectID = createUniqueId();
-	const musicVolumeSelectID = createUniqueId();
-	const soundVolumeSelectID = createUniqueId();
-	const voiceVolumeSelectID = createUniqueId();
-
 	return (
 		<div class="root settings">
 			<div class="settings__controls">
@@ -65,6 +60,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 				>
 					{t('HomeScreen')}
 				</button>
+
 				<button
 					type="button"
 					class="button settings__button"
@@ -75,88 +71,75 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 					{t('ToTheGame')}
 				</button>
 			</div>
+
 			<div class="settings__options">
 				<div>
-					<div class="select">
-						<label class="select__label" for={languageSelectID}>
-							<span class="select__label__icon" aria-hidden={true} innerHTML={props.icons.language} /> {t('Language')}
-						</label>
-						<select class="select__select" id={languageSelectID} onChange={onLanguageSelect}>
-							<For each={options.languages}>
-								{(lang) => (
-									<option value={lang} selected={lang === language()}>
-										{options.getLanguageDisplayName(lang)}
-									</option>
-								)}
-							</For>
-						</select>
-					</div>
-					<div class="select">
-						<label class="select__label" for={speedSelectID}>
-							<span class="select__label__icon" aria-hidden={true} innerHTML={props.icons.typewriter_speed} /> {t('TextSpeed')}
-						</label>
-						<select class="select__select" id={speedSelectID} onChange={onSpeedSelect}>
-							<For each={['Slow', 'Medium', 'Fast', 'Auto']}>
-								{(speed) => (
-									<option value={speed} selected={speed === textSpeed()}>
-										{t('TextSpeed' + speed)}
-									</option>
-								)}
-							</For>
-						</select>
-					</div>
+					<Select
+						icon={props.icons.language}
+						label={t('Language')}
+						onChange={onLanguageSelect}
+					>
+						<For each={options.languages}>
+							{(lang) => (
+								<option value={lang} selected={lang === language()}>
+									{options.getLanguageDisplayName(lang)}
+								</option>
+							)}
+						</For>
+					</Select>
+
+					<Select
+						icon={props.icons.typewriter_speed}
+						label={t('TextSpeed')}
+						onChange={onSpeedSelect}
+					>
+						<For each={['Slow', 'Medium', 'Fast', 'Auto']}>
+							{(speed) => (
+								<option value={speed} selected={speed === textSpeed()}>
+									{t('TextSpeed' + speed)}
+								</option>
+							)}
+						</For>
+					</Select>
 				</div>
 
 				<div
 					classList={{
-						"settings-hidden": !props.showAudioSettings
+						"settings--hidden": !props.showAudioSettings
 					}}
 				>
-					<div class="range">
-						<label class="range__label" for={musicVolumeSelectID}>
-							<span class="range__label__icon" aria-hidden={true} innerHTML={props.icons.music_volume} /> {t('MusicVolume')}
-						</label>
-						<input
-							class="range__range"
-							type="range"
-							id={musicVolumeSelectID}
-							min={0}
-							max={1}
-							step={0.01}
-							value={volume(2)}
-							onChange={volumeChange(2)}
-						/>
-					</div>
-					<div class="range">
-						<label class="range__label" for={soundVolumeSelectID}>
-							<span class="range__label__icon" aria-hidden={true} innerHTML={props.icons.sound_volume} /> {t('SoundVolume')}
-						</label>
-						<input
-							class="range__range"
-							type="range"
-							id={soundVolumeSelectID}
-							min={0}
-							max={1}
-							step={0.01}
-							value={volume(3)}
-							onChange={volumeChange(3)}
-						/>
-					</div>
-					<div class="range">
-						<label class="range__label" for={voiceVolumeSelectID}>
-							<span class="range__label__icon" aria-hidden={true} innerHTML={props.icons.voice_volume} /> {t('VoiceVolume')}
-						</label>
-						<input
-							class="range__range"
-							type="range"
-							id={voiceVolumeSelectID}
-							min={0}
-							max={1}
-							step={0.01}
-							value={volume(4)}
-							onChange={volumeChange(4)}
-						/>
-					</div>
+					<Range
+						icon={props.icons.music_volume}
+						label={t('MusicVolume')}
+
+						min={0}
+						max={1}
+						step={0.01}
+						value={volume(2)}
+						onChange={volumeChange(2)}
+					/>
+
+					<Range
+						icon={props.icons.sound_volume}
+						label={t('SoundVolume')}
+
+						min={0}
+						max={1}
+						step={0.01}
+						value={volume(3)}
+						onChange={volumeChange(3)}
+					/>
+
+					<Range
+						icon={props.icons.voice_volume}
+						label={t('VoiceVolume')}
+
+						min={0}
+						max={1}
+						step={0.01}
+						value={volume(4)}
+						onChange={volumeChange(4)}
+					/>
 				</div>
 			</div>
 		</div>

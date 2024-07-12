@@ -12,7 +12,15 @@ const Canvas: VoidComponent<CanvasProps> = (props) => {
   const [local, rest] = splitProps(props, ['resize', 'render']);
 
   const [canvas, setCanvas] = createSignal<HTMLCanvasElement>();
-  const ctx = createMemo(() => canvas()?.getContext('2d'));
+  const ctx = createMemo(() => {
+    const canvasElement = canvas();
+
+    if (!canvasElement) {
+      return null;
+    }
+
+    return canvasElement.getContext('2d');
+  });
 
   createEffect(() => {
     const canvasElement = canvas();

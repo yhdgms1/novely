@@ -7,3 +7,5 @@ export { Save } from './Save'
 export { createTypewriter } from './Typewriter';
 export { createRootComponent } from './Root'
 export { Canvas } from './Canvas';
+export { Select } from './Select';
+export { Range } from './Range';
