@@ -15,7 +15,7 @@
 	"devDependencies": {
 		"esbuild": "^0.20.2",
 		"esbuild-plugin-solid": "^0.5.0",
-		"typescript": "^5.4.5"
+		"typescript": "^5.5.4"
 	},
 	"dependencies": {
 		"@novely/core": "workspace:*",

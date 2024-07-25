@@ -15,8 +15,8 @@
 		"build": "tsup --dts"
 	},
 	"devDependencies": {
-		"tsup": "^8.0.2",
-		"typescript": "^5.4.5"
+		"tsup": "^8.2.3",
+		"typescript": "^5.5.4"
 	},
 	"license": "ISC",
 	"bugs": {

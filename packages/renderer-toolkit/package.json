@@ -26,8 +26,8 @@
 	},
 	"devDependencies": {
 		"@types/howler": "^2.2.11",
-		"tsup": "^8.0.2",
-		"typescript": "^5.4.5"
+		"tsup": "^8.2.3",
+		"typescript": "^5.5.4"
 	},
 	"dependencies": {
 		"@novely/core": "workspace:*",
