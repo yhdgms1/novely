@@ -1,6 +1,13 @@
-import type { SDK, Player } from '../../node_modules/svelte-yagames/dist/sdk'
 import type { StorageData } from '@novely/core'
 import { createDeferredPromise } from '.'
+
+declare global {
+	interface Window {
+		YaGames?: {
+			init: () => any;
+		}
+	}
+}
 
 type Games =
 	| {
@@ -8,15 +15,15 @@ type Games =
 	  }
 	| {
 			loaded: Promise<void>
-			sdk: SDK
+			sdk: any
 
-			player: Player | null
+			player: Record<string, unknown> | null
 
 			get: () => Promise<StorageData>
 			set: (data: StorageData) => Promise<void>
 	  }
 
-type LoadedSDK = Extract<Games, { sdk: SDK }>
+type LoadedSDK = Extract<Games, { sdk: any }>
 
 const initialized = createDeferredPromise()
 
@@ -52,18 +59,20 @@ const load = async () => {
 
 	const sdk = await window.YaGames.init()
 
+	let player;
+
 	try {
-		var player = await sdk.getPlayer({
+		player = await sdk.getPlayer({
 			scopes: false,
 		})
 	} catch (error) {
 		/**
 		 * В случае режима черепахи
 		 */
-		var player = {
+		player = {
 			getData: local.get,
 			setData: local.set,
-		} as unknown as Player
+		}
 	}
 
 	games.sdk = sdk
