@@ -4,7 +4,7 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
-		"lint": "biome lint --apply ./packages",
+		"lint": "biome lint --write ./packages",
 		"format": "biome format --write .",
 
 		"dev": "pnpm dev:preview",
@@ -40,6 +40,6 @@
 		"build:moment-presser": "pnpm --filter=@novely/moment-presser... --parallel build"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^1.7.1"
+		"@biomejs/biome": "^1.8.3"
 	}
 }
