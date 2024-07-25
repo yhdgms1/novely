@@ -35,7 +35,7 @@
 		"esm-env": "^1.0.0",
 		"howler": "^2.2.4",
 		"nanostores": "^0.10.3",
-		"p-limit": "3.1.0"
+		"p-limit": "^6.1.0"
 	},
 	"license": "ISC",
 	"bugs": {

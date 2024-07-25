@@ -48,6 +48,6 @@
 		"types/*"
 	],
 	"dependencies": {
-		"@novely/parser": "latest"
+		"@novely/parser": "workspace:*"
 	}
 }

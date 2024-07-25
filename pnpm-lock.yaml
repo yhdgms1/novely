@@ -36,8 +36,8 @@ importers:
         specifier: ^2.0.6
         version: 2.0.6
       p-limit:
-        specifier: 3.1.0
-        version: 3.1.0
+        specifier: ^6.1.0
+        version: 6.1.0
     devDependencies:
       tsup:
         specifier: ^8.2.3
@@ -68,11 +68,11 @@ importers:
   packages/create-novely/template-solid-js:
     dependencies:
       '@novely/core':
-        specifier: latest
-        version: 0.29.2(klona@2.0.6)
+        specifier: ~0.38.1
+        version: 0.38.1(klona@2.0.6)
       '@novely/solid-renderer':
-        specifier: latest
-        version: 0.25.0(@novely/core@0.29.2(klona@2.0.6))(klona@2.0.6)(solid-js@1.8.12)
+        specifier: ~0.35.4
+        version: 0.35.4(@novely/core@0.38.1(klona@2.0.6))(klona@2.0.6)(solid-js@1.8.12)
       modern-normalize:
         specifier: ~2.0.0
         version: 2.0.0
@@ -81,8 +81,8 @@ importers:
         version: 1.8.12
     devDependencies:
       '@novely/vite-plugin-nvl':
-        specifier: latest
-        version: 0.4.2(@novely/core@0.29.2(klona@2.0.6))(vite@5.0.12(@types/node@20.3.1)(lightningcss@1.24.1))
+        specifier: ~0.4.2
+        version: 0.4.2(@novely/core@0.38.1(klona@2.0.6))(vite@5.0.12(@types/node@20.3.1)(lightningcss@1.24.1))
       vite:
         specifier: ~5.0.12
         version: 5.0.12(@types/node@20.3.1)(lightningcss@1.24.1)
@@ -90,11 +90,11 @@ importers:
   packages/create-novely/template-solid-js-yagames:
     dependencies:
       '@novely/core':
-        specifier: latest
-        version: 0.29.2(klona@2.0.6)
+        specifier: ~0.38.1
+        version: 0.38.1(klona@2.0.6)
       '@novely/solid-renderer':
-        specifier: latest
-        version: 0.25.0(@novely/core@0.29.2(klona@2.0.6))(klona@2.0.6)(solid-js@1.8.12)
+        specifier: ~0.35.4
+        version: 0.35.4(@novely/core@0.38.1(klona@2.0.6))(klona@2.0.6)(solid-js@1.8.12)
       modern-normalize:
         specifier: ~2.0.0
         version: 2.0.0
@@ -103,8 +103,8 @@ importers:
         version: 1.8.12
     devDependencies:
       '@novely/vite-plugin-nvl':
-        specifier: latest
-        version: 0.4.2(@novely/core@0.29.2(klona@2.0.6))(vite@5.0.12(@types/node@20.3.1)(lightningcss@1.24.1))
+        specifier: ~0.4.2
+        version: 0.4.2(@novely/core@0.38.1(klona@2.0.6))(vite@5.0.12(@types/node@20.3.1)(lightningcss@1.24.1))
       '@vitejs/plugin-basic-ssl':
         specifier: ^1.1.0
         version: 1.1.0(vite@5.0.12(@types/node@20.3.1)(lightningcss@1.24.1))
@@ -254,8 +254,8 @@ importers:
         specifier: ^0.10.3
         version: 0.10.3
       p-limit:
-        specifier: 3.1.0
-        version: 3.1.0
+        specifier: ^6.1.0
+        version: 6.1.0
     devDependencies:
       '@types/howler':
         specifier: ^2.2.11
@@ -354,8 +354,8 @@ importers:
         specifier: '*'
         version: 0.29.2(klona@2.0.6)
       '@novely/parser':
-        specifier: latest
-        version: 0.7.0
+        specifier: workspace:*
+        version: link:../parser
     devDependencies:
       tsup:
         specifier: ^8.2.3
@@ -373,6 +373,10 @@ packages:
 
   '@ampproject/remapping@2.2.1':
     resolution: {integrity: sha512-lFMjJTrFL3j7L9yBxwYfCq2k6qqwHyzuUl/XBnif78PWTJYyL/dfowQHWE3sp6U6ZzqWiiIZnpTMO96zhkjwtg==}
+    engines: {node: '>=6.0.0'}
+
+  '@ampproject/remapping@2.3.0':
+    resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
   '@babel/code-frame@7.22.5':
@@ -1133,16 +1137,24 @@ packages:
     resolution: {integrity: sha512-HLhSWOLRi875zjjMG/r+Nv0oCW8umGb0BgEhyX3dDX3egwZtB8PqLnjz3yedt8R5StBrzcg4aBpnh8UA9D1BoQ==}
     engines: {node: '>=6.0.0'}
 
+  '@jridgewell/gen-mapping@0.3.5':
+    resolution: {integrity: sha512-IzL8ZoEDIBRWEzlCcRhOaCupYyN5gdIK+Q6fbFdPDg6HqX6jpkItn7DFIpW9LQzXG6Df9sA7+OKnq0qlz/GaQg==}
+    engines: {node: '>=6.0.0'}
+
   '@jridgewell/resolve-uri@3.1.0':
     resolution: {integrity: sha512-F2msla3tad+Mfht5cJq7LSXcdudKTWCVYUgw6pLFOOHSTtZlj6SWNYAp+AhuqLmWdBO2X5hPrLcu8cVP8fy28w==}
     engines: {node: '>=6.0.0'}
 
-  '@jridgewell/resolve-uri@3.1.1':
-    resolution: {integrity: sha512-dSYZh7HhCDtCKm4QakX0xFpsRDqjjtZf/kjI/v3T3Nwt5r8/qz/M19F9ySyOqU94SXBmeG9ttTul+YnR4LOxFA==}
+  '@jridgewell/resolve-uri@3.1.2':
+    resolution: {integrity: sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==}
     engines: {node: '>=6.0.0'}
 
   '@jridgewell/set-array@1.1.2':
     resolution: {integrity: sha512-xnkseuNADM0gt2bs+BvhO0p78Mk762YnZdsuzFV018NoG1Sj1SCQvpSqa7XUaTam5vAGasABV9qXASMKnFMwMw==}
+    engines: {node: '>=6.0.0'}
+
+  '@jridgewell/set-array@1.2.1':
+    resolution: {integrity: sha512-R8gLRTZeyp03ymzP/6Lil/28tGeGEzhx1q2k703KGWRAI1VdvPIXdG70VJc2pAMw3NA6JKL5hhFu1sJX0Mnn/A==}
     engines: {node: '>=6.0.0'}
 
   '@jridgewell/sourcemap-codec@1.4.14':
@@ -1151,11 +1163,14 @@ packages:
   '@jridgewell/sourcemap-codec@1.4.15':
     resolution: {integrity: sha512-eF2rxCRulEKXHTRiDrDy6erMYWqNw4LPdQ8UQA4huuxaQsVeRPFl2oM8oDGxMFhJUWZf9McpLtJasDDZb/Bpeg==}
 
+  '@jridgewell/sourcemap-codec@1.5.0':
+    resolution: {integrity: sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ==}
+
   '@jridgewell/trace-mapping@0.3.18':
     resolution: {integrity: sha512-w+niJYzMHdd7USdiH2U6869nqhD2nbfZXND5Yp93qIbEmnDNk7PD48o+YchRVpzMU7M6jVCbenTR7PA1FLQ9pA==}
 
-  '@jridgewell/trace-mapping@0.3.21':
-    resolution: {integrity: sha512-SRfKmRe1KvYnxjEMtxEr+J4HIeMX5YBg/qhRHpxEIGjhX1rshcHlnFUE9K0GazhVKWM7B+nARSkV8LuvJdJ5/g==}
+  '@jridgewell/trace-mapping@0.3.25':
+    resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1174,19 +1189,27 @@ packages:
     peerDependencies:
       klona: ^2.0.6
 
+  '@novely/core@0.37.0':
+    resolution: {integrity: sha512-bXqlYrkYCiziot6jq1LftktR2Rc7SG/4HuCDfsRv8tzGD4T1OEpA8G4mCgLTvllcOAaiCmD6sJ4TixADfPlvQg==}
+    peerDependencies:
+      klona: ^2.0.6
+
+  '@novely/core@0.38.1':
+    resolution: {integrity: sha512-02IAiOky5UDic98Io+ObElAoIdoenDaMl/ZOsgy3AP2rG1yL1aW6lIx9rJ9d9OhzHyl+4hof5N8jCU9vFeIOlg==}
+    peerDependencies:
+      klona: ^2.0.6
+
   '@novely/deepmerge@0.0.0':
     resolution: {integrity: sha512-qhc7ysrO4dDXqHAPxDHkUK0TWQb8wy3I4UexxTi4Og85jB+OVlMTI4MT7FN3UpQ0ubtG2zX3AqPhukHPtDq4Sg==}
 
   '@novely/parser@0.7.0':
     resolution: {integrity: sha512-pX4E1oNluqUn27sfkFi7k1Q0JRx9+PfmTlSiKTF6ix1sjeQv1aey5mIz9CV5xytRrz6QzO2SU8qNGFnyZwduWQ==}
 
-  '@novely/renderer-toolkit@0.0.4':
-    resolution: {integrity: sha512-y7AWTneThwOsQgn/Ho6wnprVFi2fZz3WsvkXj+gzeMKB1kitwvhruETtyxykp3cWlbI36FTgU+s+LyKnh0Vbtw==}
-    peerDependencies:
-      klona: ^2.0.6
+  '@novely/renderer-toolkit@0.7.1':
+    resolution: {integrity: sha512-EyGdHpKevqv0n97IzAjxk2oLMOvydRUG3RKg99C1n7l9SJ6Y8/dzbqL2TTZhA4bgE1OBqKXH39xPKP5ee15HZQ==}
 
-  '@novely/solid-renderer@0.25.0':
-    resolution: {integrity: sha512-8eCF9GbOsKCdWF0CMA+AawCyK5mGcKkF1VFG5d/v7LxmxurYFYOUigqm5IJyiaSoDMsDILLpIT9xMk5DaoFJrA==}
+  '@novely/solid-renderer@0.35.4':
+    resolution: {integrity: sha512-tPGb2NVnB6vvzG35MRC9y1ui+b+hWkzH9k2QAA2+UnhNVZLhDqzZCDB+NWJr1r7UMeynl+8qdW7VrsXVFuq/Bg==}
     peerDependencies:
       '@novely/core': '*'
       solid-js: '*'
@@ -1499,8 +1522,8 @@ packages:
     peerDependencies:
       vite: ^3.0.0 || ^4.0.0 || ^5.0.0
 
-  acorn@8.11.3:
-    resolution: {integrity: sha512-Y9rRfJG5jcKOE0CLisYbojUjIrIEE7AGMzA/Sm4BslANhbS+cDMpgBdcPT91oJ7OuJ9hYJBx59RjbhxVnrF8Xg==}
+  acorn@8.12.1:
+    resolution: {integrity: sha512-tcpGyI9zbizT9JbV6oYE477V6mTlXvvi0T0G3SNIYE2apm/G5huBa1+K89VGeovbg+jycCrfhl3ADxErOuO6Jg==}
     engines: {node: '>=0.4.0'}
     hasBin: true
 
@@ -1541,8 +1564,9 @@ packages:
     resolution: {integrity: sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==}
     engines: {node: '>=8'}
 
-  axobject-query@3.2.1:
-    resolution: {integrity: sha512-jsyHu61e6N4Vbz/v18DHwWYKK0bSWLqn47eeDSKPB7m8tqMHF9YJ+mhIk2lVteyZrY8tnSj/jHOv4YiTCuCJgg==}
+  axobject-query@3.2.4:
+    resolution: {integrity: sha512-aPTElBrbifBU1krmZxGZOlBkslORe7Ll7+BDnI50Wy4LgOt69luMgevkDfTq1O/ZgprooPCtWpjCwKSZw/iZ4A==}
+    engines: {node: '>= 0.4'}
 
   babel-plugin-jsx-dom-expressions@0.36.10:
     resolution: {integrity: sha512-QA2k/14WGw+RgcGGnEuLWwnu4em6CGhjeXtjvgOYyFHYS2a+CzPeaVQHDOlfuiBcjq/3hWMspHMIMnPEOIzdBg==}
@@ -1939,9 +1963,8 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
-  magic-string@0.30.5:
-    resolution: {integrity: sha512-7xlpfBaQaP/T6Vh8MO/EqXSW5En6INHEvEXQiuff7Gku0PWjU3uf6w/j9o7O+SpB5fOAkrI5HeoNgwjEO0pFsA==}
-    engines: {node: '>=12'}
+  magic-string@0.30.10:
+    resolution: {integrity: sha512-iIRwTIf0QKV3UAnYK4PU8uiEc4SRh5jX0mwpIwETPpHdhVM4f53RSwS/vXvN1JhGX+Cs7B8qIq3d6AH49O5fAQ==}
 
   mdn-data@2.0.30:
     resolution: {integrity: sha512-GaqWWShW4kv/G9IEucWScBx9G1/vsFZZJUO+tD26M8J8z3Kw5RDQjaoZe03YAClgeS/SWPOcb4nkFBTEi5DUEA==}
@@ -2018,6 +2041,10 @@ packages:
   p-limit@3.1.0:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
     engines: {node: '>=10'}
+
+  p-limit@6.1.0:
+    resolution: {integrity: sha512-H0jc0q1vOzlEk0TqAKXKZxdl7kX3OFUzCnNVUnq5Pc3DGo0kpeaMuPqxQn235HibwBEb0/pm9dgKTjXy66fBkg==}
+    engines: {node: '>=18'}
 
   package-json-from-dist@1.0.0:
     resolution: {integrity: sha512-dATvCeZN/8wQsGywez1mzHtTlP22H8OEfPrVMLNr4/eGa+ijtLn/6M5f0dY8UKNrC2O9UCU6SSoG3qRKnt7STw==}
@@ -2183,6 +2210,10 @@ packages:
 
   source-map-js@1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
+    engines: {node: '>=0.10.0'}
+
+  source-map-js@1.2.0:
+    resolution: {integrity: sha512-itJW8lvSA0TXEphiRoawsCksnlf8SyvmFzIhltqAHluXd88pkCd+cXJVHTDwdCr0IzwptSm035IHQktUu1QUMg==}
     engines: {node: '>=0.10.0'}
 
   source-map@0.8.0-beta.0:
@@ -2485,12 +2516,21 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
+  yocto-queue@1.1.1:
+    resolution: {integrity: sha512-b4JR1PFR10y1mKjhHY9LaGo6tmrgjit7hxVIeAmyMw3jegXR4dhYqLaQF5zMXZxY7tLpMyJeLjr1C4rLmkVe8g==}
+    engines: {node: '>=12.20'}
+
 snapshots:
 
   '@ampproject/remapping@2.2.1':
     dependencies:
       '@jridgewell/gen-mapping': 0.3.3
       '@jridgewell/trace-mapping': 0.3.18
+
+  '@ampproject/remapping@2.3.0':
+    dependencies:
+      '@jridgewell/gen-mapping': 0.3.5
+      '@jridgewell/trace-mapping': 0.3.25
 
   '@babel/code-frame@7.22.5':
     dependencies:
@@ -3032,25 +3072,35 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.4.15
       '@jridgewell/trace-mapping': 0.3.18
 
+  '@jridgewell/gen-mapping@0.3.5':
+    dependencies:
+      '@jridgewell/set-array': 1.2.1
+      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/trace-mapping': 0.3.25
+
   '@jridgewell/resolve-uri@3.1.0': {}
 
-  '@jridgewell/resolve-uri@3.1.1': {}
+  '@jridgewell/resolve-uri@3.1.2': {}
 
   '@jridgewell/set-array@1.1.2': {}
+
+  '@jridgewell/set-array@1.2.1': {}
 
   '@jridgewell/sourcemap-codec@1.4.14': {}
 
   '@jridgewell/sourcemap-codec@1.4.15': {}
+
+  '@jridgewell/sourcemap-codec@1.5.0': {}
 
   '@jridgewell/trace-mapping@0.3.18':
     dependencies:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
 
-  '@jridgewell/trace-mapping@0.3.21':
+  '@jridgewell/trace-mapping@0.3.25':
     dependencies:
-      '@jridgewell/resolve-uri': 3.1.1
-      '@jridgewell/sourcemap-codec': 1.4.15
+      '@jridgewell/resolve-uri': 3.1.2
+      '@jridgewell/sourcemap-codec': 1.5.0
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -3072,35 +3122,54 @@ snapshots:
       klona: 2.0.6
       p-limit: 3.1.0
 
+  '@novely/core@0.37.0(klona@2.0.6)':
+    dependencies:
+      '@novely/deepmerge': 0.0.0
+      dequal: 2.0.3
+      esm-env: 1.0.0
+      klona: 2.0.6
+      p-limit: 3.1.0
+
+  '@novely/core@0.38.1(klona@2.0.6)':
+    dependencies:
+      '@novely/deepmerge': 0.0.0
+      dequal: 2.0.3
+      esm-env: 1.0.0
+      klona: 2.0.6
+      p-limit: 3.1.0
+
   '@novely/deepmerge@0.0.0': {}
 
   '@novely/parser@0.7.0': {}
 
-  '@novely/renderer-toolkit@0.0.4(klona@2.0.6)':
+  '@novely/renderer-toolkit@0.7.1(klona@2.0.6)':
     dependencies:
-      '@novely/core': 0.29.2(klona@2.0.6)
-      '@novely/deepmerge': 0.0.0
+      '@novely/core': 0.37.0(klona@2.0.6)
+      dequal: 2.0.3
       esm-env: 1.0.0
       howler: 2.2.4
-      klona: 2.0.6
       nanostores: 0.10.3
       p-limit: 3.1.0
+    transitivePeerDependencies:
+      - klona
 
-  '@novely/solid-renderer@0.25.0(@novely/core@0.29.2(klona@2.0.6))(klona@2.0.6)(solid-js@1.8.12)':
+  '@novely/solid-renderer@0.35.4(@novely/core@0.38.1(klona@2.0.6))(klona@2.0.6)(solid-js@1.8.12)':
     dependencies:
-      '@novely/core': 0.29.2(klona@2.0.6)
-      '@novely/renderer-toolkit': 0.0.4(klona@2.0.6)
+      '@novely/core': 0.38.1(klona@2.0.6)
+      '@novely/renderer-toolkit': 0.7.1(klona@2.0.6)
       '@novely/typewriter': 0.5.1
+      '@solid-primitives/destructure': 0.1.17(solid-js@1.8.12)
       retrieved: 0.1.0
       solid-js: 1.8.12
+      solid-transition-group: 0.2.3(solid-js@1.8.12)
     transitivePeerDependencies:
       - klona
 
   '@novely/typewriter@0.5.1': {}
 
-  '@novely/vite-plugin-nvl@0.4.2(@novely/core@0.29.2(klona@2.0.6))(vite@5.0.12(@types/node@20.3.1)(lightningcss@1.24.1))':
+  '@novely/vite-plugin-nvl@0.4.2(@novely/core@0.38.1(klona@2.0.6))(vite@5.0.12(@types/node@20.3.1)(lightningcss@1.24.1))':
     dependencies:
-      '@novely/core': 0.29.2(klona@2.0.6)
+      '@novely/core': 0.38.1(klona@2.0.6)
       '@novely/parser': 0.7.0
       vite: 5.0.12(@types/node@20.3.1)(lightningcss@1.24.1)
 
@@ -3193,19 +3262,37 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.5.0':
     optional: true
 
+  '@solid-primitives/destructure@0.1.17(solid-js@1.8.12)':
+    dependencies:
+      '@solid-primitives/utils': 6.2.3(solid-js@1.8.12)
+      solid-js: 1.8.12
+
   '@solid-primitives/destructure@0.1.17(solid-js@1.8.18)':
     dependencies:
       '@solid-primitives/utils': 6.2.3(solid-js@1.8.18)
       solid-js: 1.8.18
+
+  '@solid-primitives/refs@1.0.8(solid-js@1.8.12)':
+    dependencies:
+      '@solid-primitives/utils': 6.2.3(solid-js@1.8.12)
+      solid-js: 1.8.12
 
   '@solid-primitives/refs@1.0.8(solid-js@1.8.18)':
     dependencies:
       '@solid-primitives/utils': 6.2.3(solid-js@1.8.18)
       solid-js: 1.8.18
 
+  '@solid-primitives/transition-group@1.0.5(solid-js@1.8.12)':
+    dependencies:
+      solid-js: 1.8.12
+
   '@solid-primitives/transition-group@1.0.5(solid-js@1.8.18)':
     dependencies:
       solid-js: 1.8.18
+
+  '@solid-primitives/utils@6.2.3(solid-js@1.8.12)':
+    dependencies:
+      solid-js: 1.8.12
 
   '@solid-primitives/utils@6.2.3(solid-js@1.8.18)':
     dependencies:
@@ -3410,7 +3497,7 @@ snapshots:
     dependencies:
       vite: 5.0.12(@types/node@20.3.1)(lightningcss@1.24.1)
 
-  acorn@8.11.3: {}
+  acorn@8.12.1: {}
 
   animate.css@4.1.1: {}
 
@@ -3441,9 +3528,7 @@ snapshots:
 
   array-union@2.1.0: {}
 
-  axobject-query@3.2.1:
-    dependencies:
-      dequal: 2.0.3
+  axobject-query@3.2.4: {}
 
   babel-plugin-jsx-dom-expressions@0.36.10(@babel/core@7.22.5):
     dependencies:
@@ -3507,9 +3592,9 @@ snapshots:
 
   code-red@1.0.4:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.4.15
+      '@jridgewell/sourcemap-codec': 1.5.0
       '@types/estree': 1.0.5
-      acorn: 8.11.3
+      acorn: 8.12.1
       estree-walker: 3.0.3
       periscopic: 3.1.0
 
@@ -3542,7 +3627,7 @@ snapshots:
   css-tree@2.3.1:
     dependencies:
       mdn-data: 2.0.30
-      source-map-js: 1.0.2
+      source-map-js: 1.2.0
 
   csstype@3.1.2: {}
 
@@ -3872,9 +3957,9 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
-  magic-string@0.30.5:
+  magic-string@0.30.10:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.4.15
+      '@jridgewell/sourcemap-codec': 1.5.0
 
   mdn-data@2.0.30: {}
 
@@ -3932,6 +4017,10 @@ snapshots:
   p-limit@3.1.0:
     dependencies:
       yocto-queue: 0.1.0
+
+  p-limit@6.1.0:
+    dependencies:
+      yocto-queue: 1.1.1
 
   package-json-from-dist@1.0.0: {}
 
@@ -4087,6 +4176,12 @@ snapshots:
       '@babel/types': 7.22.5
       solid-js: 1.8.5
 
+  solid-transition-group@0.2.3(solid-js@1.8.12):
+    dependencies:
+      '@solid-primitives/refs': 1.0.8(solid-js@1.8.12)
+      '@solid-primitives/transition-group': 1.0.5(solid-js@1.8.12)
+      solid-js: 1.8.12
+
   solid-transition-group@0.2.3(solid-js@1.8.18):
     dependencies:
       '@solid-primitives/refs': 1.0.8(solid-js@1.8.18)
@@ -4094,6 +4189,8 @@ snapshots:
       solid-js: 1.8.18
 
   source-map-js@1.0.2: {}
+
+  source-map-js@1.2.0: {}
 
   source-map@0.8.0-beta.0:
     dependencies:
@@ -4142,18 +4239,18 @@ snapshots:
 
   svelte@4.2.8:
     dependencies:
-      '@ampproject/remapping': 2.2.1
-      '@jridgewell/sourcemap-codec': 1.4.15
-      '@jridgewell/trace-mapping': 0.3.21
-      acorn: 8.11.3
+      '@ampproject/remapping': 2.3.0
+      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/trace-mapping': 0.3.25
+      acorn: 8.12.1
       aria-query: 5.3.0
-      axobject-query: 3.2.1
+      axobject-query: 3.2.4
       code-red: 1.0.4
       css-tree: 2.3.1
       estree-walker: 3.0.3
       is-reference: 3.0.2
       locate-character: 3.0.0
-      magic-string: 0.30.5
+      magic-string: 0.30.10
       periscopic: 3.1.0
 
   thenify-all@1.6.0:
@@ -4448,3 +4545,5 @@ snapshots:
   yallist@3.1.1: {}
 
   yocto-queue@0.1.0: {}
+
+  yocto-queue@1.1.1: {}

@@ -9,13 +9,13 @@
 		"format": "prettier --write ."
 	},
 	"dependencies": {
-		"@novely/core": "latest",
-		"@novely/solid-renderer": "latest",
+		"@novely/core": "~0.38.1",
+		"@novely/solid-renderer": "~0.35.4",
 		"modern-normalize": "~2.0.0",
 		"solid-js": "~1.8.12"
 	},
 	"devDependencies": {
-		"@novely/vite-plugin-nvl": "latest",
+		"@novely/vite-plugin-nvl": "~0.4.2",
 		"@vitejs/plugin-basic-ssl": "^1.1.0",
 		"svelte-yagames": "^0.3.7",
 		"vite": "~5.0.12"
