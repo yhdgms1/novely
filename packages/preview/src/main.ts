@@ -23,10 +23,6 @@ import lily_ok from './assets/lily.png';
  */
 import sakura_girl from './assets/sakura_girl.mp3';
 
-import voice1 from './assets/voice/1.mp3'
-import voice2 from './assets/voice/2.mp3'
-import voice3 from './assets/voice/3.mp3'
-
 const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidRenderer({
 	fullscreen: false,
 });

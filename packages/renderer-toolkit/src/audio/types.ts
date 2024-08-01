@@ -1,15 +1,13 @@
-import type { Howl } from 'howler';
+import type { createAudio } from 'simple-web-audio';
+
+type AudioInstance = ReturnType<typeof createAudio>;
 
 type AudioStore = {
-  music: Partial<Record<string, Howl>>
-  sound: Partial<Record<string, Howl>>
-  voices: Partial<Record<string, Howl>>
+  music: Partial<Record<string, AudioInstance>>
+  sound: Partial<Record<string, AudioInstance>>
+  voices: Partial<Record<string, AudioInstance>>
 
-  voice?: Howl;
-
-  resumeList: Howl[];
-
-  onDocumentVisibilityChangeListener?: () => void;
+  voice?: AudioInstance;
 }
 
 export type { AudioStore }

@@ -1,8 +1,7 @@
-// !todo: move into submodule '/audio'
-
 import type { AudioStore } from './types';
 import type { AudioHandle, Context, Stored, StorageData, Data, Renderer } from '@novely/core';
-import { Howl } from 'howler';
+import { createAudio as createWebAudio, prefetchAudio } from 'simple-web-audio';
+import { noop } from '../utils';
 
 type AudioContext = Context['audio'];
 type AudioMisc = Pick<Renderer['misc'], 'preloadAudioBlocking'>;
@@ -20,9 +19,7 @@ const TYPE_META_MAP = {
 } as const;
 
 /**
- * Audio easy!
- *
- * This implementation uses Howler under the hood.
+ * Audio easy! This implementation uses `simple-web-audio` package under the hood.
  *
  * @example
  * ```ts
@@ -34,55 +31,50 @@ const createAudio = (storageData: StorageDataStore) => {
     music: {},
     sound: {},
     voices: {},
-    resumeList: []
   }
 
   const getVolume = (type: 'music' | 'sound' | 'voice') => {
     return storageData.get().meta[TYPE_META_MAP[type]];
   }
 
-  const getHowl = (type: 'music' | 'sound' | 'voice', src: string) => {
+  const getAudio = (type: 'music' | 'sound' | 'voice', src: string) => {
     const kind = type === 'voice' ? 'voices' : type;
     const cached = store[kind][src];
 
     if (cached) return cached;
 
-    const howl = new Howl({
+    const audio = createWebAudio({
       src,
       volume: getVolume(type),
-      html5: type === 'music',
-    });
+      pauseOnBlur: true
+    })
 
-    store[kind][src] = howl;
+    store[kind][src] = audio;
 
-    return howl;
+    return audio;
   }
+
+  let unsubscribe = noop;
 
   const context: AudioContext = {
     music(src, method) {
-      const resource = getHowl(method, src);
+      const resource = getAudio(method, src);
 
       this.start();
 
       return {
         pause() {
-          resource.fade(getVolume(method), 0, 300);
-          resource.once('fade', resource.pause);
+          resource.pause();
         },
         play(loop) {
-          if (resource.playing()) return;
-
-          /**
-           * Update
-           */
-          resource.loop(loop);
+          try {
+            resource.loop = loop;
+          } catch {}
 
           resource.play();
-          resource.fade(0, getVolume(method), 300);
         },
         stop() {
-          resource.fade(getVolume(method), 0, 300);
-          resource.once('fade', resource.stop);
+          resource.stop();
         },
       } satisfies AudioHandle;
     },
@@ -90,68 +82,63 @@ const createAudio = (storageData: StorageDataStore) => {
       this.start();
       this.voiceStop();
 
-      const resource = store.voice = getHowl('voice', source);
-
-      resource.once('end', () => {
-        store.voice = undefined;
-      });
+      const resource = store.voice = getAudio('voice', source);
 
       resource.play();
     },
     voiceStop() {
-      store.voice?.stop();
+      if (!store.voice) return;
+
+      store.voice.stop();
+      store.voice = undefined;
     },
     start() {
-      if (!store.onDocumentVisibilityChangeListener) {
-        const onDocumentVisibilityChange = () => {
-          if (document.visibilityState === 'hidden') {
-            for (const howl of Object.values(store.music)) {
-              if (howl && howl.playing()) {
-                store.resumeList.push(howl);
-                howl.pause();
-              }
+      if (unsubscribe !== noop) return;
+
+      /**
+       * Subscribe for volume changes in settings
+       */
+      unsubscribe = storageData.subscribe(() => {
+        for (const type of ['music', 'sound', 'voice'] as const) {
+          const volume = getVolume(type);
+
+          if (type === 'music' || type === 'sound') {
+            for (const audio of Object.values(store[type])) {
+              if (!audio) continue;
+
+              try {
+                audio.volume = volume;
+              } catch {}
             }
+          }
 
-            const currentVoice = store.voice;
+          if (type === 'voice') {
+            const audio = store.voice;
 
-            if (currentVoice && currentVoice.playing()) {
-              store.resumeList.push(currentVoice)
-              currentVoice.pause();
+            if (audio) {
+              try {
+                audio.volume = volume;
+              } catch {}
             }
-
-          } else {
-            for (const howl of store.resumeList) {
-              howl.play();
-            }
-
-            store.resumeList = []
           }
         }
-
-        document.addEventListener(
-          'visibilitychange',
-          store.onDocumentVisibilityChangeListener = onDocumentVisibilityChange
-        );
-      }
+      });
     },
     clear() {
       const musics = Object.values(store.music);
       const sounds = Object.values(store.sound);
 
       for (const music of [...musics, ...sounds]) {
-        if (!music) continue;
-
-        music.stop();
+        music?.stop()
       }
 
       this.voiceStop();
     },
     destroy() {
+      unsubscribe();
       this.clear();
 
-      if (store.onDocumentVisibilityChangeListener) {
-        document.removeEventListener('visibilitychange', store.onDocumentVisibilityChangeListener);
-      }
+      unsubscribe = noop;
     }
   };
 
@@ -168,71 +155,28 @@ const createAudio = (storageData: StorageDataStore) => {
     for (const music of [...musics, ...sounds]) {
       if (!music) continue;
 
-      music.stop();
+      music.stop()
     }
   }
-
-  /**
-   * Subscribe for volume changes in settings
-   */
-  const unsubscribe = storageData.subscribe(() => {
-    for (const type of ['music', 'sound', 'voice'] as const) {
-      const volume = getVolume(type);
-
-      if (type === 'music' || type === 'sound') {
-        for (const howl of Object.values(store[type])) {
-          if (!howl) continue;
-
-          howl.fade(howl.volume(), volume, 150);
-        }
-      }
-
-      if (type === 'voice') {
-        const howl = store.voice;
-
-        if (howl) {
-          howl.fade(howl.volume(), volume, 150);
-        }
-      }
-    }
-  });
 
   return {
     context,
 
     clear,
 
-    // todo: pass this where it needed
-    unsubscribe,
-
     getVolume,
-    getHowl
+    getAudio
   }
 }
 
 const createAudioMisc = () => {
   const misc: AudioMisc = {
-    preloadAudioBlocking: (src) => {
-      return new Promise((resolve) => {
-        /**
-         * Howler automatically caches loaded sounds so this is enough
-         */
-        const howl = new Howl({
-          src,
-        });
-
-        if (howl.state() === 'loaded') {
-          resolve();
-          return;
-        }
-
-        howl.once('load', resolve);
-        howl.once('loaderror', () => resolve());
-      })
+    preloadAudioBlocking: async (src) => {
+      await prefetchAudio(src);
     }
   };
 
   return misc;
 }
 
-export { createAudioMisc, createAudio, Howl }
+export { createAudioMisc, createAudio }

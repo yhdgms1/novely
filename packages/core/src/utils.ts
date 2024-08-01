@@ -531,7 +531,7 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 			const closing = getOppositeAction(action);
 
 			const skip = next(i).some(([_action, target]) => {
-				if (target !== params[0]) {
+				if (target !== params[0] && action !== 'voice') {
 					return false;
 				}
 

@@ -1,1 +1,1 @@
-export { createSolidRenderer, Howl } from './renderer';
+export { createSolidRenderer } from './renderer';

@@ -24,7 +24,6 @@ import {
 	createAudio,
 	createAudioMisc,
 	createRootSetter,
-	Howl,
 
 	handleBackgroundAction,
 	handleDialogAction,
@@ -385,5 +384,5 @@ const createSolidRenderer = ({
 	};
 };
 
-export { createSolidRenderer, Howl };
+export { createSolidRenderer };
 export type { StateScreen, StateScreens, SolidRendererStore };
