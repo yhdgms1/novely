@@ -34,7 +34,7 @@
 		"esm-env": "^1.0.0",
 		"nanostores": "^0.10.3",
 		"p-limit": "^6.1.0",
-		"simple-web-audio": "^0.6.0"
+		"simple-web-audio": "^0.7.0"
 	},
 	"license": "ISC",
 	"bugs": {

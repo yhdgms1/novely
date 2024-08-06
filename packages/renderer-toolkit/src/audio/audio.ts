@@ -129,6 +129,7 @@ const createAudio = (storageData: StorageDataStore) => {
       const sounds = Object.values(store.sound);
 
       for (const music of [...musics, ...sounds]) {
+        // todo: при переходе в настройки для музыки не делать бы stop, а делать pause
         music?.stop()
       }
 

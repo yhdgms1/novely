@@ -251,8 +251,8 @@ importers:
         specifier: ^6.1.0
         version: 6.1.0
       simple-web-audio:
-        specifier: ^0.6.0
-        version: 0.6.0(postcss@8.4.32)
+        specifier: ^0.7.0
+        version: 0.7.0(postcss@8.4.32)
     devDependencies:
       tsup:
         specifier: ^8.2.3
@@ -2109,8 +2109,8 @@ packages:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
 
-  simple-web-audio@0.6.0:
-    resolution: {integrity: sha512-c7q7YpJ9tMvF19pxMgHBzdkTg7jibinmeZtQ9vMnThJXRof85MFW2jqxtiYV9H5bVaE2rhc/Mc7v6dgJkkKQkA==}
+  simple-web-audio@0.7.0:
+    resolution: {integrity: sha512-afAJYMEUO7tT7ifzwqT/ogFaLahoPsBEe39wj9os8nyxR9C3zbIBEww3cT3lWYoPLjWb0T825iDYGoH0j6tPwg==}
 
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
@@ -3997,7 +3997,7 @@ snapshots:
 
   signal-exit@4.1.0: {}
 
-  simple-web-audio@0.6.0(postcss@8.4.32):
+  simple-web-audio@0.7.0(postcss@8.4.32):
     dependencies:
       p-limit: 6.1.0
       tsup: 8.2.3(postcss@8.4.32)(typescript@5.5.4)
