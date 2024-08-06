@@ -1,18 +1,16 @@
-import type { Character } from '@novely/core';
 import type { VoidComponent } from 'solid-js';
+import { useData } from '$context';
 
 interface DialogNameProps {
 	character?: string;
-	characters: Record<string, Character>;
 	name: string;
 }
 
 const DialogName: VoidComponent<DialogNameProps> = (props) => {
-	const color = () => {
-		const c = props.character;
-		const cs = props.characters;
+	const data = useData();
 
-		return c ? (c in cs ? cs[c].color : '#000') : '#000';
+	const color = () => {
+		return props.character ? data.options.getCharacterColor(props.character) : '#000';
 	};
 
 	return (

@@ -54,3 +54,5 @@ export { localStorageStorage } from './storage';
 export { extendAction } from './extend-actions'
 
 export { RU, EN, JP, KK } from './translations';
+
+export { asset } from './asset';

@@ -228,6 +228,7 @@ type RendererInit<$Language extends Lang, $Characters extends Record<string, Cha
 	clearCustomAction: (ctx: Context, customAction: CustomHandler) => void;
 
 	getLanguageDisplayName: (lang: Lang) => string;
+	getCharacterColor: (character: string) => string;
 
 	getResourseType: (url: string) => Promise<"image" | "audio" | "other">;
 };

@@ -1,12 +1,10 @@
-import { novely, RU, EN, extendAction, TextContent, ValidAction } from '@novely/core';
+import { novely, asset, RU, EN, extendAction, TextContent, ValidAction } from '@novely/core';
 import { createSolidRenderer } from '@novely/solid-renderer';
 
 import { showParticles, hideParticles } from '@novely/particles';
 import { snow } from './particles';
 
 import { show, animate, hide as hideRive, remove } from '@novely/rive';
-
-import { selectFormat, setPriority } from '@novely/image-format-selector'
 
 import '@novely/moment-presser/style.css';
 import { createMomentPresser } from '@novely/moment-presser';
@@ -22,6 +20,8 @@ import lily_ok from './assets/lily.png';
  * https://creativecommons.org/licenses/by/3.0/
  */
 import sakura_girl from './assets/sakura_girl.mp3';
+
+const backgroundMusic = asset(sakura_girl);
 
 const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidRenderer({
 	fullscreen: false,
@@ -169,7 +169,7 @@ engine.script({
 			en: 'You wake up, but do not see your keyboard anymore, instead...',
 			ru: 'Вы просыпаетесь, но больше не видите своей клавиатуры, вместо неё...',
 		}),
-		action.playMusic(sakura_girl),
+		action.playMusic(backgroundMusic),
 		action.particles(snow),
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok'),

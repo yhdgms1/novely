@@ -329,8 +329,6 @@ const createSolidRenderer = ({
 
 							renderer,
 
-							characters,
-
 							fullscreen,
 							emitter,
 

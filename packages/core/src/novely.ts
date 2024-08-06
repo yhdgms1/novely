@@ -47,6 +47,7 @@ import {
 	isPromise,
 	isBlockingAction,
 	collectActionsBeforeBlockingAction,
+	handleAudioAsset,
 } from './utils';
 import { dequal } from 'dequal/lite';
 import { store } from './store';
@@ -61,6 +62,7 @@ import pLimit from 'p-limit';
 
 import { DEV } from 'esm-env';
 import { STACK_MAP, PRELOADED_ASSETS } from './shared';
+import { isAsset } from './asset';
 
 const novely = <
 	$Language extends string,
@@ -234,6 +236,8 @@ const novely = <
 	 * @todo Better naming
 	 */
 	const assetPreloadingCheck = <Action extends keyof Actions & string>(action: Action, props: Parameters<Actions[Action]>, doAction = assetsToPreloadAdd) => {
+		// todo: find `NovelyAssets` with promised assets and get it
+
 		if (action === 'showBackground') {
 			/**
 			 * There are two types of showBackground currently
@@ -878,6 +882,10 @@ const novely = <
 		return getResourseType(request, url);
 	}
 
+	const getCharacterColor = (c: keyof $Characters) => {
+		return c in characters ? characters[c].color : '#000000'
+	}
+
 	const renderer = createRenderer({
 		mainContextKey: MAIN_CONTEXT_KEY,
 
@@ -899,6 +907,7 @@ const novely = <
 		coreData,
 
 		getLanguageDisplayName,
+		getCharacterColor,
 
 		getResourseType: getResourseTypeForRenderer
 	});
@@ -960,6 +969,7 @@ const novely = <
 				})
 
 				for (const [action, ...props] of collection) {
+					// todo: wait for it
 					assetPreloadingCheck(action, props as any);
 				}
 
@@ -1005,33 +1015,33 @@ const novely = <
 			push();
 		},
 		playMusic({ ctx, push }, [source]) {
-			ctx.audio.music(source, 'music').play(true);
+			handleAudioAsset(source).then(source => ctx.audio.music(source, 'music').play(true));
 			push();
 		},
 		pauseMusic({ ctx, push }, [source]) {
-			ctx.audio.music(source, 'music').pause();
+			handleAudioAsset(source).then(source => ctx.audio.music(source, 'music').pause());
 			push();
 		},
 		stopMusic({ ctx, push }, [source]) {
-			ctx.audio.music(source, 'music').stop();
+			handleAudioAsset(source).then(source => ctx.audio.music(source, 'music').stop());
 			push();
 		},
 		playSound({ ctx, push }, [source, loop]) {
-			ctx.audio.music(source, 'sound').play(loop || false);
+			handleAudioAsset(source).then(source => ctx.audio.music(source, 'sound').play(loop || false));
 			push();
 		},
 		pauseSound({ ctx, push }, [source]) {
-			ctx.audio.music(source, 'sound').pause();
+			handleAudioAsset(source).then(source => ctx.audio.music(source, 'sound').pause());
 			push();
 		},
 		stopSound({ ctx, push }, [source]) {
-			ctx.audio.music(source, 'sound').stop();
+			handleAudioAsset(source).then(source => ctx.audio.music(source, 'sound').stop());
 			push();
 		},
 		voice({ ctx, push }, [source]) {
 			const [lang] = storageData.get().meta;
 
-			const audioSource = isString(source) ? source : source[lang]
+			const audioSource = isString(source) ? source : isAsset(source) ? source : source[lang];
 
 			/**
 			 * We allow ignoring voice because it is okay to not have voiceover for certain languages
@@ -1041,7 +1051,7 @@ const novely = <
 				return;
 			}
 
-			ctx.audio.voice(audioSource);
+			handleAudioAsset(audioSource).then(audio => ctx.audio.voice(audio));
 			push();
 		},
 		stopVoice({ ctx, push }) {

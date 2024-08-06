@@ -1,11 +1,13 @@
-import type { DefaultActionProxy, CustomHandler, Story, ValidAction, GetActionParameters, TextContent, ChoiceCheckFunction } from './action';
-import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, Lang, State } from './types';
+import type { DefaultActionProxy, CustomHandler, Story, ValidAction, GetActionParameters } from './action';
+import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, Lang, NovelyAsset } from './types';
 import type { Context, Renderer } from './renderer';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE, AUDIO_ACTIONS, HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from './constants';
 import { RESOURCE_TYPE_CACHE, STACK_MAP } from './shared';
 
 import { DEV } from 'esm-env';
 import { klona } from 'klona/json';
+import { default as memoize } from 'micro-memoize';
+import { isAsset } from './asset';
 
 type MatchActionParams = {
 	data: Record<string, unknown>
@@ -710,55 +712,60 @@ const fetchContentType = async (request: typeof fetch, url: string) => {
 	}
 }
 
-const getResourseType = async (request: typeof fetch, url: string) => {
-	/**
-	 * Simple caching. Will be useful in case of network requests.
-	 */
-	if (RESOURCE_TYPE_CACHE.has(url)) {
-		return RESOURCE_TYPE_CACHE.get(url)!;
-	}
+const getResourseType = memoize(
+	async (request: typeof fetch, url: string) => {
+		/**
+		 * Simple caching. Will be useful in case of network requests.
+		 */
+		if (RESOURCE_TYPE_CACHE.has(url)) {
+			return RESOURCE_TYPE_CACHE.get(url)!;
+		}
 
-	const encache = (value: "image" | "audio" | "other") => {
-		RESOURCE_TYPE_CACHE.set(url, value);
+		const encache = (value: "image" | "audio" | "other") => {
+			RESOURCE_TYPE_CACHE.set(url, value);
 
-		return value;
-	}
+			return value;
+		}
 
-	/**
-	 * If url is not http we should not check
-	 *
-	 * startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data')
-	 */
-	if (!isCSSImage(url)) {
+		/**
+		 * If url is not http we should not check
+		 *
+		 * startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data')
+		 */
+		if (!isCSSImage(url)) {
+			return encache('other')
+		}
+
+		const extension = getUrlFileExtension(url);
+
+		if (HOWLER_SUPPORTED_FILE_FORMATS.has(extension as any)) {
+			return encache('audio')
+		}
+
+		if (SUPPORTED_IMAGE_FILE_FORMATS.has(extension as any)) {
+			return encache('image')
+		}
+
+		/**
+		 * If checks above didn't worked we will fetch content type
+		 * This might not work because of CORS
+		 */
+		const contentType = await fetchContentType(request, url);
+
+		if (contentType.includes('audio')) {
+			return encache('audio')
+		}
+
+		if (contentType.includes('image')) {
+			return encache('image')
+		}
+
 		return encache('other')
+	},
+	{
+		isPromise: true
 	}
-
-	const extension = getUrlFileExtension(url);
-
-	if (HOWLER_SUPPORTED_FILE_FORMATS.has(extension as any)) {
-		return encache('audio')
-	}
-
-	if (SUPPORTED_IMAGE_FILE_FORMATS.has(extension as any)) {
-		return encache('image')
-	}
-
-	/**
-	 * If checks above didn't worked we will fetch content type
-	 * This might not work because of CORS
-	 */
-	const contentType = await fetchContentType(request, url);
-
-	if (contentType.includes('audio')) {
-		return encache('audio')
-	}
-
-	if (contentType.includes('image')) {
-		return encache('image')
-	}
-
-	return encache('other')
-}
+);
 
 /**
  * Capitalizes the string
@@ -768,7 +775,7 @@ const capitalize = (str: string) => {
 	return str[0].toUpperCase() + str.slice(1);
 };
 
-const getIntlLanguageDisplayName = (lang: Lang) => {
+const getIntlLanguageDisplayName = memoize((lang: Lang) => {
 	/**
 	 * When using Intl fails we just return language key.
 	 */
@@ -781,7 +788,7 @@ const getIntlLanguageDisplayName = (lang: Lang) => {
 	} catch {
 		return lang;
 	}
-}
+})
 
 const createReferFunction = (story: Story) => {
 	const refer = (path: Path) => {
@@ -1025,6 +1032,14 @@ const collectActionsBeforeBlockingAction = ({ path, refer }: CollectActionsBefor
 	return collection;
 }
 
+const handleAudioAsset = (asset: string | NovelyAsset) => {
+	if (DEV && isAsset(asset) && asset.type !== 'audio') {
+		throw new Error('Attempt to use non-audio asset in audio action', { cause: asset });
+	}
+
+	return isAsset(asset) ? asset.source : Promise.resolve(asset);
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -1066,7 +1081,8 @@ export {
 	exitPath,
 	collectActionsBeforeBlockingAction,
 	nextPath,
-	isBlockingAction
+	isBlockingAction,
+	handleAudioAsset
 };
 
 export type { MatchActionOptions, ControlledPromise, MatchActionMapComplete }

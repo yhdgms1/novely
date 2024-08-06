@@ -35,6 +35,9 @@ importers:
       klona:
         specifier: ^2.0.6
         version: 2.0.6
+      micro-memoize:
+        specifier: ^4.1.2
+        version: 4.1.2
       p-limit:
         specifier: ^6.1.0
         version: 6.1.0
@@ -189,9 +192,6 @@ importers:
       '@novely/core':
         specifier: workspace:*
         version: link:../core
-      '@novely/image-format-selector':
-        specifier: workspace:*
-        version: link:../image-format-selector
       '@novely/moment-presser':
         specifier: workspace:*
         version: link:../moment-presser
@@ -1767,6 +1767,9 @@ packages:
   merge2@1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
+
+  micro-memoize@4.1.2:
+    resolution: {integrity: sha512-+HzcV2H+rbSJzApgkj0NdTakkC+bnyeiUxgT6/m7mjcz1CmM22KYFKp+EVj1sWe4UYcnriJr5uqHQD/gMHLD+g==}
 
   micromatch@4.0.5:
     resolution: {integrity: sha512-DMy+ERcEW2q8Z2Po+WNXuw3c5YaUSFjAO5GsJqfEl7UjvtIuFKO6ZrKvcItdy98dwFI2N1tg3zNIdKaQT+aNdA==}
@@ -3602,6 +3605,8 @@ snapshots:
 
   merge2@1.4.1: {}
 
+  micro-memoize@4.1.2: {}
+
   micromatch@4.0.5:
     dependencies:
       braces: 3.0.2
@@ -3683,7 +3688,7 @@ snapshots:
   postcss@8.4.32:
     dependencies:
       nanoid: 3.3.7
-      picocolors: 1.0.0
+      picocolors: 1.0.1
       source-map-js: 1.0.2
 
   prompts@2.4.2:

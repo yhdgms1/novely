@@ -15,8 +15,6 @@ type CreateRootComponentOpts = {
 
   renderer: Renderer
 
-  characters: Record<string, Character>
-
   fullscreen: boolean
   emitter: Emitter<EmitterEventsMap>
 
@@ -34,7 +32,7 @@ type CreateRootComponentOpts = {
   $rendererState: DeepAtom<RendererStateStore<RendererStoreExtension>>
 }
 
-const createRootComponent = ({ $rendererState, $contextState, coreOptions, setRoot, characters, renderer, showAudioSettings, fullscreen, emitter, controls, skipTypewriterWhenGoingBack, settingsIcons, rendererContext }: CreateRootComponentOpts) => {
+const createRootComponent = ({ $rendererState, $contextState, coreOptions, setRoot, renderer, showAudioSettings, fullscreen, emitter, controls, skipTypewriterWhenGoingBack, settingsIcons, rendererContext }: CreateRootComponentOpts) => {
   const Root: Component = () => {
     const screen = from(memo($rendererState, (state) => state.screen));
     const loadingShown = from(memo($rendererState, (state) => state.loadingShown));
@@ -74,8 +72,6 @@ const createRootComponent = ({ $rendererState, $contextState, coreOptions, setRo
           options={coreOptions}
           renderer={renderer}
           emitter={emitter}
-
-          characters={characters}
 
           getContext={renderer.getContext}
           removeContext={renderer.removeContext}

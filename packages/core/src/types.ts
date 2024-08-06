@@ -6,6 +6,11 @@ import type { Character } from './character';
 import type { BaseTranslationStrings } from './translations';
 import type {	getLanguage as defaultGetLanguage } from './utils';
 
+type NovelyAsset = {
+	readonly source: Promise<string>;
+	readonly type: "audio" | "image";
+}
+
 type Thenable<T> = T | Promise<T>;
 
 type PathItem =
@@ -391,5 +396,6 @@ export type {
 	TypeEssentials,
 	DefaultEmotions,
 	Assign,
-	CharacterAssetSizes
+	CharacterAssetSizes,
+	NovelyAsset
 };

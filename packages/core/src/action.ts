@@ -1,6 +1,6 @@
 import type { Character } from './character';
 import type { Context } from './renderer';
-import type { Thenable, NonEmptyRecord, StateFunction, State, Lang } from './types';
+import type { Thenable, NonEmptyRecord, StateFunction, State, Lang, NovelyAsset } from './types';
 
 type ValidAction =
 	| ['choice', number]
@@ -10,13 +10,13 @@ type ValidAction =
 	| ['say', string, TextContent<string, State>]
 	| ['end']
 	| ['showBackground', string | NonEmptyRecord<BackgroundImage>]
-	| ['playMusic', string]
-	| ['stopMusic', string]
-	| ['pauseMusic', string]
-	| ['playSound', audio: string, loop?: boolean]
-	| ['pauseSound', string]
-	| ['stopSound', string]
-	| ['voice', string | Record<string, string>]
+	| ['playMusic', string | NovelyAsset]
+	| ['stopMusic', string | NovelyAsset]
+	| ['pauseMusic', string | NovelyAsset]
+	| ['playSound', audio: string | NovelyAsset, loop?: boolean]
+	| ['pauseSound', string | NovelyAsset]
+	| ['stopSound', string | NovelyAsset]
+	| ['voice', string | NovelyAsset | Record<string, string | NovelyAsset>]
 	| ['stopVoice']
 	| ['jump', string]
 	| ['showCharacter', string, keyof Character['emotions'], string?, string?]
@@ -222,7 +222,7 @@ type ActionInputSetup = (input: HTMLInputElement) => ActionInputSetupCleanup | v
 
 type BackgroundImage = Partial<Record<'portrait' | 'landscape' | 'all', string>> & Record<string, string>;
 
-type VoiceAction<L extends Lang> = (params: string | Partial<Record<L, string>>) => ValidAction;
+type VoiceAction<L extends Lang> = (params: string | NovelyAsset | Partial<Record<L, string | NovelyAsset>>) => ValidAction;
 
 type ActionProxy<Characters extends Record<string, Character>, Languages extends Lang, S extends State> = {
 	choice: {
@@ -267,13 +267,13 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 		background: T extends string ? T : T extends Record<PropertyKey, unknown> ? NonEmptyRecord<T> : never,
 	) => ValidAction;
 
-	playMusic: (audio: string) => ValidAction;
-	pauseMusic: (audio: string) => ValidAction;
-	stopMusic: (audio: string) => ValidAction;
+	playMusic: (audio: string | NovelyAsset) => ValidAction;
+	pauseMusic: (audio: string | NovelyAsset) => ValidAction;
+	stopMusic: (audio: string | NovelyAsset) => ValidAction;
 
-	playSound: (audio: string, loop?: boolean) => ValidAction;
-	pauseSound: (audio: string) => ValidAction;
-	stopSound: (audio: string) => ValidAction;
+	playSound: (audio: string | NovelyAsset, loop?: boolean) => ValidAction;
+	pauseSound: (audio: string | NovelyAsset) => ValidAction;
+	stopSound: (audio: string | NovelyAsset) => ValidAction;
 
 	/**
 	 * Plays voice
