@@ -1,7 +1,7 @@
 {
 	"name": "@novely/renderer-toolkit",
 	"description": "Toolkit for creating renderer for novely",
-	"version": "0.7.1",
+	"version": "0.8.0-experemental",
 	"type": "module",
 	"sideEffects": false,
 	"publishConfig": {
@@ -25,7 +25,6 @@
 		"build": "tsup --dts"
 	},
 	"devDependencies": {
-		"@types/howler": "^2.2.11",
 		"tsup": "^8.2.3",
 		"typescript": "^5.5.4"
 	},
@@ -33,9 +32,9 @@
 		"@novely/core": "workspace:*",
 		"dequal": "^2.0.3",
 		"esm-env": "^1.0.0",
-		"howler": "^2.2.4",
 		"nanostores": "^0.10.3",
-		"p-limit": "^6.1.0"
+		"p-limit": "^6.1.0",
+		"simple-web-audio": "^0.7.0"
 	},
 	"license": "ISC",
 	"bugs": {

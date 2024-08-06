@@ -244,19 +244,16 @@ importers:
       esm-env:
         specifier: ^1.0.0
         version: 1.0.0
-      howler:
-        specifier: ^2.2.4
-        version: 2.2.4
       nanostores:
         specifier: ^0.10.3
         version: 0.10.3
       p-limit:
         specifier: ^6.1.0
         version: 6.1.0
+      simple-web-audio:
+        specifier: ^0.7.0
+        version: 0.7.0(postcss@8.4.32)
     devDependencies:
-      '@types/howler':
-        specifier: ^2.2.11
-        version: 2.2.11
       tsup:
         specifier: ^8.2.3
         version: 8.2.3(postcss@8.4.32)(typescript@5.5.4)
@@ -1479,9 +1476,6 @@ packages:
   '@types/estree@1.0.5':
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
 
-  '@types/howler@2.2.11':
-    resolution: {integrity: sha512-7aBoUL6RbSIrqKnpEgfa1wSNUBK06mn08siP2QI0zYk7MXfEJAaORc4tohamQYqCqVESoDyRWSdQn2BOKWj2Qw==}
-
   '@types/node@20.3.1':
     resolution: {integrity: sha512-EhcH/wvidPy1WeML3TtYFGR83UzjxeWRen9V402T8aUGYsCHOmfoisV3ZSg03gAFIbLq8TnWOJ0f4cALtnSEUg==}
 
@@ -2114,6 +2108,9 @@ packages:
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
+
+  simple-web-audio@0.7.0:
+    resolution: {integrity: sha512-afAJYMEUO7tT7ifzwqT/ogFaLahoPsBEe39wj9os8nyxR9C3zbIBEww3cT3lWYoPLjWb0T825iDYGoH0j6tPwg==}
 
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
@@ -3381,8 +3378,6 @@ snapshots:
 
   '@types/estree@1.0.5': {}
 
-  '@types/howler@2.2.11': {}
-
   '@types/node@20.3.1': {}
 
   '@types/prompts@2.4.4':
@@ -4001,6 +3996,20 @@ snapshots:
   signal-exit@3.0.7: {}
 
   signal-exit@4.1.0: {}
+
+  simple-web-audio@0.7.0(postcss@8.4.32):
+    dependencies:
+      p-limit: 6.1.0
+      tsup: 8.2.3(postcss@8.4.32)(typescript@5.5.4)
+      typescript: 5.5.4
+    transitivePeerDependencies:
+      - '@microsoft/api-extractor'
+      - '@swc/core'
+      - jiti
+      - postcss
+      - supports-color
+      - tsx
+      - yaml
 
   sisteransi@1.0.5: {}
 
