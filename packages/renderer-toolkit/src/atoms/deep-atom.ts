@@ -1,5 +1,5 @@
 import type { BaseDeepMap, DeepMapStore } from 'nanostores'
-import { deepMap, setPath } from 'nanostores'
+import { deepMap, setByKey } from 'nanostores'
 
 type AnyFunction = (...args: any[]) => any;
 
@@ -86,22 +86,8 @@ const deepAtom = <$AtomValue extends BaseDeepMap>(init: $AtomValue): DeepAtom<$A
 
     const oldValue = $atom.value;
 
-    /**
-     * They split string and then call flatMap, but we are going to pass an array directly
-     * @link https://github.com/nanostores/nanostores/blob/56b0fbc7f51d94073191309376b9cf63948b2c91/deep-map/path.js#L41
-     */
-    const fakedPath = {
-      split: () => {
-        return {
-          flatMap: () => {
-            return path;
-          }
-        }
-      }
-    }
-
     // @ts-expect-error Value is actually is not read-only
-    $atom.value = setPath($atom.value, fakedPath, newValue)
+    $atom.value = setByKey($atom.value, path, newValue)
     // @ts-expect-error There is a hidden notify method
     $atom.notify(oldValue, path.join('.'))
 

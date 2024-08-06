@@ -245,8 +245,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       nanostores:
-        specifier: ^0.10.3
-        version: 0.10.3
+        specifier: ^0.11.2
+        version: 0.11.2
       p-limit:
         specifier: ^6.1.0
         version: 6.1.0
@@ -1948,6 +1948,10 @@ packages:
 
   nanostores@0.10.3:
     resolution: {integrity: sha512-Nii8O1XqmawqSCf9o2aWqVxhKRN01+iue9/VEd1TiJCr9VT5XxgPFbF1Edl1XN6pwJcZRsl8Ki+z01yb/T/C2g==}
+    engines: {node: ^18.0.0 || >=20.0.0}
+
+  nanostores@0.11.2:
+    resolution: {integrity: sha512-6bucNxMJA5rNV554WQl+MWGng0QVMzlRgpKTHHfIbVLrhQ+yRXBychV9ECGVuuUfCMQPjfIG9bj8oJFZ9hYP/Q==}
     engines: {node: ^18.0.0 || >=20.0.0}
 
   node-releases@2.0.12:
@@ -3864,6 +3868,8 @@ snapshots:
   nanoid@3.3.7: {}
 
   nanostores@0.10.3: {}
+
+  nanostores@0.11.2: {}
 
   node-releases@2.0.12: {}
 
