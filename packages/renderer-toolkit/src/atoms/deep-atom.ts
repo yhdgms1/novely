@@ -88,7 +88,7 @@ const deepAtom = <$AtomValue extends BaseDeepMap>(init: $AtomValue): DeepAtom<$A
 
     // @ts-expect-error Value is actually is not read-only
     $atom.value = setByKey($atom.value, path, newValue)
-    // @ts-expect-error There is a hidden notify method
+    // @ts-expect-error Type for path is dynamic
     $atom.notify(oldValue, path.join('.'))
 
     return newValue;
