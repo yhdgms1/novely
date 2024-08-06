@@ -12,7 +12,7 @@
 		}
 	},
 	"devDependencies": {
-		"esbuild": "^0.20.2",
-		"lightningcss": "^1.24.1s"
+		"esbuild": "^0.23.0",
+		"lightningcss": "^1.25.1"
 	}
 }

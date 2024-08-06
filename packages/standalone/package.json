@@ -13,8 +13,8 @@
 		"build": "node ./build.js && tsc"
 	},
 	"devDependencies": {
-		"esbuild": "^0.20.2",
-		"esbuild-plugin-solid": "^0.5.0",
+		"esbuild": "^0.23.0",
+		"esbuild-plugin-solid": "^0.6.0",
 		"typescript": "^5.5.4"
 	},
 	"dependencies": {
