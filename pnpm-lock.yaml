@@ -290,23 +290,23 @@ importers:
         version: link:../typewriter
       '@solid-primitives/destructure':
         specifier: ^0.1.17
-        version: 0.1.17(solid-js@1.8.18)
+        version: 0.1.17(solid-js@1.8.19)
       retrieved:
         specifier: ^0.1.0
         version: 0.1.0
       solid-js:
-        specifier: 1.8.18
-        version: 1.8.18
+        specifier: 1.8.19
+        version: 1.8.19
       solid-transition-group:
         specifier: ^0.2.3
-        version: 0.2.3(solid-js@1.8.18)
+        version: 0.2.3(solid-js@1.8.19)
     devDependencies:
       esbuild:
         specifier: ^0.20.2
         version: 0.20.2
       esbuild-plugin-solid:
         specifier: ^0.5.0
-        version: 0.5.0(esbuild@0.20.2)(solid-js@1.8.18)
+        version: 0.5.0(esbuild@0.20.2)(solid-js@1.8.19)
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
@@ -328,7 +328,7 @@ importers:
         version: 0.20.2
       esbuild-plugin-solid:
         specifier: ^0.5.0
-        version: 0.5.0(esbuild@0.20.2)(solid-js@1.8.18)
+        version: 0.5.0(esbuild@0.20.2)(solid-js@1.8.19)
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
@@ -2086,12 +2086,22 @@ packages:
     peerDependencies:
       seroval: ^1.0
 
+  seroval-plugins@1.1.1:
+    resolution: {integrity: sha512-qNSy1+nUj7hsCOon7AO4wdAIo9P0jrzAMp18XhiOzA6/uO5TKtP7ScozVJ8T293oRIvi5wyCHSM4TrJo/c/GJA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      seroval: ^1.0
+
   seroval@0.12.4:
     resolution: {integrity: sha512-JIsZHp98o+okpYN8HEPyI9Blr0gxAUPIGvg3waXrEMFjPz9obiLYMz0uFiUGezKiCK8loosYbn8WsqO8WtAJUA==}
     engines: {node: '>=10'}
 
   seroval@1.0.4:
     resolution: {integrity: sha512-qQs/N+KfJu83rmszFQaTxcoJoPn6KNUruX4KmnmyD0oZkUoiNvJ1rpdYKDf4YHM05k+HOgCxa3yvf15QbVijGg==}
+    engines: {node: '>=10'}
+
+  seroval@1.1.1:
+    resolution: {integrity: sha512-rqEO6FZk8mv7Hyv4UCj3FD3b6Waqft605TLfsCe/BiaylRpyyMC0b+uA5TJKawX3KzMrdi3wsLbCaLplrQmBvQ==}
     engines: {node: '>=10'}
 
   shebang-command@2.0.0:
@@ -2122,8 +2132,8 @@ packages:
   solid-js@1.8.12:
     resolution: {integrity: sha512-sLE/i6M9FSWlov3a2pTC5ISzanH2aKwqXTZj+bbFt4SUrVb4iGEa7fpILBMOxsQjkv3eXqEk6JVLlogOdTe0UQ==}
 
-  solid-js@1.8.18:
-    resolution: {integrity: sha512-cpkxDPvO/AuKBugVv6xKFd1C9VC0XZMu4VtF56IlHoux8HgyW44uqNSWbozMnVcpIzHIhS3vVXPAVZYM26jpWw==}
+  solid-js@1.8.19:
+    resolution: {integrity: sha512-h8z/TvTQYsf894LM9Iau/ZW2iAKrCzAWDwjPhMcXnonmW1OIIihc28wp82b1wwei1p81fH5+gnfNOe8RzLbDRQ==}
 
   solid-js@1.8.5:
     resolution: {integrity: sha512-xvtJvzJzWbsn35oKFhW9kNwaxG1Z/YLMsDp4tLVcYZTMPzvzQ8vEZuyDQ6nt7xDArVgZJ7TUFrJUwrui/oq53A==}
@@ -3163,36 +3173,36 @@ snapshots:
       '@solid-primitives/utils': 6.2.3(solid-js@1.8.12)
       solid-js: 1.8.12
 
-  '@solid-primitives/destructure@0.1.17(solid-js@1.8.18)':
+  '@solid-primitives/destructure@0.1.17(solid-js@1.8.19)':
     dependencies:
-      '@solid-primitives/utils': 6.2.3(solid-js@1.8.18)
-      solid-js: 1.8.18
+      '@solid-primitives/utils': 6.2.3(solid-js@1.8.19)
+      solid-js: 1.8.19
 
   '@solid-primitives/refs@1.0.8(solid-js@1.8.12)':
     dependencies:
       '@solid-primitives/utils': 6.2.3(solid-js@1.8.12)
       solid-js: 1.8.12
 
-  '@solid-primitives/refs@1.0.8(solid-js@1.8.18)':
+  '@solid-primitives/refs@1.0.8(solid-js@1.8.19)':
     dependencies:
-      '@solid-primitives/utils': 6.2.3(solid-js@1.8.18)
-      solid-js: 1.8.18
+      '@solid-primitives/utils': 6.2.3(solid-js@1.8.19)
+      solid-js: 1.8.19
 
   '@solid-primitives/transition-group@1.0.5(solid-js@1.8.12)':
     dependencies:
       solid-js: 1.8.12
 
-  '@solid-primitives/transition-group@1.0.5(solid-js@1.8.18)':
+  '@solid-primitives/transition-group@1.0.5(solid-js@1.8.19)':
     dependencies:
-      solid-js: 1.8.18
+      solid-js: 1.8.19
 
   '@solid-primitives/utils@6.2.3(solid-js@1.8.12)':
     dependencies:
       solid-js: 1.8.12
 
-  '@solid-primitives/utils@6.2.3(solid-js@1.8.18)':
+  '@solid-primitives/utils@6.2.3(solid-js@1.8.19)':
     dependencies:
-      solid-js: 1.8.18
+      solid-js: 1.8.19
 
   '@tsparticles/basic@3.3.0':
     dependencies:
@@ -3528,13 +3538,13 @@ snapshots:
 
   emoji-regex@9.2.2: {}
 
-  esbuild-plugin-solid@0.5.0(esbuild@0.20.2)(solid-js@1.8.18):
+  esbuild-plugin-solid@0.5.0(esbuild@0.20.2)(solid-js@1.8.19):
     dependencies:
       '@babel/core': 7.22.5
       '@babel/preset-typescript': 7.22.5(@babel/core@7.22.5)
       babel-preset-solid: 1.7.4(@babel/core@7.22.5)
       esbuild: 0.20.2
-      solid-js: 1.8.18
+      solid-js: 1.8.19
     transitivePeerDependencies:
       - supports-color
 
@@ -3983,9 +3993,15 @@ snapshots:
     dependencies:
       seroval: 1.0.4
 
+  seroval-plugins@1.1.1(seroval@1.1.1):
+    dependencies:
+      seroval: 1.1.1
+
   seroval@0.12.4: {}
 
   seroval@1.0.4: {}
+
+  seroval@1.1.1: {}
 
   shebang-command@2.0.0:
     dependencies:
@@ -4021,11 +4037,11 @@ snapshots:
       seroval: 1.0.4
       seroval-plugins: 1.0.4(seroval@1.0.4)
 
-  solid-js@1.8.18:
+  solid-js@1.8.19:
     dependencies:
       csstype: 3.1.2
-      seroval: 1.0.4
-      seroval-plugins: 1.0.4(seroval@1.0.4)
+      seroval: 1.1.1
+      seroval-plugins: 1.1.1(seroval@1.1.1)
 
   solid-js@1.8.5:
     dependencies:
@@ -4045,11 +4061,11 @@ snapshots:
       '@solid-primitives/transition-group': 1.0.5(solid-js@1.8.12)
       solid-js: 1.8.12
 
-  solid-transition-group@0.2.3(solid-js@1.8.18):
+  solid-transition-group@0.2.3(solid-js@1.8.19):
     dependencies:
-      '@solid-primitives/refs': 1.0.8(solid-js@1.8.18)
-      '@solid-primitives/transition-group': 1.0.5(solid-js@1.8.18)
-      solid-js: 1.8.18
+      '@solid-primitives/refs': 1.0.8(solid-js@1.8.19)
+      '@solid-primitives/transition-group': 1.0.5(solid-js@1.8.19)
+      solid-js: 1.8.19
 
   source-map-js@1.0.2: {}
 
