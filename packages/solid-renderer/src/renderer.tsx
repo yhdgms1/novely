@@ -40,7 +40,7 @@ import { useContextState, removeContextState } from './context-state'
 import { canvasDrawImages, imagePreloadWithCaching, imagePreloadWithCachingNotComplete, isCSSImage } from '$utils';
 import { useShared } from './shared';
 import { createRootComponent } from './components/Root';
-import { createShowArbitraryCharacterAction, hideImage, showImage } from './custom-actions';
+import { hideImage, showImage } from './custom-actions';
 import { settingsIcons as settingsIconsDefault } from './constants'
 
 const { preloadAudioBlocking } = createAudioMisc();
@@ -100,14 +100,11 @@ const createSolidRenderer = ({
 								canvas,
 								ctx: canvasContext,
 								emotions: {},
-								emotion(emotion, shouldRender) {
+								async emotion(emotion, shouldRender) {
 									let stored = this.emotions[emotion];
 
 									if (!stored) {
-										const characterEmotion = characters[character].emotions[emotion];
-										const emotionData = (unknown => Array.isArray(unknown) ? unknown : [unknown])(characterEmotion);
-
-										stored = this.emotions[emotion] = emotionData.map(src => imagePreloadWithCachingNotComplete(src));
+										stored = this.emotions[emotion] = options.getCharacterAssets(character, emotion).map(src => imagePreloadWithCachingNotComplete(src));
 									}
 
 									if (shouldRender && stored) {
@@ -365,7 +362,6 @@ const createSolidRenderer = ({
 					preloadAudioBlocking
 				},
 				actions: {
-					showArbitraryCharacter: createShowArbitraryCharacterAction(options.characters),
 					showImage: showImage,
 					hideImage: hideImage
 				}

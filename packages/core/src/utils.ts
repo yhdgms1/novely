@@ -1,5 +1,6 @@
 import type { DefaultActionProxy, CustomHandler, Story, ValidAction, GetActionParameters } from './action';
-import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, Lang, NovelyAsset } from './types';
+import type { Character } from './character';
+import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, Lang, NovelyAsset, CharactersData } from './types';
 import type { Context, Renderer } from './renderer';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE, AUDIO_ACTIONS, HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from './constants';
 import { RESOURCE_TYPE_CACHE, STACK_MAP } from './shared';
@@ -1032,12 +1033,31 @@ const collectActionsBeforeBlockingAction = ({ path, refer }: CollectActionsBefor
 	return collection;
 }
 
+const unwrapAsset = (asset: string | NovelyAsset) => {
+	return isAsset(asset) ? asset.source : asset;
+}
+
 const handleAudioAsset = (asset: string | NovelyAsset) => {
 	if (DEV && isAsset(asset) && asset.type !== 'audio') {
 		throw new Error('Attempt to use non-audio asset in audio action', { cause: asset });
 	}
 
-	return isAsset(asset) ? asset.source : Promise.resolve(asset);
+	return unwrapAsset(asset);
+}
+
+const handleImageAsset = (asset: string | NovelyAsset) => {
+	if (DEV && isAsset(asset) && asset.type !== 'image') {
+		throw new Error('Attempt to use non-image asset in action that requires image assets', { cause: asset });
+	}
+
+	return unwrapAsset(asset);
+}
+
+const getCharactersData = <Characters extends Record<string, Character<Lang>>>(characters: Characters) => {
+	const entries = Object.entries(characters);
+	const mapped = entries.map(([key, value]) => [key, { name: value.name, emotions: Object.keys(value.emotions) }]);
+
+	return Object.fromEntries(mapped) as CharactersData<Characters>;
 }
 
 export {
@@ -1082,7 +1102,9 @@ export {
 	collectActionsBeforeBlockingAction,
 	nextPath,
 	isBlockingAction,
-	handleAudioAsset
+	handleAudioAsset,
+	handleImageAsset,
+	getCharactersData
 };
 
 export type { MatchActionOptions, ControlledPromise, MatchActionMapComplete }

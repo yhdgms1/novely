@@ -7,7 +7,7 @@ import type { BaseTranslationStrings } from './translations';
 import type {	getLanguage as defaultGetLanguage } from './utils';
 
 type NovelyAsset = {
-	readonly source: Promise<string>;
+	readonly source: string;
 	readonly type: "audio" | "image";
 }
 
@@ -138,6 +138,13 @@ type CharacterAssetSizes<$Characters extends Record<string, Character<Lang>>> = 
 	[Character in keyof $Characters]?: {
 		width: number;
 		height: number;
+	}
+}
+
+type CharactersData<$Characters extends Record<string, Character<Lang>>> = {
+	[Character in keyof $Characters]: {
+		name: $Characters[Character]['name']
+		emotions: Array<keyof $Characters[Character]['emotions']>
 	}
 }
 
@@ -397,5 +404,6 @@ export type {
 	DefaultEmotions,
 	Assign,
 	CharacterAssetSizes,
-	NovelyAsset
+	NovelyAsset,
+	CharactersData
 };

@@ -38,7 +38,9 @@ const engine = novely({
 			},
 			color: '#ed5c87',
 			emotions: {
-				ok: lily_ok,
+				ok: [
+					asset(lily_ok)
+				],
 			},
 		},
 		You: {

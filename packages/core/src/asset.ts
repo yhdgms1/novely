@@ -1,9 +1,9 @@
 import type { NovelyAsset } from './types';
 import { DEV } from 'esm-env';
 import { getUrlFileExtension } from './utils';
-import { getAudioCodecsSupport } from './audio-codecs';
+import { supportsMap as audioSupport } from './audio-codecs';
+import { supportsMap as imageSupport } from './image-formats';
 import { HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from './constants';
-import { getImageFormatsSupport } from './image-formats';
 import { default as memoize } from 'micro-memoize';
 
 /**
@@ -40,7 +40,9 @@ const getType = memoize((extensions: string[]) => {
  *   'classroom.jpeg'
  * );
  *
- * console.log(await classroom.source);
+ * setTimeout(() => {
+ *   console.log(classroom.source);
+ * }, 100);
  * ```
  */
 const asset = memoize((...variants: string[]): NovelyAsset => {
@@ -60,10 +62,8 @@ const asset = memoize((...variants: string[]): NovelyAsset => {
 
   const type = getType(extensions);
 
-  const getSource = memoize(async () => {
+  const getSource = memoize(() => {
     if (type === 'image') {
-      const imageSupport = await getImageFormatsSupport();
-
       for (const extension of extensions) {
         if (extension in imageSupport) {
           if (imageSupport[extension as keyof typeof imageSupport]) {
@@ -75,7 +75,6 @@ const asset = memoize((...variants: string[]): NovelyAsset => {
         }
       }
     } else if (type === 'audio') {
-      const audioSupport = getAudioCodecsSupport();
 
       for (const extension of extensions) {
         if (extension in audioSupport) {
@@ -93,7 +92,7 @@ const asset = memoize((...variants: string[]): NovelyAsset => {
     }
 
     return '';
-  })
+  });
 
   return {
     get source() {
@@ -101,7 +100,7 @@ const asset = memoize((...variants: string[]): NovelyAsset => {
     },
     get type() {
       return type;
-    }
+    },
   }
 })
 

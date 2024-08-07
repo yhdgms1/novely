@@ -48,6 +48,8 @@ import {
 	isBlockingAction,
 	collectActionsBeforeBlockingAction,
 	handleAudioAsset,
+	getCharactersData,
+	handleImageAsset
 } from './utils';
 import { dequal } from 'dequal/lite';
 import { store } from './store';
@@ -276,9 +278,12 @@ const novely = <
 
 			if (Array.isArray(images)) {
 				for (const asset of images) {
+					// todo: fix me
+					// @ts-ignore
 					doAction(asset);
 				}
 			} else {
+				// @ts-ignore
 				doAction(images)
 			}
 
@@ -886,10 +891,17 @@ const novely = <
 		return c in characters ? characters[c].color : '#000000'
 	}
 
+	const getCharacterAssets = (character: string, emotion: string) => {
+		const images = characters[character].emotions[emotion];
+		const imagesArray = Array.isArray(images) ? images : [images];
+
+		return imagesArray.map(handleImageAsset);
+	}
+
 	const renderer = createRenderer({
 		mainContextKey: MAIN_CONTEXT_KEY,
 
-		characters,
+		characters: getCharactersData(characters),
 		characterAssetSizes,
 		set,
 		restore,
@@ -908,6 +920,7 @@ const novely = <
 
 		getLanguageDisplayName,
 		getCharacterColor,
+		getCharacterAssets,
 
 		getResourseType: getResourseTypeForRenderer
 	});
@@ -1015,27 +1028,27 @@ const novely = <
 			push();
 		},
 		playMusic({ ctx, push }, [source]) {
-			handleAudioAsset(source).then(source => ctx.audio.music(source, 'music').play(true));
+			ctx.audio.music(handleAudioAsset(source), 'music').play(true)
 			push();
 		},
 		pauseMusic({ ctx, push }, [source]) {
-			handleAudioAsset(source).then(source => ctx.audio.music(source, 'music').pause());
+			ctx.audio.music(handleAudioAsset(source), 'music').pause()
 			push();
 		},
 		stopMusic({ ctx, push }, [source]) {
-			handleAudioAsset(source).then(source => ctx.audio.music(source, 'music').stop());
+			ctx.audio.music(handleAudioAsset(source), 'music').stop()
 			push();
 		},
 		playSound({ ctx, push }, [source, loop]) {
-			handleAudioAsset(source).then(source => ctx.audio.music(source, 'sound').play(loop || false));
+			ctx.audio.music(handleAudioAsset(source), 'sound').play(loop || false)
 			push();
 		},
 		pauseSound({ ctx, push }, [source]) {
-			handleAudioAsset(source).then(source => ctx.audio.music(source, 'sound').pause());
+			ctx.audio.music(handleAudioAsset(source), 'sound').pause()
 			push();
 		},
 		stopSound({ ctx, push }, [source]) {
-			handleAudioAsset(source).then(source => ctx.audio.music(source, 'sound').stop());
+			ctx.audio.music(handleAudioAsset(source), 'sound').stop()
 			push();
 		},
 		voice({ ctx, push }, [source]) {
@@ -1051,7 +1064,7 @@ const novely = <
 				return;
 			}
 
-			handleAudioAsset(audioSource).then(audio => ctx.audio.voice(audio));
+			ctx.audio.voice(handleAudioAsset(audioSource));
 			push();
 		},
 		stopVoice({ ctx, push }) {

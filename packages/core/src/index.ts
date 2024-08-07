@@ -36,7 +36,9 @@ export type {
 	StateFunction,
 	Data,
 	DeepPartial,
-	TypeEssentials
+	TypeEssentials,
+	CharacterAssetSizes,
+	CharactersData
 } from './types';
 export type { Stored } from './store';
 export type { BaseTranslationStrings } from './translations';
