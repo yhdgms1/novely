@@ -199,7 +199,6 @@ const novely = <
 			}
 
 			return (...props: Parameters<Actions[Action]>) => {
-				// todo: figure out how to preload voices
 				if (preloadAssets === 'blocking') {
 					// @ts-expect-error
 					huntAssets({ characters, action, props, handle: enqueueAssetForPreloading })
@@ -896,10 +895,20 @@ const novely = <
 			setTimeout(push, isFunction(time) ? time(getStateAtCtx(ctx)) : time);
 		},
 		showBackground({ ctx, push }, [background]) {
-			const bg = isString(background) ? handleImageAsset(background) : background;
+			const bg = (() => {
+				// todo: at some time make it always a media-query based background, with `all` for static backgrounds
+				if (isString(background)) {
+					return background;
+				}
 
-			// todo: fix
-			ctx.background(bg as any);
+				if (isAsset(background)) {
+					return handleImageAsset(background);
+				}
+
+				return Object.fromEntries(Object.entries(background).map(([media, asset]) => [media, handleImageAsset(asset as string)]))
+			})();
+
+			ctx.background(bg);
 			push();
 		},
 		playMusic({ ctx, push }, [source]) {
@@ -1080,6 +1089,13 @@ const novely = <
 				}
 
 				// todo: calculate offset dynamically
+				// maybe even use object
+				// action.choice({
+				//   label: { ru: 'фцв', en: 'awd' },
+				//   choices: [
+				//     { label: 'Something', children: [], active: (state) => state.something > 15 }
+			  //   ]
+			  // })
 
 				stack.value[0].push(['choice', selected + offset], [null, 0]);
 				render(ctx);

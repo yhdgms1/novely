@@ -362,7 +362,6 @@ const getActionsFromPath = (story: Story, path: Path, filter: boolean) => {
 	let index = 0;
 	/**
 	 * Skipped action that should be preserved
-	 * @todo Give a better name
 	 */
 	let skipPreserve: Exclude<ValidAction, ValidAction[]> | undefined = undefined;
 	/**

@@ -9,7 +9,7 @@ type ValidAction =
 	| ['dialog', string | undefined, TextContent<string, State>, string | undefined]
 	| ['say', string, TextContent<string, State>]
 	| ['end']
-	| ['showBackground', string | NovelyAsset | NonEmptyRecord<BackgroundImage>]
+	| ['showBackground', string | NovelyAsset | BackgroundImage]
 	| ['playMusic', string | NovelyAsset]
 	| ['stopMusic', string | NovelyAsset]
 	| ['pauseMusic', string | NovelyAsset]
@@ -220,7 +220,7 @@ type FunctionAction<L extends string, S extends State> = (props: FunctionActionP
 type ActionInputSetupCleanup = () => void;
 type ActionInputSetup = (input: HTMLInputElement) => ActionInputSetupCleanup | void;
 
-type BackgroundImage = Partial<Record<'portrait' | 'landscape' | 'all', string>> & Record<string, string>;
+type BackgroundImage = Record<string, string | NovelyAsset>;
 
 type VoiceAction<L extends Lang> = (params: string | NovelyAsset | Partial<Record<L, string | NovelyAsset>>) => ValidAction;
 

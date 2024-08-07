@@ -10,8 +10,8 @@ import '@novely/moment-presser/style.css';
 import { createMomentPresser } from '@novely/moment-presser';
 import type { CreateMomentPresserOptions } from '@novely/moment-presser';
 
-import outdoor from './assets/outdoor.png';
-import lily_ok from './assets/lily.png';
+import outdoor_png from './assets/outdoor.png';
+import lily_ok_png from './assets/lily.png';
 
 /**
  * Peach by Sakura Girl | https://soundcloud.com/sakuragirl_official
@@ -21,11 +21,13 @@ import lily_ok from './assets/lily.png';
  */
 import sakura_girl from './assets/sakura_girl.mp3';
 
-const backgroundMusic = asset(sakura_girl);
 
 const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidRenderer({
 	fullscreen: false,
 });
+
+const outdoor = asset(outdoor_png);
+const music = asset(sakura_girl);
 
 const engine = novely({
 	renderer,
@@ -39,7 +41,7 @@ const engine = novely({
 			color: '#ed5c87',
 			emotions: {
 				ok: [
-					asset(lily_ok)
+					asset(lily_ok_png)
 				],
 			},
 		},
@@ -171,7 +173,7 @@ engine.script({
 			en: 'You wake up, but do not see your keyboard anymore, instead...',
 			ru: 'Вы просыпаетесь, но больше не видите своей клавиатуры, вместо неё...',
 		}),
-		action.playMusic(backgroundMusic),
+		action.playMusic(music),
 		action.particles(snow),
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok'),
