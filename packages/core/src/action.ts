@@ -9,7 +9,7 @@ type ValidAction =
 	| ['dialog', string | undefined, TextContent<string, State>, string | undefined]
 	| ['say', string, TextContent<string, State>]
 	| ['end']
-	| ['showBackground', string | NonEmptyRecord<BackgroundImage>]
+	| ['showBackground', string | NovelyAsset | NonEmptyRecord<BackgroundImage>]
 	| ['playMusic', string | NovelyAsset]
 	| ['stopMusic', string | NovelyAsset]
 	| ['pauseMusic', string | NovelyAsset]
@@ -263,9 +263,11 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 
 	end: () => ValidAction;
 
-	showBackground: <T extends string | BackgroundImage>(
-		background: T extends string ? T : T extends Record<PropertyKey, unknown> ? NonEmptyRecord<T> : never,
-	) => ValidAction;
+	showBackground: {
+		(background: string): ValidAction;
+		(background: NovelyAsset): ValidAction;
+		<T extends Record<PropertyKey, unknown>>(background: NonEmptyRecord<T>): ValidAction;
+	}
 
 	playMusic: (audio: string | NovelyAsset) => ValidAction;
 	pauseMusic: (audio: string | NovelyAsset) => ValidAction;

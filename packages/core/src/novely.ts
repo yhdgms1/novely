@@ -34,10 +34,8 @@ import {
 	getActionsFromPath,
 	createUseStackFunction,
 	createQueueProcessor,
-	mapSet,
 	isAudioAction,
 	isString,
-	isImageAsset,
 	getResourseType,
 	capitalize,
 	getIntlLanguageDisplayName,
@@ -49,7 +47,8 @@ import {
 	collectActionsBeforeBlockingAction,
 	handleAudioAsset,
 	getCharactersData,
-	handleImageAsset
+	handleImageAsset,
+	toArray
 } from './utils';
 import { dequal } from 'dequal/lite';
 import { store } from './store';
@@ -63,7 +62,8 @@ import { setupBrowserVisibilityChangeListeners } from './browser';
 import pLimit from 'p-limit';
 
 import { DEV } from 'esm-env';
-import { STACK_MAP, PRELOADED_ASSETS } from './shared';
+import { STACK_MAP, PRELOADED_ASSETS, ASSETS_TO_PRELOAD } from './shared';
+import { enqueueAssetForPreloading, handleAssetsPreloading, huntAssets } from './preloading';
 import { isAsset } from './asset';
 
 const novely = <
@@ -110,8 +110,6 @@ const novely = <
 
 	const times = new Set<number>();
 
-	const ASSETS_TO_PRELOAD = new Set<string>();
-
 	const dataLoaded = createControlledPromise();
 
 	let initialScreenWasShown = false;
@@ -123,47 +121,6 @@ const novely = <
 	const intime = (value: number) => {
 		return times.add(value), value;
 	};
-
-	const handleAssetsPreloading = async () => {
-		const { preloadAudioBlocking, preloadImageBlocking } = renderer.misc;
-
-		const list = mapSet(ASSETS_TO_PRELOAD, (asset) => {
-			return limitAssetsDownload(async () => {
-				const type = await getResourseType(request, asset);
-
-				switch (type) {
-					case 'audio': {
-						await preloadAudioBlocking(asset);
-						break;
-					}
-
-					case 'image': {
-						await preloadImageBlocking(asset);
-						break;
-					}
-				}
-			})
-		});
-
-		/**
-		 * `allSettled` is used because even if error happens game should run
-		 *
-		 * Ideally, there could be a notification for player, maybe developer could be also notified
-		 * But I don't think it's really needed
-		 */
-		await Promise.allSettled(list);
-
-		ASSETS_TO_PRELOAD.clear();
-	}
-
-	/**
-	 * Adds asset to `ASSETS_TO_PRELOAD` firstly checking if is was already preloaded
-	 */
-	const assetsToPreloadAdd = (asset: string) => {
-		if (!PRELOADED_ASSETS.has(asset)) {
-			ASSETS_TO_PRELOAD.add(asset)
-		}
-	}
 
 	const scriptBase = async (part: Story) => {
 		/**
@@ -192,7 +149,11 @@ const novely = <
 				renderer.ui.showLoading();
 			}
 
-			await handleAssetsPreloading()
+			await handleAssetsPreloading({
+				...renderer.misc,
+				limiter: limitAssetsDownload,
+				request,
+			});
 		}
 
 		await dataLoaded.promise;
@@ -231,72 +192,6 @@ const novely = <
 		return limitScript(() => scriptBase(part));
 	}
 
-	/**
-	 * @param action Action name
-	 * @param props Action props
-	 * @param doAction Function to handle asset preloading. By default adds asset to preloading list
-	 * @todo Better naming
-	 */
-	const assetPreloadingCheck = <Action extends keyof Actions & string>(action: Action, props: Parameters<Actions[Action]>, doAction = assetsToPreloadAdd) => {
-		// todo: find `NovelyAssets` with promised assets and get it
-
-		if (action === 'showBackground') {
-			/**
-			 * There are two types of showBackground currently
-			 *
-			 * Parameter is a `string`
-			 * Parameter is a `Record<'CSS Media', string>`
-			 */
-			if (isImageAsset(props[0])) {
-				doAction(props[0]);
-			}
-
-			if (props[0] && typeof props[0] === 'object') {
-				for (const value of Object.values(props[0])) {
-					if (!isImageAsset(value)) continue;
-
-					doAction(value);
-				}
-			}
-
-			return;
-		}
-
-		/**
-		 * Here "stop" action also matches condition, but because `ASSETS_TO_PRELOAD` is a Set, there is no problem
-		 */
-		if (isAudioAction(action) && isString(props[0])) {
-			doAction(props[0])
-			return;
-		}
-
-		/**
-		 * Load characters
-		 */
-		if (action === 'showCharacter' && isString(props[0]) && isString(props[1])) {
-			const images = characters[props[0]].emotions[props[1]];
-
-			if (Array.isArray(images)) {
-				for (const asset of images) {
-					// todo: fix me
-					// @ts-ignore
-					doAction(asset);
-				}
-			} else {
-				// @ts-ignore
-				doAction(images)
-			}
-
-			return;
-		}
-
-		if (action === 'custom' && props[0].assets && props[0].assets.length > 0) {
-			for (const asset of props[0].assets) {
-				doAction(asset);
-			}
-		}
-	}
-
 	const action = new Proxy({} as Actions, {
 		get<Action extends keyof Actions & string>(_: unknown, action: Action) {
 			if (action in renderer.actions) {
@@ -305,10 +200,9 @@ const novely = <
 
 			return (...props: Parameters<Actions[Action]>) => {
 				// todo: figure out how to preload voices
-				// preloading every languages especially in browser (not in Electron or Tauri, however, this is thill is browser, but there is no huge latency) is not effective
-
 				if (preloadAssets === 'blocking') {
-					assetPreloadingCheck(action, props)
+					// @ts-expect-error
+					huntAssets({ characters, action, props, handle: enqueueAssetForPreloading })
 				}
 
 				return [action, ...props] as ValidAction;
@@ -827,7 +721,8 @@ const novely = <
 			if (action === 'vibrate') return;
 			if (action === 'end') return;
 
-			assetPreloadingCheck(action, props as any, assets.push.bind(assets));
+			// @ts-expect-error
+			huntAssets({ characters, action, props, handle: assets.push.bind(assets) })
 
 			return match(action, props, {
 				ctx,
@@ -892,10 +787,7 @@ const novely = <
 	}
 
 	const getCharacterAssets = (character: string, emotion: string) => {
-		const images = characters[character].emotions[emotion];
-		const imagesArray = Array.isArray(images) ? images : [images];
-
-		return imagesArray.map(handleImageAsset);
+		return toArray(characters[character].emotions[emotion]).map(handleImageAsset);
 	}
 
 	const renderer = createRenderer({
@@ -982,34 +874,14 @@ const novely = <
 				})
 
 				for (const [action, ...props] of collection) {
-					// todo: wait for it
-					assetPreloadingCheck(action, props as any);
+					// @ts-expect-error
+					huntAssets({ characters, action, props, handle: enqueueAssetForPreloading })
 				}
 
-				const { preloadAudioBlocking, preloadImageBlocking } = renderer.misc;
-
-				ASSETS_TO_PRELOAD.forEach(async (asset) => {
-					ASSETS_TO_PRELOAD.delete(asset);
-
-					const type = await getResourseType(request, asset);
-
-					switch (type) {
-						case 'audio': {
-							preloadAudioBlocking(asset).then(() => {
-								PRELOADED_ASSETS.add(asset)
-							});
-
-							break;
-						}
-
-						case 'image': {
-							preloadImageBlocking(asset).then(() => {
-								PRELOADED_ASSETS.add(asset)
-							});
-
-							break;
-						}
-					}
+				handleAssetsPreloading({
+					...renderer.misc,
+					request,
+					limiter: limitAssetsDownload,
 				})
 			} catch (cause) {
 				console.error(cause);
@@ -1024,7 +896,10 @@ const novely = <
 			setTimeout(push, isFunction(time) ? time(getStateAtCtx(ctx)) : time);
 		},
 		showBackground({ ctx, push }, [background]) {
-			ctx.background(background);
+			const bg = isString(background) ? handleImageAsset(background) : background;
+
+			// todo: fix
+			ctx.background(bg as any);
 			push();
 		},
 		playMusic({ ctx, push }, [source]) {
@@ -1381,7 +1256,7 @@ const novely = <
 
 			if (!ctx.meta.goingBack && !ctx.meta.restoring && !PRELOADED_ASSETS.has(source)) {
 				/**
-				 * Make image load
+				 * Add to preloaded before it was loaded to prevent save image downloading multiple times
 				 */
 				PRELOADED_ASSETS.add(renderer.misc.preloadImage(source));
 			}

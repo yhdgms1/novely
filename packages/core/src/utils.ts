@@ -1060,6 +1060,10 @@ const getCharactersData = <Characters extends Record<string, Character<Lang>>>(c
 	return Object.fromEntries(mapped) as CharactersData<Characters>;
 }
 
+const toArray = <T>(target: T | T[]) => {
+	return Array.isArray(target) ? target : [target]
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -1104,7 +1108,8 @@ export {
 	isBlockingAction,
 	handleAudioAsset,
 	handleImageAsset,
-	getCharactersData
+	getCharactersData,
+	toArray
 };
 
 export type { MatchActionOptions, ControlledPromise, MatchActionMapComplete }
