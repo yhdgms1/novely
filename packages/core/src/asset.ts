@@ -21,6 +21,11 @@ const getType = memoize((extensions: string[]) => {
   throw extensions;
 })
 
+const SUPPORT_MAPS = {
+  'image': imageSupport,
+  'audio': audioSupport
+} as const;
+
 /**
  * Memoizes and returns an asset selection object based on provided file variants.
  * The selected asset depends on the client's support for various formats.
@@ -63,27 +68,16 @@ const asset = memoize((...variants: string[]): NovelyAsset => {
   const type = getType(extensions);
 
   const getSource = memoize(() => {
-    if (type === 'image') {
-      for (const extension of extensions) {
-        if (extension in imageSupport) {
-          if (imageSupport[extension as keyof typeof imageSupport]) {
-            return map[extension];
-          }
+    const support = SUPPORT_MAPS[type];
 
-        } else {
+    for (const extension of extensions) {
+      if (extension in support) {
+        if (support[extension as keyof typeof support]) {
           return map[extension];
         }
-      }
-    } else if (type === 'audio') {
 
-      for (const extension of extensions) {
-        if (extension in audioSupport) {
-          if (audioSupport[extension as keyof typeof audioSupport]) {
-            return map[extension];
-          }
-        } else {
-          return map[extension];
-        }
+      } else {
+        return map[extension];
       }
     }
 

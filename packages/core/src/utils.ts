@@ -513,18 +513,9 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 
 					if (notLatest) continue;
 				} else if ('skipOnRestore' in fn && fn.skipOnRestore) {
-					let getNext = () => {
-						const nextActions = next(i);
-
-						// Not sure is creating a closure would be more efficient than slicing array or not
-						getNext = () => {
-							return nextActions
-						}
-
-						return nextActions;
+					if (fn.skipOnRestore(() => next(i))) {
+						continue;
 					}
-
-					if (fn.skipOnRestore(getNext)) continue;
 				}
 			}
 

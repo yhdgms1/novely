@@ -1389,12 +1389,9 @@ const novely = <
 	}
 
 	const setStorageData = (data: StorageData<$Language, $Data>) => {
-		/**
-		 * After destroy data is not updated
-		 */
 		if (destroyed) {
 			if (DEV) {
-				throw new Error(`function \`setStorageData\` was called after novely instance was destroyed.`)
+				throw new Error(`function \`setStorageData\` was called after novely instance was destroyed. Data is not updater nor synced after destroy.`)
 			}
 
 			return;
