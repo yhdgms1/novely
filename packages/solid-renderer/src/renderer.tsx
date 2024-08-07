@@ -66,8 +66,7 @@ const createSolidRenderer = ({
 		emitter,
 
 		renderer<$Language extends Lang, $Characters extends Record<string, Character<$Language>>>(options: RendererInit<$Language, $Characters>) {
-			const { characters, characterAssetSizes } = options;
-
+			const { characterAssetSizes } = options;
 			const { root, setRoot } = createRootSetter(() => renderer.getContext(options.mainContextKey));
 
 			const renderer = {

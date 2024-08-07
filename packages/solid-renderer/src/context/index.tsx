@@ -1,5 +1,5 @@
 import type { Accessor, FlowComponent } from 'solid-js';
-import type { Renderer, RendererInit, StorageData, Stored, BaseTranslationStrings, CoreData, Character, Context } from '@novely/core';
+import type { Renderer, RendererInit, StorageData, Stored, BaseTranslationStrings, CoreData, Context } from '@novely/core';
 import type { EmitterEventsMap, RendererStoreExtension } from '../types';
 import type { Emitter } from '../emitter';
 
