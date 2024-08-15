@@ -79,11 +79,7 @@ const createSolidRenderer = ({
 						root: root(),
 
 						background(background) {
-							handleBackgroundAction($contextState, background, (bg) => {
-								if (!isCSSImage(bg)) return;
-
-								renderer.misc.preloadImage(bg);
-							})
+							handleBackgroundAction($contextState, background);
 						},
 						character(character) {
 							const chars = useShared(name).characters;

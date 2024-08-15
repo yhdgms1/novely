@@ -895,20 +895,14 @@ const novely = <
 			setTimeout(push, isFunction(time) ? time(getStateAtCtx(ctx)) : time);
 		},
 		showBackground({ ctx, push }, [background]) {
-			const bg = (() => {
-				// todo: at some time make it always a media-query based background, with `all` for static backgrounds
-				if (isString(background)) {
-					return background;
-				}
+			if (isString(background) || isAsset(background)) {
+				ctx.background({
+					'all': handleImageAsset(background)
+				})
+			} else {
+				ctx.background(Object.fromEntries(Object.entries(background).map(([media, asset]) => [media, handleImageAsset(asset as string)])))
+			}
 
-				if (isAsset(background)) {
-					return handleImageAsset(background);
-				}
-
-				return Object.fromEntries(Object.entries(background).map(([media, asset]) => [media, handleImageAsset(asset as string)]))
-			})();
-
-			ctx.background(bg);
 			push();
 		},
 		playMusic({ ctx, push }, [source]) {

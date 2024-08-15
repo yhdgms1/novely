@@ -1,4 +1,4 @@
-import type { ActionInputSetup, ActionInputOnInputMeta, BackgroundImage, DefaultActionProxy, ValidAction, CustomHandler } from './action';
+import type { ActionInputSetup, ActionInputOnInputMeta, DefaultActionProxy, ValidAction, CustomHandler } from './action';
 import type { Character } from './character';
 import type { CharacterAssetSizes, CharactersData, CoreData, Data, Lang, NovelyScreen, Save, State, StateFunction, StorageData } from './types';
 import type { BaseTranslationStrings } from './translations';
@@ -50,7 +50,7 @@ type Context = {
 	set root(value: HTMLElement);
 
 	character: (character: string) => CharacterHandle;
-	background: (background: string | BackgroundImage) => void;
+	background: (background: Record<string, string>) => void;
 	dialog: (
 		content: string,
 		name: string,

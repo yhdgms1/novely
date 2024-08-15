@@ -157,16 +157,6 @@ false && engine.script({
 })
 
 engine.script({
-	'block:adv': [
-		action.condition(() => true, {
-			true: [
-				action.text({
-					en: 'You will be shown a full-screen ad',
-					ru: 'Вам будет показана полноэкранная реклама',
-				}),
-			],
-		}),
-	],
 	start: [
 		action.next(),
 		action.text({

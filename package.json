@@ -20,8 +20,6 @@
 		"build:typewriter": "pnpm --filter=@novely/typewriter... --parallel build",
 		"dev:particles": "pnpm --filter=@novely/particles... --parallel dev",
 		"build:particles": "pnpm --filter=@novely/particles... --parallel build",
-		"dev:css": "pnpm --filter=@novely/css... --parallel dev",
-		"build:css": "pnpm --filter=@novely/css... --parallel build",
 		"dev:parser": "pnpm --filter=@novely/parser... --parallel dev",
 		"build:parser": "pnpm --filter=@novely/parser... --parallel build",
 		"dev:vite-plugin-nvl": "pnpm --filter=@novely/vite-plugin-nvl... --parallel dev",

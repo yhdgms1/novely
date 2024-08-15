@@ -47,23 +47,8 @@ const allEmpty = (target: object | string | number | null | undefined) => {
   return true;
 }
 
-const handleBackgroundAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, background: string | BackgroundImage, onChange?: (currentBackground: string) => void) => {
-  const { clear } = $contextState.get().background;
-
-  clear && clear();
-
-  if (typeof background === 'string') {
-    $contextState.mutate((s) => s.background!, (prev) => {
-      return {
-        ...prev,
-        background
-      }
-    });
-
-    onChange?.(background);
-
-    return;
-  }
+const handleBackgroundAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, background: Record<string, string>) => {
+  $contextState.get().background.clear?.();
 
   const { dispose } = useBackground(background, (value) => {
     $contextState.mutate((s) => s.background, (prev) => {
@@ -72,15 +57,9 @@ const handleBackgroundAction = ($contextState: DeepAtom<ContextStateStore<Record
         background: value
       }
     });
-    onChange?.(value);
-  })
-
-  $contextState.mutate((s) => s.background, (prev) => {
-    return {
-      ...prev,
-      clear: dispose
-    }
   });
+
+  $contextState.mutate((s) => s.background.clear!, () => dispose);
 }
 
 const handleDialogAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, content: string, name: string, character: string | undefined, emotion: string | undefined, resolve: () => void) => {
