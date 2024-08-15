@@ -543,7 +543,7 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 			 * Actually, we do not need check above to add there things to keep because if something was hidden already we could not keep it visible
 			 */
 			if (action === 'showCharacter') {
-				characters.add(handleImageAsset(params[0] as string))
+				characters.add(params[0])
 			} else if (action === 'playMusic') {
 				audio.music.add(handleAudioAsset(params[0] as string))
 			} else if (action === 'playSound') {
