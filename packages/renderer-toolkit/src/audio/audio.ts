@@ -67,10 +67,7 @@ const createAudio = (storageData: StorageDataStore) => {
           resource.pause();
         },
         play(loop) {
-          try {
-            resource.loop = loop;
-          } catch {}
-
+          resource.loop = loop;
           resource.play();
         },
         stop() {
@@ -106,20 +103,12 @@ const createAudio = (storageData: StorageDataStore) => {
             for (const audio of Object.values(store[type])) {
               if (!audio) continue;
 
-              try {
-                audio.volume = volume;
-              } catch {}
+              audio.volume = volume;
             }
           }
 
-          if (type === 'voice') {
-            const audio = store.voice;
-
-            if (audio) {
-              try {
-                audio.volume = volume;
-              } catch {}
-            }
+          if (type === 'voice' && store.voice) {
+            store.voice.volume = volume;
           }
         }
       });
@@ -150,8 +139,8 @@ const createAudio = (storageData: StorageDataStore) => {
   const clear = (keepAudio: KeepAudio) => {
     context.voiceStop();
 
-    const musics = Object.entries(store.music).filter(([name]) => keepAudio.music && !keepAudio.music.has(name)).map(([_, h]) => h);
-    const sounds = Object.entries(store.sound).filter(([name]) => keepAudio.sounds && !keepAudio.sounds.has(name)).map(([_, h]) => h);
+    const musics = Object.entries(store.music).filter(([name]) => !keepAudio.music.has(name)).map(([_, a]) => a);
+    const sounds = Object.entries(store.sound).filter(([name]) => !keepAudio.sounds.has(name)).map(([_, a]) => a);
 
     for (const music of [...musics, ...sounds]) {
       if (!music) continue;
