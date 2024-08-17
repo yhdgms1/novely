@@ -234,8 +234,8 @@ engine.script({
 false && engine.script({
 	start: [
 		action.showBackground({
-			'portrait': 'red',
-			'landscape': 'green',
+			'(orientation: portrait)': 'red',
+			'(orientation: landscape)': 'green',
 			'all': 'blue'
 		}),
 		action.text({

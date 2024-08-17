@@ -264,9 +264,8 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 	end: () => ValidAction;
 
 	showBackground: {
-		(background: string): ValidAction;
-		(background: NovelyAsset): ValidAction;
-		<T extends Record<PropertyKey, unknown>>(background: NonEmptyRecord<T>): ValidAction;
+		(background: string | NovelyAsset): ValidAction;
+		<T extends Record<string, string | NovelyAsset>>(background: NonEmptyRecord<T>): ValidAction;
 	}
 
 	playMusic: (audio: string | NovelyAsset) => ValidAction;
