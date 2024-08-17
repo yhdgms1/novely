@@ -1,6 +1,6 @@
-import type { ActionInputSetup, ActionInputOnInputMeta, BackgroundImage, DefaultActionProxy, ValidAction, CustomHandler } from './action';
+import type { ActionInputSetup, ActionInputOnInputMeta, DefaultActionProxy, ValidAction, CustomHandler } from './action';
 import type { Character } from './character';
-import type { CharacterAssetSizes, CoreData, Data, Lang, NovelyScreen, Save, State, StateFunction, StorageData } from './types';
+import type { CharacterAssetSizes, CharactersData, CoreData, Data, Lang, NovelyScreen, Save, State, StateFunction, StorageData } from './types';
 import type { BaseTranslationStrings } from './translations';
 import type { Stored } from './store';
 
@@ -50,7 +50,7 @@ type Context = {
 	set root(value: HTMLElement);
 
 	character: (character: string) => CharacterHandle;
-	background: (background: string | BackgroundImage) => void;
+	background: (background: Record<string, string>) => void;
 	dialog: (
 		content: string,
 		name: string,
@@ -189,7 +189,7 @@ type RendererInitPreviewReturn = {
 }
 
 type RendererInit<$Language extends Lang, $Characters extends Record<string, Character<$Language>>> = {
-	characters: $Characters;
+	characters: CharactersData<$Characters>;
 	characterAssetSizes: CharacterAssetSizes<$Characters>;
 
 	set: (save: Save<State>) => Promise<void>;
@@ -228,6 +228,8 @@ type RendererInit<$Language extends Lang, $Characters extends Record<string, Cha
 	clearCustomAction: (ctx: Context, customAction: CustomHandler) => void;
 
 	getLanguageDisplayName: (lang: Lang) => string;
+	getCharacterColor: (character: string) => string;
+	getCharacterAssets: (character: string, emotion: string) => string[];
 
 	getResourseType: (url: string) => Promise<"image" | "audio" | "other">;
 };

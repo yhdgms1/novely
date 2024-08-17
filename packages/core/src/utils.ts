@@ -1,11 +1,13 @@
-import type { DefaultActionProxy, CustomHandler, Story, ValidAction, GetActionParameters, TextContent, ChoiceCheckFunction } from './action';
-import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, Lang, State } from './types';
+import type { DefaultActionProxy, CustomHandler, Story, ValidAction, GetActionParameters } from './action';
+import type { Character } from './character';
+import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, Lang, NovelyAsset, CharactersData } from './types';
 import type { Context, Renderer } from './renderer';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE, AUDIO_ACTIONS, HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from './constants';
-import { RESOURCE_TYPE_CACHE, STACK_MAP } from './shared';
-
+import { STACK_MAP } from './shared';
 import { DEV } from 'esm-env';
 import { klona } from 'klona/json';
+import { default as memoize } from 'micro-memoize';
+import { isAsset } from './asset';
 
 type MatchActionParams = {
 	data: Record<string, unknown>
@@ -359,7 +361,6 @@ const getActionsFromPath = (story: Story, path: Path, filter: boolean) => {
 	let index = 0;
 	/**
 	 * Skipped action that should be preserved
-	 * @todo Give a better name
 	 */
 	let skipPreserve: Exclude<ValidAction, ValidAction[]> | undefined = undefined;
 	/**
@@ -511,18 +512,9 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 
 					if (notLatest) continue;
 				} else if ('skipOnRestore' in fn && fn.skipOnRestore) {
-					let getNext = () => {
-						const nextActions = next(i);
-
-						// Not sure is creating a closure would be more efficient than slicing array or not
-						getNext = () => {
-							return nextActions
-						}
-
-						return nextActions;
+					if (fn.skipOnRestore(() => next(i))) {
+						continue;
 					}
-
-					if (fn.skipOnRestore(getNext)) continue;
 				}
 			}
 
@@ -552,9 +544,9 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 			if (action === 'showCharacter') {
 				characters.add(params[0])
 			} else if (action === 'playMusic') {
-				audio.music.add(params[0])
+				audio.music.add(unwrapAsset(params[0] as NovelyAsset))
 			} else if (action === 'playSound') {
-				audio.sound.add(params[0])
+				audio.sound.add(unwrapAsset(params[0] as NovelyAsset))
 			}
 
 			processedQueue.push(item);
@@ -710,55 +702,47 @@ const fetchContentType = async (request: typeof fetch, url: string) => {
 	}
 }
 
-const getResourseType = async (request: typeof fetch, url: string) => {
-	/**
-	 * Simple caching. Will be useful in case of network requests.
-	 */
-	if (RESOURCE_TYPE_CACHE.has(url)) {
-		return RESOURCE_TYPE_CACHE.get(url)!;
+const getResourseType = memoize(
+	async (request: typeof fetch, url: string) => {
+		/**
+		 * If url is not http we should not check
+		 *
+		 * startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data')
+		 */
+		if (!isCSSImage(url)) {
+			return 'other'
+		}
+
+		const extension = getUrlFileExtension(url);
+
+		if (HOWLER_SUPPORTED_FILE_FORMATS.has(extension as any)) {
+			return 'audio'
+		}
+
+		if (SUPPORTED_IMAGE_FILE_FORMATS.has(extension as any)) {
+			return 'image'
+		}
+
+		/**
+		 * If checks above didn't worked we will fetch content type
+		 * This might not work because of CORS
+		 */
+		const contentType = await fetchContentType(request, url);
+
+		if (contentType.includes('audio')) {
+			return 'audio'
+		}
+
+		if (contentType.includes('image')) {
+			return 'image'
+		}
+
+		return 'other'
+	},
+	{
+		isPromise: true
 	}
-
-	const encache = (value: "image" | "audio" | "other") => {
-		RESOURCE_TYPE_CACHE.set(url, value);
-
-		return value;
-	}
-
-	/**
-	 * If url is not http we should not check
-	 *
-	 * startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data')
-	 */
-	if (!isCSSImage(url)) {
-		return encache('other')
-	}
-
-	const extension = getUrlFileExtension(url);
-
-	if (HOWLER_SUPPORTED_FILE_FORMATS.has(extension as any)) {
-		return encache('audio')
-	}
-
-	if (SUPPORTED_IMAGE_FILE_FORMATS.has(extension as any)) {
-		return encache('image')
-	}
-
-	/**
-	 * If checks above didn't worked we will fetch content type
-	 * This might not work because of CORS
-	 */
-	const contentType = await fetchContentType(request, url);
-
-	if (contentType.includes('audio')) {
-		return encache('audio')
-	}
-
-	if (contentType.includes('image')) {
-		return encache('image')
-	}
-
-	return encache('other')
-}
+);
 
 /**
  * Capitalizes the string
@@ -768,7 +752,7 @@ const capitalize = (str: string) => {
 	return str[0].toUpperCase() + str.slice(1);
 };
 
-const getIntlLanguageDisplayName = (lang: Lang) => {
+const getIntlLanguageDisplayName = memoize((lang: Lang) => {
 	/**
 	 * When using Intl fails we just return language key.
 	 */
@@ -781,7 +765,7 @@ const getIntlLanguageDisplayName = (lang: Lang) => {
 	} catch {
 		return lang;
 	}
-}
+})
 
 const createReferFunction = (story: Story) => {
 	const refer = (path: Path) => {
@@ -1025,6 +1009,37 @@ const collectActionsBeforeBlockingAction = ({ path, refer }: CollectActionsBefor
 	return collection;
 }
 
+const unwrapAsset = (asset: string | NovelyAsset) => {
+	return isAsset(asset) ? asset.source : asset;
+}
+
+const handleAudioAsset = (asset: string | NovelyAsset) => {
+	if (DEV && isAsset(asset) && asset.type !== 'audio') {
+		throw new Error('Attempt to use non-audio asset in audio action', { cause: asset });
+	}
+
+	return unwrapAsset(asset);
+}
+
+const handleImageAsset = (asset: string | NovelyAsset) => {
+	if (DEV && isAsset(asset) && asset.type !== 'image') {
+		throw new Error('Attempt to use non-image asset in action that requires image assets', { cause: asset });
+	}
+
+	return unwrapAsset(asset);
+}
+
+const getCharactersData = <Characters extends Record<string, Character<Lang>>>(characters: Characters) => {
+	const entries = Object.entries(characters);
+	const mapped = entries.map(([key, value]) => [key, { name: value.name, emotions: Object.keys(value.emotions) }]);
+
+	return Object.fromEntries(mapped) as CharactersData<Characters>;
+}
+
+const toArray = <T>(target: T | T[]) => {
+	return Array.isArray(target) ? target : [target]
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -1066,7 +1081,11 @@ export {
 	exitPath,
 	collectActionsBeforeBlockingAction,
 	nextPath,
-	isBlockingAction
+	isBlockingAction,
+	handleAudioAsset,
+	handleImageAsset,
+	getCharactersData,
+	toArray
 };
 
 export type { MatchActionOptions, ControlledPromise, MatchActionMapComplete }

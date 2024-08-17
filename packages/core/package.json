@@ -1,7 +1,7 @@
 {
 	"name": "@novely/core",
 	"description": "Novely - powerful visual novel engine for creating interactive stories and games with branching narratives and rich multimedia content",
-	"version": "0.38.2",
+	"version": "0.39.0",
 	"type": "module",
 	"sideEffects": false,
 	"publishConfig": {
@@ -21,7 +21,7 @@
 		"./package.json": "./package.json"
 	},
 	"scripts": {
-		"dev": "tsup --watch",
+		"dev": "tsup --dts --watch",
 		"build": "tsup --dts"
 	},
 	"devDependencies": {
@@ -33,6 +33,7 @@
 		"dequal": "^2.0.3",
 		"esm-env": "^1.0.0",
 		"klona": "^2.0.6",
+		"micro-memoize": "^4.1.2",
 		"p-limit": "^6.1.0"
 	},
 	"peerDependencies": {

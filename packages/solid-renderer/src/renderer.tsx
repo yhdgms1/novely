@@ -40,7 +40,7 @@ import { useContextState, removeContextState } from './context-state'
 import { canvasDrawImages, imagePreloadWithCaching, imagePreloadWithCachingNotComplete, isCSSImage } from '$utils';
 import { useShared } from './shared';
 import { createRootComponent } from './components/Root';
-import { createShowArbitraryCharacterAction, hideImage, showImage } from './custom-actions';
+import { hideImage, showImage } from './custom-actions';
 import { settingsIcons as settingsIconsDefault } from './constants'
 
 const { preloadAudioBlocking } = createAudioMisc();
@@ -66,8 +66,7 @@ const createSolidRenderer = ({
 		emitter,
 
 		renderer<$Language extends Lang, $Characters extends Record<string, Character<$Language>>>(options: RendererInit<$Language, $Characters>) {
-			const { characters, characterAssetSizes } = options;
-
+			const { characterAssetSizes } = options;
 			const { root, setRoot } = createRootSetter(() => renderer.getContext(options.mainContextKey));
 
 			const renderer = {
@@ -80,11 +79,7 @@ const createSolidRenderer = ({
 						root: root(),
 
 						background(background) {
-							handleBackgroundAction($contextState, background, (bg) => {
-								if (!isCSSImage(bg)) return;
-
-								renderer.misc.preloadImage(bg);
-							})
+							handleBackgroundAction($contextState, background);
 						},
 						character(character) {
 							const chars = useShared(name).characters;
@@ -100,14 +95,11 @@ const createSolidRenderer = ({
 								canvas,
 								ctx: canvasContext,
 								emotions: {},
-								emotion(emotion, shouldRender) {
+								async emotion(emotion, shouldRender) {
 									let stored = this.emotions[emotion];
 
 									if (!stored) {
-										const characterEmotion = characters[character].emotions[emotion];
-										const emotionData = (unknown => Array.isArray(unknown) ? unknown : [unknown])(characterEmotion);
-
-										stored = this.emotions[emotion] = emotionData.map(src => imagePreloadWithCachingNotComplete(src));
+										stored = this.emotions[emotion] = options.getCharacterAssets(character, emotion).map(src => imagePreloadWithCachingNotComplete(src));
 									}
 
 									if (shouldRender && stored) {
@@ -329,8 +321,6 @@ const createSolidRenderer = ({
 
 							renderer,
 
-							characters,
-
 							fullscreen,
 							emitter,
 
@@ -367,7 +357,6 @@ const createSolidRenderer = ({
 					preloadAudioBlocking
 				},
 				actions: {
-					showArbitraryCharacter: createShowArbitraryCharacterAction(options.characters),
 					showImage: showImage,
 					hideImage: hideImage
 				}

@@ -1,4 +1,4 @@
-import { novely, RU, EN, extendAction, TextContent, ValidAction } from '@novely/core';
+import { novely, asset, RU, EN, extendAction, TextContent, ValidAction } from '@novely/core';
 import { createSolidRenderer } from '@novely/solid-renderer';
 
 import { showParticles, hideParticles } from '@novely/particles';
@@ -6,14 +6,12 @@ import { snow } from './particles';
 
 import { show, animate, hide as hideRive, remove } from '@novely/rive';
 
-import { selectFormat, setPriority } from '@novely/image-format-selector'
-
 import '@novely/moment-presser/style.css';
 import { createMomentPresser } from '@novely/moment-presser';
 import type { CreateMomentPresserOptions } from '@novely/moment-presser';
 
-import outdoor from './assets/outdoor.png';
-import lily_ok from './assets/lily.png';
+import outdoor_png from './assets/outdoor.png';
+import lily_ok_png from './assets/lily.png';
 
 /**
  * Peach by Sakura Girl | https://soundcloud.com/sakuragirl_official
@@ -23,9 +21,13 @@ import lily_ok from './assets/lily.png';
  */
 import sakura_girl from './assets/sakura_girl.mp3';
 
+
 const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidRenderer({
 	fullscreen: false,
 });
+
+const outdoor = asset(outdoor_png);
+const music = asset(sakura_girl);
 
 const engine = novely({
 	renderer,
@@ -38,7 +40,9 @@ const engine = novely({
 			},
 			color: '#ed5c87',
 			emotions: {
-				ok: lily_ok,
+				ok: [
+					asset(lily_ok_png)
+				],
 			},
 		},
 		You: {
@@ -153,23 +157,13 @@ false && engine.script({
 })
 
 engine.script({
-	'block:adv': [
-		action.condition(() => true, {
-			true: [
-				action.text({
-					en: 'You will be shown a full-screen ad',
-					ru: 'Вам будет показана полноэкранная реклама',
-				}),
-			],
-		}),
-	],
 	start: [
 		action.next(),
 		action.text({
 			en: 'You wake up, but do not see your keyboard anymore, instead...',
 			ru: 'Вы просыпаетесь, но больше не видите своей клавиатуры, вместо неё...',
 		}),
-		action.playMusic(sakura_girl),
+		action.playMusic(music),
 		action.particles(snow),
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok'),
@@ -240,8 +234,8 @@ engine.script({
 false && engine.script({
 	start: [
 		action.showBackground({
-			'portrait': 'red',
-			'landscape': 'green',
+			'(orientation: portrait)': 'red',
+			'(orientation: landscape)': 'green',
 			'all': 'blue'
 		}),
 		action.text({

@@ -36,7 +36,9 @@ export type {
 	StateFunction,
 	Data,
 	DeepPartial,
-	TypeEssentials
+	TypeEssentials,
+	CharacterAssetSizes,
+	CharactersData
 } from './types';
 export type { Stored } from './store';
 export type { BaseTranslationStrings } from './translations';
@@ -54,3 +56,5 @@ export { localStorageStorage } from './storage';
 export { extendAction } from './extend-actions'
 
 export { RU, EN, JP, KK } from './translations';
+
+export { asset } from './asset';

@@ -1,6 +1,6 @@
 import type { Character } from './character';
 import type { Context } from './renderer';
-import type { Thenable, NonEmptyRecord, StateFunction, State, Lang } from './types';
+import type { Thenable, NonEmptyRecord, StateFunction, State, Lang, NovelyAsset } from './types';
 
 type ValidAction =
 	| ['choice', number]
@@ -9,14 +9,14 @@ type ValidAction =
 	| ['dialog', string | undefined, TextContent<string, State>, string | undefined]
 	| ['say', string, TextContent<string, State>]
 	| ['end']
-	| ['showBackground', string | NonEmptyRecord<BackgroundImage>]
-	| ['playMusic', string]
-	| ['stopMusic', string]
-	| ['pauseMusic', string]
-	| ['playSound', audio: string, loop?: boolean]
-	| ['pauseSound', string]
-	| ['stopSound', string]
-	| ['voice', string | Record<string, string>]
+	| ['showBackground', string | NovelyAsset | BackgroundImage]
+	| ['playMusic', string | NovelyAsset]
+	| ['stopMusic', string | NovelyAsset]
+	| ['pauseMusic', string | NovelyAsset]
+	| ['playSound', audio: string | NovelyAsset, loop?: boolean]
+	| ['pauseSound', string | NovelyAsset]
+	| ['stopSound', string | NovelyAsset]
+	| ['voice', string | NovelyAsset | Record<string, string | NovelyAsset>]
 	| ['stopVoice']
 	| ['jump', string]
 	| ['showCharacter', string, keyof Character['emotions'], string?, string?]
@@ -220,9 +220,9 @@ type FunctionAction<L extends string, S extends State> = (props: FunctionActionP
 type ActionInputSetupCleanup = () => void;
 type ActionInputSetup = (input: HTMLInputElement) => ActionInputSetupCleanup | void;
 
-type BackgroundImage = Partial<Record<'portrait' | 'landscape' | 'all', string>> & Record<string, string>;
+type BackgroundImage = Record<string, string | NovelyAsset>;
 
-type VoiceAction<L extends Lang> = (params: string | Partial<Record<L, string>>) => ValidAction;
+type VoiceAction<L extends Lang> = (params: string | NovelyAsset | Partial<Record<L, string | NovelyAsset>>) => ValidAction;
 
 type ActionProxy<Characters extends Record<string, Character>, Languages extends Lang, S extends State> = {
 	choice: {
@@ -263,17 +263,18 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 
 	end: () => ValidAction;
 
-	showBackground: <T extends string | BackgroundImage>(
-		background: T extends string ? T : T extends Record<PropertyKey, unknown> ? NonEmptyRecord<T> : never,
-	) => ValidAction;
+	showBackground: {
+		(background: string | NovelyAsset): ValidAction;
+		<T extends Record<string, string | NovelyAsset>>(background: NonEmptyRecord<T>): ValidAction;
+	}
 
-	playMusic: (audio: string) => ValidAction;
-	pauseMusic: (audio: string) => ValidAction;
-	stopMusic: (audio: string) => ValidAction;
+	playMusic: (audio: string | NovelyAsset) => ValidAction;
+	pauseMusic: (audio: string | NovelyAsset) => ValidAction;
+	stopMusic: (audio: string | NovelyAsset) => ValidAction;
 
-	playSound: (audio: string, loop?: boolean) => ValidAction;
-	pauseSound: (audio: string) => ValidAction;
-	stopSound: (audio: string) => ValidAction;
+	playSound: (audio: string | NovelyAsset, loop?: boolean) => ValidAction;
+	pauseSound: (audio: string | NovelyAsset) => ValidAction;
+	stopSound: (audio: string | NovelyAsset) => ValidAction;
 
 	/**
 	 * Plays voice

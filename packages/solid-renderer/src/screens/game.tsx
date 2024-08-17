@@ -186,7 +186,6 @@ const Game: VoidComponent<GameProps> = (props) => {
 				<DialogName
 					character={dialog().miniature.character}
 					name={dialog().name}
-					characters={data.characters}
 				/>
 				<div
 					class="action-dialog-container"

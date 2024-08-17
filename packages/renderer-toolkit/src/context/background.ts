@@ -1,19 +1,6 @@
 import { findLast } from "../utils";
 
-const toMedia = (media: 'portrait' | 'landscape' | (string & Record<never, never>)) => {
-	if (media === 'portrait' || media === 'landscape') {
-		return `(orientation: ${media})`;
-	}
-
-	return media;
-};
-
-const useBackground = (obj: Record<string, string>, set: (bg: string) => void) => {
-	/**
-	 * Changes `portrait` to `(orientation: portrait)` and same for `landscape`
-	 */
-	const backgrounds = Object.fromEntries(Object.entries(obj).map(([key, value]) => [toMedia(key), value]))
-
+const useBackground = (backgrounds: Record<string, string>, set: (bg: string) => void) => {
 	const mediaQueries = Object.keys(backgrounds).map((media) => matchMedia(media));
 	const allMedia = mediaQueries.find(({ media }) => media === 'all');
 

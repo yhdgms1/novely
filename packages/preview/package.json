@@ -19,7 +19,6 @@
 		"@novely/particles": "workspace:*",
 		"@novely/solid-renderer": "workspace:*",
 		"@novely/rive": "workspace:*",
-		"@novely/image-format-selector": "workspace:*",
 		"@novely/moment-presser": "workspace:*",
 		"animate.css": "^4.1.1",
 		"modern-normalize": "~2.0.0",
