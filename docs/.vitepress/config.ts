@@ -33,6 +33,7 @@ export default defineConfig({
           { text: "Game States", link: "/guide/game-states" },
           { text: "Translation", link: "/guide/translation" },
           { text: "Characters", link: "/guide/characters" },
+          { text: "Assets", link: "/guide/assets" },
           { text: "Other Options", link: "/guide/other-options" },
           { text: "Story", link: "/guide/story" },
           {

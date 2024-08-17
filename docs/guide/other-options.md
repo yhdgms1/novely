@@ -4,6 +4,64 @@ There are options that are completely not necessary for setting up, so you can s
 
 ## Options
 
+### DefaultEmotions
+
+For showing a character you will need to pass character id and emotion. However, there can be default emotion.
+
+```ts
+const engine = novely({
+  characters: {
+    'Ann': {
+      name: "Ann",
+      color: '#D282A6',
+      emotions: {
+        normal: './ann_normal.jpeg',
+        happy: './ann_happy.jpeg'
+      }
+    }
+  },
+  defaultEmotions: {
+    'Ann': 'normal'
+  }
+});
+
+engine.script({
+  start: [
+    // Will show 'normal'
+    engine.action.showCharacter('Ann'),
+    engine.action.text('Some text'),
+    // Will shot 'happy'
+    engine.action.showCharacter('Ann', 'happy'),
+  ]
+})
+```
+
+### CharacterAssetSizes
+
+Can be useful with 'lazy' `assetsPreload` strategy. It will assign width and height to character before it finishes loading so there will be no layout shifts.
+
+```ts
+import peter_the_great from './assets/peter_the_great.png?width=800&height=1200';
+
+const engine = novely({
+  characters: {
+    Peter: {
+      name: 'Peter',
+      color: '#c04931',
+      emotions: {
+        normal: peter_the_great
+      }
+    }
+  },
+  characterAssetSizes: {
+    Peter: {
+      width: 800,
+      height: 1200
+    }
+  }
+})
+```
+
 ### Autosaves
 
 ```ts
@@ -131,7 +189,7 @@ You can control when Novely will get initial data. In example, you get your save
 ```ts
 const engine = novely({
   ...
-  preloadAssets: 'blocking' // or 'lazy'
+  preloadAssets: 'blocking' // or 'lazy' or 'automatic'
 })
 ```
 
@@ -144,6 +202,10 @@ Before game starts Novely will download all the backgrounds and user expressions
 #### Lazy
 
 Default mode. Nothing will be loaded before. Backgrounds and etc will be loaded when used. You still can preload some assets by using [preload](/guide/actions/preload) action
+
+#### Automatic
+
+Will get assets before user gets to them and preload it. Most optimal one.
 
 ### Fetch
 
