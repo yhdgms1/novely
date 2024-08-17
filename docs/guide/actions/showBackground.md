@@ -18,7 +18,7 @@ engine.script({
     // latest matching is preferred
     engine.action.showBackground({
       all: "<url>",
-      portrait: "<url>",
+      "(orientation: portrait)": "<url>",
       "(prefers-color-scheme: dark)": "#363636",
     }),
   ],
