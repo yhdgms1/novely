@@ -4,7 +4,6 @@ import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackH
 import type { Context, Renderer } from './renderer';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE, AUDIO_ACTIONS, HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from './constants';
 import { STACK_MAP } from './shared';
-
 import { DEV } from 'esm-env';
 import { klona } from 'klona/json';
 import { default as memoize } from 'micro-memoize';
@@ -545,9 +544,9 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 			if (action === 'showCharacter') {
 				characters.add(params[0])
 			} else if (action === 'playMusic') {
-				audio.music.add(handleAudioAsset(params[0] as string))
+				audio.music.add(unwrapAsset(params[0] as NovelyAsset))
 			} else if (action === 'playSound') {
-				audio.sound.add(handleAudioAsset(params[0] as string))
+				audio.sound.add(unwrapAsset(params[0] as NovelyAsset))
 			}
 
 			processedQueue.push(item);
