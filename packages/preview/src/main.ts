@@ -1,4 +1,4 @@
-import { novely, asset, RU, EN, extendAction, TextContent, ValidAction } from '@novely/core';
+import { novely, asset, RU, EN, extendAction, TextContent, ValidAction, CustomHandler } from '@novely/core';
 import { createSolidRenderer } from '@novely/solid-renderer';
 
 import { showParticles, hideParticles } from '@novely/particles';
@@ -20,7 +20,6 @@ import lily_ok_png from './assets/lily.png';
  * https://creativecommons.org/licenses/by/3.0/
  */
 import sakura_girl from './assets/sakura_girl.mp3';
-
 
 const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidRenderer({
 	fullscreen: false,
@@ -132,6 +131,21 @@ const action = extendAction(engine.action, {
 			['animateCharacter', character, 'animate__animated animate__pulse'],
 			['say', character, text]
 		] as ValidAction[]
+	},
+	setCharacterOpacity: (character: keyof NonNullable<(typeof engine.typeEssentials)['c']>, opacity: number) => {
+		const fn: CustomHandler = ({ clear, getDomNodes }) => {
+			const { root } = getDomNodes();
+
+			const PROPERTY_KEY = `--character-${character}-opacity`;
+
+			root.style.setProperty(PROPERTY_KEY, String(opacity));
+			clear(() => root.style.removeProperty(PROPERTY_KEY));
+		};
+
+		fn.id = `set-opacity`;
+		fn.key = `set-opacity-${character}`;
+
+		return ['custom', fn];
 	}
 })
 
@@ -166,11 +180,12 @@ engine.script({
 		action.playMusic(music),
 		action.particles(snow),
 		action.showBackground(outdoor),
-		action.showCharacter('Lily', 'ok'),
+		action.showCharacter('Lily', 'ok', '', 'opacity: var(--character-Lily-opacity, 1)'),
 		action.talk('Lily', {
 			en: 'Hii~',
 			ru: 'Привет!'
 		}),
+		action.setCharacterOpacity('Lily', 0.5),
 		action.talk('Lily', {
 			en: 'Iʼm going to tell you about the Novely engine',
 			ru: 'Я расскажу тебе про движок Novely',

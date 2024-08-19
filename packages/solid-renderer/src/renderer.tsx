@@ -37,7 +37,7 @@ import {
 } from '@novely/renderer-toolkit'
 import { createEmitter } from './emitter';
 import { useContextState, removeContextState } from './context-state'
-import { canvasDrawImages, imagePreloadWithCaching, imagePreloadWithCachingNotComplete, isCSSImage } from '$utils';
+import { canvasDrawImages, imagePreloadWithCaching, imagePreloadWithCachingNotComplete } from '$utils';
 import { useShared } from './shared';
 import { createRootComponent } from './components/Root';
 import { hideImage, showImage } from './custom-actions';
