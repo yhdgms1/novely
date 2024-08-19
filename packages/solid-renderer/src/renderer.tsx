@@ -33,7 +33,8 @@ import {
 	handleTextAction,
 	handleInputAction,
 	handleVibrateAction,
-	handleClearBlockingActions
+	handleClearBlockingActions,
+	noop
 } from '@novely/renderer-toolkit'
 import { createEmitter } from './emitter';
 import { useContextState, removeContextState } from './context-state'
@@ -69,10 +70,30 @@ const createSolidRenderer = ({
 			const { characterAssetSizes } = options;
 			const { root, setRoot } = createRootSetter(() => renderer.getContext(options.mainContextKey));
 
+			const cleanup: Record<string, (() => void) | undefined> = {};
+
 			const renderer = {
 				getContext: getContextCached((name) => {
 					const audio = createAudio(options.storageData);
 					const $contextState = useContextState(name);
+
+					{
+						/**
+						 * Makes saves loading better by preloading images
+						 */
+						const unsub = $contextState.listen((state, prev) => {
+							if (state.background.background !== prev.background.background) {
+								renderer.misc.preloadImage(state.background.background);
+							}
+						});
+
+						const handler = cleanup[name];
+
+						cleanup[name] = () => {
+							handler?.();
+							unsub();
+						}
+					}
 
 					const context: Context = {
 						id: name,
@@ -298,6 +319,9 @@ const createSolidRenderer = ({
 				removeContext(name) {
 					removeContext(name);
 					removeContextState(name);
+
+					cleanup[name]?.();
+					cleanup[name] = noop;
 				},
 				ui: {
 					showScreen(name) {

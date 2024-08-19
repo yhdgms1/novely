@@ -185,7 +185,6 @@ engine.script({
 			en: 'Hii~',
 			ru: 'Привет!'
 		}),
-		action.setCharacterOpacity('Lily', 0.5),
 		action.talk('Lily', {
 			en: 'Iʼm going to tell you about the Novely engine',
 			ru: 'Я расскажу тебе про движок Novely',
