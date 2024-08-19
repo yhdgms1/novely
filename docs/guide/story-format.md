@@ -59,7 +59,7 @@ start
           \Let me get some sleep
         !exit
   !condition
-    %() => $values1.state().sister.angry
+    %(state) => state.sister.angry
     *
       true
         !dialog
@@ -175,25 +175,3 @@ const story = setupStory({
 
 engine.script(story);
 ```
-
-## How to Avoid using `$values1`
-
-You may consider `useWith` option. Find `novelyPlugin` in your configuration file and add `useWith: true` into that config.
-
-Now code will be transformed into something like
-
-```js{2,10}
-export default ($values1) => {
-  with ($values1) {
-    return {
-      start: [
-        ['function', () => state({ some: 'value' })],
-        ['function', someFunction],
-        ['function', setRelationshipPreference('None')]
-      ]
-    }
-  }
-}
-```
-
-The [with](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/with) statement is used here. This feature is not recommended to use, so it is disabled by default.
