@@ -23,7 +23,7 @@ const story = fn(engine.action, {});
 
 Ключи основных сцен пишутся в начале строки
 
-```nvl
+```novely
 start
 dojo
 ```
@@ -46,7 +46,7 @@ loaded.then(() => {
 
 Экшены описываются через ! и название экшена. После чего или на текущей строки или на следующих находятся параметры.
 
-```nvl
+```novely
 start
   !dialog Name "Тут можно написать текст\n Добавить перенос"
   !dialog
@@ -74,7 +74,7 @@ engine.withStory({
 
 Значения из js передаются через спец-символ %.
 
-```nvl
+```novely
 start
   !dialog %Person %Text
 ```
@@ -89,7 +89,7 @@ engine.withStory({
 
 Запись экшена условия, для которого требуется объект, также отличается
 
-```nvl
+```novely
 start
   !condition
     %jsCondition

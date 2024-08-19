@@ -11,27 +11,29 @@ interface PluginOptions {
 	 * Rewrite action names
 	 */
 	rewrites?: Record<string, string>;
-	/**
-	 * Use with statement to get $values1 values
-	 * @default false
-	 */
-	useWith?: boolean;
 }
 
 const defaults = {
-	extensions: ['.nvly', '.novely', '.nvl', '.nly'],
-	rewrites: {
-		диалог: 'dialog',
-		ввод: 'input',
-		выбор: 'choice',
-	},
-	useWith: false,
+	extensions: ['.novely'],
+	rewrites: {},
 };
 
+/**
+ * @example
+ * ```ts
+ * import { defineConfig } from 'vite';
+ * import { novelyPlugin } from 'vite-plugin-novely';
+ *
+ * export default defineConfig({
+ *   plugins: [
+ *     novelyPlugin()
+ *   ]
+ * })
+ * ```
+ */
 const novelyPlugin = ({
 	extensions = defaults.extensions,
 	rewrites = defaults.rewrites,
-	useWith = defaults.useWith,
 }: PluginOptions = {}) => {
 	const plugin: Plugin = {
 		name: 'vite-plugin-nvl',
@@ -41,7 +43,6 @@ const novelyPlugin = ({
 				const ast = parse(contents);
 				const func = transform(ast, {
 					rewrites,
-					useWith,
 				});
 
 				return `export default ${func}`;
@@ -54,9 +55,4 @@ const novelyPlugin = ({
 	return plugin;
 };
 
-/**
- * @deprecated use novelyPlugin instead
- */
-const plugin = novelyPlugin();
-
-export { novelyPlugin, plugin };
+export { novelyPlugin };

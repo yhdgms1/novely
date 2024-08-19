@@ -1,0 +1,1 @@
+export { novelyPlugin } from './plugin';

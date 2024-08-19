@@ -9,7 +9,7 @@
 		"preview": "vite preview"
 	},
 	"devDependencies": {
-		"@novely/vite-plugin-nvl": "workspace:^",
+		"@novely/vite-plugin-novely": "workspace:^",
 		"typescript": "^5.5.4",
 		"vite": "^4.5.2",
 		"vite-plugin-solid": "^2.7.0"

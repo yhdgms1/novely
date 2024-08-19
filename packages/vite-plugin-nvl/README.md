@@ -1,1 +1,0 @@
-# @novely/vite-plugin-nvl

@@ -2,7 +2,8 @@
 	"name": "novely-story-highlight",
 	"displayName": "Novely Story Language Highlight",
 	"description": "Highlighting for format for novel stories",
-	"version": "0.1.0",
+	"version": "0.2.0",
+	"private": true,
 	"engines": {
 		"vscode": "^1.79.0"
 	},
@@ -16,15 +17,9 @@
 	"contributes": {
 		"languages": [
 			{
-				"id": "nvly",
-				"aliases": [
-					"Novely",
-					"nvly",
-					"nvl"
-				],
+				"id": "novely",
+				"aliases": [],
 				"extensions": [
-					".nvl",
-					".nvly",
 					".novely"
 				],
 				"configuration": "./language-configuration.json"
@@ -32,9 +27,9 @@
 		],
 		"grammars": [
 			{
-				"language": "nvly",
+				"language": "novely",
 				"scopeName": "novely",
-				"path": "./syntaxes/nvly.tmLanguage.json"
+				"path": "./syntaxes/novely.tmLanguage.json"
 			}
 		]
 	}

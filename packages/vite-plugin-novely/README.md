@@ -1,0 +1,2 @@
+# @novely/vite-plugin-novely
+

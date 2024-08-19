@@ -1,8 +1,8 @@
 # novely-story-language-support
 
-Highlighting for format for novel stories, basically it looks like that:
+Highlighting for format for [Novely](https://novely.deno.dev/) file format, basically it looks like that:
 
-```nvl
+```novely
 start
   !action %value_from_js
   !action StringWithoutSpaces "String with spaces and \n line breaks"

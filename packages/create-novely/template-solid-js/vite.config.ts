@@ -1,6 +1,6 @@
 import type { UserConfig } from 'vite'
 import { defineConfig } from 'vite'
-import { novelyPlugin } from '@novely/vite-plugin-nvl'
+import { novelyPlugin } from '@novely/vite-plugin-novely'
 
 export default defineConfig(() => {
 	return {
@@ -8,16 +8,7 @@ export default defineConfig(() => {
 			/**
 			 * Plugin for special story file format
 			 */
-			novelyPlugin({
-				/**
-				 * Plugin will use `with` statement for values
-				 */
-				useWith: false,
-				/**
-				 * Can be used to map one action to another one, can be used for writing in cyrillic
-				 */
-				rewrites: {},
-			}),
+			novelyPlugin(),
 		],
 		build: {
 			cssCodeSplit: false,

@@ -1,7 +1,7 @@
 {
-	"name": "@novely/vite-plugin-nvl",
+	"name": "@novely/vite-plugin-novely",
 	"description": "Vite Plugin for Novely Story Language",
-	"version": "0.4.2",
+	"version": "0.5.1",
 	"type": "module",
 	"sideEffects": false,
 	"types": "./dist/index.d.ts",
@@ -27,7 +27,7 @@
 	"bugs": {
 		"url": "https://github.com/yhdgms1/novely/issues"
 	},
-	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/vite-plugin-nvl",
+	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/vite-plugin-novely",
 	"keywords": [
 		"novely",
 		"language",

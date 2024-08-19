@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import { default as solidPlugin } from 'vite-plugin-solid';
-import { novelyPlugin } from '@novely/vite-plugin-nvl';
+import { novelyPlugin } from '@novely/vite-plugin-novely';
 
 export default defineConfig({
 	plugins: [
