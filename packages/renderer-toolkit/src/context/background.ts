@@ -1,11 +1,9 @@
-import { findLast } from "../utils";
-
 const useBackground = (backgrounds: Record<string, string>, set: (bg: string) => void) => {
 	const mediaQueries = Object.keys(backgrounds).map((media) => matchMedia(media));
 	const allMedia = mediaQueries.find(({ media }) => media === 'all');
 
 	const handle = () => {
-		const last = findLast(mediaQueries, ({ matches, media }) => matches && media !== 'all');
+		const last = mediaQueries.findLast(({ matches, media }) => matches && media !== 'all');
 		const bg = last
 			? backgrounds[last.media]
 			: allMedia

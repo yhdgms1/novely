@@ -40,6 +40,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 	const { text, dialog, characters, choice, input, background, custom } = destructure(contextState());
 
 	const rendererState = from(data.$rendererState);
+	const exitPromptShown = () => rendererState()!.exitPromptShown;
 
 	/**
 	 * Can be destructured because these are passed without getters
@@ -260,7 +261,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				// `inert` is used to make modal not get focus when opened in preview mode
 				inert={props.isPreview}
 				isOpen={() => choice().visible}
-				trapFocus={() => !props.isPreview && !rendererState()!.exitPromptShown}
+				trapFocus={() => !props.isPreview && !exitPromptShown()}
 			>
 				<span
 					class="dialog-label"
@@ -295,7 +296,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				// `inert` is used to make modal not get focus when opened in preview mode
 				inert={props.isPreview}
 				isOpen={() => input().visible}
-				trapFocus={() => !props.isPreview && !rendererState()!.exitPromptShown}
+				trapFocus={() => !props.isPreview && !exitPromptShown()}
 			>
 				<label for="novely-input" class="input-dialog-label">
 					<span class="input-dialog-label-text">{input().label}</span>
@@ -319,8 +320,8 @@ const Game: VoidComponent<GameProps> = (props) => {
 			<Modal
 				class='exit-dialog'
 				isModal={true}
-				isOpen={() => rendererState()!.exitPromptShown && !props.isPreview}
-				trapFocus={() => !props.isPreview && rendererState()!.exitPromptShown}
+				isOpen={() => !props.isPreview && exitPromptShown()}
+				trapFocus={() => !props.isPreview && exitPromptShown()}
 			>
 				<span class="dialog-label">
 					{data.t('ExitDialogWarning')}
@@ -398,7 +399,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 						</Show>
 					</Show>
 
-					<Show when={data.media.hyperWide() && controlPanelMenuExpanded() && !rendererState()!.exitPromptShown}>
+					<Show when={data.media.hyperWide() && controlPanelMenuExpanded() && !exitPromptShown()}>
 						<span class="control-panel-container-fix" aria-hidden="true">
 							&#8203;
 						</span>

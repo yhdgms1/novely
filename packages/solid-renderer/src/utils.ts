@@ -1,23 +1,6 @@
 import { untrack, batch } from 'solid-js';
 import { PRELOADED_IMAGE_MAP, PRELOADING_IMAGE_MAP } from './shared';
-
-const findLastIndex = <T>(array: T[], fn: (this: T[], item: T, index: number, array: T[]) => boolean) => {
-	for (let i = array.length - 1; i >= 0; i--) {
-		if (fn.call(array, array[i], i, array)) {
-			return i;
-		}
-	}
-
-	return -1;
-};
-
-/**
- * Using this because `Array.prototype.findLast` has not enough support
- * @see https://caniuse.com/?search=findLast
- */
-const findLast = <T>(array: T[], fn: (this: T[], item: T, index: number, array: T[]) => boolean) => {
-	return array[findLastIndex(array, fn)];
-}
+import { noop } from '@novely/renderer-toolkit';
 
 const capitalize = (str: string) => {
 	return str[0].toUpperCase() + str.slice(1);
@@ -50,7 +33,7 @@ const imageLoaded = (image: HTMLImageElement) => {
 
 	image.addEventListener('load', async () => {
 		if (image.decode) {
-			await image.decode().catch(() => { })
+			await image.decode().catch(noop)
 		}
 
 		resolve(true);
@@ -239,7 +222,6 @@ export {
 	createImage,
 	capitalize,
 	onKey,
-	findLast,
 	simple,
 	getDocumentStyles,
 	once,
