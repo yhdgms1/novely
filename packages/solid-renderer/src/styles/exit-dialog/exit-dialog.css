@@ -1,4 +1,4 @@
-.exit-dialog-panel {
+.exit-dialog {
 	justify-content: center;
 	align-items: center;
 
@@ -15,13 +15,13 @@
 	background-size: var(--novely-exit-dialog-background-size, 6.25rem 6.25rem);
 }
 
-.exit-dialog-panel-buttons {
+.exit-dialog-buttons {
 	display: flex;
 	gap: 0.5rem;
 }
 
 @media (max-aspect-ratio: 0.26) {
-	.exit-dialog-panel-buttons {
+	.exit-dialog-buttons {
 		flex-direction: column;
 	}
 }

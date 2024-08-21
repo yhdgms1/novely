@@ -8,6 +8,7 @@
 @import './range/index.css';
 @import './action-dialog/index.css';
 @import './dialog/index.css';
+@import './choice-dialog/index.css';
 @import './input-dialog/index.css';
 @import './exit-dialog/index.css';
 

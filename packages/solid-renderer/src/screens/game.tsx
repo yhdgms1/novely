@@ -255,106 +255,97 @@ const Game: VoidComponent<GameProps> = (props) => {
 			</div>
 
 			<Modal
+				class="choice-dialog"
+				isModal={false}
+				// `inert` is used to make modal not get focus when opened in preview mode
+				inert={props.isPreview}
 				isOpen={() => choice().visible}
 				trapFocus={() => !props.isPreview && !rendererState()!.exitPromptShown}
 			>
-				<div class="dialog-container">
-					<span class="dialog-fix" aria-hidden="true">
-						&#8203;
-					</span>
-					<div class="dialog-panel">
-						<span
-							class="dialog-panel-label"
-							data-used={Boolean(choice().label)}
-							aria-hidden={!choice().label}
-						>
-							{choice().label || <>&#8197;</>}
-						</span>
-						<For each={choice().choices}>
-							{([text, active], i) => {
-								const disabled = !active;
-								const index = i();
+				<span
+					class="dialog-label"
+					data-used={Boolean(choice().label)}
+					aria-hidden={!choice().label}
+				>
+					{choice().label || <>&#8197;</>}
+				</span>
 
-								return (
-									<button
-										type="button"
-										class="button"
-										aria-disabled={disabled}
-										onClick={[onChoicesButtonClick, [disabled, index]]}
-									>
-										{text}
-									</button>
-								);
-							}}
-						</For>
-					</div>
-				</div>
+				<For each={choice().choices}>
+					{([text, active], i) => {
+						const disabled = !active;
+						const index = i();
+
+						return (
+							<button
+								type="button"
+								class="button"
+								aria-disabled={disabled}
+								onClick={[onChoicesButtonClick, [disabled, index]]}
+							>
+								{text}
+							</button>
+						);
+					}}
+				</For>
 			</Modal>
 
 			<Modal
+				class="input-dialog"
+				isModal={false}
+				// `inert` is used to make modal not get focus when opened in preview mode
+				inert={props.isPreview}
 				isOpen={() => input().visible}
 				trapFocus={() => !props.isPreview && !rendererState()!.exitPromptShown}
 			>
-				<div class="dialog-container">
-					<span class="dialog-fix" aria-hidden="true">
-						&#8203;
-					</span>
-					<div class="dialog-panel input-dialog-panel">
-						<label for="novely-input" class="input-dialog-label">
-							<span class="input-dialog-label-text">{input().label}</span>
-							{input().element}
-						</label>
+				<label for="novely-input" class="input-dialog-label">
+					<span class="input-dialog-label-text">{input().label}</span>
+					{input().element}
+				</label>
 
-						<span class="input-dialog-label-text input-dialog-label__error" aria-live="polite" aria-atomic="true">
-							{input().error}
-						</span>
+				<span class="input-dialog-label-text input-dialog-label__error" aria-live="polite" aria-atomic="true">
+					{input().error}
+				</span>
 
-						<button
-							type="submit"
-							class="button dialog-input__button"
-							onClick={onInputButtonClick}
-							aria-disabled={Boolean(input().error)}
-						>
-							{data.t('Sumbit')}
-						</button>
-					</div>
-				</div>
+				<button
+					type="submit"
+					class="button dialog-input__button"
+					onClick={onInputButtonClick}
+					aria-disabled={Boolean(input().error)}
+				>
+					{data.t('Sumbit')}
+				</button>
 			</Modal>
 
 			<Modal
+				class='exit-dialog'
+				isModal={true}
 				isOpen={() => rendererState()!.exitPromptShown && !props.isPreview}
 				trapFocus={() => !props.isPreview && rendererState()!.exitPromptShown}
 			>
-				<div class="dialog-container">
-					<span class="dialog-fix" aria-hidden="true">
-						&#8203;
-					</span>
-					<div class="dialog-backdrop" />
-					<div class="dialog-panel exit-dialog-panel">
-						<span class="dialog-panel-label">
-							{data.t('ExitDialogWarning')}
-						</span>
-						<div class="exit-dialog-panel-buttons">
-							<button
-								type="button"
-								class="button"
-								onClick={() => {
-									data.$rendererState.setKey('exitPromptShown', false);
-								}}
-							>
-								{data.t('ExitDialogBack')}
-							</button>
-							<button
-								type="button"
-								class="button"
-								onClick={() => {
-									data.options.exit(true);
-								}}
-							>
-								{data.t('ExitDialogExit')}
-							</button>
-						</div>
-					</div>
+				<span class="dialog-label">
+					{data.t('ExitDialogWarning')}
+				</span>
+
+				<div class="exit-dialog-buttons">
+					<button
+						type="button"
+						class="button"
+						onClick={() => {
+							data.$rendererState.setKey('exitPromptShown', false);
+						}}
+					>
+						{data.t('ExitDialogBack')}
+					</button>
+
+					<button
+						type="button"
+						class="button"
+						onClick={() => {
+							data.options.exit(true);
+						}}
+					>
+						{data.t('ExitDialogExit')}
+					</button>
 				</div>
 			</Modal>
 

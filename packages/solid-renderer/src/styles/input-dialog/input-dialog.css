@@ -54,7 +54,7 @@
 	min-height: 2lh;
 }
 
-.input-dialog-panel {
+.input-dialog {
 	min-width: 35vw;
 
 	justify-content: center;
@@ -72,7 +72,6 @@
 	background-position: var(--novely-input-dialog-background-position, 0 0, 3.125rem 3.125rem);
 	background-size: var(--novely-input-dialog-background-size, 6.25rem 6.25rem);
 }
-
 
 @media (max-aspect-ratio: 0.8) {
   .input-dialog-label-text {

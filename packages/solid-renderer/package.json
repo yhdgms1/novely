@@ -23,6 +23,7 @@
 		"@novely/renderer-toolkit": "workspace:*",
 		"@novely/typewriter": "workspace:*",
 		"@solid-primitives/destructure": "^0.1.17",
+		"clsx": "^2.1.1",
 		"retrieved": "^0.1.0",
 		"solid-js": "1.8.19",
 		"solid-transition-group": "^0.2.3"

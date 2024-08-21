@@ -1,36 +1,40 @@
-import type { FlowComponent, Accessor } from 'solid-js';
-import { untrack, createEffect, on, onCleanup, Show } from 'solid-js';
-import { clickOutside } from '$actions';
+import type { JSX, FlowComponent, Accessor } from 'solid-js';
+import { untrack, splitProps, onCleanup, createEffect } from 'solid-js';
+import { clsx } from 'clsx';
 
-interface ModalProps {
+type NativeAttrs = JSX.DialogHtmlAttributes<HTMLDialogElement>;
+type FinalNativeAttrs = Exclude<NativeAttrs, 'open' | 'ref' | 'classList'>;
+
+type ModalProps = FinalNativeAttrs & {
 	isOpen: Accessor<boolean>;
 	setIsOpen?: (value: boolean) => void;
 
-	onClose?: () => void;
-
 	trapFocus: Accessor<boolean>;
+	isModal: boolean;
 }
 
 const Modal: FlowComponent<ModalProps> = (props) => {
-	let modalWindow: HTMLDivElement;
+	const [it, rest] = splitProps(props, ['isOpen', 'setIsOpen', 'trapFocus', 'isModal']);
+
+	let dialog!: HTMLDialogElement;
 
 	const handleKeydown = (event: KeyboardEvent) => {
-		if (untrack(props.isOpen) && event.key === 'Tab') {
-			if (!untrack(props.trapFocus)) {
+		if (untrack(it.isOpen) && event.key === 'Tab') {
+			if (!untrack(it.trapFocus)) {
 				/**
 				 * When multiple Modals are opened we can prevent one from breaking another
 				 */
 				return;
 			}
 
-			if (!modalWindow) {
+			if (!dialog) {
 				/**
-				 * In case modalWindow in undefined
+				 * In case dialog in undefined
 				 */
 				return;
 			}
 
-			const nodes = modalWindow.querySelectorAll('*');
+			const nodes = dialog.querySelectorAll('*');
 			const tabbable = Array.from(nodes).filter((node) => (node as HTMLElement).tabIndex >= 0);
 
 			let index = tabbable.indexOf(document.activeElement!);
@@ -44,30 +48,24 @@ const Modal: FlowComponent<ModalProps> = (props) => {
 		}
 	};
 
-	const close = () => {
-		props.setIsOpen && props.setIsOpen(false);
-		props.onClose && untrack(props.onClose);
-	};
-
-	createEffect(on(props.isOpen, (isOpen) => isOpen && props.onClose && untrack(props.onClose), { defer: true }));
-
 	addEventListener('keydown', handleKeydown);
 	onCleanup(() => removeEventListener('keydown', handleKeydown));
 
+	createEffect(() => {
+		/**
+		 * Modal requires to call `showModal`. When `showModal` is called ::backdrop is visible
+		 */
+		dialog[it.isOpen() ? it.isModal ? 'showModal' : 'show' : 'close']();
+	});
+
 	return (
-		<Show when={props.isOpen()}>
-			<div
-				role="dialog"
-				class="dialog"
-				aria-modal={true}
-				ref={(element) => {
-					modalWindow = element;
-					clickOutside(element, close);
-				}}
-			>
-				{props.children}
-			</div>
-		</Show>
+		<dialog
+			{...rest}
+
+			class={clsx('dialog', rest.class)}
+
+			ref={dialog}
+		/>
 	);
 };
 
