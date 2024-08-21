@@ -11,8 +11,7 @@
 	"devDependencies": {
 		"@novely/vite-plugin-novely": "workspace:^",
 		"typescript": "^5.5.4",
-		"vite": "^4.5.2",
-		"vite-plugin-solid": "^2.7.0"
+		"vite": "^5.4.2"
 	},
 	"dependencies": {
 		"@novely/core": "workspace:*",
@@ -21,9 +20,6 @@
 		"@novely/rive": "workspace:*",
 		"@novely/moment-presser": "workspace:*",
 		"animate.css": "^4.1.1",
-		"modern-normalize": "~2.0.0",
-		"solid-js": "1.8.5",
-		"tsparticles-engine": "^2.10.1",
-		"tsparticles-slim": "^2.10.1"
+		"modern-normalize": "~3.0.0"
 	}
 }
