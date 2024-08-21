@@ -4,8 +4,7 @@ import { Portal } from 'solid-js/web';
 import { Show, createSignal, createEffect, onCleanup, untrack } from 'solid-js';
 import { Transition } from 'solid-transition-group';
 import { useData } from '$context';
-import { capitalize, getDocumentStyles, imagePreloadWithCaching, once } from '$utils';
-import { createRetrieved } from "retrieved";
+import { capitalize, getDocumentStyles, imagePreloadWithCaching, once, createRetrieved } from '$utils';
 import { removeContextState, useContextState } from '../context-state'
 import { useShared, removeShared } from '../shared';
 import { Game } from '$screens';

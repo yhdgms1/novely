@@ -278,9 +278,6 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      retrieved:
-        specifier: ^0.1.0
-        version: 0.1.0
       solid-js:
         specifier: 1.8.19
         version: 1.8.19

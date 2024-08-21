@@ -50,7 +50,7 @@ const imageLoaded = (image: HTMLImageElement) => {
 
 	image.addEventListener('load', async () => {
 		if (image.decode) {
-			await image.decode().catch(() => {})
+			await image.decode().catch(() => { })
 		}
 
 		resolve(true);
@@ -217,7 +217,22 @@ const once = (fn: () => void) => {
 	};
 };
 
+const createRetrieved = <T>(fn: () => T) => {
+	const key = Symbol();
+
+	let value: typeof key | T = key;
+
+	return () => {
+		if (value === key) {
+			value = fn();
+		}
+
+		return value;
+	};
+};
+
 export {
+	createRetrieved,
 	isCSSImage,
 	canvasDrawImages,
 	url,
