@@ -46,3 +46,12 @@ engine.script({
   ]
 })
 ```
+
+## Features Used
+
+Including, but not limited to:
+
+- `Promise.withResolvers`
+- `Array.prototype.findLast`
+- `Array.prototype.findLastIndex`
+- `Array.prototype.at`

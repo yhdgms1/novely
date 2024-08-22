@@ -6,7 +6,7 @@ import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE, AUDIO_
 import { STACK_MAP } from './shared';
 import { DEV } from 'esm-env';
 import { klona } from 'klona/json';
-import { default as memoize } from 'micro-memoize';
+import { memoize } from 'es-toolkit/function';
 import { isAsset } from './asset';
 
 type MatchActionParams = {
@@ -131,58 +131,6 @@ const getLanguage = (languages: string[]) => {
 	return languages[0];
 };
 
-/**
- * @copyright Techlead LLC
- * @see https://learn.javascript.ru/task/throttle
- */
-const throttle = <Fn extends (...args: any[]) => any>(fn: Fn, ms: number) => {
-	let throttled = false,
-		savedArgs: any,
-		savedThis: any;
-
-	function wrapper(this: any, ...args: any[]) {
-		if (throttled) {
-			savedArgs = args;
-			/* eslint-disable @typescript-eslint/no-this-alias */
-			savedThis = this;
-			return;
-		}
-
-		fn.apply(this, args as unknown as any[]);
-
-		throttled = true;
-
-		setTimeout(() => {
-			throttled = false;
-
-			if (savedArgs) {
-				wrapper.apply(savedThis, savedArgs);
-				savedArgs = savedThis = null;
-			}
-		}, ms);
-	}
-
-	return wrapper as unknown as (...args: Parameters<Fn>) => void;
-};
-
-const findLastIndex = <T>(array: T[], fn: (this: T[], item: T, index: number, array: T[]) => boolean) => {
-	for (let i = array.length - 1; i >= 0; i--) {
-		if (fn.call(array, array[i], i, array)) {
-			return i;
-		}
-	}
-
-	return -1;
-};
-
-/**
- * Using this because `Array.prototype.findLast` has not enough support
- * @see https://caniuse.com/?search=findLast
- */
-const findLast = <T>(array: T[], fn: (this: T[], item: T, index: number, array: T[]) => boolean) => {
-	return array[findLastIndex(array, fn)];
-}
-
 type ControlledPromise<T> = Promise<
 	| {
 			value: T;
@@ -233,13 +181,13 @@ const createControlledPromise = <T = void>() => {
 };
 
 const findLastPathItemBeforeItemOfType = (path: Path, name: PathItem[0]) => {
-	const index = findLastIndex(path, ([_name, _value], i, array) => {
+	const item = path.findLast(([_name, _value], i, array) => {
 		const next = array[i + 1];
 
 		return isNull(_name) && isNumber(_value) && next != null && next[0] === name;
 	});
 
-	return path[index] as undefined | [null, number];
+	return item as undefined | [null, number];
 };
 
 const isBlockStatement = (statement: unknown): statement is 'choice' | 'condition' | 'block' => {
@@ -608,18 +556,15 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 	}
 }
 
-const getStack = (ctx: Context) => {
-	const { id } = ctx;
-	const cached = STACK_MAP.get(id);
-
-	if (cached) return cached;
-
-	const stack = [] as unknown as StackHolder;
-
-	STACK_MAP.set(id, stack);
-
-	return stack;
-}
+const getStack = memoize(
+	(_: Context) => {
+		return [] as unknown as StackHolder;
+	},
+	{
+		cache: STACK_MAP,
+		getCacheKey: (ctx) => ctx.id,
+	}
+);
 
 const createUseStackFunction = (renderer: Renderer) => {
 	const useStack = (context: Context | string): UseStackFunctionReturnType => {
@@ -686,7 +631,7 @@ const getUrlFileExtension = (address: string) => {
 	}
 }
 
-const fetchContentType = async (request: typeof fetch, url: string) => {
+const fetchContentType = async (url: string, request: typeof fetch) => {
 	try {
 		const response = await request(url, {
 			method: 'HEAD'
@@ -702,47 +647,42 @@ const fetchContentType = async (request: typeof fetch, url: string) => {
 	}
 }
 
-const getResourseType = memoize(
-	async (request: typeof fetch, url: string) => {
-		/**
-		 * If url is not http we should not check
-		 *
-		 * startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data')
-		 */
-		if (!isCSSImage(url)) {
-			return 'other'
-		}
-
-		const extension = getUrlFileExtension(url);
-
-		if (HOWLER_SUPPORTED_FILE_FORMATS.has(extension as any)) {
-			return 'audio'
-		}
-
-		if (SUPPORTED_IMAGE_FILE_FORMATS.has(extension as any)) {
-			return 'image'
-		}
-
-		/**
-		 * If checks above didn't worked we will fetch content type
-		 * This might not work because of CORS
-		 */
-		const contentType = await fetchContentType(request, url);
-
-		if (contentType.includes('audio')) {
-			return 'audio'
-		}
-
-		if (contentType.includes('image')) {
-			return 'image'
-		}
-
+const getResourseType = memoize(async (url: string, request: typeof fetch) => {
+	/**
+	 * If url is not http we should not check
+	 *
+	 * startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data')
+	 */
+	if (!isCSSImage(url)) {
 		return 'other'
-	},
-	{
-		isPromise: true
 	}
-);
+
+	const extension = getUrlFileExtension(url);
+
+	if (HOWLER_SUPPORTED_FILE_FORMATS.has(extension as any)) {
+		return 'audio'
+	}
+
+	if (SUPPORTED_IMAGE_FILE_FORMATS.has(extension as any)) {
+		return 'image'
+	}
+
+	/**
+	 * If checks above didn't worked we will fetch content type
+	 * This might not work because of CORS
+	 */
+	const contentType = await fetchContentType(url, request);
+
+	if (contentType.includes('audio')) {
+		return 'audio'
+	}
+
+	if (contentType.includes('image')) {
+		return 'image'
+	}
+
+	return 'other'
+});
 
 /**
  * Capitalizes the string
@@ -1051,10 +991,7 @@ export {
 	str,
 	isUserRequiredAction,
 	getLanguage,
-	throttle,
 	isFunction,
-	findLastIndex,
-	findLast,
 	createControlledPromise,
 	findLastPathItemBeforeItemOfType,
 	isBlockStatement,

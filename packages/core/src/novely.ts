@@ -25,7 +25,6 @@ import {
 	matchAction,
 	isEmpty,
 	getLanguage as defaultGetLanguage,
-	throttle,
 	isFunction,
 	createControlledPromise,
 	isAction,
@@ -50,9 +49,10 @@ import {
 	handleImageAsset,
 	toArray
 } from './utils';
+import { throttle } from 'es-toolkit/function';
+import { merge as deepmerge } from 'es-toolkit/object';
 import { dequal } from 'dequal/lite';
 import { store } from './store';
-import { deepmerge } from '@novely/deepmerge';
 import { klona } from 'klona/json';
 import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, MAIN_CONTEXT_KEY } from './constants';
 import { replace as replaceTranslation, flattenAllowedContent } from './translation';
@@ -60,7 +60,6 @@ import { handleCustomAction, getCustomActionHolder } from './custom-action'
 import { localStorageStorage } from './storage';
 import { setupBrowserVisibilityChangeListeners } from './browser';
 import pLimit from 'p-limit';
-
 import { DEV } from 'esm-env';
 import { STACK_MAP, PRELOADED_ASSETS, ASSETS_TO_PRELOAD } from './shared';
 import { enqueueAssetForPreloading, handleAssetsPreloading, huntAssets } from './preloading';
@@ -778,7 +777,7 @@ const novely = <
 	}
 
 	const getResourseTypeForRenderer = (url: string) => {
-		return getResourseType(request, url);
+		return getResourseType(url, request);
 	}
 
 	const getCharacterColor = (c: keyof $Characters) => {

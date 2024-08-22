@@ -23,21 +23,18 @@ importers:
 
   packages/core:
     dependencies:
-      '@novely/deepmerge':
-        specifier: workspace:*
-        version: link:../deepmerge
       dequal:
         specifier: ^2.0.3
         version: 2.0.3
+      es-toolkit:
+        specifier: ^1.16.0
+        version: 1.16.0
       esm-env:
         specifier: ^1.0.0
         version: 1.0.0
       klona:
         specifier: ^2.0.6
         version: 2.0.6
-      micro-memoize:
-        specifier: ^4.1.2
-        version: 4.1.2
       p-limit:
         specifier: ^6.1.0
         version: 6.1.0
@@ -1359,6 +1356,9 @@ packages:
 
   emoji-regex@9.2.2:
     resolution: {integrity: sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==}
+
+  es-toolkit@1.16.0:
+    resolution: {integrity: sha512-eNJh3zF1KmAHRYd1D8rFi1cMFMCjrC6tumBfwuuZdSur97mED/ifyeBoGzxS11L4owCMx3XSmWTo6oxJQkdGng==}
 
   esbuild-plugin-solid@0.6.0:
     resolution: {integrity: sha512-V1FvDALwLDX6K0XNYM9CMRAnMzA0+Ecu55qBUT9q/eAJh1KIDsTMFoOzMSgyHqbOfvrVfO3Mws3z7TW2GVnIZA==}
@@ -2946,6 +2946,8 @@ snapshots:
   emoji-regex@8.0.0: {}
 
   emoji-regex@9.2.2: {}
+
+  es-toolkit@1.16.0: {}
 
   esbuild-plugin-solid@0.6.0(esbuild@0.23.0)(solid-js@1.8.19):
     dependencies:
