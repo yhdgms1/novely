@@ -259,23 +259,23 @@ importers:
         version: link:../typewriter
       '@solid-primitives/destructure':
         specifier: ^0.1.17
-        version: 0.1.17(solid-js@1.8.19)
+        version: 0.1.17(solid-js@1.8.21)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
       solid-js:
-        specifier: 1.8.19
-        version: 1.8.19
+        specifier: 1.8.21
+        version: 1.8.21
       solid-transition-group:
         specifier: ^0.2.3
-        version: 0.2.3(solid-js@1.8.19)
+        version: 0.2.3(solid-js@1.8.21)
     devDependencies:
       esbuild:
         specifier: ^0.23.0
         version: 0.23.0
       esbuild-plugin-solid:
         specifier: ^0.6.0
-        version: 0.6.0(esbuild@0.23.0)(solid-js@1.8.19)
+        version: 0.6.0(esbuild@0.23.0)(solid-js@1.8.21)
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
@@ -1799,9 +1799,6 @@ packages:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
 
-  solid-js@1.8.19:
-    resolution: {integrity: sha512-h8z/TvTQYsf894LM9Iau/ZW2iAKrCzAWDwjPhMcXnonmW1OIIihc28wp82b1wwei1p81fH5+gnfNOe8RzLbDRQ==}
-
   solid-js@1.8.21:
     resolution: {integrity: sha512-FHUGdoo7GVa1BTpGh/4UtwIISde0vSXoqNB6KFpHiTgkIY959tmCJ7NYQAWDfScBfnpoMGZR8lFz0DiwW/gFlw==}
 
@@ -2598,37 +2595,19 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.21.0':
     optional: true
 
-  '@solid-primitives/destructure@0.1.17(solid-js@1.8.19)':
-    dependencies:
-      '@solid-primitives/utils': 6.2.3(solid-js@1.8.19)
-      solid-js: 1.8.19
-
   '@solid-primitives/destructure@0.1.17(solid-js@1.8.21)':
     dependencies:
       '@solid-primitives/utils': 6.2.3(solid-js@1.8.21)
       solid-js: 1.8.21
-
-  '@solid-primitives/refs@1.0.8(solid-js@1.8.19)':
-    dependencies:
-      '@solid-primitives/utils': 6.2.3(solid-js@1.8.19)
-      solid-js: 1.8.19
 
   '@solid-primitives/refs@1.0.8(solid-js@1.8.21)':
     dependencies:
       '@solid-primitives/utils': 6.2.3(solid-js@1.8.21)
       solid-js: 1.8.21
 
-  '@solid-primitives/transition-group@1.0.5(solid-js@1.8.19)':
-    dependencies:
-      solid-js: 1.8.19
-
   '@solid-primitives/transition-group@1.0.5(solid-js@1.8.21)':
     dependencies:
       solid-js: 1.8.21
-
-  '@solid-primitives/utils@6.2.3(solid-js@1.8.19)':
-    dependencies:
-      solid-js: 1.8.19
 
   '@solid-primitives/utils@6.2.3(solid-js@1.8.21)':
     dependencies:
@@ -2948,16 +2927,6 @@ snapshots:
   emoji-regex@9.2.2: {}
 
   es-toolkit@1.16.0: {}
-
-  esbuild-plugin-solid@0.6.0(esbuild@0.23.0)(solid-js@1.8.19):
-    dependencies:
-      '@babel/core': 7.22.5
-      '@babel/preset-typescript': 7.22.5(@babel/core@7.22.5)
-      babel-preset-solid: 1.7.4(@babel/core@7.22.5)
-      esbuild: 0.23.0
-      solid-js: 1.8.19
-    transitivePeerDependencies:
-      - supports-color
 
   esbuild-plugin-solid@0.6.0(esbuild@0.23.0)(solid-js@1.8.21):
     dependencies:
@@ -3388,23 +3357,11 @@ snapshots:
 
   slash@3.0.0: {}
 
-  solid-js@1.8.19:
-    dependencies:
-      csstype: 3.1.2
-      seroval: 1.1.1
-      seroval-plugins: 1.1.1(seroval@1.1.1)
-
   solid-js@1.8.21:
     dependencies:
       csstype: 3.1.2
       seroval: 1.1.1
       seroval-plugins: 1.1.1(seroval@1.1.1)
-
-  solid-transition-group@0.2.3(solid-js@1.8.19):
-    dependencies:
-      '@solid-primitives/refs': 1.0.8(solid-js@1.8.19)
-      '@solid-primitives/transition-group': 1.0.5(solid-js@1.8.19)
-      solid-js: 1.8.19
 
   solid-transition-group@0.2.3(solid-js@1.8.21):
     dependencies:
