@@ -35,7 +35,10 @@ type HandleAssetsPreloadingOptions = {
 const handleAssetsPreloading = async ({ request, limiter, preloadAudioBlocking, preloadImageBlocking }: HandleAssetsPreloadingOptions) => {
   const list = mapSet(ASSETS_TO_PRELOAD, (asset) => {
     return limiter(async () => {
-      const type = await getResourseType(asset, request);
+      const type = await getResourseType({
+        url: asset,
+        request
+      });
 
       switch (type) {
         case 'audio': {

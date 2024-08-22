@@ -799,7 +799,10 @@ const novely = <
 	}
 
 	const getResourseTypeForRenderer = (url: string) => {
-		return getResourseType(url, request);
+		return getResourseType({
+			url,
+			request
+		});
 	}
 
 	const getCharacterColor = (c: keyof $Characters) => {

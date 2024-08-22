@@ -648,42 +648,52 @@ const fetchContentType = async (url: string, request: typeof fetch) => {
 	}
 }
 
-const getResourseType = memoize(async (url: string, request: typeof fetch) => {
-	/**
-	 * If url is not http we should not check
-	 *
-	 * startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data')
-	 */
-	if (!isCSSImage(url)) {
+type GetResourceTypeParams = {
+	url: string;
+	request: typeof fetch;
+}
+
+const getResourseType = memoize(
+	async ({ url, request }: GetResourceTypeParams) => {
+		/**
+		 * If url is not http we should not check
+		 *
+		 * startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data')
+		 */
+		if (!isCSSImage(url)) {
+			return 'other'
+		}
+
+		const extension = getUrlFileExtension(url);
+
+		if (HOWLER_SUPPORTED_FILE_FORMATS.has(extension as any)) {
+			return 'audio'
+		}
+
+		if (SUPPORTED_IMAGE_FILE_FORMATS.has(extension as any)) {
+			return 'image'
+		}
+
+		/**
+		 * If checks above didn't worked we will fetch content type
+		 * This might not work because of CORS
+		 */
+		const contentType = await fetchContentType(url, request);
+
+		if (contentType.includes('audio')) {
+			return 'audio'
+		}
+
+		if (contentType.includes('image')) {
+			return 'image'
+		}
+
 		return 'other'
+	},
+	{
+		getCacheKey: ({ url }) => url
 	}
-
-	const extension = getUrlFileExtension(url);
-
-	if (HOWLER_SUPPORTED_FILE_FORMATS.has(extension as any)) {
-		return 'audio'
-	}
-
-	if (SUPPORTED_IMAGE_FILE_FORMATS.has(extension as any)) {
-		return 'image'
-	}
-
-	/**
-	 * If checks above didn't worked we will fetch content type
-	 * This might not work because of CORS
-	 */
-	const contentType = await fetchContentType(url, request);
-
-	if (contentType.includes('audio')) {
-		return 'audio'
-	}
-
-	if (contentType.includes('image')) {
-		return 'image'
-	}
-
-	return 'other'
-});
+);
 
 /**
  * Capitalizes the string
