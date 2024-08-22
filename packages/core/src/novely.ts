@@ -47,7 +47,9 @@ import {
 	handleAudioAsset,
 	getCharactersData,
 	handleImageAsset,
-	toArray
+	toArray,
+	getLanguageFromStore,
+	getVolumeFromStore
 } from './utils';
 import { throttle } from 'es-toolkit/function';
 import { merge as deepmerge } from 'es-toolkit/object';
@@ -199,8 +201,18 @@ const novely = <
 
 			return (...props: Parameters<Actions[Action]>) => {
 				if (preloadAssets === 'blocking') {
-					// @ts-expect-error
-					huntAssets({ characters, action, props, handle: enqueueAssetForPreloading })
+					huntAssets({
+						action: action as any,
+						props: props as any,
+
+						mode: preloadAssets,
+						characters,
+
+						lang: getLanguageFromStore(storageData),
+						volume: getVolumeFromStore(storageData),
+
+						handle: enqueueAssetForPreloading
+					});
 				}
 
 				return [action, ...props] as ValidAction;
@@ -719,8 +731,18 @@ const novely = <
 			if (action === 'vibrate') return;
 			if (action === 'end') return;
 
-			// @ts-expect-error
-			huntAssets({ characters, action, props, handle: assets.push.bind(assets) })
+			huntAssets({
+				action,
+				props: props as any,
+
+				mode: preloadAssets,
+				characters,
+
+				lang: getLanguageFromStore(storageData),
+				volume: getVolumeFromStore(storageData),
+
+				handle: assets.push.bind(assets)
+			});
 
 			return match(action, props, {
 				ctx,
@@ -872,8 +894,18 @@ const novely = <
 				})
 
 				for (const [action, ...props] of collection) {
-					// @ts-expect-error
-					huntAssets({ characters, action, props, handle: enqueueAssetForPreloading })
+					huntAssets({
+						action,
+						props: props as any,
+
+						mode: preloadAssets,
+						characters,
+
+						lang: getLanguageFromStore(storageData),
+						volume: getVolumeFromStore(storageData),
+
+						handle: enqueueAssetForPreloading
+					});
 				}
 
 				handleAssetsPreloading({
@@ -1019,7 +1051,7 @@ const novely = <
 			const { restoring, goingBack, preview } = ctx.meta;
 
 			const result = fn({
-				lang: storageData.get().meta[0],
+				lang: getLanguageFromStore(storageData),
 				goingBack,
 				restoring,
 				preview,
@@ -1048,7 +1080,7 @@ const novely = <
 
 			const transformedChoices = choices.map(([content, action, visible]) => {
 				const shown = !visible || visible({
-					lang: storageData.get().meta[0],
+					lang: getLanguageFromStore(storageData),
 					state: getStateAtCtx(ctx)
 				});
 
@@ -1179,7 +1211,7 @@ const novely = <
 			}
 
 			const state = getStateFunction(ctx);
-			const lang = storageData.get().meta[0]
+			const lang = getLanguageFromStore(storageData)
 
 			const result = handleCustomAction(ctx, fn, {
 				...ctx.custom(fn),

@@ -1,7 +1,8 @@
 import type { DefaultActionProxy, CustomHandler, Story, ValidAction, GetActionParameters } from './action';
 import type { Character } from './character';
-import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, Lang, NovelyAsset, CharactersData } from './types';
+import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, Lang, NovelyAsset, CharactersData, StorageData } from './types';
 import type { Context, Renderer } from './renderer';
+import type { Stored } from './store';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE, AUDIO_ACTIONS, HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from './constants';
 import { STACK_MAP } from './shared';
 import { DEV } from 'esm-env';
@@ -980,6 +981,20 @@ const toArray = <T>(target: T | T[]) => {
 	return Array.isArray(target) ? target : [target]
 }
 
+const getLanguageFromStore = <$Language extends Lang>(store: Stored<StorageData<$Language, any>>) => {
+	return store.get().meta[0];
+}
+
+const getVolumeFromStore = <$Language extends Lang>(store: Stored<StorageData<$Language, any>>) => {
+	const { meta } = store.get();
+
+	return {
+		music: meta[2],
+		sound: meta[3],
+		voice: meta[4]
+	}
+}
+
 export {
 	matchAction,
 	isNumber,
@@ -1022,7 +1037,9 @@ export {
 	handleAudioAsset,
 	handleImageAsset,
 	getCharactersData,
-	toArray
+	toArray,
+	getLanguageFromStore,
+	getVolumeFromStore
 };
 
 export type { MatchActionOptions, ControlledPromise, MatchActionMapComplete }

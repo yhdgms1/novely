@@ -148,6 +148,8 @@ type CharactersData<$Characters extends Record<string, Character<Lang>>> = {
 	}
 }
 
+type AssetsPreloading = 'lazy' | 'blocking' | 'automatic';
+
 interface NovelyInit<
 	$Language extends Lang,
 	$Characters extends Record<string, Character<NoInfer<$Language>>>,
@@ -333,7 +335,7 @@ interface NovelyInit<
 	/**
 	 * @default "lazy"
 	 */
-	preloadAssets?: 'lazy' | 'blocking' | 'automatic';
+	preloadAssets?: AssetsPreloading;
 	/**
 	 * Fetching function
 	 */
@@ -405,5 +407,6 @@ export type {
 	Assign,
 	CharacterAssetSizes,
 	NovelyAsset,
-	CharactersData
+	CharactersData,
+	AssetsPreloading
 };
