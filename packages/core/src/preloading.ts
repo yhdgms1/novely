@@ -117,7 +117,11 @@ const huntAssets = ({ volume, lang, mode, characters, action, props, handle }: H
         if (isImageAsset(value)) {
           handle(value)
         } else if (isAsset(value)) {
-          handle(handleImageAsset(value))
+          const unwrapped = handleImageAsset(value);
+
+          if (isImageAsset(unwrapped)) {
+            handle(unwrapped)
+          }
         }
       }
     }
