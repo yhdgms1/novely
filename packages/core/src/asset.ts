@@ -9,17 +9,22 @@ import { memoize, once } from 'es-toolkit/function';
 /**
  * Function to get assets type. All assets must be of the same type. Only works with supported types.
  */
-const getType = memoize((extensions: string[]) => {
-  if (extensions.every((extension) => HOWLER_SUPPORTED_FILE_FORMATS.has(extension as any))) {
-    return 'audio';
-  }
+const getType = memoize(
+  (extensions: string[]) => {
+    if (extensions.every((extension) => HOWLER_SUPPORTED_FILE_FORMATS.has(extension as any))) {
+      return 'audio';
+    }
 
-  if (extensions.every((extension) => SUPPORTED_IMAGE_FILE_FORMATS.has(extension as any))) {
-    return 'image';
-  }
+    if (extensions.every((extension) => SUPPORTED_IMAGE_FILE_FORMATS.has(extension as any))) {
+      return 'image';
+    }
 
-  throw extensions;
-})
+    throw extensions;
+  },
+  {
+    getCacheKey: (extensions) => extensions.join('~')
+  }
+);
 
 const SUPPORT_MAPS = {
   'image': imageSupport,
