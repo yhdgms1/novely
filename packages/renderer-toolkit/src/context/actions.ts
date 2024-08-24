@@ -276,6 +276,7 @@ const handleInputAction = ($contextState: DeepAtom<ContextStateStore<Record<Prop
 
   input.setAttribute('type', 'text')
   input.setAttribute('name', 'novely-input')
+  input.setAttribute('id', 'novely-input')
   input.setAttribute('required', 'true')
   input.setAttribute('autocomplete', 'off')
 

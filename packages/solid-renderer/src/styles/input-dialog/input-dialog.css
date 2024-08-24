@@ -1,15 +1,4 @@
-.input-dialog-label {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-
-	font-size: 1.2375rem;
-
-	width: 100%;
-}
-
-.input-dialog-label-text {
+.input-dialog__text {
 	font-size: 1.2375rem;
 
 	margin: 0.4rem 0;
@@ -26,32 +15,15 @@
 	text-align: center;
 }
 
-.input-dialog-label > input {
-	min-width: min(10rem, 100%);
-	max-width: 100%;
-}
+.input-dialog__label {
+	margin-block-end: 0.6rem;
 
-/* #checkbox start */
-
-.input-dialog-label:has(input[type="checkbox"]) {
-	gap: 1.25rem;
-
-	flex-direction: row;
-}
-
-.input-dialog-label:has(input[type="checkbox"]) .input-dialog-label-text {
 	width: auto;
 }
 
-.input-dialog-label > input[type="checkbox"] {
-	min-width: unset;
-}
-
-/* #checkbox end */
-
-.input-dialog-label__error {
-	min-height: 2rem;
-	min-height: 2lh;
+.input-dialog__error {
+	min-height: 1rem;
+	min-height: 1lh;
 }
 
 .input-dialog {
@@ -74,11 +46,11 @@
 }
 
 @media (max-aspect-ratio: 0.8) {
-  .input-dialog-label-text {
+  .input-dialog__text {
 		width: calc(100vw - 0.5rem);
 	}
 
-	.input-dialog-label__error {
+	.input-dialog__error {
 		min-height: 3rem;
 		min-height: 3lh;
 	}

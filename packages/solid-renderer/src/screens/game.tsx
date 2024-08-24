@@ -298,12 +298,13 @@ const Game: VoidComponent<GameProps> = (props) => {
 				isOpen={() => input().visible}
 				trapFocus={() => !props.isPreview && !exitPromptShown()}
 			>
-				<label for="novely-input" class="input-dialog-label">
-					<span class="input-dialog-label-text">{input().label}</span>
-					{input().element}
+				<label for="novely-input" class="input-dialog__text input-dialog__label">
+					{input().label}
 				</label>
 
-				<span class="input-dialog-label-text input-dialog-label__error" aria-live="polite" aria-atomic="true">
+				{input().element}
+
+				<span class="input-dialog__text input-dialog__error" aria-live="polite" aria-atomic="true">
 					{input().error}
 				</span>
 
