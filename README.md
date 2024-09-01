@@ -6,11 +6,15 @@ Novel Engine for creating interactive stories
 - **TypeScript**: Development with efficiency, type checking, and smart auto complete
 - **Modularity in Mind**: Opt-in features, instead of opting-out! Lightweight and highly customizable
 
-## Installation
+## Community
 
-- [Getting Started](https://novely.deno.dev/guide/getting-started.html)
+We have a [Discord](https://discord.gg/h2U63hx4GR) server
 
-## Documentation
+## Demo
+
+You can see working demo [here](https://novely-demo.deno.dev/)
+
+## Documentation and Getting Started
 
 You can find documentation on the [website](https://novely.deno.dev/guide/getting-started.html).
 
@@ -46,14 +50,6 @@ engine.script({
   ]
 })
 ```
-
-## Community
-
-We have a [Discord](https://discord.gg/h2U63hx4GR) server
-
-## Demo
-
-You can see working demo [here](https://novely-demo.deno.dev/)
 
 ## License
 
