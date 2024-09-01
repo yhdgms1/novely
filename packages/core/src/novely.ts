@@ -1117,13 +1117,6 @@ const novely = <
 				}
 
 				// todo: calculate offset dynamically
-				// maybe even use object
-				// action.choice({
-				//   label: { ru: 'фцв', en: 'awd' },
-				//   choices: [
-				//     { label: 'Something', children: [], active: (state) => state.something > 15 }
-			  //   ]
-			  // })
 
 				stack.value[0].push(['choice', selected + offset], [null, 0]);
 				render(ctx);
@@ -1220,6 +1213,7 @@ const novely = <
 				...ctx.custom(fn),
 				state,
 				lang,
+				getStack: useStack
 			})
 
 			const next = () => {

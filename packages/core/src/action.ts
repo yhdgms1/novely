@@ -1,6 +1,6 @@
 import type { Character } from './character';
 import type { Context } from './renderer';
-import type { Thenable, NonEmptyRecord, StateFunction, State, Lang, NovelyAsset } from './types';
+import type { Thenable, NonEmptyRecord, StateFunction, State, Lang, NovelyAsset, Path } from './types';
 
 type ValidAction =
 	| ['choice', number]
@@ -68,6 +68,13 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 	 * ```
 	 */
 	getDomNodes: CustomHandlerFunctionGetFn;
+
+	/**
+	 * Function to get current Path. Path can be mutated. Can be helpful when making complex custom actions.
+	 *
+	 * Only use it when you know what you do
+	 */
+	getPath: () => Path;
 
 	/**
 	 * Renderer Context

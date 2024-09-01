@@ -1,6 +1,6 @@
 import type { CustomHandler, CustomHandlerGetResult, CustomHandlerFunctionGetFn } from './action'
 import type { Context, CustomActionHandle } from './renderer';
-import type { Lang, State, StateFunction } from './types';
+import type { Lang, Stack, State, StateFunction } from './types';
 import { CUSTOM_ACTION_MAP } from './shared'
 import { noop } from './utils';
 
@@ -31,7 +31,11 @@ type HandleCustomActionOptions = CustomActionHandle & {
   /**
    * Current Game Language
    */
-  lang: Lang
+  lang: Lang,
+  /**
+   * Function to get Stack
+   */
+  getStack: (ctx: Context) => Stack
 }
 
 const createCustomActionNode = (id: string) => {
@@ -61,7 +65,7 @@ const getCustomActionHolder = (ctx: Context, fn: CustomHandler) => {
   return holder;
 }
 
-const handleCustomAction = (ctx: Context, fn: CustomHandler, { lang, state, setMountElement, setClear, remove: renderersRemove }: HandleCustomActionOptions) => {
+const handleCustomAction = (ctx: Context, fn: CustomHandler, { lang, state, setMountElement, setClear, remove: renderersRemove, getStack }: HandleCustomActionOptions) => {
   const holder = getCustomActionHolder(ctx, fn);
 
   const flags = {
@@ -117,6 +121,12 @@ const handleCustomAction = (ctx: Context, fn: CustomHandler, { lang, state, setM
     renderersRemove();
   }
 
+  const stack = getStack(ctx);
+
+  const getPath = () => {
+    return stack.value[0]
+  }
+
   return fn({
     flags,
 
@@ -130,7 +140,9 @@ const handleCustomAction = (ctx: Context, fn: CustomHandler, { lang, state, setM
 
     rendererContext: ctx,
 
-    getDomNodes: getDomNodes as CustomHandlerFunctionGetFn
+    getDomNodes: getDomNodes as CustomHandlerFunctionGetFn,
+
+    getPath
   });
 }
 
