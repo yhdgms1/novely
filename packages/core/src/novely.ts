@@ -1484,7 +1484,7 @@ const novely = <
 		 */
 		typeEssentials,
 		/**
-		 * Replaces content inside {{braces}} with using global data
+		 * Replaces content inside {{braces}} using global data
 		 * @example
 		 * ```ts
 		 * data({ name: 'Alexei' })
@@ -1497,6 +1497,12 @@ const novely = <
 		 */
 		templateReplace(content: TextContent<$Language, $Data>) {
 			return templateReplace(content as TextContent<$Language, Data>)
+		},
+		/**
+		 * Same as `templateReplace` but uses state and requires explicitly providing it
+		 */
+		templateReplaceState(content: TextContent<$Language, $State>, state: State) {
+			return templateReplace(content as TextContent<$Language, State>, state);
 		},
 		/**
 		 * Cancel data loading, hide UI, ignore page change events
