@@ -5,10 +5,11 @@ import type { RendererStateStore, ContextStateStore, DeepAtom } from '@novely/re
 import type { EmitterEventsMap, RendererStoreExtension, SettingsIcons } from '../types';
 import type { Context } from '@novely/core';
 import { memo } from '@novely/renderer-toolkit';
-import { Switch, Match, createEffect, from, Show } from 'solid-js';
+import { Switch, Match, createEffect, Show } from 'solid-js';
 import { Provider } from '$context';
 import { useShared } from '../shared';
 import { Game, MainMenu, Saves, Settings, Loading, CustomScreen } from '$screens';
+import { from } from '$utils';
 
 type CreateRootComponentOpts = {
   setRoot: (root: HTMLDivElement) => void

@@ -1,4 +1,6 @@
-import { untrack, batch } from 'solid-js';
+import type { Atom } from '@novely/renderer-toolkit';
+import type { Stored } from '@novely/core';
+import { untrack, batch, createSignal, onCleanup } from 'solid-js';
 import { PRELOADED_IMAGE_MAP, PRELOADING_IMAGE_MAP } from './shared';
 import { noop } from '@novely/renderer-toolkit';
 
@@ -214,6 +216,19 @@ const createRetrieved = <T>(fn: () => T) => {
 	};
 };
 
+/**
+ * Like solid-js's from, but has initial value
+ */
+const from = <T>(producer: Atom<T> | Stored<T>) => {
+  const [s, set] = createSignal(producer.get(), {
+    equals: false
+  });
+
+  onCleanup(producer.subscribe(set));
+
+  return s;
+}
+
 export {
 	createRetrieved,
 	isCSSImage,
@@ -227,5 +242,6 @@ export {
 	once,
 	imageLoaded,
 	imagePreloadWithCaching,
-	imagePreloadWithCachingNotComplete
+	imagePreloadWithCachingNotComplete,
+	from
 };

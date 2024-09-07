@@ -3,12 +3,13 @@ import type { VoidComponent } from 'solid-js';
 import type { SolidRendererStore } from '../renderer';
 import type { ContextStateStore, DeepAtom } from '@novely/renderer-toolkit'
 
-import { createSignal, untrack, For, Show, createUniqueId, createEffect, createMemo, from } from 'solid-js';
+import { createSignal, untrack, For, Show, createUniqueId, createEffect, createMemo } from 'solid-js';
 import { Character, DialogName, Modal, Icon, ControlPanelButtons, createTypewriter, Canvas } from '$components';
 import { clickOutside } from '$actions';
 import { useData } from '$context';
 import { canvasDrawImages, imagePreloadWithCaching, isCSSImage, onKey } from '$utils';
 import { destructure } from "@solid-primitives/destructure";
+import { from } from '$utils';
 
 interface GameProps {
 	context: Context;
@@ -27,20 +28,10 @@ interface GameProps {
 const Game: VoidComponent<GameProps> = (props) => {
 	const data = useData();
 
-	const { $contextState } = props;
-
-	const contextState = () => {
-		const accessor = from($contextState);
-
-		return () => {
-			return accessor()!;
-		}
-	}
-
-	const { text, dialog, characters, choice, input, background, custom } = destructure(contextState());
+	const { text, dialog, characters, choice, input, background, custom } = destructure(from(props.$contextState));
 
 	const rendererState = from(data.$rendererState);
-	const exitPromptShown = () => rendererState()!.exitPromptShown;
+	const exitPromptShown = () => rendererState().exitPromptShown;
 
 	/**
 	 * Can be destructured because these are passed without getters
