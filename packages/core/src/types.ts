@@ -150,6 +150,8 @@ type CharactersData<$Characters extends Record<string, Character<Lang>>> = {
 
 type AssetsPreloading = 'lazy' | 'blocking' | 'automatic';
 
+type CloneFN = <T>(value: T) => T;
+
 interface NovelyInit<
 	$Language extends Lang,
 	$Characters extends Record<string, Character<NoInfer<$Language>>>,
@@ -339,7 +341,11 @@ interface NovelyInit<
 	/**
 	 * Fetching function
 	 */
-	fetch?: typeof fetch
+	fetch?: typeof fetch;
+	/**
+	 * Function for clonning operations
+	 */
+	cloneFunction?: CloneFN;
 	/**
 	 * When page is going to be unloaded will call `storage.set` method
 	 * If 'prod' is passed enable only in production env.
@@ -408,5 +414,6 @@ export type {
 	CharacterAssetSizes,
 	NovelyAsset,
 	CharactersData,
-	AssetsPreloading
+	AssetsPreloading,
+	CloneFN
 };

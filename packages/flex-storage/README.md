@@ -5,7 +5,7 @@ Flex storage uses [seroval](https://github.com/lxsmnsyc/seroval) for serializing
 ## Usage
 
 ```ts
-import { flexStorage, adapterLocalStorage } from '@novely/flex-storage';
+import { flexStorage, adapterLocalStorage, cloneFunction } from '@novely/flex-storage';
 
 const storage = flexStorage({
 	adapter: adapterLocalStorage()
@@ -13,6 +13,7 @@ const storage = flexStorage({
 
 const engine = novely({
   ...,
-  storage
+  storage,
+  cloneFunction
 });
 ```

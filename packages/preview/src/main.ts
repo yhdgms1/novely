@@ -1,6 +1,6 @@
 import { novely, asset, RU, EN, extendAction, TextContent, ValidAction, CustomHandler } from '@novely/core';
 import { createSolidRenderer } from '@novely/solid-renderer';
-import { flexStorage, adapterLocalStorage } from '@novely/flex-storage';
+import { flexStorage, adapterLocalStorage, cloneFunction } from '@novely/flex-storage';
 
 import { showParticles, hideParticles } from '@novely/particles';
 import { snow } from './particles';
@@ -92,7 +92,6 @@ const engine = novely({
 
 	state: {
 		age: 0,
-		data: Uint8Array
 	},
 
 	autosaves: true,

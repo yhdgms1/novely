@@ -93,8 +93,9 @@ const novely = <
 	preloadAssets = 'lazy',
 	parallelAssetsDownloadLimit = 15,
 	fetch: request = fetch,
+	cloneFunction: clone = klona,
 	saveOnUnload = true,
-	startKey = 'start'
+	startKey = 'start',
 }: NovelyInit<$Language, $Characters, $State, $Data, $Actions>) => {
 	// Local type declaration to not repeat code
 	/**
@@ -258,7 +259,7 @@ const novely = <
 	 */
 	const initialData: StorageData<$Language, $Data> = {
 		saves: [],
-		data: klona(defaultData),
+		data: clone(defaultData),
 		meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED, 1, 1, 1],
 	};
 
@@ -350,7 +351,7 @@ const novely = <
 	 */
 	storageDelay.then(getStoredData);
 
-	const initial = getDefaultSave(klona(defaultState));
+	const initial = getDefaultSave(clone(defaultState));
 
 	const unsubscribeFromBrowserVisibilityChange = setupBrowserVisibilityChangeListeners({
 		onChange: throttledEmergencyOnStorageDataChange
@@ -368,7 +369,7 @@ const novely = <
 		 * Saves only possible in main context, so there is no reason for context to be used here
 		 */
 		const stack = useStack(MAIN_CONTEXT_KEY);
-		const current = klona(stack.value);
+		const current = clone(stack.value);
 
 		storageData.update((prev) => {
 			const replace = () => {
@@ -428,7 +429,7 @@ const novely = <
 	const newGame = () => {
 		if (!coreData.get().dataLoaded) return;
 
-		const save = getDefaultSave(klona(defaultState));
+		const save = getDefaultSave(clone(defaultState));
 
 		/**
 		 * Initial save is automatic, and should be ignored when autosaves is turned off
@@ -483,7 +484,7 @@ const novely = <
 		 * When there is no save, make a new save
 		 */
 		if (!latest) {
-			latest = klona(initial)
+			latest = clone(initial)
 
 			storageData.update((prev) => {
 				/**
@@ -722,7 +723,7 @@ const novely = <
 			skip: EMPTY_SET,
 		});
 
-		useStack(ctx).push(klona(save));
+		useStack(ctx).push(clone(save));
 
 		const assets: string[] = [];
 
@@ -854,7 +855,7 @@ const novely = <
 
 		const stack = useStack(ctx);
 
-		const current = klona(stack.value);
+		const current = clone(stack.value);
 
 		current[2][1] = 'auto';
 
@@ -892,8 +893,9 @@ const novely = <
 
 			try {
 				const collection = collectActionsBeforeBlockingAction({
-					path: nextPath(klona(useStack(ctx).value[0])),
-					refer
+					path: nextPath(clone(useStack(ctx).value[0])),
+					refer,
+					clone
 				})
 
 				for (const [action, ...props] of collection) {
@@ -1407,7 +1409,7 @@ const novely = <
 	}
 
 	const getCurrentStorageData = () => {
-		return coreData.get().dataLoaded ? klona(storageData.get()) : null;
+		return coreData.get().dataLoaded ? clone(storageData.get()) : null;
 	}
 
 	const setStorageData = (data: StorageData<$Language, $Data>) => {

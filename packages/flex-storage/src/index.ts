@@ -1,7 +1,7 @@
 import type { StorageData, NovelyStorage } from '@novely/core';
 import type { Adapter, AdapterLocalStorageOptions, Options } from './types'
 import { compress, decompress } from 'lz-string';
-import { serializeAsync, deserialize } from 'seroval';
+import { serialize, deserialize } from 'seroval';
 
 const getDefault = (): StorageData => {
   /**
@@ -34,7 +34,7 @@ const flexStorage = ({ adapter }: Options): NovelyStorage => {
     },
     async set(data) {
       try {
-        const serialized = await serializeAsync(data);
+        const serialized = await serialize(data);
         const compressed = compress(serialized);
 
         await adapter.set(compressed);
@@ -60,9 +60,14 @@ const adapterLocalStorage = ({ key = 'flex-novely-storage' }: AdapterLocalStorag
   }
 }
 
+const cloneFunction = <T>(input: T) => {
+  return deserialize<T>(serialize(input));
+}
+
 export {
   flexStorage,
-  adapterLocalStorage
+  adapterLocalStorage,
+  cloneFunction
 }
 
 export type {

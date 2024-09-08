@@ -1,12 +1,11 @@
 import type { DefaultActionProxy, CustomHandler, Story, ValidAction, GetActionParameters } from './action';
 import type { Character } from './character';
-import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, Lang, NovelyAsset, CharactersData, StorageData } from './types';
+import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, Lang, NovelyAsset, CharactersData, StorageData, CloneFN } from './types';
 import type { Context, Renderer } from './renderer';
 import type { Stored } from './store';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE, AUDIO_ACTIONS, HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from './constants';
 import { STACK_MAP } from './shared';
 import { DEV } from 'esm-env';
-import { klona } from 'klona/full';
 import { memoize } from 'es-toolkit/function';
 import { isAsset } from './asset';
 
@@ -872,9 +871,10 @@ const isBlockingAction = (action: Exclude<ValidAction, ValidAction[]>) => {
 type CollectActionsBeforeBlockingActionOptions = {
 	path: Path;
 	refer: ReferFunction;
+	clone: CloneFN;
 }
 
-const collectActionsBeforeBlockingAction = ({ path, refer }: CollectActionsBeforeBlockingActionOptions) => {
+const collectActionsBeforeBlockingAction = ({ path, refer, clone }: CollectActionsBeforeBlockingActionOptions) => {
 	const collection: Exclude<ValidAction, ValidAction[]>[] = []
 
 	let action = refer(path);
@@ -909,13 +909,14 @@ const collectActionsBeforeBlockingAction = ({ path, refer }: CollectActionsBefor
 					 */
 					if (!Array.isArray(branchContent)) continue;
 
-					const virtualPath = klona(path)
+					const virtualPath = clone(path)
 
 					virtualPath.push(['choice', i], [null, 0])
 
 					const innerActions = collectActionsBeforeBlockingAction({
 						path: virtualPath,
-						refer
+						refer,
+						clone
 					});
 
 					collection.push(...innerActions);
@@ -925,13 +926,14 @@ const collectActionsBeforeBlockingAction = ({ path, refer }: CollectActionsBefor
 				const conditions = Object.keys(conditionProps[1]);
 
 				for (const condition of conditions) {
-					const virtualPath = klona(path)
+					const virtualPath = clone(path)
 
 					virtualPath.push(['condition', condition], [null, 0])
 
 					const innerActions = collectActionsBeforeBlockingAction({
 						path: virtualPath,
-						refer
+						refer,
+						clone
 					});
 
 					collection.push(...innerActions);
