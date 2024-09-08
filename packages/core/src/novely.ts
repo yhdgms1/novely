@@ -220,7 +220,7 @@ const novely = <
 		},
 	});
 
-	const getDefaultSave = (state = {}) => {
+	const getDefaultSave = (state: $State) => {
 		return [
 			[
 				['jump', startKey],
@@ -228,7 +228,7 @@ const novely = <
 			],
 			state,
 			[intime(Date.now()), 'auto'],
-		] as Save;
+		] as Save<$State>;
 	};
 
 	/**
