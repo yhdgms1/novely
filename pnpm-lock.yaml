@@ -124,6 +124,25 @@ importers:
         specifier: ^0.5.6
         version: 0.5.6
 
+  packages/flex-storage:
+    dependencies:
+      '@novely/core':
+        specifier: workspace:*
+        version: link:../core
+      lz-string:
+        specifier: ^1.5.0
+        version: 1.5.0
+      seroval:
+        specifier: ^1.1.1
+        version: 1.1.1
+    devDependencies:
+      tsup:
+        specifier: ^8.2.3
+        version: 8.2.3(postcss@8.4.41)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+
   packages/moment-presser:
     dependencies:
       '@novely/core':
@@ -173,6 +192,9 @@ importers:
       '@novely/core':
         specifier: workspace:*
         version: link:../core
+      '@novely/flex-storage':
+        specifier: workspace:*
+        version: link:../flex-storage
       '@novely/moment-presser':
         specifier: workspace:*
         version: link:../moment-presser
@@ -1589,6 +1611,10 @@ packages:
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
+
+  lz-string@1.5.0:
+    resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
+    hasBin: true
 
   merge-stream@2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
@@ -3163,6 +3189,8 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
+
+  lz-string@1.5.0: {}
 
   merge-stream@2.0.0: {}
 

@@ -1,15 +1,15 @@
 import type { StorageData } from './types';
 
-interface LocalStorageStorageSettings {
+type LocalStorageStorageSettings = {
 	key: string;
 }
 
-interface Storage {
+type NovelyStorage = {
 	get: () => Promise<StorageData>;
 	set: (data: StorageData) => Promise<void>;
 }
 
-const localStorageStorage = (options: LocalStorageStorageSettings): Storage => {
+const localStorageStorage = (options: LocalStorageStorageSettings): NovelyStorage => {
 	return {
 		async get() {
 			const fallback = { saves: [], data: {}, meta: [] };
@@ -30,5 +30,5 @@ const localStorageStorage = (options: LocalStorageStorageSettings): Storage => {
 	};
 };
 
-export type { Storage };
+export type { NovelyStorage };
 export { localStorageStorage };

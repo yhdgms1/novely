@@ -1,0 +1,56 @@
+{
+	"name": "@novely/flex-storage",
+	"description": "Storage for @novely/core",
+	"version": "0.1.0",
+	"type": "module",
+	"sideEffects": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		},
+		"./*": "./dist/*",
+		"./package.json": "./package.json"
+	},
+	"scripts": {
+		"dev": "tsup --dts --watch",
+		"build": "tsup --dts"
+	},
+	"devDependencies": {
+		"tsup": "^8.2.3",
+		"typescript": "^5.5.4"
+	},
+	"dependencies": {
+		"@novely/core": "workspace:*",
+		"lz-string": "^1.5.0",
+		"seroval": "^1.1.1"
+	},
+	"peerDependencies": {
+		"@novely/core": "*"
+	},
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/yhdgms1/novely/issues"
+	},
+	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/flex-storage",
+	"keywords": [
+		"novely",
+		"storage"
+	],
+	"author": {
+		"name": "Artemiy Schukin",
+		"url": "https://github.com/yhdgms1"
+	},
+	"contributors": [],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/yhdgms1/novely.git"
+	},
+	"files": [
+		"dist/*"
+	]
+}

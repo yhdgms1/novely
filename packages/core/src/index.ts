@@ -18,7 +18,7 @@ export type {
 } from './action';
 export type { Emotions, Character } from './character';
 export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context, CustomActionHandle, RendererInitPreviewReturn } from './renderer';
-export type { Storage } from './storage';
+export type { NovelyStorage } from './storage';
 export type {
 	Thenable,
 	Path,

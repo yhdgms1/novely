@@ -6,7 +6,7 @@ import type { Stored } from './store';
 import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE, AUDIO_ACTIONS, HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from './constants';
 import { STACK_MAP } from './shared';
 import { DEV } from 'esm-env';
-import { klona } from 'klona/json';
+import { klona } from 'klona/full';
 import { memoize } from 'es-toolkit/function';
 import { isAsset } from './asset';
 

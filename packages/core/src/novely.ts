@@ -55,7 +55,7 @@ import { throttle } from 'es-toolkit/function';
 import { merge as deepmerge } from 'es-toolkit/object';
 import { dequal } from 'dequal/lite';
 import { store } from './store';
-import { klona } from 'klona/json';
+import { klona } from 'klona/full';
 import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, MAIN_CONTEXT_KEY } from './constants';
 import { replace as replaceTranslation, flattenAllowedContent } from './translation';
 import { handleCustomAction, getCustomActionHolder } from './custom-action'

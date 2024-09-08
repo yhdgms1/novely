@@ -1,5 +1,5 @@
 import type { DefaultActionProxy, ValidAction } from './action';
-import type { Storage } from './storage';
+import type { NovelyStorage } from './storage';
 import type { TranslationActions, Pluralization } from './translation';
 import type { Renderer, RendererInit } from './renderer';
 import type { Character } from './character';
@@ -234,7 +234,7 @@ interface NovelyInit<
 	 * An object that provides access to the game's storage system.
 	 * @default localStorage // at key `novely-game-storage`
 	 */
-	storage?: Storage;
+	storage?: NovelyStorage;
 	/**
 	 * Delay loading data until Promise is resolved
 	 */
