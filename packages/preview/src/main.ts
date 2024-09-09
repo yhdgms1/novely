@@ -176,7 +176,7 @@ false && engine.script({
 	]
 })
 
-false && engine.script({
+engine.script({
 	start: [
 		action.next(),
 		action.text({
@@ -296,51 +296,51 @@ false && engine.script({
 	]
 })
 
-engine.script({
+false && engine.script({
 	start: [
 		action.playMusic(music),
 		action.particles(snow),
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok', '', 'opacity: var(--character-Lily-opacity, 1)'),
 		action.choiceExtended(
-			{
-				'en': 'Make a decision',
-				'ru': 'Прими решение'
-			},
+			'Who would you like to meet?',
 			[
 				{
-					title: {
-						en: 'Tania',
-						ru: 'Таня'
-					},
+					title: '',
 					children: [
-						action.say(
-							'Lily',
-							{
-								en: 'Tania',
-								ru: 'Таня'
-							}
-						)
+						action.function(() => console.log('#1'))
 					],
 					image: lily_ok_png
 				},
 				{
-					title: {
-						en: 'Lena',
-						ru: 'Лена'
-					},
+					title: '',
 					children: [
-						action.say(
-							'Lily',
-							{
-								en: 'Lena',
-								ru: 'Лена'
-							}
-						)
+						action.function(() => console.log('#2'))
 					],
 					image: lily_ok_png
 				},
 			]
+		),
+		action.choice(
+			'Who would you like to meet?',
+			[
+				'',
+				[
+					action.function(() => console.log('#1'))
+				],
+				undefined,
+				undefined,
+				lily_ok_png
+			],
+			[
+				'',
+				[
+					action.function(() => console.log('#2'))
+				],
+				undefined,
+				undefined,
+				lily_ok_png
+			],
 		),
 		action.say(
 			'Lily',
