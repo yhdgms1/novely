@@ -1,0 +1,27 @@
+.choice-dialog__choices {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.choice-dialog__choices:has(.choice-dialog__choice-image) {
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.choice-dialog__choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.choice-dialog__choice:has(.choice-dialog__choice-image) {
+  flex-grow: 1;
+}
+
+.choice-dialog__choice-image {
+ max-height: 25vh;
+ max-width: 25vw;
+}

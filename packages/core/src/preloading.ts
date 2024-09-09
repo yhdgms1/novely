@@ -207,6 +207,17 @@ const huntAssets = ({ volume, lang, mode, characters, action, props, handle }: H
 
     return;
   }
+
+
+  if (action === 'choice') {
+    for (let i = 1; i < props.length; i++) {
+      const data = props[i];
+
+      if (Array.isArray(data)) {
+        handle(handleImageAsset(data[4] as string))
+      }
+    }
+  }
 }
 
 export { enqueueAssetForPreloading, handleAssetsPreloading, huntAssets }

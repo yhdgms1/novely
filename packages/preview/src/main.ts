@@ -134,9 +134,9 @@ const action = extendAction(engine.action, {
 	},
 	talk: (character: keyof NonNullable<typeof engine.typeEssentials.c> & string, text: TextContent<NonNullable<typeof engine.typeEssentials.l>, NonNullable<typeof engine.typeEssentials.s>>) => {
 		return [
-			['animateCharacter', character, 'animate__animated animate__pulse'],
-			['say', character, text]
-		] as ValidAction[]
+			engine.action.animateCharacter(character, 'animate__animated animate__pulse'),
+			engine.action.say(character, text)
+		]
 	},
 	setCharacterOpacity: (character: keyof NonNullable<(typeof engine.typeEssentials)['c']>, opacity: number) => {
 		const fn: CustomHandler = ({ clear, getDomNodes }) => {

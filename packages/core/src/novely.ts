@@ -1128,11 +1128,13 @@ const novely = <
 					state: getStateAtCtx(ctx)
 				});
 
+				const imageValue = image ? handleImageAsset(image) : '';
+
 				if (DEV && action.length === 0 && (!activeValue && !visibleValue)) {
 					console.warn(`Choice children should not be empty, either add content there or make item not selectable`)
 				}
 
-				return [templateReplace(content, data), activeValue, visibleValue, image || ''] as [string, boolean, boolean, string];
+				return [templateReplace(content, data), activeValue, visibleValue, imageValue] as [string, boolean, boolean, string];
 			});
 
 			if (DEV && transformedChoices.length === 0) {
@@ -1491,7 +1493,7 @@ const novely = <
 		 * })
 		 * ```
 		 */
-		action,
+		action: action as Actions,
 		/**
 		 * @deprecated Will be removed BUT replaced with state passed into actions as a parameter
 		 */

@@ -235,7 +235,7 @@ type ActionChoiceExtendedChoice<Languages extends Lang, S extends State> = {
 	children: ValidAction[],
 	active?: ChoiceCheckFunction<Languages, S>,
 	visible?: ChoiceCheckFunction<Languages, S>;
-	image?: string | NovelyAsset | (string | NovelyAsset)[];
+	image?: string | NovelyAsset;
 }
 
 type ActionChoiceChoice<Languages extends Lang, S extends State> = [
@@ -243,7 +243,7 @@ type ActionChoiceChoice<Languages extends Lang, S extends State> = [
 	actions: ValidAction[],
 	active?: ChoiceCheckFunction<Languages, S>,
 	visible?: ChoiceCheckFunction<Languages, S>,
-	image?: string | NovelyAsset | (string | NovelyAsset)[]
+	image?: string | NovelyAsset,
 ]
 
 type ActionProxy<Characters extends Record<string, Character>, Languages extends Lang, S extends State> = {

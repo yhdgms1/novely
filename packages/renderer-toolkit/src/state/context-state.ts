@@ -138,10 +138,9 @@ type ContextStateChoice = WithActionVisibility & Labelled & {
   /**
    * It is an array of choices.
    *
-   * First item of choice is a choice text and second one is active it or not.
    * When choice is not action it should be impossible to select that choice.
    */
-  choices: [string, boolean][];
+  choices: [title: string, active: boolean, visible: boolean, image: string][];
   /**
    * Function that is called after choice was made and game should move forward
    * @param selected index

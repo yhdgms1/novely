@@ -262,23 +262,42 @@ const Game: VoidComponent<GameProps> = (props) => {
 					{choice().label || <>&#8197;</>}
 				</span>
 
-				<For each={choice().choices}>
-					{([text, active], i) => {
-						const disabled = !active;
-						const index = i();
+				<div class="choice-dialog__choices">
+					<For each={choice().choices}>
+						{([text, active, visible, image], i) => {
+							const disabled = !active;
+							const index = i();
 
-						return (
-							<button
-								type="button"
-								class="button"
-								aria-disabled={disabled}
-								onClick={[onChoicesButtonClick, [disabled, index]]}
-							>
-								{text}
-							</button>
-						);
-					}}
-				</For>
+							return (
+								<Show when={visible}>
+									<button
+										type="button"
+										class="button choice-dialog__choice"
+										aria-disabled={disabled}
+										onClick={[onChoicesButtonClick, [disabled, index]]}
+									>
+										<span>{text}</span>
+
+										<Show when={image !== ''}>
+											<Canvas
+												class="choice-dialog__choice-image"
+												resize={false}
+												render={async (canvas, ctx) => {
+													const img = await imagePreloadWithCaching(image);
+
+													canvas.width = img.width;
+													canvas.height = img.height;
+
+													ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+												}}
+											/>
+										</Show>
+									</button>
+								</Show>
+							);
+						}}
+					</For>
+				</div>
 			</Modal>
 
 			<Modal
