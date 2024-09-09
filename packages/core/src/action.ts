@@ -3,11 +3,10 @@ import type { Context } from './renderer';
 import type { Thenable, NonEmptyRecord, StateFunction, State, Lang, NovelyAsset, Path } from './types';
 
 type ValidAction =
-	| ['choice', number]
+	| ['choice', string | undefined, ...[string, unknown[], (() => boolean)?, (() => boolean)?, string?][]]
 	| ['clear', Set<keyof DefaultActionProxy>?, Set<string>?, { music: Set<string>, sounds: Set<string> }?]
 	| ['condition', (state: State) => boolean, Record<string, ValidAction[]>]
 	| ['dialog', string | undefined, TextContent<string, State>, string | undefined]
-	| ['say', string, TextContent<string, State>]
 	| ['end']
 	| ['showBackground', string | NovelyAsset | BackgroundImage]
 	| ['playMusic', string | NovelyAsset]
@@ -231,13 +230,26 @@ type BackgroundImage = Record<string, string | NovelyAsset>;
 
 type VoiceAction<L extends Lang> = (params: string | NovelyAsset | Partial<Record<L, string | NovelyAsset>>) => ValidAction;
 
+type ActionChoiceExtendedChoice<Languages extends Lang, S extends State> = {
+	title: TextContent<Languages, S>,
+	children: ValidAction[],
+	active?: ChoiceCheckFunction<Languages, S>,
+	visible?: ChoiceCheckFunction<Languages, S>;
+	image?: string | NovelyAsset | (string | NovelyAsset)[];
+}
+
+type ActionChoiceChoice<Languages extends Lang, S extends State> = [
+	title: TextContent<Languages, S>,
+	actions: ValidAction[],
+	active?: ChoiceCheckFunction<Languages, S>,
+	visible?: ChoiceCheckFunction<Languages, S>,
+	image?: string | NovelyAsset | (string | NovelyAsset)[]
+]
+
 type ActionProxy<Characters extends Record<string, Character>, Languages extends Lang, S extends State> = {
 	choice: {
-		(...choices: [name: TextContent<Languages, S>, actions: ValidAction[], active?: ChoiceCheckFunction<Languages, S>][]): ValidAction;
-		(
-			question: TextContent<Languages, S>,
-			...choices: [name: TextContent<Languages, S>, actions: ValidAction[], active?: ChoiceCheckFunction<Languages, S>][]
-		): ValidAction;
+		(...choices: ActionChoiceChoice<Languages, S>[]): ValidAction;
+		(question: TextContent<Languages, S>, ...choices: ActionChoiceChoice<Languages, S>[]): ValidAction;
 	};
 
 	clear: (
@@ -265,8 +277,6 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 		(character: undefined, content: TextContent<Languages, S>, emotion?: undefined): ValidAction;
 		(character: string, content: TextContent<Languages, S>, emotion?: undefined): ValidAction;
 	};
-
-	say: (character: keyof Characters, content: TextContent<Languages, S>) => ValidAction;
 
 	end: () => ValidAction;
 
@@ -347,6 +357,11 @@ type GetActionParameters<T extends Capitalize<keyof DefaultActionProxy>> = Param
 	DefaultActionProxy[Uncapitalize<T>]
 >;
 
+type VirtualActions<Characters extends Record<string, Character>, Languages extends Lang, S extends State> = {
+	choiceExtended: (question: TextContent<Languages, S>, choices: ActionChoiceExtendedChoice<Languages, State>[]) => ValidAction;
+	say: (character: keyof Characters, content: TextContent<Languages, S>) => ValidAction;
+}
+
 export type {
 	ValidAction,
 	Story,
@@ -362,6 +377,8 @@ export type {
 	BackgroundImage,
 	ActionInputSetup,
 	ActionInputSetupCleanup,
+	ActionChoiceExtendedChoice,
+	ActionChoiceChoice,
 	CustomHandlerFunctionGetFn,
 	CustomHandlerFunction,
 	CustomHandlerFunctionParameters,
@@ -370,5 +387,6 @@ export type {
 	ChoiceCheckFunction,
 	ChoiceCheckFunctionProps,
 	FunctionActionProps,
-	FunctionAction
+	FunctionAction,
+	VirtualActions
 };

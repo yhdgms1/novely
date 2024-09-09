@@ -1,10 +1,12 @@
 import type { TypewriterSpeed } from './types';
 
-const SKIPPED_DURING_RESTORE = new Set(['dialog', 'say', 'choice', 'input', 'vibrate', 'text'] as const);
+const SKIPPED_DURING_RESTORE = new Set(['dialog', 'choice', 'input', 'vibrate', 'text'] as const);
 
 const BLOCK_EXIT_STATEMENTS = new Set(['choice:exit', 'condition:exit', 'block:exit'] as const);
 
 const BLOCK_STATEMENTS = new Set(['choice', 'condition', 'block'] as const);
+
+const VIRTUAL_ACTIONS = new Set(['say', 'choiceExtended'] as const);
 
 const AUDIO_ACTIONS = new Set([
   'playMusic',
@@ -66,5 +68,6 @@ export {
   MAIN_CONTEXT_KEY,
   AUDIO_ACTIONS,
   HOWLER_SUPPORTED_FILE_FORMATS,
-  SUPPORTED_IMAGE_FILE_FORMATS
+  SUPPORTED_IMAGE_FILE_FORMATS,
+  VIRTUAL_ACTIONS
 };

@@ -60,7 +60,7 @@ type Context = {
 	) => void;
 	choices: (
 		question: string,
-		choices: [name: string, active: boolean][],
+		choices: [name: string, active: boolean, visible: boolean, image: string][],
 		resolve: (selected: number) => void
 	) => void;
 	input: (

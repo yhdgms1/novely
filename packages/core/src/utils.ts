@@ -49,16 +49,11 @@ const matchAction = <M extends MatchActionMapComplete>({ getContext, onBeforeAct
 	return (action: keyof MatchActionMapComplete, props: any, { ctx, data }: MatchActionParameters) => {
 		const context = typeof ctx === 'string' ? getContext(ctx) : ctx;
 
-		/**
-		 * We ignore `say` action because it calls `dialog` action
-		 */
-		if (action !== 'say') {
-			onBeforeActionCall({
-				action,
-				props,
-				ctx: context
-			})
-		}
+		onBeforeActionCall({
+			action,
+			props,
+			ctx: context
+		})
 
 		return values[action]({
 			ctx: context,

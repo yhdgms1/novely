@@ -5,6 +5,9 @@ import type {
 	ValidAction,
 	TextContent,
 	CustomHandler,
+	ActionChoiceChoice,
+	VirtualActions,
+	ActionChoiceExtendedChoice,
 } from './action';
 import type {
 	Save,
@@ -56,7 +59,7 @@ import { merge as deepmerge } from 'es-toolkit/object';
 import { dequal } from 'dequal/lite';
 import { store } from './store';
 import { klona } from 'klona/full';
-import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, MAIN_CONTEXT_KEY } from './constants';
+import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, MAIN_CONTEXT_KEY, VIRTUAL_ACTIONS } from './constants';
 import { replace as replaceTranslation, flattenAllowedContent } from './translation';
 import { handleCustomAction, getCustomActionHolder } from './custom-action'
 import { localStorageStorage } from './storage';
@@ -97,11 +100,10 @@ const novely = <
 	saveOnUnload = true,
 	startKey = 'start',
 }: NovelyInit<$Language, $Characters, $State, $Data, $Actions>) => {
-	// Local type declaration to not repeat code
 	/**
 	 * All action functions
 	 */
-	type Actions = $Actions & ActionProxy<$Characters, $Language, $State>;
+	type Actions = $Actions & ActionProxy<$Characters, $Language, $State> & VirtualActions<$Characters, $Language, $State>;
 
 	const languages = Object.keys(translation) as $Language[];
 
@@ -194,13 +196,42 @@ const novely = <
 		return limitScript(() => scriptBase(part));
 	}
 
+	// #region Action Proxy
 	const action = new Proxy({} as Actions, {
-		get<Action extends keyof Actions & string>(_: unknown, action: Action) {
+		get(_: unknown, action: string) {
 			if (action in renderer.actions) {
 				return renderer.actions[action];
 			}
 
-			return (...props: Parameters<Actions[Action]>) => {
+			return (...props: Parameters<Actions[keyof Actions]>) => {
+				if (VIRTUAL_ACTIONS.has(action as any)) {
+					if (action === 'say') {
+						action = 'dialog';
+
+						const [character] = props;
+
+						if (DEV && !characters[character]) {
+							throw new Error(`Attempt to call Say action with unknown character "${character}"`);
+						}
+					} else if (action === 'choiceExtended') {
+						action = 'choice';
+
+						const choices = props[1] as ActionChoiceExtendedChoice<$Language, $State>[];
+
+						const mappedChoices = choices.map(choice => [
+							choice.title,
+							choice.children,
+							choice.active,
+							choice.visible,
+							choice.image
+						]);
+
+						for (let i = 0; i < mappedChoices.length; i++) {
+							props[i + 1] = mappedChoices[i];
+						}
+					}
+				}
+
 				if (preloadAssets === 'blocking') {
 					huntAssets({
 						action: action as any,
@@ -220,6 +251,7 @@ const novely = <
 			};
 		},
 	});
+	// #endregion
 
 	const getDefaultSave = (state: $State) => {
 		return [
@@ -357,6 +389,7 @@ const novely = <
 		onChange: throttledEmergencyOnStorageDataChange
 	})
 
+	// #region Save Function
 	const save = (type: Save[2][1]) => {
 		if (!coreData.get().dataLoaded) return;
 
@@ -425,6 +458,7 @@ const novely = <
 			return add();
 		});
 	};
+	// #endregion
 
 	const newGame = () => {
 		if (!coreData.get().dataLoaded) return;
@@ -464,6 +498,7 @@ const novely = <
 
 	let interacted = 0;
 
+	// #region Restore Function
 	/**
 	 * Restore save or if none is passed then look for latest save, if there is no saves will create a new save
 	 */
@@ -596,9 +631,11 @@ const novely = <
 
 		context.meta.restoring = context.meta.goingBack = false;
 	};
+	// #endregion
 
 	const refer = createReferFunction(story);
 
+	// #region Exit Function
 	/**
 	 * @param force Force exit
 	 */
@@ -671,6 +708,7 @@ const novely = <
 		 */
 		times.clear();
 	};
+	// #endregion
 
 	const back = async () => {
 		/**
@@ -696,6 +734,7 @@ const novely = <
 		return translation[lang as $Language].internal[key];
 	};
 
+	// #region Preview Function
 	/**
 	 * Execute save in context named `name`
 	 * @param save Save
@@ -755,6 +794,7 @@ const novely = <
 			assets,
 		}
 	}
+	// #endregion
 
 	const removeContext = (name: string) => {
 		STACK_MAP.delete(name);
@@ -814,6 +854,7 @@ const novely = <
 		return toArray(characters[character].emotions[emotion]).map(handleImageAsset);
 	}
 
+	// #region Renderer Creation
 	const renderer = createRenderer({
 		mainContextKey: MAIN_CONTEXT_KEY,
 
@@ -840,6 +881,7 @@ const novely = <
 
 		getResourseType: getResourseTypeForRenderer
 	});
+	// #endregion
 
 	const useStack = createUseStackFunction(renderer);
 
@@ -924,6 +966,7 @@ const novely = <
 		}
 	};
 
+	// #region Match Action
 	const match = matchAction(matchActionOptions, {
 		wait({ ctx, push }, [time]) {
 			if (ctx.meta.restoring) return;
@@ -1042,16 +1085,6 @@ const novely = <
 				forward
 			);
 		},
-		say({ ctx, data }, [character, content]) {
-			if (DEV && !characters[character]) {
-				throw new Error(`Attempt to call Say action with unknown character "${character}"`);
-			}
-
-			match('dialog', [character, content], {
-				ctx,
-				data
-			});
-		},
 		function({ ctx, push }, [fn]) {
 			const { restoring, goingBack, preview } = ctx.meta;
 
@@ -1074,26 +1107,32 @@ const novely = <
 
 			if (isWithoutQuestion) {
 				/**
-				 * Первый элемент может быть как строкой, так и элементов выбора
+				 * Can be string or a choice
 				 */
-				choices.unshift(question as unknown as [TextContent<$Language, State>, ValidAction[], () => boolean]);
+				choices.unshift(question as unknown as ActionChoiceChoice<string, State>);
+
 				/**
-				 * Значит, текст не требуется
+				 * Omitted then
 				 */
 				question = '';
 			}
 
-			const transformedChoices = choices.map(([content, action, visible]) => {
-				const shown = !visible || visible({
+			const transformedChoices = choices.map(([content, action, active, visible, image]) => {
+				const activeValue = !active || active({
 					lang: getLanguageFromStore(storageData),
 					state: getStateAtCtx(ctx)
 				});
 
-				if (DEV && action.length === 0 && !shown) {
+				const visibleValue = !visible || visible({
+					lang: getLanguageFromStore(storageData),
+					state: getStateAtCtx(ctx)
+				});
+
+				if (DEV && action.length === 0 && (!activeValue && !visibleValue)) {
 					console.warn(`Choice children should not be empty, either add content there or make item not selectable`)
 				}
 
-				return [templateReplace(content, data),  shown] as [string, boolean];
+				return [templateReplace(content, data), activeValue, visibleValue, image || ''] as [string, boolean, boolean, string];
 			});
 
 			if (DEV && transformedChoices.length === 0) {
@@ -1117,8 +1156,6 @@ const novely = <
 				if (DEV && !transformedChoices[selected]) {
 					throw new Error('Choice children is empty, either add content there or make item not selectable')
 				}
-
-				// todo: calculate offset dynamically
 
 				stack.value[0].push(['choice', selected + offset], [null, 0]);
 				render(ctx);
@@ -1321,7 +1358,9 @@ const novely = <
 			}
 		},
 	});
+	// #endregion
 
+	// #region Render Function
 	const render = (ctx: Context) => {
 		const stack = useStack(ctx);
 		const referred = refer(stack.value[0]);
@@ -1353,6 +1392,7 @@ const novely = <
 			});
 		}
 	};
+	// #endregion
 
 	const interactivity = (value = false) => {
 		interacted = value ? interacted + 1 : 0;
@@ -1424,6 +1464,7 @@ const novely = <
 		storageData.set(data);
 	}
 
+	// #region Function Return
 	return {
 		/**
 		 * Function to set game script
@@ -1546,6 +1587,7 @@ const novely = <
 		 */
 		setStorageData
 	};
+	// #endregion
 };
 
 export { novely };

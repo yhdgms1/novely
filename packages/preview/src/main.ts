@@ -176,7 +176,7 @@ false && engine.script({
 	]
 })
 
-engine.script({
+false && engine.script({
 	start: [
 		action.next(),
 		action.text({
@@ -291,6 +291,62 @@ false && engine.script({
 					input.removeAttribute('minlength')
 					input.removeAttribute('maxlength')
 				}
+			}
+		)
+	]
+})
+
+engine.script({
+	start: [
+		action.playMusic(music),
+		action.particles(snow),
+		action.showBackground(outdoor),
+		action.showCharacter('Lily', 'ok', '', 'opacity: var(--character-Lily-opacity, 1)'),
+		action.choiceExtended(
+			{
+				'en': 'Make a decision',
+				'ru': 'Прими решение'
+			},
+			[
+				{
+					title: {
+						en: 'Tania',
+						ru: 'Таня'
+					},
+					children: [
+						action.say(
+							'Lily',
+							{
+								en: 'Tania',
+								ru: 'Таня'
+							}
+						)
+					],
+					image: lily_ok_png
+				},
+				{
+					title: {
+						en: 'Lena',
+						ru: 'Лена'
+					},
+					children: [
+						action.say(
+							'Lily',
+							{
+								en: 'Lena',
+								ru: 'Лена'
+							}
+						)
+					],
+					image: lily_ok_png
+				},
+			]
+		),
+		action.say(
+			'Lily',
+			{
+				en: 'So what\'s your name?',
+				ru: 'Так как зовут тебя?'
 			}
 		)
 	]
