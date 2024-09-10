@@ -302,31 +302,29 @@ false && engine.script({
 		action.particles(snow),
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok', '', 'opacity: var(--character-Lily-opacity, 1)'),
-		action.choiceExtended(
-			'Who would you like to meet?',
-			[
-				{
-					title: '',
-					children: [
-						action.function(() => console.log('#1'))
-					],
-					image: lily_ok_png
-				},
-				{
-					title: '',
-					children: [
-						action.function(() => console.log('#2'))
-					],
-					image: lily_ok_png
-				},
-			]
+		action.choice(
+			'Who would you like to meet? #1',
+			{
+				title: '',
+				children: [
+					action.function(() => console.log('#1'))
+				],
+				image: lily_ok_png
+			},
+			{
+				title: '',
+				children: [
+					action.function(() => console.log('#2'))
+				],
+				image: lily_ok_png
+			},
 		),
 		action.choice(
-			'Who would you like to meet?',
+			'Who would you like to meet? #2',
 			[
 				'',
 				[
-					action.function(() => console.log('#1'))
+					action.function(() => console.log('#3'))
 				],
 				undefined,
 				undefined,
@@ -335,7 +333,7 @@ false && engine.script({
 			[
 				'',
 				[
-					action.function(() => console.log('#2'))
+					action.function(() => console.log('#4'))
 				],
 				undefined,
 				undefined,
@@ -348,6 +346,8 @@ false && engine.script({
 				en: 'So what\'s your name?',
 				ru: 'Так как зовут тебя?'
 			}
-		)
+		),
+		// todo: find out why two action above are needed for automatic `end` to work
+		action.end()
 	]
 })

@@ -6,8 +6,6 @@ const BLOCK_EXIT_STATEMENTS = new Set(['choice:exit', 'condition:exit', 'block:e
 
 const BLOCK_STATEMENTS = new Set(['choice', 'condition', 'block'] as const);
 
-const VIRTUAL_ACTIONS = new Set(['say', 'choiceExtended'] as const);
-
 const AUDIO_ACTIONS = new Set([
   'playMusic',
   'stopMusic',
@@ -69,5 +67,4 @@ export {
   AUDIO_ACTIONS,
   HOWLER_SUPPORTED_FILE_FORMATS,
   SUPPORTED_IMAGE_FILE_FORMATS,
-  VIRTUAL_ACTIONS
 };

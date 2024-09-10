@@ -358,7 +358,7 @@ type GetActionParameters<T extends Capitalize<keyof DefaultActionProxy>> = Param
 >;
 
 type VirtualActions<Characters extends Record<string, Character>, Languages extends Lang, S extends State> = {
-	choiceExtended: (question: TextContent<Languages, S>, choices: ActionChoiceExtendedChoice<Languages, State>[]) => ValidAction;
+	choice: (question: TextContent<Languages, S>, ...choices: ActionChoiceExtendedChoice<Languages, State>[]) => ValidAction;
 	say: (character: keyof Characters, content: TextContent<Languages, S>) => ValidAction;
 }
 

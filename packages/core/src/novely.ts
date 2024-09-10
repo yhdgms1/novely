@@ -59,7 +59,7 @@ import { merge as deepmerge } from 'es-toolkit/object';
 import { dequal } from 'dequal/lite';
 import { store } from './store';
 import { klona } from 'klona/full';
-import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, MAIN_CONTEXT_KEY, VIRTUAL_ACTIONS } from './constants';
+import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, MAIN_CONTEXT_KEY } from './constants';
 import { replace as replaceTranslation, flattenAllowedContent } from './translation';
 import { handleCustomAction, getCustomActionHolder } from './custom-action'
 import { localStorageStorage } from './storage';
@@ -204,30 +204,26 @@ const novely = <
 			}
 
 			return (...props: Parameters<Actions[keyof Actions]>) => {
-				if (VIRTUAL_ACTIONS.has(action as any)) {
-					if (action === 'say') {
-						action = 'dialog';
+				if (action === 'say') {
+					action = 'dialog';
 
-						const [character] = props;
+					const [character] = props;
 
-						if (DEV && !characters[character]) {
-							throw new Error(`Attempt to call Say action with unknown character "${character}"`);
-						}
-					} else if (action === 'choiceExtended') {
-						action = 'choice';
+					if (DEV && !characters[character]) {
+						throw new Error(`Attempt to call Say action with unknown character "${character}"`);
+					}
+				} else if (action === 'choice') {
+					if (props.slice(1).every(choice => !Array.isArray(choice))) {
+						for (let i = 1; i < props.length; i++) {
+							const choice = props[i];
 
-						const choices = props[1] as ActionChoiceExtendedChoice<$Language, $State>[];
-
-						const mappedChoices = choices.map(choice => [
-							choice.title,
-							choice.children,
-							choice.active,
-							choice.visible,
-							choice.image
-						]);
-
-						for (let i = 0; i < mappedChoices.length; i++) {
-							props[i + 1] = mappedChoices[i];
+							props[i] = [
+								choice.title,
+								choice.children,
+								choice.active,
+								choice.visible,
+								choice.image
+							];
 						}
 					}
 				}
