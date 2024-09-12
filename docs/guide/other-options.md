@@ -220,4 +220,17 @@ const engine = novely({
 })
 ```
 
-Novely uses `fetch` in some places, if you want to override fetch function you can pass it here
+Novely uses [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch) in some places, if you want to override fetch function you can pass it here
+
+### CloneFunction
+
+```ts
+const engine = novely({
+  ...,
+  cloneFunction: (data) => {
+    return structuredClone(data)
+  },
+})
+```
+
+Function to clone data. Novely clones data a lot so there will be no unexpected mutations. In case you want to use things like [`Uint8Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array) or classes like `class SomeData` you must use advanced clonning.

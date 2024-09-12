@@ -13,14 +13,12 @@ The game also requires localization - translation of parts of the interface, as 
 The basic configuration of the engine includes languages, renderer, characters, including their pictures, and the renderer.
 
 ```ts
-// Import renderer and run novely
-
 import { createSolidRenderer } from "@novely/solid-renderer";
 
 const { renderer } = createSolidRenderer();
 
 const engine = novely({
-  renderer: renderer,
+  renderer,
   translation: {
     en: {
       internal: EN
