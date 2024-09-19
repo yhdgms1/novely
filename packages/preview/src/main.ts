@@ -351,3 +351,20 @@ false && engine.script({
 		action.end()
 	]
 })
+
+false && engine.script({
+	start: [
+		action.showBackground('https://i.imgur.com/YUSqhw8.png'),
+		action.say('Lily', 'Привет!'),
+		action.showImage('https://i.imgur.com/QQl8atN.png', {
+			in: 'animate__animated animate__pulse',
+			await: true
+		}),
+		action.say('Lily', 'Хотя, пока'),
+		action.hideImage('https://i.imgur.com/QQl8atN.png', {
+			out: 'animate__animated animate__pulse',
+			await: true
+		}),
+		action.say('You', '...')
+	]
+})

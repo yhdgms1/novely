@@ -1,9 +1,10 @@
 import type { Component } from 'solid-js';
 import type { Renderer, RendererInit } from '@novely/core';
 import type { Emitter } from '../emitter';
-import type { RendererStateStore, ContextStateStore, DeepAtom } from '@novely/renderer-toolkit'
+import type { RendererStateStore, DeepAtom } from '@novely/renderer-toolkit'
 import type { EmitterEventsMap, RendererStoreExtension, SettingsIcons } from '../types';
 import type { Context } from '@novely/core';
+import type { IContextState } from '../context-state';
 import { memo } from '@novely/renderer-toolkit';
 import { Switch, Match, createEffect, Show } from 'solid-js';
 import { Provider } from '$context';
@@ -29,7 +30,7 @@ type CreateRootComponentOpts = {
 
   coreOptions: RendererInit<any, any>
 
-  $contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>
+  $contextState: IContextState
   $rendererState: DeepAtom<RendererStateStore<RendererStoreExtension>>
 }
 

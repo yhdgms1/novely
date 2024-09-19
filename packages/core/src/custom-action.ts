@@ -142,7 +142,9 @@ const handleCustomAction = (ctx: Context, fn: CustomHandler, { lang, state, setM
 
     getDomNodes: getDomNodes as CustomHandlerFunctionGetFn,
 
-    getPath
+    getPath,
+
+    contextKey: ctx.id
   });
 }
 

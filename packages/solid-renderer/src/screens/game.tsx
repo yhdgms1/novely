@@ -1,8 +1,7 @@
 import type { Context } from '@novely/core';
 import type { VoidComponent } from 'solid-js';
 import type { SolidRendererStore } from '../renderer';
-import type { ContextStateStore, DeepAtom } from '@novely/renderer-toolkit'
-
+import type { IContextState } from '../context-state';
 import { createSignal, untrack, For, Show, createUniqueId, createEffect, createMemo } from 'solid-js';
 import { Character, DialogName, Modal, Icon, ControlPanelButtons, createTypewriter, Canvas } from '$components';
 import { clickOutside } from '$actions';
@@ -14,7 +13,7 @@ import { from } from '$utils';
 interface GameProps {
 	context: Context;
 
-	$contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>
+	$contextState: IContextState
 
 	store: SolidRendererStore;
 
@@ -28,7 +27,7 @@ interface GameProps {
 const Game: VoidComponent<GameProps> = (props) => {
 	const data = useData();
 
-	const { text, dialog, characters, choice, input, background, custom } = destructure(from(props.$contextState));
+	const { text, dialog, characters, choice, input, background, custom, images } = destructure(from(props.$contextState));
 
 	const rendererState = from(data.$rendererState);
 	const exitPromptShown = () => rendererState().exitPromptShown;
@@ -110,6 +109,10 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 			return acc;
 		}, 0)
+	})
+
+	createEffect(() => {
+		console.log(images())
 	})
 
 	return (
@@ -447,6 +450,12 @@ const Game: VoidComponent<GameProps> = (props) => {
 					</div>
 				</div>
 			</Show>
+
+			<div class="action-image">
+				<For each={Object.values(images())}>
+					{image => image}
+				</For>
+			</div>
 		</div>
 	);
 };

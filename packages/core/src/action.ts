@@ -81,6 +81,11 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 	rendererContext: Context;
 
 	/**
+	 * Context key in which action is running
+	 */
+	contextKey: string;
+
+	/**
 	 * Function to work with custom action's state
 	 */
 	data: CustomHandlerGetResultDataFunction;

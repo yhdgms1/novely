@@ -1,5 +1,8 @@
 import type { CustomHandler, ValidAction } from "@novely/core";
 import { noop } from "@novely/renderer-toolkit";
+import { useContextState } from "../context-state";
+
+// todo: refactor
 
 const SHOW_IMAGE = Symbol();
 
@@ -11,66 +14,63 @@ type ShowImageParams = {
   class?: string;
   style?: string;
 
-  position?: string;
-
   await?: boolean;
 }
 
 type ShowImageData = {
-  image: HTMLImageElement
-
-  in?: string;
+  image: HTMLImageElement;
+  inClasses: string[];
 }
 
 const showImage = (source: string, params: ShowImageParams = {}) => {
-  const handler: CustomHandler = ({ getDomNodes, clear, flags, data, rendererContext }) => {
-    const { promise, resolve } = Promise.withResolvers<void>()
-    const { element } = getDomNodes(true);
+  const handler: CustomHandler = ({ contextKey, clear, flags, data, rendererContext }) => {
+    const ctx = useContextState(contextKey);
 
-    {
-      element.style.cssText += `position: fixed; inset: 0;`
-      element.style.zIndex = String(params.z || 1);
-    }
+    const { promise, resolve } = Promise.withResolvers<void>()
 
     const image = document.createElement('img');
 
     {
       image.src = source;
-      image.className = params.class || '';
+      image.className = 'action-image__image ' + (params.class || '');
       image.style.cssText = params.style || '';
-      image.style.cssText += `object-fit: cover; object-position: ${params.position || '50% 50%'}; width: 100vw; height: 100vh;`;
+      image.style.setProperty('--z-index', String(params.z || 1));
     }
 
-    element.appendChild(image);
+    ctx.mutate((s) => s.images[source], image);
+
+    const inClasses = (params.in || '').split(' ');
 
     data<ShowImageData>({
       image,
-      in: params.in
+      inClasses
     });
 
     let clearAnimation = noop;
 
     if (params.in && !flags.preview) {
-      const classes = params.in.split(' ');
+      image.classList.add(...inClasses);
 
-      image.classList.add(...classes);
+      // In case we will await for animation then we need to manually "clear" (remove) actions on the screen
+      // I think it will not clear "blocking" custom actions
+      // todo: implement
+      if (params.await) {
+        rendererContext.clearBlockingActions(undefined);
+      }
 
       clearAnimation = () => {
-        image.classList.remove(...classes);
-
-        if (params.await) {
-          rendererContext.clearBlockingActions(undefined);
-          resolve();
-        }
+        image.classList.remove(...inClasses);
+        resolve();
       }
 
       image.addEventListener("animationend", clearAnimation, { once: true });
+    } else {
+      resolve();
     }
 
     clear(() => {
       data({});
       clearAnimation();
-      image.remove();
     })
 
     if (!params.await) {
@@ -96,10 +96,16 @@ type HideImageParams = {
 }
 
 const hideImage = (source: string, params: HideImageParams = {}) => {
-  const handler: CustomHandler = async ({ data, rendererContext }) => {
+  const handler: CustomHandler = async ({ data, rendererContext, contextKey, flags }) => {
+    const ctx = useContextState(contextKey);
     const { promise, resolve } = Promise.withResolvers<void>();
 
-    const { image, in: inClasses } = data<ShowImageData>()
+    const done = () => {
+      ctx.mutate((s) => s.images[source], undefined);
+      resolve();
+    }
+
+    const { image, inClasses } = data<ShowImageData>()
 
     if (!image) {
       resolve();
@@ -107,32 +113,28 @@ const hideImage = (source: string, params: HideImageParams = {}) => {
     }
 
     if (inClasses) {
-      const classes = inClasses.split(' ');
-
-      image.classList.remove(...classes);
+      image.classList.remove(...inClasses);
     }
 
-    if (params.out) {
+    if (params.out && !flags.preview) {
       const classes = params.out.split(' ');
 
       image.classList.add(...classes);
 
+      rendererContext.clearBlockingActions(undefined);
+
       const onAnimationEnd = () => {
         image.classList.remove(...classes)
-
-        if (params.await) {
-          rendererContext.clearBlockingActions(undefined);
-          resolve();
-        }
+        done();
       }
 
       image.addEventListener("animationend", onAnimationEnd, { once: true });
 
       if (!params.await) {
-        resolve();
+        done();
       }
     } else {
-      resolve();
+      done();
     }
 
     return promise;
@@ -140,7 +142,9 @@ const hideImage = (source: string, params: HideImageParams = {}) => {
 
   handler.id = SHOW_IMAGE;
   handler.key = source;
-  handler.assets = [source];
+  // We're gonna hide image, we do not need to preload assets
+  handler.assets = [];
+  // todo: we need that?
   handler.skipOnRestore = (getNext) => {
     return getNext().some(([name, fn]) => name === 'custom' && fn.key === source);
   }
