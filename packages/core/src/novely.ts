@@ -7,7 +7,6 @@ import type {
 	CustomHandler,
 	ActionChoiceChoice,
 	VirtualActions,
-	ActionChoiceExtendedChoice,
 } from './action';
 import type {
 	Save,

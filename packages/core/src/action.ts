@@ -235,7 +235,7 @@ type BackgroundImage = Record<string, string | NovelyAsset>;
 
 type VoiceAction<L extends Lang> = (params: string | NovelyAsset | Partial<Record<L, string | NovelyAsset>>) => ValidAction;
 
-type ActionChoiceExtendedChoice<Languages extends Lang, S extends State> = {
+type ActionChoiceChoiceObject<Languages extends Lang, S extends State> = {
 	title: TextContent<Languages, S>,
 	children: ValidAction[],
 	active?: ChoiceCheckFunction<Languages, S>,
@@ -363,7 +363,7 @@ type GetActionParameters<T extends Capitalize<keyof DefaultActionProxy>> = Param
 >;
 
 type VirtualActions<Characters extends Record<string, Character>, Languages extends Lang, S extends State> = {
-	choice: (question: TextContent<Languages, S>, ...choices: ActionChoiceExtendedChoice<Languages, State>[]) => ValidAction;
+	choice: (question: TextContent<Languages, S>, ...choices: ActionChoiceChoiceObject<Languages, State>[]) => ValidAction;
 	say: (character: keyof Characters, content: TextContent<Languages, S>) => ValidAction;
 }
 
@@ -382,7 +382,7 @@ export type {
 	BackgroundImage,
 	ActionInputSetup,
 	ActionInputSetupCleanup,
-	ActionChoiceExtendedChoice,
+	ActionChoiceChoiceObject,
 	ActionChoiceChoice,
 	CustomHandlerFunctionGetFn,
 	CustomHandlerFunction,

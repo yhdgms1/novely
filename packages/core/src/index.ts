@@ -14,7 +14,10 @@ export type {
 	BackgroundImage,
 	ActionInputOnInputMeta,
 	ActionInputSetup,
-	ActionInputSetupCleanup
+	ActionInputSetupCleanup,
+	ActionChoiceChoice,
+	ActionChoiceChoiceObject,
+	ChoiceCheckFunction
 } from './action';
 export type { Emotions, Character } from './character';
 export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context, CustomActionHandle, RendererInitPreviewReturn } from './renderer';
