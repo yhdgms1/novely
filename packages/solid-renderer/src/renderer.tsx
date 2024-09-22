@@ -116,7 +116,7 @@ const createSolidRenderer = ({
 								canvas,
 								ctx: canvasContext,
 								emotions: {},
-								async emotion(emotion, shouldRender) {
+								emotion(emotion, shouldRender) {
 									let stored = this.emotions[emotion];
 
 									if (!stored) {

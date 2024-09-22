@@ -111,10 +111,6 @@ const Game: VoidComponent<GameProps> = (props) => {
 		}, 0)
 	})
 
-	createEffect(() => {
-		console.log(images())
-	})
-
 	return (
 		<div
 			class={props.className}
