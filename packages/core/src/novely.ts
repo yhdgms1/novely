@@ -51,7 +51,8 @@ import {
 	handleImageAsset,
 	toArray,
 	getLanguageFromStore,
-	getVolumeFromStore
+	getVolumeFromStore,
+	flatActions
 } from './utils';
 import { throttle } from 'es-toolkit/function';
 import { merge as deepmerge } from 'es-toolkit/object';
@@ -212,13 +213,14 @@ const novely = <
 						throw new Error(`Attempt to call Say action with unknown character "${character}"`);
 					}
 				} else if (action === 'choice') {
+
 					if (props.slice(1).every(choice => !Array.isArray(choice))) {
 						for (let i = 1; i < props.length; i++) {
 							const choice = props[i];
 
 							props[i] = [
 								choice.title,
-								choice.children,
+								flatActions(choice.children),
 								choice.active,
 								choice.visible,
 								choice.image

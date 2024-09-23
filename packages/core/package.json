@@ -1,7 +1,7 @@
 {
 	"name": "@novely/core",
 	"description": "Novely - powerful visual novel engine for creating interactive stories and games with branching narratives and rich multimedia content",
-	"version": "0.44.2",
+	"version": "0.44.3",
 	"type": "module",
 	"sideEffects": false,
 	"publishConfig": {
