@@ -362,9 +362,9 @@ type GetActionParameters<T extends Capitalize<keyof DefaultActionProxy>> = Param
 	DefaultActionProxy[Uncapitalize<T>]
 >;
 
-type VirtualActions<Characters extends Record<string, Character>, Languages extends Lang, S extends State> = {
-	choice: (question: TextContent<Languages, S>, ...choices: ActionChoiceChoiceObject<Languages, State>[]) => ValidAction;
-	say: (character: keyof Characters, content: TextContent<Languages, S>) => ValidAction;
+type VirtualActions<$Characters extends Record<string, Character>, $Lang extends Lang, $State extends State> = {
+	choice: (question: TextContent<$Lang, $State>, ...choices: ActionChoiceChoiceObject<$Lang, $State>[]) => ValidAction;
+	say: (character: keyof $Characters, content: TextContent<$Lang, $State>) => ValidAction;
 }
 
 export type {
