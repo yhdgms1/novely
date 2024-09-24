@@ -39,12 +39,6 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 	const [auto, setAuto] = createSignal(false);
 
-	const onChoicesButtonClick = ([disabled, i]: [boolean, number]) => {
-		if (disabled) return;
-
-		choice().resolve?.(i);
-	};
-
 	const onInputButtonClick = () => {
 		if (input().error) return;
 
@@ -263,8 +257,11 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 				<div class="choice-dialog__choices">
 					<For each={choice().choices}>
-						{([text, active, visible, image], i) => {
-							const disabled = !active;
+						{([text, active$, visible$, onSelect, image], i) => {
+							const active = from(active$);
+							const visible = from(visible$);
+
+							const disabled = () => !active();
 							const index = i();
 
 							return (
@@ -272,8 +269,14 @@ const Game: VoidComponent<GameProps> = (props) => {
 									<button
 										type="button"
 										class="button choice-dialog__choice"
-										aria-disabled={disabled}
-										onClick={[onChoicesButtonClick, [disabled, index]]}
+										aria-disabled={disabled()}
+										onClick={async () => {
+											await onSelect();
+
+											if (disabled()) return;
+
+											choice().resolve?.(index);
+										}}
 									>
 										<span>{text}</span>
 

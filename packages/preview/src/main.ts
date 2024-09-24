@@ -27,7 +27,9 @@ const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidR
 });
 
 const storage = flexStorage({
-	adapter: adapterLocalStorage()
+	adapter: adapterLocalStorage({
+		key: 'test-purchases'
+	})
 })
 
 const outdoor = asset(outdoor_png);
@@ -92,6 +94,10 @@ const engine = novely({
 
 	state: {
 		age: 0,
+	},
+
+	data: {
+		purchases: new Set<'choice__start__rude'>()
 	},
 
 	autosaves: true,
@@ -176,7 +182,7 @@ false && engine.script({
 	]
 })
 
-engine.script({
+false && engine.script({
 	start: [
 		action.next(),
 		action.text({
@@ -328,6 +334,7 @@ false && engine.script({
 				],
 				undefined,
 				undefined,
+				undefined,
 				lily_ok_png
 			],
 			[
@@ -335,6 +342,7 @@ false && engine.script({
 				[
 					action.function(() => console.log('#4'))
 				],
+				undefined,
 				undefined,
 				undefined,
 				lily_ok_png
@@ -366,5 +374,50 @@ false && engine.script({
 			await: true
 		}),
 		action.say('You', '...')
+	]
+})
+
+engine.script({
+	start: [
+		action.showBackground(outdoor),
+		action.showCharacter('Lily', 'ok'),
+		action.choice(
+			'Заголовок вопроса',
+			{
+				title: 'Ответить вежливо',
+				children: [
+					action.function(() => console.log('Вежливый ответ'))
+				]
+			},
+			{
+				title: 'Ответить грубо',
+				children: [
+					action.say('You', 'Шо ты чепуха, фарту масти')
+				],
+				active: () => {
+					return engine.data().purchases.has('choice__start__rude');
+				},
+				onSelect: () => {
+					if (engine.data().purchases.has('choice__start__rude')) {
+						return;
+					}
+
+					const { promise, resolve } = Promise.withResolvers<void>();
+
+					console.log('Showing ad...');
+
+					setTimeout(() => {
+						console.log('Ad is shown')
+						console.log('Item purchased')
+
+						engine.data().purchases.add('choice__start__rude');
+
+						resolve();
+					}, 3000);
+
+					return promise;
+				}
+			}
+		)
 	]
 })

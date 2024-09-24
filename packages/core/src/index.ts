@@ -17,7 +17,12 @@ export type {
 	ActionInputSetupCleanup,
 	ActionChoiceChoice,
 	ActionChoiceChoiceObject,
-	ChoiceCheckFunction
+	ChoiceCheckFunction,
+	ChoiceOnSelectFunction,
+	ChoiceCheckFunctionProps,
+	ConditionCheckFunction,
+	CustomHandlerFunction,
+	CustomHandlerInfo
 } from './action';
 export type { Emotions, Character } from './character';
 export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context, CustomActionHandle, RendererInitPreviewReturn } from './renderer';

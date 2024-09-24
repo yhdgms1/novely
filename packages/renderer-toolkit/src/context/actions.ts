@@ -1,5 +1,4 @@
 import type {
-  BackgroundImage,
   Context,
   DefaultActionProxy,
   RendererInit,
@@ -7,7 +6,9 @@ import type {
   State,
   ActionInputOnInputMeta,
 	ActionInputSetup,
-  CustomActionHandle
+  CustomActionHandle,
+  Stored,
+  ChoiceOnSelectFunction
 } from '@novely/core'
 import type { ContextState, ContextStateStore } from '../state/context-state'
 import type { RendererStateStore } from '../state/renderer-state'
@@ -73,7 +74,7 @@ const handleDialogAction = ($contextState: DeepAtom<ContextStateStore<Record<Pro
   );
 }
 
-const handleChoiceAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, label: string, choices: [name: string, active: boolean, visible: boolean, image: string][], resolve: (selected: number) => void) => {
+const handleChoiceAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, label: string, choices: [name: string, active: Stored<boolean>, visible: Stored<boolean>, onselect: ChoiceOnSelectFunction, image: string][], resolve: (selected: number) => void) => {
   $contextState.mutate(
     (s) => s.choice,
     { choices, label, resolve, visible: true }

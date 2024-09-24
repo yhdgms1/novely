@@ -7,6 +7,7 @@ import type {
 	CustomHandler,
 	ActionChoiceChoice,
 	VirtualActions,
+	ChoiceOnSelectFunction,
 } from './action';
 import type {
 	Save,
@@ -213,7 +214,6 @@ const novely = <
 						throw new Error(`Attempt to call Say action with unknown character "${character}"`);
 					}
 				} else if (action === 'choice') {
-
 					if (props.slice(1).every(choice => !Array.isArray(choice))) {
 						for (let i = 1; i < props.length; i++) {
 							const choice = props[i];
@@ -223,6 +223,7 @@ const novely = <
 								flatActions(choice.children),
 								choice.active,
 								choice.visible,
+								choice.onSelect,
 								choice.image
 							];
 						}
@@ -1114,24 +1115,36 @@ const novely = <
 				question = '';
 			}
 
-			const transformedChoices = choices.map(([content, action, active, visible, image]) => {
-				const activeValue = !active || active({
-					lang: getLanguageFromStore(storageData),
-					state: getStateAtCtx(ctx)
-				});
+			const transformedChoices = choices.map(([content, _children, active, visible, onSelect, image]) => {
+				const active$ = store(false);
+				const visible$ = store(false);
 
-				const visibleValue = !visible || visible({
-					lang: getLanguageFromStore(storageData),
-					state: getStateAtCtx(ctx)
-				});
+				const update = () => {
+					const activeValue = !active || active({
+						lang: getLanguageFromStore(storageData),
+						state: getStateAtCtx(ctx)
+					});
+
+					const visibleValue = !visible || visible({
+						lang: getLanguageFromStore(storageData),
+						state: getStateAtCtx(ctx)
+					});
+
+					active$.set(activeValue);
+					visible$.set(visibleValue);
+				}
+
+				update();
+
+				const onSelectGuarded = onSelect || noop;
+				const onSelectWrapped = async () => {
+					await onSelectGuarded();
+					update();
+				}
 
 				const imageValue = image ? handleImageAsset(image) : '';
 
-				if (DEV && action.length === 0 && (!activeValue && !visibleValue)) {
-					console.warn(`Choice children should not be empty, either add content there or make item not selectable`)
-				}
-
-				return [templateReplace(content, data), activeValue, visibleValue, imageValue] as [string, boolean, boolean, string];
+				return [templateReplace(content, data), active$, visible$, onSelectWrapped, imageValue] as [string, Stored<boolean>, Stored<boolean>, ChoiceOnSelectFunction, string];
 			});
 
 			if (DEV && transformedChoices.length === 0) {

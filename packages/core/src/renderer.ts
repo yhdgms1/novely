@@ -1,4 +1,4 @@
-import type { ActionInputSetup, ActionInputOnInputMeta, DefaultActionProxy, ValidAction, CustomHandler } from './action';
+import type { ActionInputSetup, ActionInputOnInputMeta, DefaultActionProxy, ValidAction, CustomHandler, ChoiceOnSelectFunction } from './action';
 import type { Character } from './character';
 import type { CharacterAssetSizes, CharactersData, CoreData, Data, Lang, NovelyScreen, Save, State, StateFunction, StorageData } from './types';
 import type { BaseTranslationStrings } from './translations';
@@ -60,7 +60,7 @@ type Context = {
 	) => void;
 	choices: (
 		question: string,
-		choices: [name: string, active: boolean, visible: boolean, image: string][],
+		choices: [name: string, active: Stored<boolean>, visible: Stored<boolean>, onselect: ChoiceOnSelectFunction, image: string][],
 		resolve: (selected: number) => void
 	) => void;
 	input: (

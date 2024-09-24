@@ -1,4 +1,4 @@
-import type { CustomHandler, CustomHandlerGetResult } from '@novely/core';
+import type { ChoiceOnSelectFunction, CustomHandler, Stored } from '@novely/core';
 import type { BaseDeepMap } from 'nanostores';
 import type { DeepAtom } from '../atoms/deep-atom';
 import { onMount, cleanStores } from 'nanostores';
@@ -140,7 +140,7 @@ type ContextStateChoice = WithActionVisibility & Labelled & {
    *
    * When choice is not action it should be impossible to select that choice.
    */
-  choices: [title: string, active: boolean, visible: boolean, image: string][];
+  choices: [title: string, active: Stored<boolean>, visible: Stored<boolean>, onselect: ChoiceOnSelectFunction, image: string][];
   /**
    * Function that is called after choice was made and game should move forward
    * @param selected index

@@ -197,7 +197,7 @@ interface ActionInputOnInputMeta<L extends string, S extends State> {
 	state: StateFunction<S>;
 }
 
-type FunctionActionProps<L extends string, S extends State> = {
+type FunctionActionProps<L extends Lang, S extends State> = {
 	restoring: boolean;
 	goingBack: boolean;
 	preview: boolean;
@@ -211,7 +211,7 @@ type FunctionActionProps<L extends string, S extends State> = {
 	state: StateFunction<S>;
 }
 
-type ChoiceCheckFunctionProps<L extends string, S extends State> = {
+type ChoiceCheckFunctionProps<L extends Lang, S extends State> = {
 	/**
 	 * Language
 	 */
@@ -222,7 +222,8 @@ type ChoiceCheckFunctionProps<L extends string, S extends State> = {
 	state: S;
 }
 
-type ChoiceCheckFunction<L extends string, S extends State> = (props: ChoiceCheckFunctionProps<L, S>) => boolean
+type ChoiceCheckFunction<L extends Lang, S extends State> = (props: ChoiceCheckFunctionProps<L, S>) => boolean
+type ChoiceOnSelectFunction = () => Thenable<void>;
 
 type ConditionCheckFunction<S extends State, R extends string | true | false> = (state: S) => R;
 
@@ -235,19 +236,21 @@ type BackgroundImage = Record<string, string | NovelyAsset>;
 
 type VoiceAction<L extends Lang> = (params: string | NovelyAsset | Partial<Record<L, string | NovelyAsset>>) => ValidAction;
 
-type ActionChoiceChoiceObject<Languages extends Lang, S extends State> = {
-	title: TextContent<Languages, S>,
+type ActionChoiceChoiceObject<L extends Lang, S extends State> = {
+	title: TextContent<L, S>,
 	children: ValidAction[],
-	active?: ChoiceCheckFunction<Languages, S>,
-	visible?: ChoiceCheckFunction<Languages, S>;
+	active?: ChoiceCheckFunction<L, S>,
+	visible?: ChoiceCheckFunction<L, S>;
+	onSelect?: ChoiceOnSelectFunction;
 	image?: string | NovelyAsset;
 }
 
-type ActionChoiceChoice<Languages extends Lang, S extends State> = [
-	title: TextContent<Languages, S>,
+type ActionChoiceChoice<L extends Lang, S extends State> = [
+	title: TextContent<L, S>,
 	actions: ValidAction[],
-	active?: ChoiceCheckFunction<Languages, S>,
-	visible?: ChoiceCheckFunction<Languages, S>,
+	active?: ChoiceCheckFunction<L, S>,
+	visible?: ChoiceCheckFunction<L, S>,
+	onSelect?: ChoiceOnSelectFunction,
 	image?: string | NovelyAsset,
 ]
 
@@ -391,6 +394,7 @@ export type {
 	ConditionCheckFunction,
 	ChoiceCheckFunction,
 	ChoiceCheckFunctionProps,
+	ChoiceOnSelectFunction,
 	FunctionActionProps,
 	FunctionAction,
 	VirtualActions
