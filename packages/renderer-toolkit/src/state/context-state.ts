@@ -140,7 +140,7 @@ type ContextStateChoice = WithActionVisibility & Labelled & {
    *
    * When choice is not action it should be impossible to select that choice.
    */
-  choices: [title: string, active: Stored<boolean>, visible: Stored<boolean>, onselect: ChoiceOnSelectFunction, image: string][];
+  choices: [title: string, active: Stored<boolean>, visible: Stored<boolean>, onselect: () => void, image: string][];
   /**
    * Function that is called after choice was made and game should move forward
    * @param selected index
