@@ -222,8 +222,15 @@ type ChoiceCheckFunctionProps<L extends Lang, S extends State> = {
 	state: S;
 }
 
+type ChoiceOnSelectFunctionProps = {
+	/**
+	 * Triggers `active` and `visible` properties computation
+	 */
+	recompute: () => void;
+}
+
 type ChoiceCheckFunction<L extends Lang, S extends State> = (props: ChoiceCheckFunctionProps<L, S>) => boolean
-type ChoiceOnSelectFunction = () => Thenable<void>;
+type ChoiceOnSelectFunction = (props: ChoiceOnSelectFunctionProps) => void;
 
 type ConditionCheckFunction<S extends State, R extends string | true | false> = (state: S) => R;
 
@@ -394,6 +401,7 @@ export type {
 	ConditionCheckFunction,
 	ChoiceCheckFunction,
 	ChoiceCheckFunctionProps,
+	ChoiceOnSelectFunctionProps,
 	ChoiceOnSelectFunction,
 	FunctionActionProps,
 	FunctionAction,

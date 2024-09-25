@@ -60,7 +60,7 @@ type Context = {
 	) => void;
 	choices: (
 		question: string,
-		choices: [name: string, active: Stored<boolean>, visible: Stored<boolean>, onselect: ChoiceOnSelectFunction, image: string][],
+		choices: [name: string, active: Stored<boolean>, visible: Stored<boolean>, onselect: () => void, image: string][],
 		resolve: (selected: number) => void
 	) => void;
 	input: (

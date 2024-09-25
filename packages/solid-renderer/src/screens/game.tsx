@@ -270,8 +270,8 @@ const Game: VoidComponent<GameProps> = (props) => {
 										type="button"
 										class="button choice-dialog__choice"
 										aria-disabled={disabled()}
-										onClick={async () => {
-											await onSelect();
+										onClick={() => {
+											onSelect();
 
 											if (disabled()) return;
 

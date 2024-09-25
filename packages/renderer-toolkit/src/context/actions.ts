@@ -74,7 +74,7 @@ const handleDialogAction = ($contextState: DeepAtom<ContextStateStore<Record<Pro
   );
 }
 
-const handleChoiceAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, label: string, choices: [name: string, active: Stored<boolean>, visible: Stored<boolean>, onselect: ChoiceOnSelectFunction, image: string][], resolve: (selected: number) => void) => {
+const handleChoiceAction = ($contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>, label: string, choices: [name: string, active: Stored<boolean>, visible: Stored<boolean>, onselect: () => void, image: string][], resolve: (selected: number) => void) => {
   $contextState.mutate(
     (s) => s.choice,
     { choices, label, resolve, visible: true }

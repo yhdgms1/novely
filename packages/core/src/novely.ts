@@ -1120,14 +1120,17 @@ const novely = <
 				const visible$ = store(false);
 
 				const update = () => {
+					const lang = getLanguageFromStore(storageData);
+					const state = getStateAtCtx(ctx);
+
 					const activeValue = !active || active({
-						lang: getLanguageFromStore(storageData),
-						state: getStateAtCtx(ctx)
+						lang,
+						state
 					});
 
 					const visibleValue = !visible || visible({
-						lang: getLanguageFromStore(storageData),
-						state: getStateAtCtx(ctx)
+						lang,
+						state
 					});
 
 					active$.set(activeValue);
@@ -1137,14 +1140,15 @@ const novely = <
 				update();
 
 				const onSelectGuarded = onSelect || noop;
-				const onSelectWrapped = async () => {
-					await onSelectGuarded();
-					update();
+				const onSelectWrapped = () => {
+					onSelectGuarded({
+						recompute: update
+					});
 				}
 
 				const imageValue = image ? handleImageAsset(image) : '';
 
-				return [templateReplace(content, data), active$, visible$, onSelectWrapped, imageValue] as [string, Stored<boolean>, Stored<boolean>, ChoiceOnSelectFunction, string];
+				return [templateReplace(content, data), active$, visible$, onSelectWrapped, imageValue] as [string, Stored<boolean>, Stored<boolean>, () => void, string];
 			});
 
 			if (DEV && transformedChoices.length === 0) {

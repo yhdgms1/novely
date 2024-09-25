@@ -22,7 +22,8 @@ export type {
 	ChoiceCheckFunctionProps,
 	ConditionCheckFunction,
 	CustomHandlerFunction,
-	CustomHandlerInfo
+	CustomHandlerInfo,
+	ChoiceOnSelectFunctionProps
 } from './action';
 export type { Emotions, Character } from './character';
 export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context, CustomActionHandle, RendererInitPreviewReturn } from './renderer';
