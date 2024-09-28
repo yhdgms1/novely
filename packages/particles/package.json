@@ -31,11 +31,7 @@
 		"url": "https://github.com/yhdgms1/novely/issues"
 	},
 	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/particles",
-	"keywords": [
-		"ts-particles",
-		"particles",
-		"novely"
-	],
+	"keywords": ["ts-particles", "particles", "novely"],
 	"author": {
 		"name": "Artemiy Schukin",
 		"url": "https://github.com/yhdgms1"
@@ -45,7 +41,5 @@
 		"type": "git",
 		"url": "git+https://github.com/yhdgms1/novely.git"
 	},
-	"files": [
-		"dist/*"
-	]
+	"files": ["dist/*"]
 }

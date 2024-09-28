@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { blue, lightGray, red, reset, yellow } from 'kolorist';
 import prompts from 'prompts';
-import { red, blue, yellow, lightGray, reset } from 'kolorist';
 
 async function main() {
 	let cancelled = false;

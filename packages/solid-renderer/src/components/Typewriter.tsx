@@ -1,7 +1,7 @@
-import type { VoidComponent, JSX } from 'solid-js';
 import type { TypewriterSpeed } from '@novely/core';
-import { untrack, createEffect, onCleanup, createSignal } from 'solid-js';
 import { typewriter as initiateTypewriter } from '@novely/typewriter';
+import type { JSX, VoidComponent } from 'solid-js';
+import { createEffect, createSignal, onCleanup, untrack } from 'solid-js';
 import { TEXT_SPEED_MAP } from '../constants';
 
 interface TypewriterProps {

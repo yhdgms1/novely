@@ -1,1 +1,1 @@
-import './story'
+import './story';

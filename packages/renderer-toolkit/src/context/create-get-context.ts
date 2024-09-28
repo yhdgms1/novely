@@ -1,4 +1,4 @@
-import type { Context } from "@novely/core"
+import type { Context } from '@novely/core';
 
 /**
  * Creates utilities to manage context's in renderer
@@ -20,69 +20,69 @@ import type { Context } from "@novely/core"
  * ```
  */
 const createGetContext = () => {
-  const CACHE = new Map<string, Context>();
+	const CACHE = new Map<string, Context>();
 
-  /**
-   * Creates context on call, but if context was already created, returns already created context
-   * @param createContext Function to create context
-   * @example
-   * ```ts
-   * function renderer(options: RendererInit) {
-   *   return {
-   *     getContext: getContextCached((key) => {
-   *       // return Context
-   *       return {}
-   *     }),
-   *     removeContext: (key) => {
-   *       removeContext(key);
-   *     }
-   *   }
-   * }
-   * ```
-   */
-  const getContextCached = (createContext: (key: string) => Context) => {
-    return (key: string) => {
-      const cached = CACHE.get(key);
+	/**
+	 * Creates context on call, but if context was already created, returns already created context
+	 * @param createContext Function to create context
+	 * @example
+	 * ```ts
+	 * function renderer(options: RendererInit) {
+	 *   return {
+	 *     getContext: getContextCached((key) => {
+	 *       // return Context
+	 *       return {}
+	 *     }),
+	 *     removeContext: (key) => {
+	 *       removeContext(key);
+	 *     }
+	 *   }
+	 * }
+	 * ```
+	 */
+	const getContextCached = (createContext: (key: string) => Context) => {
+		return (key: string) => {
+			const cached = CACHE.get(key);
 
-      if (cached) {
-        return cached;
-      }
+			if (cached) {
+				return cached;
+			}
 
-      const context = createContext(key);
+			const context = createContext(key);
 
-      CACHE.set(key, context)
+			CACHE.set(key, context);
 
-      return context;
-    }
-  }
+			return context;
+		};
+	};
 
-  /**
-   * Removed context
-   * @param key Context's key
-   * @example
-   * ```ts
-   * function renderer(options: RendererInit) {
-   *   return {
-   *     getContext: getContextCached((key) => {
-   *       // return Context
-   *       return {}
-   *     }),
-   *     removeContext: (key) => {
-   *       // remove context
-   *       removeContext(key);
-   *     }
-   *   }
-   * }
-   * ```
-   */
-  const removeContext = (key: string) => {
-    CACHE.delete(key)
-  }
+	/**
+	 * Removed context
+	 * @param key Context's key
+	 * @example
+	 * ```ts
+	 * function renderer(options: RendererInit) {
+	 *   return {
+	 *     getContext: getContextCached((key) => {
+	 *       // return Context
+	 *       return {}
+	 *     }),
+	 *     removeContext: (key) => {
+	 *       // remove context
+	 *       removeContext(key);
+	 *     }
+	 *   }
+	 * }
+	 * ```
+	 */
+	const removeContext = (key: string) => {
+		CACHE.delete(key);
+	};
 
-  return {
-    getContextCached,
-    removeContext
-  }
-}
+	return {
+		getContextCached,
+		removeContext,
+	};
+};
 
-export { createGetContext }
+export { createGetContext };

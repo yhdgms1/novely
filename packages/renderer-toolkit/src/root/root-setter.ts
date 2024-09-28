@@ -1,4 +1,4 @@
-import type { Context } from "@novely/core"
+import type { Context } from '@novely/core';
 
 /**
  * Simply set root to the context
@@ -31,25 +31,25 @@ import type { Context } from "@novely/core"
  * ```
  */
 const createRootSetter = (getContext: () => Context) => {
-  let element: HTMLElement;
+	let element: HTMLElement;
 
-  return {
-    root() {
-      return element
-    },
-    setRoot(root: HTMLElement) {
-      element = root;
+	return {
+		root() {
+			return element;
+		},
+		setRoot(root: HTMLElement) {
+			element = root;
 
-      const context = getContext();
+			const context = getContext();
 
-      /**
-       * Update directly if root was not set already
-       */
-      if (!context.root) {
-        context.root = root;
-      }
-    }
-  }
-}
+			/**
+			 * Update directly if root was not set already
+			 */
+			if (!context.root) {
+				context.root = root;
+			}
+		},
+	};
+};
 
-export { createRootSetter }
+export { createRootSetter };

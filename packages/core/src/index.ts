@@ -23,10 +23,18 @@ export type {
 	ConditionCheckFunction,
 	CustomHandlerFunction,
 	CustomHandlerInfo,
-	ChoiceOnSelectFunctionProps
+	ChoiceOnSelectFunctionProps,
 } from './action';
 export type { Emotions, Character } from './character';
-export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context, CustomActionHandle, RendererInitPreviewReturn } from './renderer';
+export type {
+	CharacterHandle,
+	AudioHandle,
+	Renderer,
+	RendererInit,
+	Context,
+	CustomActionHandle,
+	RendererInitPreviewReturn,
+} from './renderer';
 export type { NovelyStorage } from './storage';
 export type {
 	Thenable,
@@ -47,7 +55,7 @@ export type {
 	DeepPartial,
 	TypeEssentials,
 	CharacterAssetSizes,
-	CharactersData
+	CharactersData,
 } from './types';
 export type { Stored } from './store';
 export type { BaseTranslationStrings } from './translations';
@@ -57,12 +65,12 @@ export type {
 	ConditionParams,
 	InputHandler,
 	FunctionParams,
-	ChoiceParams
+	ChoiceParams,
 } from './type-utils';
 
 export { novely } from './novely';
 export { localStorageStorage } from './storage';
-export { extendAction } from './extend-actions'
+export { extendAction } from './extend-actions';
 
 export { RU, EN, JP, KK } from './translations';
 

@@ -1,8 +1,8 @@
-import type { VoidComponent, Accessor, Setter } from 'solid-js';
+import type { Accessor, Setter, VoidComponent } from 'solid-js';
 
-import { Show } from 'solid-js';
-import { useData } from '$context';
 import { Icon } from '$components';
+import { useData } from '$context';
+import { Show } from 'solid-js';
 
 interface ControlPanelButtonsProps {
 	openSettings: () => void;

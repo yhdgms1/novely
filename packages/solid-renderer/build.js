@@ -1,8 +1,8 @@
-import * as esbuild from 'esbuild';
-import { watch } from 'fs';
-import { cssPlugin } from '../../env/index.js';
-import { solidPlugin } from 'esbuild-plugin-solid';
 import { exec } from 'child_process';
+import { watch } from 'fs';
+import * as esbuild from 'esbuild';
+import { solidPlugin } from 'esbuild-plugin-solid';
+import { cssPlugin } from '../../env/index.js';
 
 const dev = process.argv.at(2) === '--w';
 
@@ -59,7 +59,7 @@ if (dev) {
 
 	watch('./src', { recursive: true }, async () => {
 		restartTsc();
-	})
+	});
 } else {
 	await context.rebuild();
 	context.dispose();

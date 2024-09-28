@@ -1,3 +1,3 @@
 const noop = () => {};
 
-export { noop }
+export { noop };

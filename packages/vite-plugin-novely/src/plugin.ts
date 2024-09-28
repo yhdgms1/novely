@@ -1,6 +1,6 @@
-import type { Plugin } from 'vite';
 import { parse, transform } from '@novely/parser';
 import fs from 'fs/promises';
+import type { Plugin } from 'vite';
 
 interface PluginOptions {
 	/**
@@ -31,10 +31,7 @@ const defaults = {
  * })
  * ```
  */
-const novelyPlugin = ({
-	extensions = defaults.extensions,
-	rewrites = defaults.rewrites,
-}: PluginOptions = {}) => {
+const novelyPlugin = ({ extensions = defaults.extensions, rewrites = defaults.rewrites }: PluginOptions = {}) => {
 	const plugin: Plugin = {
 		name: 'vite-plugin-nvl',
 		async load(id) {

@@ -4,11 +4,7 @@ const useBackground = (backgrounds: Record<string, string>, set: (bg: string) =>
 
 	const handle = () => {
 		const last = mediaQueries.findLast(({ matches, media }) => matches && media !== 'all');
-		const bg = last
-			? backgrounds[last.media]
-			: allMedia
-				? backgrounds['all']
-				: '';
+		const bg = last ? backgrounds[last.media] : allMedia ? backgrounds['all'] : '';
 
 		set(bg);
 	};
@@ -26,7 +22,7 @@ const useBackground = (backgrounds: Record<string, string>, set: (bg: string) =>
 		if (disposed) return;
 
 		handle();
-	})
+	});
 
 	return {
 		/**
@@ -38,8 +34,8 @@ const useBackground = (backgrounds: Record<string, string>, set: (bg: string) =>
 			}
 
 			disposed = true;
-		}
-	}
-}
+		},
+	};
+};
 
-export { useBackground }
+export { useBackground };

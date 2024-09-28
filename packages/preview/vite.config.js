@@ -1,10 +1,8 @@
-import { defineConfig } from 'vite';
 import { novelyPlugin } from '@novely/vite-plugin-novely';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
-	plugins: [
-		novelyPlugin(),
-	],
+	plugins: [novelyPlugin()],
 	build: {
 		modulePreload: false,
 		rollupOptions: {
@@ -20,7 +18,7 @@ export default defineConfig({
 		charset: 'utf8',
 	},
 	server: {
-		open: true
+		open: true,
 	},
 	base: './',
 });

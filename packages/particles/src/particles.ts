@@ -1,5 +1,5 @@
-import type { RecursivePartial, IOptions, Container } from '@tsparticles/engine';
 import type { CustomHandler } from '@novely/core';
+import type { Container, IOptions, RecursivePartial } from '@tsparticles/engine';
 
 import { tsParticles } from '@tsparticles/engine';
 import { loadSlim } from '@tsparticles/slim';
@@ -22,7 +22,7 @@ const createUniqId = (() => {
 
 	return () => {
 		return `np-${c++}`;
-	}
+	};
 })();
 
 const showParticles = (options: ParticlesOptions): CustomHandler => {
@@ -83,15 +83,15 @@ const showParticles = (options: ParticlesOptions): CustomHandler => {
 			const instance = await tsParticles.load({
 				id: id,
 				element: element,
-				options: withDefault(options)
+				options: withDefault(options),
 			});
 
 			if (instance && instance.canvas.element) {
-				instance.canvas.element.style.setProperty('z-index', '2')
+				instance.canvas.element.style.setProperty('z-index', '2');
 			}
 
 			data({ instance, options });
-		}
+		};
 
 		/**
 		 * Should be safe because in restore only latest is called, and when playing it is not expected to change frequently

@@ -1,10 +1,10 @@
-import type { VoidComponent } from 'solid-js';
-import type { NovelyScreen } from '@novely/core';
-import { For, Show } from 'solid-js';
+import { Icon } from '$components';
 import { useData } from '$context';
 import { simple } from '$utils';
-import { Icon } from '$components';
 import { from } from '$utils';
+import type { NovelyScreen } from '@novely/core';
+import type { VoidComponent } from 'solid-js';
+import { For, Show } from 'solid-js';
 
 const MainMenu: VoidComponent = () => {
 	const { t, storageData, coreData, options, $rendererState } = useData();

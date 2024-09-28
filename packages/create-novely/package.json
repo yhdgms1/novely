@@ -26,10 +26,7 @@
 		"url": "https://github.com/yhdgms1/novely/issues"
 	},
 	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/create-novely",
-	"keywords": [
-		"novely",
-		"novel"
-	],
+	"keywords": ["novely", "novel"],
 	"author": {
 		"name": "Artemiy Schukin",
 		"url": "https://github.com/yhdgms1"

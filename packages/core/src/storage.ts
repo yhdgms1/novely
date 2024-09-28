@@ -2,12 +2,12 @@ import type { StorageData } from './types';
 
 type LocalStorageStorageSettings = {
 	key: string;
-}
+};
 
 type NovelyStorage = {
 	get: () => Promise<StorageData>;
 	set: (data: StorageData) => Promise<void>;
-}
+};
 
 const localStorageStorage = (options: LocalStorageStorageSettings): NovelyStorage => {
 	return {

@@ -1,8 +1,12 @@
-import type { Data, State } from "./types";
+import type { Data, State } from './types';
 
 type PluralType = Intl.LDMLPluralRule;
 type Pluralization = Partial<Record<PluralType, string>>;
-type AllowedContent = string | ((state: State | Data) => string | string[]) | string[] | (string | ((state: State | Data) => string | string[]))[];
+type AllowedContent =
+	| string
+	| ((state: State | Data) => string | string[])
+	| string[]
+	| (string | ((state: State | Data) => string | string[]))[];
 type TranslationActions = Partial<Record<string, (str: string) => string>>;
 
 const RGX = /{{(.*?)}}/g;
@@ -65,7 +69,7 @@ const replace = (
 			y = pluralization[plural][pr.select(y)];
 		}
 
-		const actionHandler = (actions && action) ? actions[action] : void 0;
+		const actionHandler = actions && action ? actions[action] : void 0;
 
 		if (actionHandler) y = actionHandler(y);
 

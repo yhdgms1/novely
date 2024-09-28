@@ -4,11 +4,12 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
-		"lint": "biome lint --write ./packages",
+		"lint": "biome check --write ./packages",
 		"format": "biome format --write .",
+		"prepare": "husky",
+		"init-repo": "pnpm build:parser && pnpm build:vite-plugin-novely && pnpm build:core && pnpm build:typewriter && pnpm build:particles && pnpm build:toolkit && pnpm build:solid",
 
 		"dev": "pnpm dev:preview",
-		"init-repo": "pnpm build:parser && pnpm build:vite-plugin-novely && pnpm build:core && pnpm build:typewriter && pnpm build:particles && pnpm build:toolkit && pnpm build:solid",
 		"dev:core": "pnpm --filter=@novely/core... --parallel dev",
 		"build:core": "pnpm --filter=@novely/core... --parallel build",
 		"dev:solid": "pnpm --filter=@novely/solid-renderer... --parallel dev",
@@ -34,6 +35,7 @@
 		"build:flex-storage": "pnpm --filter=@novely/flex-storage... --parallel build"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^1.8.3"
+		"@biomejs/biome": "^1.9.2",
+		"husky": "^9.1.6"
 	}
 }

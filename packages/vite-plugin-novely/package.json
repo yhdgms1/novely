@@ -28,12 +28,7 @@
 		"url": "https://github.com/yhdgms1/novely/issues"
 	},
 	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/vite-plugin-novely",
-	"keywords": [
-		"novely",
-		"language",
-		"vite",
-		"plugin"
-	],
+	"keywords": ["novely", "language", "vite", "plugin"],
 	"author": {
 		"name": "Artemiy Schukin",
 		"url": "https://github.com/yhdgms1"
@@ -43,10 +38,7 @@
 		"type": "git",
 		"url": "git+https://github.com/yhdgms1/novely.git"
 	},
-	"files": [
-		"dist/*",
-		"types/*"
-	],
+	"files": ["dist/*", "types/*"],
 	"dependencies": {
 		"@novely/parser": "workspace:*"
 	}

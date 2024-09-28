@@ -1,8 +1,8 @@
-import type { Atom } from '@novely/renderer-toolkit';
 import type { Stored } from '@novely/core';
-import { untrack, batch, createSignal, onCleanup } from 'solid-js';
-import { PRELOADED_IMAGE_MAP, PRELOADING_IMAGE_MAP } from './shared';
+import type { Atom } from '@novely/renderer-toolkit';
 import { noop } from '@novely/renderer-toolkit';
+import { batch, createSignal, onCleanup, untrack } from 'solid-js';
+import { PRELOADED_IMAGE_MAP, PRELOADING_IMAGE_MAP } from './shared';
 
 const capitalize = (str: string) => {
 	return str[0].toUpperCase() + str.slice(1);
@@ -35,7 +35,7 @@ const imageLoaded = (image: HTMLImageElement) => {
 
 	image.addEventListener('load', async () => {
 		if (image.decode) {
-			await image.decode().catch(noop)
+			await image.decode().catch(noop);
 		}
 
 		resolve(true);
@@ -43,14 +43,14 @@ const imageLoaded = (image: HTMLImageElement) => {
 
 	image.addEventListener('abort', () => {
 		resolve(false);
-	})
+	});
 
 	image.addEventListener('error', () => {
 		resolve(false);
-	})
+	});
 
 	return promise;
-}
+};
 
 /**
  * Uses `PRELOADING_IMAGE_MAP` and `PRELOADED_IMAGE_MAP` for asset caching.
@@ -85,7 +85,7 @@ const imagePreloadWithCaching = async (src: string) => {
 	PRELOADED_IMAGE_MAP.set(src, image);
 
 	return image;
-}
+};
 
 /**
  * Takes images from `PRELOADING_IMAGE_MAP` and `PRELOADED_IMAGE_MAP` cache. When no images were cached adds images to `PRELOADING_IMAGE_MAP`.
@@ -106,21 +106,21 @@ const imagePreloadWithCachingNotComplete = (src: string) => {
 	PRELOADING_IMAGE_MAP.set(src, image);
 
 	return image;
-}
+};
 
 const createCanvas = () => {
 	return document.createElement('canvas');
-}
+};
 
 const getContext = (canvas: HTMLCanvasElement) => {
 	return canvas.getContext('2d')!;
-}
+};
 
 /**
  * Draws passed `images` array on a `canvas`
  */
 const canvasDrawImages = async (canvas = createCanvas(), ctx = getContext(canvas), images: HTMLImageElement[]) => {
-	await Promise.allSettled(images.map(image => imageLoaded(image)));
+	await Promise.allSettled(images.map((image) => imageLoaded(image)));
 
 	if (canvas.dataset.resized === 'false' || !canvas.dataset.resized) {
 		const sizesSorted = images.slice().sort((a, b) => b.width - a.width);
@@ -174,18 +174,18 @@ const simple = <T extends unknown[], R>(fn: (...args: T) => R) => {
 };
 
 const getDocumentStyles = () => {
-	let css = ''
+	let css = '';
 
 	for (const styleSheet of Array.from(document.styleSheets)) {
 		if (!styleSheet.href || styleSheet.href.startsWith(location.origin)) {
 			for (const { cssText } of Array.from(styleSheet.cssRules)) {
-				css += cssText
+				css += cssText;
 			}
 		}
 	}
 
 	return css;
-}
+};
 
 /**
  * A wrapper on `fn` to make it run only once!
@@ -220,14 +220,14 @@ const createRetrieved = <T>(fn: () => T) => {
  * Like solid-js's from, but has initial value
  */
 const from = <T>(producer: Atom<T> | Stored<T>) => {
-  const [s, set] = createSignal(producer.get(), {
-    equals: false
-  });
+	const [s, set] = createSignal(producer.get(), {
+		equals: false,
+	});
 
-  onCleanup(producer.subscribe(set));
+	onCleanup(producer.subscribe(set));
 
-  return s;
-}
+	return s;
+};
 
 export {
 	createRetrieved,
@@ -243,5 +243,5 @@ export {
 	imageLoaded,
 	imagePreloadWithCaching,
 	imagePreloadWithCachingNotComplete,
-	from
+	from,
 };

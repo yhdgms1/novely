@@ -1,10 +1,10 @@
 import type { Character } from './character';
 import type { Context } from './renderer';
-import type { Thenable, NonEmptyRecord, StateFunction, State, Lang, NovelyAsset, Path } from './types';
+import type { Lang, NonEmptyRecord, NovelyAsset, Path, State, StateFunction, Thenable } from './types';
 
 type ValidAction =
 	| ['choice', string | undefined, ...[string, unknown[], (() => boolean)?, (() => boolean)?, string?][]]
-	| ['clear', Set<keyof DefaultActionProxy>?, Set<string>?, { music: Set<string>, sounds: Set<string> }?]
+	| ['clear', Set<keyof DefaultActionProxy>?, Set<string>?, { music: Set<string>; sounds: Set<string> }?]
 	| ['condition', (state: State) => boolean, Record<string, ValidAction[]>]
 	| ['dialog', string | undefined, TextContent<string, State>, string | undefined]
 	| ['end']
@@ -21,7 +21,7 @@ type ValidAction =
 	| ['showCharacter', string, keyof Character['emotions'], string?, string?]
 	| ['hideCharacter', string, string?, string?, number?]
 	| ['animateCharacter', string, number, ...string[]]
-	| ['wait', (number | ((state: State) => number))]
+	| ['wait', number | ((state: State) => number)]
 	| ['function', FunctionAction<string, State>]
 	| ['input', string, (meta: ActionInputOnInputMeta<string, State>) => void, ActionInputSetup?]
 	| ['custom', CustomHandler<string, State>]
@@ -35,7 +35,10 @@ type ValidAction =
 
 type Story = Record<string, ValidAction[]>;
 
-type TextContent<L extends string, S extends State> = string | ((state: S) => string) | Record<L, string | ((state: S) => string)>;
+type TextContent<L extends string, S extends State> =
+	| string
+	| ((state: S) => string)
+	| Record<L, string | ((state: S) => string)>;
 
 type FunctionableValue<T> = T | (() => T);
 
@@ -112,15 +115,17 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 		restoring: boolean;
 		goingBack: boolean;
 		preview: boolean;
-	}
+	};
 
 	/**
 	 * Game language
 	 */
 	lang: L;
-}
+};
 
-type CustomHandlerFunction<L extends string, S extends State> = (parameters: CustomHandlerFunctionParameters<L, S>) => Thenable<void>;
+type CustomHandlerFunction<L extends string, S extends State> = (
+	parameters: CustomHandlerFunctionParameters<L, S>,
+) => Thenable<void>;
 
 type CustomHandlerCalling = {
 	/**
@@ -138,7 +143,7 @@ type CustomHandlerCalling = {
 	 * @param getNext Function which will return next actions in queue
 	 */
 	skipOnRestore?: (getNext: () => Exclude<ValidAction, ValidAction[]>[]) => boolean;
-}
+};
 
 type CustomHandlerInfo = CustomHandlerCalling & {
 	/**
@@ -165,9 +170,10 @@ type CustomHandlerInfo = CustomHandlerCalling & {
 	 * It can be a name of action or more specific thing. In example for custom `showCharacter` it may be `show-character-${character}
 	 */
 	key: string;
-}
+};
 
-type CustomHandler<L extends string = string, S extends State = State> = CustomHandlerFunction<L, S> & CustomHandlerInfo;
+type CustomHandler<L extends string = string, S extends State = State> = CustomHandlerFunction<L, S> &
+	CustomHandlerInfo;
 
 interface ActionInputOnInputMeta<L extends string, S extends State> {
 	/**
@@ -209,7 +215,7 @@ type FunctionActionProps<L extends Lang, S extends State> = {
 	 * State function
 	 */
 	state: StateFunction<S>;
-}
+};
 
 type ChoiceCheckFunctionProps<L extends Lang, S extends State> = {
 	/**
@@ -220,16 +226,16 @@ type ChoiceCheckFunctionProps<L extends Lang, S extends State> = {
 	 * State
 	 */
 	state: S;
-}
+};
 
 type ChoiceOnSelectFunctionProps = {
 	/**
 	 * Triggers `active` and `visible` properties computation
 	 */
 	recompute: () => void;
-}
+};
 
-type ChoiceCheckFunction<L extends Lang, S extends State> = (props: ChoiceCheckFunctionProps<L, S>) => boolean
+type ChoiceCheckFunction<L extends Lang, S extends State> = (props: ChoiceCheckFunctionProps<L, S>) => boolean;
 type ChoiceOnSelectFunction = (props: ChoiceOnSelectFunctionProps) => void;
 
 type ConditionCheckFunction<S extends State, R extends string | true | false> = (state: S) => R;
@@ -241,16 +247,18 @@ type ActionInputSetup = (input: HTMLInputElement) => ActionInputSetupCleanup | v
 
 type BackgroundImage = Record<string, string | NovelyAsset>;
 
-type VoiceAction<L extends Lang> = (params: string | NovelyAsset | Partial<Record<L, string | NovelyAsset>>) => ValidAction;
+type VoiceAction<L extends Lang> = (
+	params: string | NovelyAsset | Partial<Record<L, string | NovelyAsset>>,
+) => ValidAction;
 
 type ActionChoiceChoiceObject<L extends Lang, S extends State> = {
-	title: TextContent<L, S>,
-	children: ValidAction[],
-	active?: ChoiceCheckFunction<L, S>,
+	title: TextContent<L, S>;
+	children: ValidAction[];
+	active?: ChoiceCheckFunction<L, S>;
 	visible?: ChoiceCheckFunction<L, S>;
 	onSelect?: ChoiceOnSelectFunction;
 	image?: string | NovelyAsset;
-}
+};
 
 type ActionChoiceChoice<L extends Lang, S extends State> = [
 	title: TextContent<L, S>,
@@ -259,7 +267,7 @@ type ActionChoiceChoice<L extends Lang, S extends State> = [
 	visible?: ChoiceCheckFunction<L, S>,
 	onSelect?: ChoiceOnSelectFunction,
 	image?: string | NovelyAsset,
-]
+];
 
 type ActionProxy<Characters extends Record<string, Character>, Languages extends Lang, S extends State> = {
 	choice: {
@@ -271,9 +279,9 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 		keep?: Set<keyof DefaultActionProxy>,
 		keepCharacters?: Set<string>,
 		keepAudio?: {
-			music: Set<string>,
-			sounds: Set<string>
-		}
+			music: Set<string>;
+			sounds: Set<string>;
+		},
 	) => ValidAction;
 
 	condition: <T extends string | true | false>(
@@ -298,7 +306,7 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 	showBackground: {
 		(background: string | NovelyAsset): ValidAction;
 		<T extends Record<string, string | NovelyAsset>>(background: NonEmptyRecord<T>): ValidAction;
-	}
+	};
 
 	playMusic: (audio: string | NovelyAsset) => ValidAction;
 	pauseMusic: (audio: string | NovelyAsset) => ValidAction;
@@ -321,7 +329,7 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 	 * })
 	 * ```
 	 */
-	voice: VoiceAction<Languages>
+	voice: VoiceAction<Languages>;
 	/**
 	 * Stops currently playing voice
 	 */
@@ -330,10 +338,11 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 	jump: (scene: string) => ValidAction;
 
 	showCharacter: <C extends keyof Characters>(
-			character: C,
-			emotion?: keyof Characters[C]['emotions'],
-			className?: string,
-			style?: string,) => ValidAction;
+		character: C,
+		emotion?: keyof Characters[C]['emotions'],
+		className?: string,
+		style?: string,
+	) => ValidAction;
 
 	hideCharacter: (
 		character: keyof Characters,
@@ -373,9 +382,12 @@ type GetActionParameters<T extends Capitalize<keyof DefaultActionProxy>> = Param
 >;
 
 type VirtualActions<$Characters extends Record<string, Character>, $Lang extends Lang, $State extends State> = {
-	choice: (question: TextContent<$Lang, $State>, ...choices: ActionChoiceChoiceObject<$Lang, $State>[]) => ValidAction;
+	choice: (
+		question: TextContent<$Lang, $State>,
+		...choices: ActionChoiceChoiceObject<$Lang, $State>[]
+	) => ValidAction;
 	say: (character: keyof $Characters, content: TextContent<$Lang, $State>) => ValidAction;
-}
+};
 
 export type {
 	ValidAction,
@@ -405,5 +417,5 @@ export type {
 	ChoiceOnSelectFunction,
 	FunctionActionProps,
 	FunctionAction,
-	VirtualActions
+	VirtualActions,
 };

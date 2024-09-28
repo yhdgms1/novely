@@ -7,9 +7,7 @@
 	"engines": {
 		"vscode": "^1.79.0"
 	},
-	"categories": [
-		"Programming Languages"
-	],
+	"categories": ["Programming Languages"],
 	"publisher": "yhdgms1",
 	"repository": {
 		"url": "https://github.com/yhdgms1/novely/tree/main/packages/vscode-highlight"
@@ -19,9 +17,7 @@
 			{
 				"id": "novely",
 				"aliases": [],
-				"extensions": [
-					".novely"
-				],
+				"extensions": [".novely"],
 				"configuration": "./language-configuration.json"
 			}
 		],

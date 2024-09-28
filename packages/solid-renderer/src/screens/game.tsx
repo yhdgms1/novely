@@ -1,19 +1,19 @@
-import type { Context } from '@novely/core';
-import type { VoidComponent } from 'solid-js';
-import type { SolidRendererStore } from '../renderer';
-import type { IContextState } from '../context-state';
-import { createSignal, untrack, For, Show, createUniqueId, createEffect, createMemo } from 'solid-js';
-import { Character, DialogName, Modal, Icon, ControlPanelButtons, createTypewriter, Canvas } from '$components';
 import { clickOutside } from '$actions';
+import { Canvas, Character, ControlPanelButtons, DialogName, Icon, Modal, createTypewriter } from '$components';
 import { useData } from '$context';
 import { canvasDrawImages, imagePreloadWithCaching, isCSSImage, onKey } from '$utils';
-import { destructure } from "@solid-primitives/destructure";
 import { from } from '$utils';
+import type { Context } from '@novely/core';
+import { destructure } from '@solid-primitives/destructure';
+import type { VoidComponent } from 'solid-js';
+import { For, Show, createEffect, createMemo, createSignal, createUniqueId, untrack } from 'solid-js';
+import type { IContextState } from '../context-state';
+import type { SolidRendererStore } from '../renderer';
 
 interface GameProps {
 	context: Context;
 
-	$contextState: IContextState
+	$contextState: IContextState;
 
 	store: SolidRendererStore;
 
@@ -27,7 +27,9 @@ interface GameProps {
 const Game: VoidComponent<GameProps> = (props) => {
 	const data = useData();
 
-	const { text, dialog, characters, choice, input, background, custom, images } = destructure(from(props.$contextState));
+	const { text, dialog, characters, choice, input, background, custom, images } = destructure(
+		from(props.$contextState),
+	);
 
 	const rendererState = from(data.$rendererState);
 	const exitPromptShown = () => rendererState().exitPromptShown;
@@ -50,7 +52,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 	const customs = () => {
 		return Object.values(custom());
-	}
+	};
 
 	const speed = () => data.storageData().meta[1];
 
@@ -102,15 +104,15 @@ const Game: VoidComponent<GameProps> = (props) => {
 			}
 
 			return acc;
-		}, 0)
-	})
+		}, 0);
+	});
 
 	return (
 		<div
 			class={props.className}
 			classList={{
-				'game': true,
-				'preview': props.isPreview
+				game: true,
+				preview: props.isPreview,
 			}}
 		>
 			<Canvas
@@ -168,10 +170,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 					'action-dialog--hidden': !dialog().visible,
 				}}
 			>
-				<DialogName
-					character={dialog().miniature.character}
-					name={dialog().name}
-				/>
+				<DialogName character={dialog().miniature.character} name={dialog().name} />
 				<div
 					class="action-dialog-container"
 					data-no-person={!(dialog().miniature.character && dialog().miniature.emotion)}
@@ -219,8 +218,8 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 					<div
 						classList={{
-							"action-dialog-content": true,
-							"action-dialog-content--disable-shadow": props.isPreview
+							'action-dialog-content': true,
+							'action-dialog-content--disable-shadow': props.isPreview,
 						}}
 					>
 						<DialogWriter.Typewriter
@@ -247,11 +246,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				isOpen={() => choice().visible}
 				trapFocus={() => !props.isPreview && !exitPromptShown()}
 			>
-				<span
-					class="dialog-label"
-					data-used={Boolean(choice().label)}
-					aria-hidden={!choice().label}
-				>
+				<span class="dialog-label" data-used={Boolean(choice().label)} aria-hidden={!choice().label}>
 					{choice().label || <>&#8197;</>}
 				</span>
 
@@ -331,14 +326,12 @@ const Game: VoidComponent<GameProps> = (props) => {
 			</Modal>
 
 			<Modal
-				class='exit-dialog'
+				class="exit-dialog"
 				isModal={true}
 				isOpen={() => !props.isPreview && exitPromptShown()}
 				trapFocus={() => !props.isPreview && exitPromptShown()}
 			>
-				<span class="dialog-label">
-					{data.t('ExitDialogWarning')}
-				</span>
+				<span class="dialog-label">{data.t('ExitDialogWarning')}</span>
 
 				<div class="exit-dialog-buttons">
 					<button
@@ -370,7 +363,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 			<div
 				class="action-text"
 				classList={{
-					"action-text--shown": Boolean(text().content)
+					'action-text--shown': Boolean(text().content),
 				}}
 				aria-disabled={!text().content}
 				role="button"
@@ -451,9 +444,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 			</Show>
 
 			<div class="action-image">
-				<For each={Object.values(images())}>
-					{image => image}
-				</For>
+				<For each={Object.values(images())}>{(image) => image}</For>
 			</div>
 		</div>
 	);

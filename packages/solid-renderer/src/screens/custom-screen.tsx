@@ -1,9 +1,9 @@
-import type { VoidComponent, JSX } from 'solid-js';
-import type { NovelyScreen } from '@novely/core';
-import { noop } from '@novely/renderer-toolkit'
-import { createEffect, createSignal, Show } from 'solid-js';
-import { useData } from '$context'
+import { useData } from '$context';
 import { from } from '$utils';
+import type { NovelyScreen } from '@novely/core';
+import { noop } from '@novely/renderer-toolkit';
+import type { JSX, VoidComponent } from 'solid-js';
+import { Show, createEffect, createSignal } from 'solid-js';
 
 interface CustomScreenProps {
 	/**
@@ -46,7 +46,7 @@ const CustomScreen: VoidComponent<CustomScreenProps> = (props) => {
 
 	const onClick: JSX.EventHandlerUnion<HTMLDivElement, MouseEvent> = ({ target }) => {
 		if (target instanceof HTMLElement && target.dataset.novelyGoto) {
-			$rendererState.setKey('screen', target.dataset.novelyGoto as NovelyScreen)
+			$rendererState.setKey('screen', target.dataset.novelyGoto as NovelyScreen);
 		}
 	};
 

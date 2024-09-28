@@ -1,5 +1,5 @@
-import type { Ast, AstNode } from './types';
 import { NEW_LINE } from './constants';
+import type { Ast, AstNode } from './types';
 
 const parse_line = (str: string) => {
 	let ident = 0;

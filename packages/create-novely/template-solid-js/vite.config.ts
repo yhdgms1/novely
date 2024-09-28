@@ -1,6 +1,6 @@
-import type { UserConfig } from 'vite'
-import { defineConfig } from 'vite'
-import { novelyPlugin } from '@novely/vite-plugin-novely'
+import { novelyPlugin } from '@novely/vite-plugin-novely';
+import type { UserConfig } from 'vite';
+import { defineConfig } from 'vite';
 
 export default defineConfig(() => {
 	return {
@@ -22,4 +22,4 @@ export default defineConfig(() => {
 		 */
 		base: './',
 	} satisfies UserConfig;
-})
+});

@@ -1,11 +1,19 @@
-import type { Accessor, FlowComponent } from 'solid-js';
-import type { Renderer, RendererInit, StorageData, Stored, BaseTranslationStrings, CoreData, Context } from '@novely/core';
-import type { EmitterEventsMap, RendererStoreExtension } from '../types';
-import type { Emitter } from '../emitter';
-import type { DeepAtom, RendererStateStore } from '@novely/renderer-toolkit';
-import { createContext, useContext, Show } from 'solid-js';
 import { useMedia } from '$hooks';
 import { from } from '$utils';
+import type {
+	BaseTranslationStrings,
+	Context,
+	CoreData,
+	Renderer,
+	RendererInit,
+	StorageData,
+	Stored,
+} from '@novely/core';
+import type { DeepAtom, RendererStateStore } from '@novely/renderer-toolkit';
+import type { Accessor, FlowComponent } from 'solid-js';
+import { Show, createContext, useContext } from 'solid-js';
+import type { Emitter } from '../emitter';
+import type { EmitterEventsMap, RendererStoreExtension } from '../types';
 
 interface DataContext {
 	$rendererState: DeepAtom<RendererStateStore<RendererStoreExtension>>;
@@ -65,10 +73,7 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
 		renderer: props.renderer,
 
 		t(key: BaseTranslationStrings | (string & Record<never, never>)) {
-			return props.options.t(
-				key as BaseTranslationStrings,
-				storageData().meta[0]
-			);
+			return props.options.t(key as BaseTranslationStrings, storageData().meta[0]);
 		},
 
 		emitter: props.emitter,
@@ -78,7 +83,7 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
 		},
 
 		getContext: props.getContext,
-		removeContext: props.removeContext
+		removeContext: props.removeContext,
 	};
 
 	return (

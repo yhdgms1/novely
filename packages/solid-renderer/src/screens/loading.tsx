@@ -9,7 +9,7 @@ const Loading: VoidComponent<LoadingProps> = (props) => {
 		<div
 			class="loading"
 			classList={{
-				overlay: props.overlay
+				overlay: props.overlay,
 			}}
 		>
 			<div class="loading__animation">

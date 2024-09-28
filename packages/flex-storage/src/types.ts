@@ -1,14 +1,14 @@
 type Options = {
-  adapter: Adapter
-}
+	adapter: Adapter;
+};
 
 type Adapter = {
-  get: () => Promise<null | string>;
-  set: (data: string) => Promise<void>;
-}
+	get: () => Promise<null | string>;
+	set: (data: string) => Promise<void>;
+};
 
 type AdapterLocalStorageOptions = {
-  key?: string;
-}
+	key?: string;
+};
 
-export type { Options, Adapter, AdapterLocalStorageOptions }
+export type { Options, Adapter, AdapterLocalStorageOptions };

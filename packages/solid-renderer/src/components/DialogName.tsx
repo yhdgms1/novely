@@ -1,5 +1,5 @@
-import type { VoidComponent } from 'solid-js';
 import { useData } from '$context';
+import type { VoidComponent } from 'solid-js';
 
 interface DialogNameProps {
 	character?: string;

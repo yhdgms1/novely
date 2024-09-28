@@ -23,6 +23,6 @@ const vibrate = (pattern: VibratePattern) => {
 			navigator.vibrate(pattern);
 		} catch {}
 	}
-}
+};
 
-export { vibrate }
+export { vibrate };

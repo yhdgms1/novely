@@ -1,15 +1,13 @@
-import { engine } from './engine'
+import { engine } from './engine';
 
-import outdoor from './assets/outdoor.png'
+import outdoor from './assets/outdoor.png';
 
-const { script, action: a } = engine
+const { script, action: a } = engine;
 
 script({
 	start: [
 		a.showBackground('#000000'),
-		a.text(
-			'You open your eyes in a beautiful place and see a girl next to you.',
-		),
+		a.text('You open your eyes in a beautiful place and see a girl next to you.'),
 		a.showBackground(outdoor),
 		a.showCharacter('Lily', 'normal'),
 		a.dialog('You', 'Uh, hi'),
@@ -22,19 +20,19 @@ script({
 				/**
 				 * Set the error, or remove it when string is empty
 				 */
-				error(input.validationMessage)
+				error(input.validationMessage);
 
 				if (!input.validationMessage) {
-					state({ name: value })
+					state({ name: value });
 				}
 			},
-			input => {
-				input.setAttribute('type', 'string')
-				input.setAttribute('min', '2')
-				input.setAttribute('max', '46')
+			(input) => {
+				input.setAttribute('type', 'string');
+				input.setAttribute('min', '2');
+				input.setAttribute('max', '46');
 			},
 		),
 		a.dialog('Lily', 'Well, {{name}}, there our novel starts!'),
 		a.end(),
 	],
-})
+});

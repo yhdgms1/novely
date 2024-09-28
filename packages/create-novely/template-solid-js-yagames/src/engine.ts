@@ -1,15 +1,15 @@
-import { novely, EN, RU } from '@novely/core'
-import { createSolidRenderer } from '@novely/solid-renderer'
-import { games } from './utilities'
+import { EN, RU, novely } from '@novely/core';
+import { createSolidRenderer } from '@novely/solid-renderer';
+import { games } from './utilities';
 
-import lily from './assets/lily.png'
+import lily from './assets/lily.png';
 
 const { renderer } = createSolidRenderer({
 	/**
 	 * Чтобы избежать отклонения по пункту 1.10.3 требований платформы переносим элементы управления внутрь диалогового окна
 	 */
 	controls: 'inside',
-})
+});
 
 const engine = novely({
 	renderer,
@@ -50,20 +50,20 @@ const engine = novely({
 				environment: {
 					i18n: { lang },
 				},
-			} = games.sdk
+			} = games.sdk;
 
 			if (languages.includes(lang)) {
-				return (document.documentElement.lang = lang)
+				return (document.documentElement.lang = lang);
 			}
 
 			//! Замените `languages[0]` на язык по-умолчанию. Например, русский для Казахстана
-			return (document.documentElement.lang = languages[0])
+			return (document.documentElement.lang = languages[0]);
 		}
 
-		return (document.documentElement.lang = original(languages))
+		return (document.documentElement.lang = original(languages));
 	},
 	autosaves: false,
 	askBeforeExit: false,
-})
+});
 
-export { engine }
+export { engine };

@@ -24,7 +24,7 @@ const store = <T>(current: T, subscribers = new Set<(value: T) => void>()): Stor
 
 	const set = (val: T) => {
 		update(() => val);
-	}
+	};
 
 	const get = () => {
 		return current;

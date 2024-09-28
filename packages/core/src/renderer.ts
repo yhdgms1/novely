@@ -1,8 +1,26 @@
-import type { ActionInputSetup, ActionInputOnInputMeta, DefaultActionProxy, ValidAction, CustomHandler, ChoiceOnSelectFunction } from './action';
+import type {
+	ActionInputOnInputMeta,
+	ActionInputSetup,
+	ChoiceOnSelectFunction,
+	CustomHandler,
+	DefaultActionProxy,
+	ValidAction,
+} from './action';
 import type { Character } from './character';
-import type { CharacterAssetSizes, CharactersData, CoreData, Data, Lang, NovelyScreen, Save, State, StateFunction, StorageData } from './types';
-import type { BaseTranslationStrings } from './translations';
 import type { Stored } from './store';
+import type { BaseTranslationStrings } from './translations';
+import type {
+	CharacterAssetSizes,
+	CharactersData,
+	CoreData,
+	Data,
+	Lang,
+	NovelyScreen,
+	Save,
+	State,
+	StateFunction,
+	StorageData,
+} from './types';
 
 interface CharacterHandle {
 	canvas: HTMLCanvasElement;
@@ -10,12 +28,7 @@ interface CharacterHandle {
 
 	emotion: (emotion: string, render: boolean) => void;
 	append: (className?: string, style?: string, restoring?: boolean) => void;
-	remove: (
-		className?: string,
-		style?: string,
-		duration?: number,
-		restoring?: boolean
-	) => Promise<void>;
+	remove: (className?: string, style?: string, duration?: number, restoring?: boolean) => Promise<void>;
 
 	animate: (classes: string[]) => void;
 
@@ -35,13 +48,13 @@ type CustomActionHandle = {
 	 * Function that will give you clean function provided by custom action.
 	 */
 	setClear: (clear: () => void) => void;
-}
+};
 
 type AudioHandle = {
 	stop: () => void;
 	pause: () => void;
 	play: (loop: boolean) => void;
-}
+};
 
 type Context = {
 	id: string;
@@ -56,27 +69,33 @@ type Context = {
 		name: string,
 		character: string | undefined,
 		emotion: string | undefined,
-		resolve: () => void
+		resolve: () => void,
 	) => void;
 	choices: (
 		question: string,
-		choices: [name: string, active: Stored<boolean>, visible: Stored<boolean>, onselect: () => void, image: string][],
-		resolve: (selected: number) => void
+		choices: [
+			name: string,
+			active: Stored<boolean>,
+			visible: Stored<boolean>,
+			onselect: () => void,
+			image: string,
+		][],
+		resolve: (selected: number) => void,
 	) => void;
 	input: (
 		question: string,
 		onInput: (meta: ActionInputOnInputMeta<Lang, State>) => void,
 		setup: ActionInputSetup,
-		resolve: () => void
+		resolve: () => void,
 	) => void;
 	clear: (
 		keep: Set<keyof DefaultActionProxy>,
 		keepCharacters: Set<string>,
 		keepAudio: {
-			music: Set<string>,
-			sounds: Set<string>
+			music: Set<string>;
+			sounds: Set<string>;
 		},
-		resolve: () => void
+		resolve: () => void,
 	) => void;
 	custom: (fn: CustomHandler<Lang, State>) => CustomActionHandle;
 	/**
@@ -115,8 +134,8 @@ type Context = {
 
 		get goingBack(): boolean;
 		set goingBack(value: boolean);
-	}
-}
+	};
+};
 
 type Renderer = {
 	misc: {
@@ -174,7 +193,7 @@ type Renderer = {
 		};
 	};
 
-	actions: Record<string, (...args: any[]) => ValidAction>
+	actions: Record<string, (...args: any[]) => ValidAction>;
 
 	getContext: (context: string) => Context;
 
@@ -186,7 +205,7 @@ type RendererInitPreviewReturn = {
 	 * Assets that was used in game preview
 	 */
 	assets: string[];
-}
+};
 
 type RendererInit<$Language extends Lang, $Characters extends Record<string, Character<$Language>>> = {
 	characters: CharactersData<$Characters>;
@@ -231,7 +250,15 @@ type RendererInit<$Language extends Lang, $Characters extends Record<string, Cha
 	getCharacterColor: (character: string) => string;
 	getCharacterAssets: (character: string, emotion: string) => string[];
 
-	getResourseType: (url: string) => Promise<"image" | "audio" | "other">;
+	getResourseType: (url: string) => Promise<'image' | 'audio' | 'other'>;
 };
 
-export type { CharacterHandle, AudioHandle, Renderer, RendererInit, Context, CustomActionHandle, RendererInitPreviewReturn };
+export type {
+	CharacterHandle,
+	AudioHandle,
+	Renderer,
+	RendererInit,
+	Context,
+	CustomActionHandle,
+	RendererInitPreviewReturn,
+};

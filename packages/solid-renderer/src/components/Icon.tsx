@@ -93,15 +93,11 @@ Icon.Files = () => {
 };
 
 Icon.ChevronDown = () => {
-	return (
-		<path d="M15.25 10.75 12 14.25l-3.25-3.5"/>
-	);
+	return <path d="M15.25 10.75 12 14.25l-3.25-3.5" />;
 };
 
 Icon.ChevronUp = () => {
-	return (
-		<path d="M15.25 14.25 12 10.75l-3.25 3.5"/>
-	);
+	return <path d="M15.25 14.25 12 10.75l-3.25 3.5" />;
 };
 
 export { Icon };

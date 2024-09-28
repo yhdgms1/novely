@@ -2,12 +2,12 @@ import type { CharacterHandle } from '@novely/core';
 import type { ContextStateCharacter } from '@novely/renderer-toolkit';
 import type { VoidComponent } from 'solid-js';
 
-import { setAttribute, effect } from 'solid-js/web';
+import { effect, setAttribute } from 'solid-js/web';
 
 interface CharacterProps {
 	character: string;
 	characters: Record<string, CharacterHandle>;
-	data: ContextStateCharacter
+	data: ContextStateCharacter;
 }
 
 const Character: VoidComponent<CharacterProps> = (props) => {

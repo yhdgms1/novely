@@ -1,48 +1,40 @@
+import type { Character, CharacterHandle, Context, Lang, Renderer, RendererInit } from '@novely/core';
 import type {
-	Renderer,
-	RendererInit,
-	CharacterHandle,
-	Context,
-	Character,
-	Lang
-} from '@novely/core';
-import type {
-  StateScreen,
-  StateScreens,
-  StateMainmenuItem,
-  SolidRendererStore,
-  CreateSolidRendererOptions,
+	CreateSolidRendererOptions,
 	EmitterEventsMap,
-	RendererStoreExtension
+	RendererStoreExtension,
+	SolidRendererStore,
+	StateMainmenuItem,
+	StateScreen,
+	StateScreens,
 } from './types';
 
-import { render } from 'solid-js/web';
+import { canvasDrawImages, imagePreloadWithCaching, imagePreloadWithCachingNotComplete } from '$utils';
 import {
-	createGetContext,
-	createRendererState,
-	createStartFunction,
 	createAudio,
 	createAudioMisc,
+	createGetContext,
+	createRendererState,
 	createRootSetter,
-
+	createStartFunction,
 	handleBackgroundAction,
-	handleDialogAction,
 	handleChoiceAction,
 	handleClearAction,
-	handleCustomAction,
-	handleTextAction,
-	handleInputAction,
-	handleVibrateAction,
 	handleClearBlockingActions,
-	noop
-} from '@novely/renderer-toolkit'
-import { createEmitter } from './emitter';
-import { useContextState, removeContextState } from './context-state'
-import { canvasDrawImages, imagePreloadWithCaching, imagePreloadWithCachingNotComplete } from '$utils';
-import { useShared } from './shared';
+	handleCustomAction,
+	handleDialogAction,
+	handleInputAction,
+	handleTextAction,
+	handleVibrateAction,
+	noop,
+} from '@novely/renderer-toolkit';
+import { render } from 'solid-js/web';
 import { createRootComponent } from './components/Root';
+import { settingsIcons as settingsIconsDefault } from './constants';
+import { removeContextState, useContextState } from './context-state';
 import { hideImage, showImage } from './custom-actions';
-import { settingsIcons as settingsIconsDefault } from './constants'
+import { createEmitter } from './emitter';
+import { useShared } from './shared';
 
 const { preloadAudioBlocking } = createAudioMisc();
 
@@ -52,13 +44,13 @@ const createSolidRenderer = ({
 	skipTypewriterWhenGoingBack = true,
 	target = document.body,
 	settingsIcons = settingsIconsDefault,
-	showAudioSettings = true
+	showAudioSettings = true,
 }: CreateSolidRendererOptions = {}) => {
 	const emitter = createEmitter<EmitterEventsMap>();
 
 	const $rendererState = createRendererState<RendererStoreExtension>({
 		screens: {},
-		mainmenu: []
+		mainmenu: [],
 	});
 
 	const { getContextCached, removeContext } = createGetContext();
@@ -66,7 +58,9 @@ const createSolidRenderer = ({
 	return {
 		emitter,
 
-		renderer<$Language extends Lang, $Characters extends Record<string, Character<$Language>>>(options: RendererInit<$Language, $Characters>) {
+		renderer<$Language extends Lang, $Characters extends Record<string, Character<$Language>>>(
+			options: RendererInit<$Language, $Characters>,
+		) {
 			const { characterAssetSizes } = options;
 			const { root, setRoot } = createRootSetter(() => renderer.getContext(options.mainContextKey));
 
@@ -92,7 +86,7 @@ const createSolidRenderer = ({
 						cleanup[name] = () => {
 							handler?.();
 							unsub();
-						}
+						};
 					}
 
 					const context: Context = {
@@ -120,7 +114,9 @@ const createSolidRenderer = ({
 									let stored = this.emotions[emotion];
 
 									if (!stored) {
-										stored = this.emotions[emotion] = options.getCharacterAssets(character, emotion).map(src => imagePreloadWithCachingNotComplete(src));
+										stored = this.emotions[emotion] = options
+											.getCharacterAssets(character, emotion)
+											.map((src) => imagePreloadWithCachingNotComplete(src));
 									}
 
 									if (shouldRender && stored) {
@@ -188,13 +184,16 @@ const createSolidRenderer = ({
 								remove(className, style, duration, restoring) {
 									return new Promise((resolve) => {
 										const hide = () => {
-											$contextState.mutate((s) => s.characters[character]!, (prev) => {
-												return {
-													...prev,
-													visible: false
-												}
-											})
-										}
+											$contextState.mutate(
+												(s) => s.characters[character]!,
+												(prev) => {
+													return {
+														...prev,
+														visible: false,
+													};
+												},
+											);
+										};
 
 										if (restoring) {
 											/**
@@ -218,14 +217,17 @@ const createSolidRenderer = ({
 											chars[character].canvas.className = className as string;
 										}
 
-										$contextState.mutate((s) => s.characters[character]!, (prev) => {
-											return {
-												...prev,
-												style: style,
-												hideTimeoutId: timeoutId
-											}
-										});
-									})
+										$contextState.mutate(
+											(s) => s.characters[character]!,
+											(prev) => {
+												return {
+													...prev,
+													style: style,
+													hideTimeoutId: timeoutId,
+												};
+											},
+										);
+									});
 								},
 								animate(classes) {
 									const target = this.canvas;
@@ -241,10 +243,10 @@ const createSolidRenderer = ({
 
 									const onAnimationEnd = () => {
 										target.classList.remove(...classNames);
-									}
+									};
 
-									target.addEventListener('animationend', onAnimationEnd, { once: true })
-								}
+									target.addEventListener('animationend', onAnimationEnd, { once: true });
+								},
 							} satisfies CharacterHandle;
 
 							useShared(name).characters[character] = characterHandle;
@@ -252,40 +254,32 @@ const createSolidRenderer = ({
 							return characterHandle;
 						},
 						dialog(content, name, character, emotion, resolve) {
-							handleDialogAction($contextState, content, name, character, emotion, resolve)
+							handleDialogAction($contextState, content, name, character, emotion, resolve);
 						},
 						choices(label, choices, resolve) {
-							handleChoiceAction($contextState, label, choices, resolve)
+							handleChoiceAction($contextState, label, choices, resolve);
 						},
 						clear(keep, keepCharacters, keepAudio, resolve) {
-							handleClearAction($rendererState, $contextState, options, context, keep, keepCharacters)
+							handleClearAction($rendererState, $contextState, options, context, keep, keepCharacters);
 
 							audio.clear(keepAudio);
 
 							resolve();
 						},
 						input(label, onInput, setup, resolve) {
-							handleInputAction(
-								$contextState,
-								options,
-								context,
-								label,
-								onInput,
-								setup,
-								resolve
-							);
+							handleInputAction($contextState, options, context, label, onInput, setup, resolve);
 						},
 						custom(fn) {
-							return handleCustomAction($contextState, fn)
+							return handleCustomAction($contextState, fn);
 						},
 						clearBlockingActions(name) {
-							handleClearBlockingActions($contextState, name)
+							handleClearBlockingActions($contextState, name);
 						},
 						vibrate(pattern) {
-							handleVibrateAction(pattern)
+							handleVibrateAction(pattern);
 						},
 						text(content, resolve) {
-							handleTextAction($contextState, content, resolve)
+							handleTextAction($contextState, content, resolve);
 						},
 
 						audio: audio.context,
@@ -310,8 +304,8 @@ const createSolidRenderer = ({
 							},
 							set goingBack(value) {
 								$contextState.mutate((s) => s.meta.goingBack, value);
-							}
-						}
+							},
+						},
 					};
 
 					return context;
@@ -360,11 +354,11 @@ const createSolidRenderer = ({
 							coreOptions: options,
 
 							$rendererState,
-							$contextState: useContextState(options.mainContextKey)
-						})
+							$contextState: useContextState(options.mainContextKey),
+						});
 
 						return render(() => <Root />, target);
-					})
+					}),
 				},
 				misc: {
 					preloadImage: (src) => {
@@ -378,21 +372,27 @@ const createSolidRenderer = ({
 					preloadImageBlocking: async (src) => {
 						await imagePreloadWithCaching(src);
 					},
-					preloadAudioBlocking
+					preloadAudioBlocking,
 				},
 				actions: {
 					showImage: showImage,
-					hideImage: hideImage
-				}
+					hideImage: hideImage,
+				},
 			} satisfies Renderer;
 
 			return renderer;
 		},
 		registerScreen(name: string, screen: StateScreen) {
-			$rendererState.mutate((s) => s.screens[name], () => screen);
+			$rendererState.mutate(
+				(s) => s.screens[name],
+				() => screen,
+			);
 		},
 		registerMainmenuItem(fn: StateMainmenuItem) {
-			$rendererState.mutate((s) => s.mainmenu, (mainmenu) => [...mainmenu, fn]);
+			$rendererState.mutate(
+				(s) => s.mainmenu,
+				(mainmenu) => [...mainmenu, fn],
+			);
 		},
 	};
 };

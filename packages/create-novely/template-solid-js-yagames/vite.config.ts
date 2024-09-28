@@ -1,10 +1,10 @@
-import type { UserConfig } from 'vite'
-import { defineConfig } from 'vite'
-import { novelyPlugin } from '@novely/vite-plugin-novely'
-import pluginSSL from '@vitejs/plugin-basic-ssl'
+import { novelyPlugin } from '@novely/vite-plugin-novely';
+import pluginSSL from '@vitejs/plugin-basic-ssl';
+import type { UserConfig } from 'vite';
+import { defineConfig } from 'vite';
 
 export default defineConfig(({ mode }) => {
-	const dev = mode.includes('development')
+	const dev = mode.includes('development');
 
 	return {
 		plugins: [
@@ -29,4 +29,4 @@ export default defineConfig(({ mode }) => {
 		 */
 		base: './',
 	} satisfies UserConfig;
-})
+});

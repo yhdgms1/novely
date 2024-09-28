@@ -1,5 +1,5 @@
 import type { TypewriterOptions } from './types';
-import { defaultSpeed, collectTextNodes } from './utils';
+import { collectTextNodes, defaultSpeed } from './utils';
 
 const map = (
 	it: string,

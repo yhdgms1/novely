@@ -1,15 +1,15 @@
 import type { DefaultActionProxy, ValidAction } from './action';
-import type { NovelyStorage } from './storage';
-import type { TranslationActions, Pluralization } from './translation';
-import type { Renderer, RendererInit } from './renderer';
 import type { Character } from './character';
+import type { Renderer, RendererInit } from './renderer';
+import type { NovelyStorage } from './storage';
+import type { Pluralization, TranslationActions } from './translation';
 import type { BaseTranslationStrings } from './translations';
-import type {	getLanguage as defaultGetLanguage } from './utils';
+import type { getLanguage as defaultGetLanguage } from './utils';
 
 type NovelyAsset = {
 	readonly source: string;
-	readonly type: "audio" | "image";
-}
+	readonly type: 'audio' | 'image';
+};
 
 type Thenable<T> = T | Promise<T>;
 
@@ -34,11 +34,7 @@ type SaveType = 'manual' | 'auto';
 
 type SaveMeta = [date: SaveDate, type: SaveType];
 
-type Save<S extends State = State> = [
-	path: Path,
-	state: S,
-	meta: SaveMeta
-];
+type Save<S extends State = State> = [path: Path, state: S, meta: SaveMeta];
 
 type Lang = string;
 type TypewriterSpeed = 'Slow' | 'Medium' | 'Fast' | 'Auto';
@@ -49,7 +45,7 @@ type StorageMeta<L extends Lang = string> = [
 	typewriter_speed: TypewriterSpeed,
 	music_volume: SoundVolume,
 	sound_volume: SoundVolume,
-	voice_volume: SoundVolume
+	voice_volume: SoundVolume,
 ];
 
 type Migration = (save: unknown) => unknown;
@@ -75,22 +71,19 @@ type NovelyScreen = 'mainmenu' | 'game' | 'saves' | 'settings';
 type DeepPartial<T> = unknown extends T
 	? T
 	: T extends object
-	  ? {
+		? {
 				[P in keyof T]?: T[P] extends Array<infer U>
 					? Array<DeepPartial<U>>
 					: T[P] extends ReadonlyArray<infer U>
-					  ? ReadonlyArray<DeepPartial<U>>
-					  : DeepPartial<T[P]>;
-	    }
-	  : T;
+						? ReadonlyArray<DeepPartial<U>>
+						: DeepPartial<T[P]>;
+			}
+		: T;
 
 /**
  *
  */
-type Assign<A extends object, B extends object> = Pick<
-		A,
-		Exclude<keyof A, keyof B>
-	> & B;
+type Assign<A extends object, B extends object> = Pick<A, Exclude<keyof A, keyof B>> & B;
 
 type ActionFN = DefaultActionProxy[keyof DefaultActionProxy];
 
@@ -113,8 +106,8 @@ type UseStackFunctionReturnType = {
 };
 
 type StackHolder = Save[] & {
-	previous: Save | undefined
-}
+	previous: Save | undefined;
+};
 
 type TranslationDescription = {
 	internal: Record<BaseTranslationStrings, string>;
@@ -128,25 +121,25 @@ type TranslationDescription = {
 	nameOverride?: string;
 	plural?: Record<string, Pluralization>;
 	actions?: TranslationActions;
-}
+};
 
 type DefaultEmotions<$Characters extends Record<string, Character<Lang>>> = {
-	[Character in keyof $Characters]?: (keyof $Characters[Character]['emotions'] & string)
-}
+	[Character in keyof $Characters]?: keyof $Characters[Character]['emotions'] & string;
+};
 
 type CharacterAssetSizes<$Characters extends Record<string, Character<Lang>>> = {
 	[Character in keyof $Characters]?: {
 		width: number;
 		height: number;
-	}
-}
+	};
+};
 
 type CharactersData<$Characters extends Record<string, Character<Lang>>> = {
 	[Character in keyof $Characters]: {
-		name: $Characters[Character]['name']
-		emotions: Array<keyof $Characters[Character]['emotions']>
-	}
-}
+		name: $Characters[Character]['name'];
+		emotions: Array<keyof $Characters[Character]['emotions']>;
+	};
+};
 
 type AssetsPreloading = 'lazy' | 'blocking' | 'automatic';
 
@@ -157,7 +150,7 @@ interface NovelyInit<
 	$Characters extends Record<string, Character<NoInfer<$Language>>>,
 	$State extends State,
 	$Data extends Data,
-	$Actions extends Record<string, (...args: any[]) => ValidAction>
+	$Actions extends Record<string, (...args: any[]) => ValidAction>,
 > {
 	/**
 	 * An object containing the characters in the game.
@@ -245,7 +238,7 @@ interface NovelyInit<
 	 * A function that returns a Renderer object used to display the game's content
 	 */
 	renderer: (
-		initializationData: RendererInit<NoInfer<$Language>, NoInfer<$Characters>>
+		initializationData: RendererInit<NoInfer<$Language>, NoInfer<$Characters>>,
 	) => Renderer & { actions: $Actions };
 	/**
 	 * An optional property that specifies the initial screen to display when the game starts
@@ -273,10 +266,7 @@ interface NovelyInit<
 	 * })
 	 * ```
 	 */
-	translation: Record<
-		$Language,
-		TranslationDescription
-	>;
+	translation: Record<$Language, TranslationDescription>;
 	/**
 	 * Initial state value
 	 *
@@ -323,7 +313,10 @@ interface NovelyInit<
 	 * })
 	 * ```
 	 */
-	getLanguage?: (languages: NoInfer<$Language>[], original: typeof defaultGetLanguage) => $Language | (string & Record<never, never>);
+	getLanguage?: (
+		languages: NoInfer<$Language>[],
+		original: typeof defaultGetLanguage,
+	) => $Language | (string & Record<never, never>);
 	/**
 	 * Ignores saved language, and uses `getLanguage` to get it on every engine start
 	 * @default false
@@ -377,14 +370,19 @@ interface NovelyInit<
 type StateFunction<S extends State> = {
 	(value: DeepPartial<S> | ((prev: S) => S)): void;
 	(): S;
-}
+};
 
-type TypeEssentials<$Lang extends Lang, $State extends State, $Data extends Data, $Characters extends Record<string, Character<$Lang>>> = {
+type TypeEssentials<
+	$Lang extends Lang,
+	$State extends State,
+	$Data extends Data,
+	$Characters extends Record<string, Character<$Lang>>,
+> = {
 	readonly l: $Lang | null;
 	readonly s: $State | null;
 	readonly d: $Data | null;
 	readonly c: $Characters | null;
-}
+};
 
 export type {
 	Thenable,
@@ -415,5 +413,5 @@ export type {
 	NovelyAsset,
 	CharactersData,
 	AssetsPreloading,
-	CloneFN
+	CloneFN,
 };

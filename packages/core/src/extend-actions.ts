@@ -1,5 +1,5 @@
-import type { ValidAction } from "./action";
-import type { Assign } from "./types";
+import type { ValidAction } from './action';
+import type { Assign } from './types';
 
 /**
  * Extens core action with custom actions
@@ -14,12 +14,18 @@ import type { Assign } from "./types";
  * })
  * ```
  */
-const extendAction = <Part0 extends Record<string, (...args: any[]) => ValidAction> , Part1 extends Record<string, (...args: any[]) => ValidAction>>(base: Part0, extension: Part1): Readonly<Assign<Part0, Part1>> => {
-  return new Proxy({} as Readonly<Assign<Part0, Part1>>, {
-    get(_, key, receiver) {
-      return Reflect.get(key in extension ? extension : base, key, receiver)
-    },
-  })
-}
+const extendAction = <
+	Part0 extends Record<string, (...args: any[]) => ValidAction>,
+	Part1 extends Record<string, (...args: any[]) => ValidAction>,
+>(
+	base: Part0,
+	extension: Part1,
+): Readonly<Assign<Part0, Part1>> => {
+	return new Proxy({} as Readonly<Assign<Part0, Part1>>, {
+		get(_, key, receiver) {
+			return Reflect.get(key in extension ? extension : base, key, receiver);
+		},
+	});
+};
 
-export { extendAction }
+export { extendAction };

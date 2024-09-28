@@ -19,30 +19,30 @@
  * ```
  */
 const createShared = <T extends Record<PropertyKey, unknown>>(get: () => T) => {
-  const CACHE = new Map<string, T>();
+	const CACHE = new Map<string, T>();
 
-  const use = (id: string) => {
-    const cached = CACHE.get(id);
+	const use = (id: string) => {
+		const cached = CACHE.get(id);
 
-    if (cached) {
-      return cached
-    }
+		if (cached) {
+			return cached;
+		}
 
-    const shared = get();
+		const shared = get();
 
-    CACHE.set(id, shared);
+		CACHE.set(id, shared);
 
-    return shared;
-  }
+		return shared;
+	};
 
-  const remove = (id: string) => {
-    CACHE.delete(id);
-  }
+	const remove = (id: string) => {
+		CACHE.delete(id);
+	};
 
-  return {
-    useShared: use,
-    removeShared: remove
-  }
-}
+	return {
+		useShared: use,
+		removeShared: remove,
+	};
+};
 
-export { createShared }
+export { createShared };

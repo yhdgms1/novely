@@ -1,6 +1,6 @@
-import type { JSX, FlowComponent, Accessor } from 'solid-js';
-import { untrack, splitProps, onCleanup, createEffect } from 'solid-js';
 import { clsx } from 'clsx';
+import type { Accessor, FlowComponent, JSX } from 'solid-js';
+import { createEffect, onCleanup, splitProps, untrack } from 'solid-js';
 
 type NativeAttrs = JSX.DialogHtmlAttributes<HTMLDialogElement>;
 type FinalNativeAttrs = Exclude<NativeAttrs, 'open' | 'ref' | 'classList'>;
@@ -11,7 +11,7 @@ type ModalProps = FinalNativeAttrs & {
 
 	trapFocus: Accessor<boolean>;
 	isModal: boolean;
-}
+};
 
 const Modal: FlowComponent<ModalProps> = (props) => {
 	const [it, rest] = splitProps(props, ['isOpen', 'setIsOpen', 'trapFocus', 'isModal']);
@@ -55,18 +55,10 @@ const Modal: FlowComponent<ModalProps> = (props) => {
 		/**
 		 * Modal requires to call `showModal`. When `showModal` is called ::backdrop is visible
 		 */
-		dialog[it.isOpen() ? it.isModal ? 'showModal' : 'show' : 'close']();
+		dialog[it.isOpen() ? (it.isModal ? 'showModal' : 'show') : 'close']();
 	});
 
-	return (
-		<dialog
-			{...rest}
-
-			class={clsx('dialog', rest.class)}
-
-			ref={dialog}
-		/>
-	);
+	return <dialog {...rest} class={clsx('dialog', rest.class)} ref={dialog} />;
 };
 
 export { Modal };

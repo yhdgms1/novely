@@ -6,19 +6,19 @@ import { deepAtom } from '../atoms/deep-atom';
  * State which is related to whole renderer
  */
 type RendererState = {
-  /**
-   * Current screen that should be rendered
-   */
-  screen: NovelyScreen;
-  /**
-   * Is loading shown. Unlike screen 'loading', it does not change screen and shown above all layers
-   */
-  loadingShown: boolean;
-  /**
-   * Is exit prompt should be shown
-   */
-  exitPromptShown: boolean;
-}
+	/**
+	 * Current screen that should be rendered
+	 */
+	screen: NovelyScreen;
+	/**
+	 * Is loading shown. Unlike screen 'loading', it does not change screen and shown above all layers
+	 */
+	loadingShown: boolean;
+	/**
+	 * Is exit prompt should be shown
+	 */
+	exitPromptShown: boolean;
+};
 
 const defaultEmpty = {} satisfies BaseDeepMap;
 
@@ -46,16 +46,18 @@ type RendererStateStore<Extension extends BaseDeepMap = typeof defaultEmpty> = R
  * })
  * ```
  */
-const createRendererState = <Extension extends BaseDeepMap = typeof defaultEmpty>(extension = defaultEmpty as Extension) => {
-  const rendererState = deepAtom<RendererStateStore<Extension>>({
-    screen: 'mainmenu',
-    loadingShown: false,
-    exitPromptShown: false,
-    ...extension
-  } as RendererStateStore<Extension>)
+const createRendererState = <Extension extends BaseDeepMap = typeof defaultEmpty>(
+	extension = defaultEmpty as Extension,
+) => {
+	const rendererState = deepAtom<RendererStateStore<Extension>>({
+		screen: 'mainmenu',
+		loadingShown: false,
+		exitPromptShown: false,
+		...extension,
+	} as RendererStateStore<Extension>);
 
-  return rendererState;
-}
+	return rendererState;
+};
 
-export { createRendererState }
-export type { RendererState, RendererStateStore }
+export { createRendererState };
+export type { RendererState, RendererStateStore };

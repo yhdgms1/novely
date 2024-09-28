@@ -1,2 +1,2 @@
-export { noop } from './noop'
-export { escapeHTML } from './escape-html'
+export { noop } from './noop';
+export { escapeHTML } from './escape-html';

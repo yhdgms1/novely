@@ -1,24 +1,46 @@
-import type { DefaultActionProxy, CustomHandler, Story, ValidAction, GetActionParameters } from './action';
-import type { Character } from './character';
-import type { Thenable, Path, PathItem, Save, UseStackFunctionReturnType, StackHolder, Lang, NovelyAsset, CharactersData, StorageData, CloneFN } from './types';
-import type { Context, Renderer } from './renderer';
-import type { Stored } from './store';
-import { BLOCK_STATEMENTS, BLOCK_EXIT_STATEMENTS, SKIPPED_DURING_RESTORE, AUDIO_ACTIONS, HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from './constants';
-import { STACK_MAP } from './shared';
-import { DEV } from 'esm-env';
 import { memoize } from 'es-toolkit/function';
+import { DEV } from 'esm-env';
+import type { CustomHandler, DefaultActionProxy, GetActionParameters, Story, ValidAction } from './action';
 import { isAsset } from './asset';
+import type { Character } from './character';
+import {
+	AUDIO_ACTIONS,
+	BLOCK_EXIT_STATEMENTS,
+	BLOCK_STATEMENTS,
+	HOWLER_SUPPORTED_FILE_FORMATS,
+	SKIPPED_DURING_RESTORE,
+	SUPPORTED_IMAGE_FILE_FORMATS,
+} from './constants';
+import type { Context, Renderer } from './renderer';
+import { STACK_MAP } from './shared';
+import type { Stored } from './store';
+import type {
+	CharactersData,
+	CloneFN,
+	Lang,
+	NovelyAsset,
+	Path,
+	PathItem,
+	Save,
+	StackHolder,
+	StorageData,
+	Thenable,
+	UseStackFunctionReturnType,
+} from './types';
 
 type MatchActionParams = {
-	data: Record<string, unknown>
+	data: Record<string, unknown>;
 	ctx: Context;
 
 	push: () => void;
 	forward: () => void;
-}
+};
 
 type MatchActionMap = {
-	[Key in keyof DefaultActionProxy]: (params: MatchActionParams, data: Parameters<DefaultActionProxy[Key]>) => void;
+	[Key in keyof DefaultActionProxy]: (
+		params: MatchActionParams,
+		data: Parameters<DefaultActionProxy[Key]>,
+	) => void;
 };
 
 type MatchActionMapComplete = Omit<MatchActionMap, 'custom'> & {
@@ -34,7 +56,7 @@ type MatchActionParameters = {
 	 * Data from the save
 	 */
 	data: Record<string, unknown>;
-}
+};
 
 type MatchActionOptions = {
 	push: (ctx: Context) => void;
@@ -42,34 +64,44 @@ type MatchActionOptions = {
 
 	getContext: (name: string) => Context;
 
-	onBeforeActionCall: (payload: { action: keyof MatchActionMapComplete, props: Parameters<DefaultActionProxy[keyof MatchActionMapComplete]>; ctx: Context }) => void;
-}
+	onBeforeActionCall: (payload: {
+		action: keyof MatchActionMapComplete;
+		props: Parameters<DefaultActionProxy[keyof MatchActionMapComplete]>;
+		ctx: Context;
+	}) => void;
+};
 
-const matchAction = <M extends MatchActionMapComplete>({ getContext, onBeforeActionCall, push, forward }: MatchActionOptions, values: M) => {
+const matchAction = <M extends MatchActionMapComplete>(
+	{ getContext, onBeforeActionCall, push, forward }: MatchActionOptions,
+	values: M,
+) => {
 	return (action: keyof MatchActionMapComplete, props: any, { ctx, data }: MatchActionParameters) => {
 		const context = typeof ctx === 'string' ? getContext(ctx) : ctx;
 
 		onBeforeActionCall({
 			action,
 			props,
-			ctx: context
-		})
-
-		return values[action]({
 			ctx: context,
-			data,
+		});
 
-			push() {
-				if (context.meta.preview) return;
+		return values[action](
+			{
+				ctx: context,
+				data,
 
-				push(context)
+				push() {
+					if (context.meta.preview) return;
+
+					push(context);
+				},
+				forward() {
+					if (context.meta.preview) return;
+
+					forward(context);
+				},
 			},
-			forward() {
-				if (context.meta.preview) return;
-
-				forward(context)
-			}
-		}, props);
+			props,
+		);
 	};
 };
 
@@ -199,13 +231,15 @@ const isSkippedDuringRestore = (item: unknown): item is 'vibrate' | 'dialog' | '
 	return SKIPPED_DURING_RESTORE.has(item as any);
 };
 
-const isAudioAction = (action: unknown): action is   'playMusic' | 'stopMusic' | 'playSound' | 'stopSound' | 'voice' | 'stopVoice' => {
+const isAudioAction = (
+	action: unknown,
+): action is 'playMusic' | 'stopMusic' | 'playSound' | 'stopSound' | 'voice' | 'stopVoice' => {
 	return AUDIO_ACTIONS.has(action as any);
-}
+};
 
 const noop = () => {};
 
-const isAction = (element: unknown,): element is Exclude<ValidAction, ValidAction[]> => {
+const isAction = (element: unknown): element is Exclude<ValidAction, ValidAction[]> => {
 	return Array.isArray(element) && isString(element[0]);
 };
 
@@ -266,19 +300,19 @@ const isExitImpossible = (path: Path) => {
 		return false;
 	}
 
-	return !blockExitStatements.every(([name], i) => name && name.startsWith(blockStatements[i][0]!))
-}
+	return !blockExitStatements.every(([name], i) => name && name.startsWith(blockStatements[i][0]!));
+};
 
 const getOppositeAction = (action: 'showCharacter' | 'playSound' | 'playMusic' | 'voice' | any) => {
 	const MAP = {
-		'showCharacter': 'hideCharacter',
-		'playSound': 'stopSound',
-		'playMusic': 'stopMusic',
-		'voice': 'stopVoice'
+		showCharacter: 'hideCharacter',
+		playSound: 'stopSound',
+		playMusic: 'stopMusic',
+		voice: 'stopVoice',
 	} as const;
 
 	return MAP[action as keyof typeof MAP];
-}
+};
 
 /**
  * @param story A story object
@@ -309,7 +343,7 @@ const getActionsFromPath = (story: Story, path: Path, filter: boolean) => {
 	/**
 	 * Actions that are either considered user action or skipped during restore process
 	 */
-	const skip = new Set<Exclude<ValidAction, ValidAction[]>>()
+	const skip = new Set<Exclude<ValidAction, ValidAction[]>>();
 
 	/**
 	 * Cound of items of type `[null, int]`
@@ -338,7 +372,7 @@ const getActionsFromPath = (story: Story, path: Path, filter: boolean) => {
 				let startIndex = 0;
 
 				if (ignoreNestedBefore) {
-					const prev = findLastPathItemBeforeItemOfType(path.slice(0, index), ignoreNestedBefore)
+					const prev = findLastPathItemBeforeItemOfType(path.slice(0, index), ignoreNestedBefore);
 
 					if (prev) {
 						startIndex = prev[1];
@@ -392,21 +426,21 @@ const getActionsFromPath = (story: Story, path: Path, filter: boolean) => {
 			current = story[val];
 		} else if (type === 'block:exit' || type === 'choice:exit' || type === 'condition:exit') {
 			current = blocks.pop();
-			ignoreNestedBefore = type.slice(0, -5) as PathItem[0]
+			ignoreNestedBefore = type.slice(0, -5) as PathItem[0];
 		}
 	}
 
 	return {
 		queue,
 		skip,
-		skipPreserve
+		skipPreserve,
 	};
-}
+};
 
 type QueueProcessorOptions = {
 	skip: Set<Exclude<ValidAction, ValidAction[]>>;
-	skipPreserve?: Exclude<ValidAction, ValidAction[]> | undefined
-}
+	skipPreserve?: Exclude<ValidAction, ValidAction[]> | undefined;
+};
 
 const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], options: QueueProcessorOptions) => {
 	const processedQueue: Exclude<ValidAction, ValidAction[]>[] = [];
@@ -415,7 +449,7 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 	const characters = new Set();
 	const audio = {
 		music: new Set(),
-		sound: new Set()
+		sound: new Set(),
 	};
 
 	/**
@@ -462,7 +496,12 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 			}
 
 			processedQueue.push(item);
-		} else if (action === 'showCharacter' || action === 'playSound' || action === 'playMusic' || action === 'voice') {
+		} else if (
+			action === 'showCharacter' ||
+			action === 'playSound' ||
+			action === 'playMusic' ||
+			action === 'voice'
+		) {
 			const closing = getOppositeAction(action);
 
 			const skip = next(i).some(([_action, target]) => {
@@ -485,11 +524,11 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 			 * Actually, we do not need check above to add there things to keep because if something was hidden already we could not keep it visible
 			 */
 			if (action === 'showCharacter') {
-				characters.add(params[0])
+				characters.add(params[0]);
 			} else if (action === 'playMusic') {
-				audio.music.add(unwrapAsset(params[0] as NovelyAsset))
+				audio.music.add(unwrapAsset(params[0] as NovelyAsset));
 			} else if (action === 'playSound') {
-				audio.sound.add(unwrapAsset(params[0] as NovelyAsset))
+				audio.sound.add(unwrapAsset(params[0] as NovelyAsset));
 			}
 
 			processedQueue.push(item);
@@ -511,14 +550,14 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 				const next = array.slice(j);
 
 				const characterWillAnimate = next.some(([__action, __character]) => action === __action);
-				const hasBlockingActions = next.some((item) => options.skip.has(item))
+				const hasBlockingActions = next.some((item) => options.skip.has(item));
 
 				/**
 				 * This is not a best check.
 				 *
 				 * @todo: make two animations for two different characters animate when not separeted by "blocking actions"
 				 */
-				return characterWillAnimate && hasBlockingActions
+				return characterWillAnimate && hasBlockingActions;
 			});
 
 			if (skip) continue;
@@ -539,17 +578,17 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 		}
 
 		processedQueue.length = 0;
-	}
+	};
 
 	return {
 		run,
 		keep: {
 			keep,
 			characters,
-			audio
-		}
-	}
-}
+			audio,
+		},
+	};
+};
 
 const getStack = memoize(
 	(_: Context) => {
@@ -558,7 +597,7 @@ const getStack = memoize(
 	{
 		cache: STACK_MAP,
 		getCacheKey: (ctx) => ctx.id,
-	}
+	},
 );
 
 const createUseStackFunction = (renderer: Renderer) => {
@@ -591,20 +630,20 @@ const createUseStackFunction = (renderer: Renderer) => {
 
 				stack.length = 0;
 				stack.length = 1;
-			}
-		}
-	}
+			},
+		};
+	};
 
 	return useStack;
-}
+};
 
 const mapSet = <T, K>(set: Set<T>, fn: (value: T, index: number, array: T[]) => K): K[] => {
 	return [...set].map(fn);
-}
+};
 
 const isImageAsset = (asset: unknown): asset is string => {
-	return isString(asset) && isCSSImage(asset)
-}
+	return isString(asset) && isCSSImage(asset);
+};
 
 const getUrlFileExtension = (address: string) => {
 	try {
@@ -619,33 +658,33 @@ const getUrlFileExtension = (address: string) => {
 		return pathname.split('.').at(-1)!.split('!')[0].split(':')[0];
 	} catch (error) {
 		if (DEV) {
-			console.error(new Error(`Could not construct URL "${address}".`, { cause: error }))
+			console.error(new Error(`Could not construct URL "${address}".`, { cause: error }));
 		}
 
-		return ''
+		return '';
 	}
-}
+};
 
 const fetchContentType = async (url: string, request: typeof fetch) => {
 	try {
 		const response = await request(url, {
-			method: 'HEAD'
+			method: 'HEAD',
 		});
 
 		return response.headers.get('Content-Type') || '';
 	} catch (error) {
 		if (DEV) {
-			console.error(new Error(`Failed to fetch file at "${url}"`, { cause: error }))
+			console.error(new Error(`Failed to fetch file at "${url}"`, { cause: error }));
 		}
 
 		return '';
 	}
-}
+};
 
 type GetResourceTypeParams = {
 	url: string;
 	request: typeof fetch;
-}
+};
 
 const getResourseType = memoize(
 	async ({ url, request }: GetResourceTypeParams) => {
@@ -655,17 +694,17 @@ const getResourseType = memoize(
 		 * startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data')
 		 */
 		if (!isCSSImage(url)) {
-			return 'other'
+			return 'other';
 		}
 
 		const extension = getUrlFileExtension(url);
 
 		if (HOWLER_SUPPORTED_FILE_FORMATS.has(extension as any)) {
-			return 'audio'
+			return 'audio';
 		}
 
 		if (SUPPORTED_IMAGE_FILE_FORMATS.has(extension as any)) {
-			return 'image'
+			return 'image';
 		}
 
 		/**
@@ -675,18 +714,18 @@ const getResourseType = memoize(
 		const contentType = await fetchContentType(url, request);
 
 		if (contentType.includes('audio')) {
-			return 'audio'
+			return 'audio';
 		}
 
 		if (contentType.includes('image')) {
-			return 'image'
+			return 'image';
 		}
 
-		return 'other'
+		return 'other';
 	},
 	{
-		getCacheKey: ({ url }) => url
-	}
+		getCacheKey: ({ url }) => url,
+	},
 );
 
 /**
@@ -710,7 +749,7 @@ const getIntlLanguageDisplayName = memoize((lang: Lang) => {
 	} catch {
 		return lang;
 	}
-})
+});
 
 const createReferFunction = (story: Story) => {
 	const refer = (path: Path) => {
@@ -744,7 +783,7 @@ const createReferFunction = (story: Story) => {
 	};
 
 	return refer;
-}
+};
 
 type ReferFunction = ReturnType<typeof createReferFunction>;
 
@@ -753,7 +792,7 @@ type ExitPathConfig = {
 	refer: ReferFunction;
 
 	onExitImpossible?: () => void;
-}
+};
 
 const exitPath = ({ path, refer, onExitImpossible }: ExitPathConfig) => {
 	const last = path.at(-1);
@@ -783,8 +822,8 @@ const exitPath = ({ path, refer, onExitImpossible }: ExitPathConfig) => {
 		wasExitImpossible = true;
 
 		return {
-			exitImpossible: wasExitImpossible
-		}
+			exitImpossible: wasExitImpossible,
+		};
 	}
 
 	for (let i = path.length - 1; i > 0; i--) {
@@ -837,9 +876,9 @@ const exitPath = ({ path, refer, onExitImpossible }: ExitPathConfig) => {
 	}
 
 	return {
-		exitImpossible: wasExitImpossible
-	}
-}
+		exitImpossible: wasExitImpossible,
+	};
+};
 
 const nextPath = (path: Path) => {
 	/**
@@ -854,23 +893,23 @@ const nextPath = (path: Path) => {
 	}
 
 	return path;
-}
+};
 
 /**
  * Is custom and requires user action or skipped during restoring
  */
 const isBlockingAction = (action: Exclude<ValidAction, ValidAction[]>) => {
-	return isUserRequiredAction(action) || (isSkippedDuringRestore(action[0]) && action[0] !== 'vibrate')
-}
+	return isUserRequiredAction(action) || (isSkippedDuringRestore(action[0]) && action[0] !== 'vibrate');
+};
 
 type CollectActionsBeforeBlockingActionOptions = {
 	path: Path;
 	refer: ReferFunction;
 	clone: CloneFN;
-}
+};
 
 const collectActionsBeforeBlockingAction = ({ path, refer, clone }: CollectActionsBeforeBlockingActionOptions) => {
-	const collection: Exclude<ValidAction, ValidAction[]>[] = []
+	const collection: Exclude<ValidAction, ValidAction[]>[] = [];
 
 	let action = refer(path);
 
@@ -879,10 +918,10 @@ const collectActionsBeforeBlockingAction = ({ path, refer, clone }: CollectActio
 			const { exitImpossible } = exitPath({
 				path,
 				refer,
-			})
+			});
 
 			if (exitImpossible) {
-				break
+				break;
 			}
 		}
 
@@ -904,14 +943,14 @@ const collectActionsBeforeBlockingAction = ({ path, refer, clone }: CollectActio
 					 */
 					if (!Array.isArray(branchContent)) continue;
 
-					const virtualPath = clone(path)
+					const virtualPath = clone(path);
 
-					virtualPath.push(['choice', i], [null, 0])
+					virtualPath.push(['choice', i], [null, 0]);
 
 					const innerActions = collectActionsBeforeBlockingAction({
 						path: virtualPath,
 						refer,
-						clone
+						clone,
 					});
 
 					collection.push(...innerActions);
@@ -921,14 +960,14 @@ const collectActionsBeforeBlockingAction = ({ path, refer, clone }: CollectActio
 				const conditions = Object.keys(conditionProps[1]);
 
 				for (const condition of conditions) {
-					const virtualPath = clone(path)
+					const virtualPath = clone(path);
 
-					virtualPath.push(['condition', condition], [null, 0])
+					virtualPath.push(['condition', condition], [null, 0]);
 
 					const innerActions = collectActionsBeforeBlockingAction({
 						path: virtualPath,
 						refer,
-						clone
+						clone,
 					});
 
 					collection.push(...innerActions);
@@ -938,15 +977,18 @@ const collectActionsBeforeBlockingAction = ({ path, refer, clone }: CollectActio
 			break;
 		}
 
-		collection.push(action)
+		collection.push(action);
 
 		/**
 		 * These special actions requires path change
 		 */
 		if (action[0] === 'jump') {
-			path = [['jump', action[1]], [null, 0]]
+			path = [
+				['jump', action[1]],
+				[null, 0],
+			];
 		} else if (action[0] == 'block') {
-			path.push(['block', action[1]], [null, 0])
+			path.push(['block', action[1]], [null, 0]);
 		} else {
 			nextPath(path);
 		}
@@ -955,11 +997,11 @@ const collectActionsBeforeBlockingAction = ({ path, refer, clone }: CollectActio
 	}
 
 	return collection;
-}
+};
 
 const unwrapAsset = (asset: string | NovelyAsset) => {
 	return isAsset(asset) ? asset.source : asset;
-}
+};
 
 const handleAudioAsset = (asset: string | NovelyAsset) => {
 	if (DEV && isAsset(asset) && asset.type !== 'audio') {
@@ -967,7 +1009,7 @@ const handleAudioAsset = (asset: string | NovelyAsset) => {
 	}
 
 	return unwrapAsset(asset);
-}
+};
 
 const handleImageAsset = (asset: string | NovelyAsset) => {
 	if (DEV && isAsset(asset) && asset.type !== 'image') {
@@ -975,22 +1017,22 @@ const handleImageAsset = (asset: string | NovelyAsset) => {
 	}
 
 	return unwrapAsset(asset);
-}
+};
 
 const getCharactersData = <Characters extends Record<string, Character<Lang>>>(characters: Characters) => {
 	const entries = Object.entries(characters);
 	const mapped = entries.map(([key, value]) => [key, { name: value.name, emotions: Object.keys(value.emotions) }]);
 
 	return Object.fromEntries(mapped) as CharactersData<Characters>;
-}
+};
 
 const toArray = <T>(target: T | T[]) => {
-	return Array.isArray(target) ? target : [target]
-}
+	return Array.isArray(target) ? target : [target];
+};
 
 const getLanguageFromStore = <$Language extends Lang>(store: Stored<StorageData<$Language, any>>) => {
 	return store.get().meta[0];
-}
+};
 
 const getVolumeFromStore = <$Language extends Lang>(store: Stored<StorageData<$Language, any>>) => {
 	const { meta } = store.get();
@@ -998,9 +1040,9 @@ const getVolumeFromStore = <$Language extends Lang>(store: Stored<StorageData<$L
 	return {
 		music: meta[2],
 		sound: meta[3],
-		voice: meta[4]
-	}
-}
+		voice: meta[4],
+	};
+};
 
 export {
 	matchAction,
@@ -1047,7 +1089,7 @@ export {
 	toArray,
 	getLanguageFromStore,
 	getVolumeFromStore,
-	flatActions
+	flatActions,
 };
 
-export type { MatchActionOptions, ControlledPromise, MatchActionMapComplete }
+export type { MatchActionOptions, ControlledPromise, MatchActionMapComplete };

@@ -1,2 +1,2 @@
-export { createDeferredPromise } from './createDeferredPromise'
-export { games } from './yandex'
+export { createDeferredPromise } from './createDeferredPromise';
+export { games } from './yandex';

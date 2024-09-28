@@ -1,9 +1,9 @@
-import { novely, localStorageStorage, EN } from '@novely/core'
-import { createSolidRenderer } from '@novely/solid-renderer'
+import { EN, localStorageStorage, novely } from '@novely/core';
+import { createSolidRenderer } from '@novely/solid-renderer';
 
-import lily from './assets/lily.png'
+import lily from './assets/lily.png';
 
-const { renderer } = createSolidRenderer()
+const { renderer } = createSolidRenderer();
 
 const engine = novely({
 	renderer,
@@ -31,6 +31,6 @@ const engine = novely({
 			emotions: {},
 		},
 	},
-})
+});
 
-export { engine }
+export { engine };

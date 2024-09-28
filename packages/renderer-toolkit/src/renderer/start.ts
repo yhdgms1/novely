@@ -1,4 +1,4 @@
-import { noop } from "../utils";
+import { noop } from '../utils';
 
 /**
  * Unmounts app
@@ -54,20 +54,20 @@ type StartFunctionMountFn = () => StartFunctionUnMountFn;
  * ```
  */
 const createStartFunction = (fn: StartFunctionMountFn) => {
-  let unmount: StartFunctionUnMountFn = noop;
+	let unmount: StartFunctionUnMountFn = noop;
 
-  return () => {
-    unmount();
-    unmount = fn();
+	return () => {
+		unmount();
+		unmount = fn();
 
-    return {
-      unmount: () => {
-        unmount();
-        unmount = noop;
-      }
-    }
-  }
-}
+		return {
+			unmount: () => {
+				unmount();
+				unmount = noop;
+			},
+		};
+	};
+};
 
-export { createStartFunction }
-export type { StartFunctionMountFn, StartFunctionUnMountFn }
+export { createStartFunction };
+export type { StartFunctionMountFn, StartFunctionUnMountFn };

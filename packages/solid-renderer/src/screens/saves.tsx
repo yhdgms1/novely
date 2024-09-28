@@ -1,7 +1,7 @@
-import type { VoidComponent } from 'solid-js';
-import { Show, For, createSignal, onCleanup, onMount } from 'solid-js';
-import { useData } from '$context';
 import { Save } from '$components';
+import { useData } from '$context';
+import type { VoidComponent } from 'solid-js';
+import { For, Show, createSignal, onCleanup, onMount } from 'solid-js';
 
 const Saves: VoidComponent = () => {
 	const { t, storageData, $rendererState } = useData();
@@ -12,7 +12,7 @@ const Saves: VoidComponent = () => {
 	 * Items that were observed so they now can call `.preview()`
 	 * We do this to not load invisible saves
 	 */
-	const [loadingAllowed, setLoadingAllowed] = createSignal<number[]>([])
+	const [loadingAllowed, setLoadingAllowed] = createSignal<number[]>([]);
 
 	/**
 	 * Every save (found by timestamp) that completed `.preview()`
@@ -40,7 +40,7 @@ const Saves: VoidComponent = () => {
 				entries.forEach((entry) => {
 					if (!entry.isIntersecting) return;
 					if (processed.has(entry.target)) return;
-					if (!(entry.target instanceof HTMLElement)) return
+					if (!(entry.target instanceof HTMLElement)) return;
 
 					processed.add(entry.target);
 
@@ -54,7 +54,7 @@ const Saves: VoidComponent = () => {
 								if (Number.isFinite(parsed)) {
 									currentEntryTimestamps.push(parsed);
 
-									return [...prev, Number(timestamp)]
+									return [...prev, Number(timestamp)];
 								}
 
 								return prev;
@@ -66,12 +66,12 @@ const Saves: VoidComponent = () => {
 				});
 
 				if (currentEntryTimestamps.length > 0) {
-					setObservedTargets((targets) => [...targets, currentEntryTimestamps])
+					setObservedTargets((targets) => [...targets, currentEntryTimestamps]);
 				}
 			},
 			{
-				root: listElement
-			}
+				root: listElement,
+			},
 		);
 
 		listElement.childNodes.forEach((childNode) => {
@@ -80,14 +80,14 @@ const Saves: VoidComponent = () => {
 
 				onCleanup(() => {
 					observer.unobserve(childNode);
-				})
+				});
 			}
-		})
+		});
 
 		onCleanup(() => {
-			observer.disconnect()
-		})
-	})
+			observer.disconnect();
+		});
+	});
 
 	const isOverlayShown = (timestamp: number) => {
 		const observed = observedTargets();
@@ -105,8 +105,8 @@ const Saves: VoidComponent = () => {
 		/**
 		 * Check if every item in that group is completed
 		 */
-		return !targets.every(item => completed.includes(item))
-	}
+		return !targets.every((item) => completed.includes(item));
+	};
 
 	return (
 		<div class="saves">
@@ -125,24 +125,18 @@ const Saves: VoidComponent = () => {
 			<div class="saves__list-container">
 				<Show
 					when={saves().length > 0}
-					fallback={
-						<div class="saves__list saves__list--empty">
-							{t('NoSaves')}
-						</div>
-					}
+					fallback={<div class="saves__list saves__list--empty">{t('NoSaves')}</div>}
 				>
 					<ol class="saves__list" ref={setList}>
 						<For each={saves()}>
-							{save => (
+							{(save) => (
 								<Save
 									save={save}
 									language={language()}
-
 									observed={loadingAllowed().includes(save[2][0])}
 									overlayShown={isOverlayShown(save[2][0])}
-
 									onPreviewDone={() => {
-										setPreviewCompleted(completed => [...completed, save[2][0]])
+										setPreviewCompleted((completed) => [...completed, save[2][0]]);
 									}}
 								/>
 							)}

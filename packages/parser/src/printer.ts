@@ -1,5 +1,5 @@
-import type { Ast, AstNode, PrintOptions } from './types';
 import { NEW_LINE } from './constants';
+import type { Ast, AstNode, PrintOptions } from './types';
 
 const DOUBLE_SPACE = '  ';
 

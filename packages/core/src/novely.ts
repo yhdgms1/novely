@@ -1,82 +1,82 @@
-import type { Character } from './character';
-import type {
-	ActionProxy,
-	Story,
-	ValidAction,
-	TextContent,
-	CustomHandler,
-	ActionChoiceChoice,
-	VirtualActions,
-	ChoiceOnSelectFunction,
-} from './action';
-import type {
-	Save,
-	State,
-	Data,
-	StorageData,
-	CoreData,
-	NovelyInit,
-	StateFunction,
-	Lang,
-	TypeEssentials
-} from './types';
-import type { Stored } from './store';
-import type { Context, RendererInitPreviewReturn } from './renderer';
-import type { BaseTranslationStrings } from './translations';
-import type { ControlledPromise, MatchActionOptions } from './utils';
-import {
-	matchAction,
-	isEmpty,
-	getLanguage as defaultGetLanguage,
-	isFunction,
-	createControlledPromise,
-	isAction,
-	noop,
-	flattenStory,
-	getActionsFromPath,
-	createUseStackFunction,
-	createQueueProcessor,
-	isAudioAction,
-	isString,
-	getResourseType,
-	capitalize,
-	getIntlLanguageDisplayName,
-	createReferFunction,
-	exitPath,
-	nextPath,
-	isPromise,
-	isBlockingAction,
-	collectActionsBeforeBlockingAction,
-	handleAudioAsset,
-	getCharactersData,
-	handleImageAsset,
-	toArray,
-	getLanguageFromStore,
-	getVolumeFromStore,
-	flatActions
-} from './utils';
+import { dequal } from 'dequal/lite';
 import { throttle } from 'es-toolkit/function';
 import { merge as deepmerge } from 'es-toolkit/object';
-import { dequal } from 'dequal/lite';
-import { store } from './store';
-import { klona } from 'klona/full';
-import { EMPTY_SET, DEFAULT_TYPEWRITER_SPEED, MAIN_CONTEXT_KEY } from './constants';
-import { replace as replaceTranslation, flattenAllowedContent } from './translation';
-import { handleCustomAction, getCustomActionHolder } from './custom-action'
-import { localStorageStorage } from './storage';
-import { setupBrowserVisibilityChangeListeners } from './browser';
-import pLimit from 'p-limit';
 import { DEV } from 'esm-env';
-import { STACK_MAP, PRELOADED_ASSETS, ASSETS_TO_PRELOAD } from './shared';
-import { enqueueAssetForPreloading, handleAssetsPreloading, huntAssets } from './preloading';
+import { klona } from 'klona/full';
+import pLimit from 'p-limit';
+import type {
+	ActionChoiceChoice,
+	ActionProxy,
+	ChoiceOnSelectFunction,
+	CustomHandler,
+	Story,
+	TextContent,
+	ValidAction,
+	VirtualActions,
+} from './action';
 import { isAsset } from './asset';
+import { setupBrowserVisibilityChangeListeners } from './browser';
+import type { Character } from './character';
+import { DEFAULT_TYPEWRITER_SPEED, EMPTY_SET, MAIN_CONTEXT_KEY } from './constants';
+import { getCustomActionHolder, handleCustomAction } from './custom-action';
+import { enqueueAssetForPreloading, handleAssetsPreloading, huntAssets } from './preloading';
+import type { Context, RendererInitPreviewReturn } from './renderer';
+import { ASSETS_TO_PRELOAD, PRELOADED_ASSETS, STACK_MAP } from './shared';
+import { localStorageStorage } from './storage';
+import type { Stored } from './store';
+import { store } from './store';
+import { flattenAllowedContent, replace as replaceTranslation } from './translation';
+import type { BaseTranslationStrings } from './translations';
+import type {
+	CoreData,
+	Data,
+	Lang,
+	NovelyInit,
+	Save,
+	State,
+	StateFunction,
+	StorageData,
+	TypeEssentials,
+} from './types';
+import type { ControlledPromise, MatchActionOptions } from './utils';
+import {
+	capitalize,
+	collectActionsBeforeBlockingAction,
+	createControlledPromise,
+	createQueueProcessor,
+	createReferFunction,
+	createUseStackFunction,
+	getLanguage as defaultGetLanguage,
+	exitPath,
+	flatActions,
+	flattenStory,
+	getActionsFromPath,
+	getCharactersData,
+	getIntlLanguageDisplayName,
+	getLanguageFromStore,
+	getResourseType,
+	getVolumeFromStore,
+	handleAudioAsset,
+	handleImageAsset,
+	isAction,
+	isAudioAction,
+	isBlockingAction,
+	isEmpty,
+	isFunction,
+	isPromise,
+	isString,
+	matchAction,
+	nextPath,
+	noop,
+	toArray,
+} from './utils';
 
 const novely = <
 	$Language extends string,
 	$Characters extends Record<string, Character<$Language>>,
 	$State extends State,
 	$Data extends Data,
-	$Actions extends Record<string, (...args: any[]) => ValidAction>
+	$Actions extends Record<string, (...args: any[]) => ValidAction>,
 >({
 	characters,
 	characterAssetSizes = {},
@@ -104,7 +104,9 @@ const novely = <
 	/**
 	 * All action functions
 	 */
-	type Actions = $Actions & ActionProxy<$Characters, $Language, $State> & VirtualActions<$Characters, $Language, $State>;
+	type Actions = $Actions &
+		ActionProxy<$Characters, $Language, $State> &
+		VirtualActions<$Characters, $Language, $State>;
 
 	const languages = Object.keys(translation) as $Language[];
 
@@ -163,7 +165,7 @@ const novely = <
 
 		await dataLoaded.promise;
 
-		renderer.ui.hideLoading()
+		renderer.ui.hideLoading();
 
 		if (!initialScreenWasShown) {
 			initialScreenWasShown = true;
@@ -195,7 +197,7 @@ const novely = <
 	 */
 	const script = (part: Story) => {
 		return limitScript(() => scriptBase(part));
-	}
+	};
 
 	// #region Action Proxy
 	const action = new Proxy({} as Actions, {
@@ -214,7 +216,7 @@ const novely = <
 						throw new Error(`Attempt to call Say action with unknown character "${character}"`);
 					}
 				} else if (action === 'choice') {
-					if (props.slice(1).every(choice => !Array.isArray(choice))) {
+					if (props.slice(1).every((choice) => !Array.isArray(choice))) {
 						for (let i = 1; i < props.length; i++) {
 							const choice = props[i];
 
@@ -224,7 +226,7 @@ const novely = <
 								choice.active,
 								choice.visible,
 								choice.onSelect,
-								choice.image
+								choice.image,
 							];
 						}
 					}
@@ -241,7 +243,7 @@ const novely = <
 						lang: getLanguageFromStore(storageData),
 						volume: getVolumeFromStore(storageData),
 
-						handle: enqueueAssetForPreloading
+						handle: enqueueAssetForPreloading,
 					});
 				}
 
@@ -277,7 +279,9 @@ const novely = <
 		}
 
 		if (DEV) {
-			throw new Error(`Attempt to use unsupported language "${language}". Supported languages: ${languages.join(', ')}.`)
+			throw new Error(
+				`Attempt to use unsupported language "${language}". Supported languages: ${languages.join(', ')}.`,
+			);
 		}
 
 		throw 0;
@@ -295,7 +299,7 @@ const novely = <
 
 	const storageData = store(initialData);
 	const coreData = store<CoreData>({
-		dataLoaded: false
+		dataLoaded: false,
 	});
 
 	const onDataLoadedPromise = ({ cancelled }: Awaited<ControlledPromise<void>>) => {
@@ -314,7 +318,7 @@ const novely = <
 			data.dataLoaded = true;
 
 			return data;
-		})
+		});
 	};
 
 	dataLoaded.promise.then(onDataLoadedPromise);
@@ -325,7 +329,7 @@ const novely = <
 
 	const throttledOnStorageDataChange = throttle(onStorageDataChange, throttleTimeout);
 	const throttledEmergencyOnStorageDataChange = throttle(() => {
-		if (saveOnUnload === true || saveOnUnload === 'prod' && !DEV) {
+		if (saveOnUnload === true || (saveOnUnload === 'prod' && !DEV)) {
 			onStorageDataChange(storageData.get());
 		}
 	}, 10);
@@ -339,7 +343,7 @@ const novely = <
 			stored = migration(stored) as StorageData;
 
 			if (DEV && !stored) {
-				throw new Error('Migrations should return a value.')
+				throw new Error('Migrations should return a value.');
 			}
 		}
 
@@ -384,8 +388,8 @@ const novely = <
 	const initial = getDefaultSave(clone(defaultState));
 
 	const unsubscribeFromBrowserVisibilityChange = setupBrowserVisibilityChangeListeners({
-		onChange: throttledEmergencyOnStorageDataChange
-	})
+		onChange: throttledEmergencyOnStorageDataChange,
+	});
 
 	// #region Save Function
 	const save = (type: Save[2][1]) => {
@@ -407,13 +411,13 @@ const novely = <
 				prev.saves[prev.saves.length - 1] = current;
 
 				return prev;
-			}
+			};
 
 			const add = () => {
 				prev.saves.push(current);
 
 				return prev;
-			}
+			};
 
 			/**
 			 * Get latest
@@ -431,7 +435,7 @@ const novely = <
 			current[2][0] = intime(Date.now());
 			current[2][1] = type;
 
-			const isIdentical = (dequal(last[0], current[0]) && dequal(last[1], current[1]));
+			const isIdentical = dequal(last[0], current[0]) && dequal(last[1], current[1]);
 			const isLastMadeInCurrentSession = times.has(last[2][0]);
 
 			/**
@@ -503,7 +507,9 @@ const novely = <
 	const restore = async (save: Save | undefined) => {
 		if (isEmpty(story)) {
 			if (DEV) {
-				throw new Error('Story is empty. You should call an `enine.script` function [https://novely.pages.dev/guide/story.html]')
+				throw new Error(
+					'Story is empty. You should call an `enine.script` function [https://novely.pages.dev/guide/story.html]',
+				);
 			}
 
 			return;
@@ -517,7 +523,7 @@ const novely = <
 		 * When there is no save, make a new save
 		 */
 		if (!latest) {
-			latest = clone(initial)
+			latest = clone(initial);
 
 			storageData.update((prev) => {
 				/**
@@ -525,8 +531,8 @@ const novely = <
 				 */
 				prev.saves.push(latest!);
 
-				return prev
-			})
+				return prev;
+			});
 		}
 
 		const context = renderer.getContext(MAIN_CONTEXT_KEY);
@@ -536,14 +542,17 @@ const novely = <
 
 		const previous = stack.previous;
 
-		const [path] = stack.value = latest;
+		const [path] = (stack.value = latest);
 
 		renderer.ui.showScreen('game');
 
 		const { queue, skip, skipPreserve } = getActionsFromPath(story, path, false);
-		const { run, keep: { keep, characters, audio } } = createQueueProcessor(queue, {
+		const {
+			run,
+			keep: { keep, characters, audio },
+		} = createQueueProcessor(queue, {
 			skip,
-			skipPreserve
+			skipPreserve,
 		});
 
 		if (previous) {
@@ -556,7 +565,7 @@ const novely = <
 				 * Just in case 🤷
 				 */
 				if (!isAction(element)) {
-					continue
+					continue;
 				}
 
 				const [action, fn] = element;
@@ -592,12 +601,12 @@ const novely = <
 			 */
 			match('clear', [keep, characters, audio], {
 				ctx: context,
-				data: latest[1]
+				data: latest[1],
 			});
 		}
 
-		const lastQueueItem = queue.at(-1)
-		const lastQueueItemRequiresUserAction = lastQueueItem && isBlockingAction(lastQueueItem)
+		const lastQueueItem = queue.at(-1);
+		const lastQueueItemRequiresUserAction = lastQueueItem && isBlockingAction(lastQueueItem);
 
 		await run((item) => {
 			if (!latest) return;
@@ -606,14 +615,14 @@ const novely = <
 			 * Skip because last item will be ran again by `render(context)` call
 			 */
 			if (lastQueueItem === item && lastQueueItemRequiresUserAction) {
-				return
+				return;
 			}
 
 			const [action, ...props] = item;
 
 			return match(action, props, {
 				ctx: context,
-				data: latest[1]
+				data: latest[1],
 			});
 		});
 
@@ -650,8 +659,11 @@ const novely = <
 			const { saves } = storageData.get();
 			const [currentPath, currentData] = stack.value;
 
-			return saves.some(([path, data, [date, type]]) => type === 'manual' && times.has(date) && dequal(path, currentPath) && dequal(data, currentData))
-		}
+			return saves.some(
+				([path, data, [date, type]]) =>
+					type === 'manual' && times.has(date) && dequal(path, currentPath) && dequal(data, currentData),
+			);
+		};
 
 		if (interacted > 1 && !force && askBeforeExit && !isSaved()) {
 			renderer.ui.showExitPrompt();
@@ -742,7 +754,7 @@ const novely = <
 		if (isEmpty(story)) {
 			return Promise.resolve({
 				assets: [],
-			})
+			});
 		}
 
 		const [path, data] = save;
@@ -779,7 +791,7 @@ const novely = <
 				lang: getLanguageFromStore(storageData),
 				volume: getVolumeFromStore(storageData),
 
-				handle: assets.push.bind(assets)
+				handle: assets.push.bind(assets),
 			});
 
 			return match(action, props, {
@@ -790,17 +802,17 @@ const novely = <
 
 		return {
 			assets,
-		}
-	}
+		};
+	};
 	// #endregion
 
 	const removeContext = (name: string) => {
 		STACK_MAP.delete(name);
-	}
+	};
 
 	const getStateAtCtx = (context: string | Context) => {
 		return useStack(context).value[1];
-	}
+	};
 
 	const getStateFunction = (context: string | Context) => {
 		const stack = useStack(context);
@@ -821,36 +833,38 @@ const novely = <
 		}) as StateFunction<State>;
 
 		return state;
-	}
+	};
 
 	const getLanguageDisplayName = (lang: Lang) => {
 		const language = translation[lang as $Language];
 
 		if (DEV && !language) {
-			throw new Error(`Attempt to use unsupported language "${language}". Supported languages: ${languages.join(', ')}.`)
+			throw new Error(
+				`Attempt to use unsupported language "${language}". Supported languages: ${languages.join(', ')}.`,
+			);
 		}
 
 		return capitalize(language.nameOverride || getIntlLanguageDisplayName(lang));
-	}
+	};
 
 	const clearCustomAction = (ctx: Context, fn: CustomHandler) => {
 		getCustomActionHolder(ctx, fn).cleanup();
-	}
+	};
 
 	const getResourseTypeForRenderer = (url: string) => {
 		return getResourseType({
 			url,
-			request
+			request,
 		});
-	}
+	};
 
 	const getCharacterColor = (c: keyof $Characters) => {
-		return c in characters ? characters[c].color : '#000000'
-	}
+		return c in characters ? characters[c].color : '#000000';
+	};
 
 	const getCharacterAssets = (character: string, emotion: string) => {
 		return toArray(characters[character].emotions[emotion]).map(handleImageAsset);
-	}
+	};
 
 	// #region Renderer Creation
 	const renderer = createRenderer({
@@ -877,7 +891,7 @@ const novely = <
 		getCharacterColor,
 		getCharacterAssets,
 
-		getResourseType: getResourseTypeForRenderer
+		getResourseType: getResourseTypeForRenderer,
 	});
 	// #endregion
 
@@ -935,8 +949,8 @@ const novely = <
 				const collection = collectActionsBeforeBlockingAction({
 					path: nextPath(clone(useStack(ctx).value[0])),
 					refer,
-					clone
-				})
+					clone,
+				});
 
 				for (const [action, ...props] of collection) {
 					huntAssets({
@@ -949,7 +963,7 @@ const novely = <
 						lang: getLanguageFromStore(storageData),
 						volume: getVolumeFromStore(storageData),
 
-						handle: enqueueAssetForPreloading
+						handle: enqueueAssetForPreloading,
 					});
 				}
 
@@ -957,11 +971,11 @@ const novely = <
 					...renderer.misc,
 					request,
 					limiter: limitAssetsDownload,
-				})
+				});
 			} catch (cause) {
 				console.error(cause);
 			}
-		}
+		},
 	};
 
 	// #region Match Action
@@ -974,36 +988,40 @@ const novely = <
 		showBackground({ ctx, push }, [background]) {
 			if (isString(background) || isAsset(background)) {
 				ctx.background({
-					'all': handleImageAsset(background)
-				})
+					all: handleImageAsset(background),
+				});
 			} else {
-				ctx.background(Object.fromEntries(Object.entries(background).map(([media, asset]) => [media, handleImageAsset(asset as string)])))
+				ctx.background(
+					Object.fromEntries(
+						Object.entries(background).map(([media, asset]) => [media, handleImageAsset(asset as string)]),
+					),
+				);
 			}
 
 			push();
 		},
 		playMusic({ ctx, push }, [source]) {
-			ctx.audio.music(handleAudioAsset(source), 'music').play(true)
+			ctx.audio.music(handleAudioAsset(source), 'music').play(true);
 			push();
 		},
 		pauseMusic({ ctx, push }, [source]) {
-			ctx.audio.music(handleAudioAsset(source), 'music').pause()
+			ctx.audio.music(handleAudioAsset(source), 'music').pause();
 			push();
 		},
 		stopMusic({ ctx, push }, [source]) {
-			ctx.audio.music(handleAudioAsset(source), 'music').stop()
+			ctx.audio.music(handleAudioAsset(source), 'music').stop();
 			push();
 		},
 		playSound({ ctx, push }, [source, loop]) {
-			ctx.audio.music(handleAudioAsset(source), 'sound').play(loop || false)
+			ctx.audio.music(handleAudioAsset(source), 'sound').play(loop || false);
 			push();
 		},
 		pauseSound({ ctx, push }, [source]) {
-			ctx.audio.music(handleAudioAsset(source), 'sound').pause()
+			ctx.audio.music(handleAudioAsset(source), 'sound').pause();
 			push();
 		},
 		stopSound({ ctx, push }, [source]) {
-			ctx.audio.music(handleAudioAsset(source), 'sound').stop()
+			ctx.audio.music(handleAudioAsset(source), 'sound').stop();
 			push();
 		},
 		voice({ ctx, push }, [source]) {
@@ -1030,13 +1048,13 @@ const novely = <
 			emotion ??= defaultEmotions[character];
 
 			if (DEV && !emotion) {
-				throw new Error(`Attemp to show character "${character}" without emotion provided.`)
+				throw new Error(`Attemp to show character "${character}" without emotion provided.`);
 			}
 
 			if (!emotion) return;
 
 			if (DEV && !characters[character].emotions[emotion]) {
-				throw new Error(`Attempt to show character "${character}" with unknown emotion "${emotion}"`)
+				throw new Error(`Attempt to show character "${character}" with unknown emotion "${emotion}"`);
 			}
 
 			const handle = ctx.character(character);
@@ -1047,7 +1065,7 @@ const novely = <
 			push();
 		},
 		hideCharacter({ ctx, push }, [character, className, style, duration]) {
-			ctx.character(character).remove(className, style, duration, ctx.meta.restoring).then(push)
+			ctx.character(character).remove(className, style, duration, ctx.meta.restoring).then(push);
 		},
 		dialog({ ctx, data, forward }, [character, content, emotion]) {
 			/**
@@ -1075,13 +1093,7 @@ const novely = <
 
 			ctx.clearBlockingActions('dialog');
 
-			ctx.dialog(
-				templateReplace(content, data),
-				templateReplace(name, data),
-				character,
-				emotion,
-				forward
-			);
+			ctx.dialog(templateReplace(content, data), templateReplace(name, data), character, emotion, forward);
 		},
 		function({ ctx, push }, [fn]) {
 			const { restoring, goingBack, preview } = ctx.meta;
@@ -1091,7 +1103,7 @@ const novely = <
 				goingBack,
 				restoring,
 				preview,
-				state: getStateFunction(ctx)
+				state: getStateFunction(ctx),
 			});
 
 			if (!ctx.meta.restoring) {
@@ -1123,36 +1135,48 @@ const novely = <
 					const lang = getLanguageFromStore(storageData);
 					const state = getStateAtCtx(ctx);
 
-					const activeValue = !active || active({
-						lang,
-						state
-					});
+					const activeValue =
+						!active ||
+						active({
+							lang,
+							state,
+						});
 
-					const visibleValue = !visible || visible({
-						lang,
-						state
-					});
+					const visibleValue =
+						!visible ||
+						visible({
+							lang,
+							state,
+						});
 
 					active$.set(activeValue);
 					visible$.set(visibleValue);
-				}
+				};
 
 				update();
 
 				const onSelectGuarded = onSelect || noop;
 				const onSelectWrapped = () => {
 					onSelectGuarded({
-						recompute: update
+						recompute: update,
 					});
-				}
+				};
 
 				const imageValue = image ? handleImageAsset(image) : '';
 
-				return [templateReplace(content, data), active$, visible$, onSelectWrapped, imageValue] as [string, Stored<boolean>, Stored<boolean>, () => void, string];
+				return [templateReplace(content, data), active$, visible$, onSelectWrapped, imageValue] as [
+					string,
+					Stored<boolean>,
+					Stored<boolean>,
+					() => void,
+					string,
+				];
 			});
 
 			if (DEV && transformedChoices.length === 0) {
-				throw new Error(`Running choice without variants to choose from, look at how to use Choice action properly [https://novely.pages.dev/guide/actions/choice#usage]`)
+				throw new Error(
+					`Running choice without variants to choose from, look at how to use Choice action properly [https://novely.pages.dev/guide/actions/choice#usage]`,
+				);
 			}
 
 			ctx.clearBlockingActions('choice');
@@ -1170,7 +1194,7 @@ const novely = <
 				const offset = isWithoutQuestion ? 0 : 1;
 
 				if (DEV && !transformedChoices[selected]) {
-					throw new Error('Choice children is empty, either add content there or make item not selectable')
+					throw new Error('Choice children is empty, either add content there or make item not selectable');
 				}
 
 				stack.value[0].push(['choice', selected + offset], [null, 0]);
@@ -1180,11 +1204,11 @@ const novely = <
 		},
 		jump({ ctx, data }, [scene]) {
 			if (DEV && !story[scene]) {
-				throw new Error(`Attempt to jump to unknown scene "${scene}"`)
+				throw new Error(`Attempt to jump to unknown scene "${scene}"`);
 			}
 
 			if (DEV && story[scene].length === 0) {
-				throw new Error(`Attempt to jump to empty scene "${scene}"`)
+				throw new Error(`Attempt to jump to empty scene "${scene}"`);
 			}
 
 			const stack = useStack(ctx);
@@ -1215,23 +1239,23 @@ const novely = <
 				keep || EMPTY_SET,
 				characters || EMPTY_SET,
 				audio || { music: EMPTY_SET, sounds: EMPTY_SET },
-				push
+				push,
 			);
 		},
 		condition({ ctx }, [condition, variants]) {
 			if (DEV && Object.values(variants).length === 0) {
-				throw new Error(`Attempt to use Condition action with empty variants object`)
+				throw new Error(`Attempt to use Condition action with empty variants object`);
 			}
 
 			if (!ctx.meta.restoring) {
 				const val = String(condition(getStateAtCtx(ctx)));
 
 				if (DEV && !variants[val]) {
-					throw new Error(`Attempt to go to unknown variant "${val}"`)
+					throw new Error(`Attempt to go to unknown variant "${val}"`);
 				}
 
 				if (DEV && variants[val].length === 0) {
-					throw new Error(`Attempt to go to empty variant "${val}"`)
+					throw new Error(`Attempt to go to empty variant "${val}"`);
 				}
 
 				const stack = useStack(MAIN_CONTEXT_KEY);
@@ -1249,27 +1273,22 @@ const novely = <
 		input({ ctx, data, forward }, [question, onInput, setup]) {
 			ctx.clearBlockingActions('input');
 
-			ctx.input(
-				templateReplace(question, data),
-				onInput,
-				setup || noop,
-				forward
-			);
+			ctx.input(templateReplace(question, data), onInput, setup || noop, forward);
 		},
 		custom({ ctx, push }, [fn]) {
 			if (fn.requireUserAction) {
-				ctx.clearBlockingActions(undefined)
+				ctx.clearBlockingActions(undefined);
 			}
 
 			const state = getStateFunction(ctx);
-			const lang = getLanguageFromStore(storageData)
+			const lang = getLanguageFromStore(storageData);
 
 			const result = handleCustomAction(ctx, fn, {
 				...ctx.custom(fn),
 				state,
 				lang,
-				getStack: useStack
-			})
+				getStack: useStack,
+			});
 
 			const next = () => {
 				if (fn.requireUserAction && !ctx.meta.preview) {
@@ -1278,13 +1297,13 @@ const novely = <
 				}
 
 				push();
-			}
+			};
 
 			if (!ctx.meta.restoring) {
 				if (isPromise(result)) {
-					result.then(next)
+					result.then(next);
 				} else {
-					next()
+					next();
 				}
 			}
 
@@ -1301,7 +1320,9 @@ const novely = <
 			const classes = className.split(' ');
 
 			if (DEV && classes.length === 0) {
-				throw new Error('Attempt to use AnimateCharacter without classes. Classes should be provided [https://novely.pages.dev/guide/actions/animateCharacter.html]')
+				throw new Error(
+					'Attempt to use AnimateCharacter without classes. Classes should be provided [https://novely.pages.dev/guide/actions/animateCharacter.html]',
+				);
 			}
 
 			if (ctx.meta.preview) return;
@@ -1314,7 +1335,7 @@ const novely = <
 			const string = text.map((content) => templateReplace(content, data)).join(' ');
 
 			if (DEV && string.length === 0) {
-				throw new Error(`Action Text was called with empty string or array`)
+				throw new Error(`Action Text was called with empty string or array`);
 			}
 
 			ctx.clearBlockingActions('text');
@@ -1332,7 +1353,7 @@ const novely = <
 						ctx,
 						data,
 					});
-				}
+				},
 			});
 
 			if (exitImpossible) {
@@ -1344,7 +1365,9 @@ const novely = <
 		},
 		preload({ ctx, push }, [source]) {
 			if (DEV && preloadAssets !== 'lazy') {
-				console.error(`You do not need a preload action becase "preloadAssets" strategy was set to "${preloadAssets}"`)
+				console.error(
+					`You do not need a preload action becase "preloadAssets" strategy was set to "${preloadAssets}"`,
+				);
 			}
 
 			if (!ctx.meta.goingBack && !ctx.meta.restoring && !PRELOADED_ASSETS.has(source)) {
@@ -1358,11 +1381,11 @@ const novely = <
 		},
 		block({ ctx }, [scene]) {
 			if (DEV && !story[scene]) {
-				throw new Error(`Attempt to call Block action with unknown scene "${scene}"`)
+				throw new Error(`Attempt to call Block action with unknown scene "${scene}"`);
 			}
 
 			if (DEV && story[scene].length === 0) {
-				throw new Error(`Attempt to call Block action with empty scene "${scene}"`)
+				throw new Error(`Attempt to call Block action with empty scene "${scene}"`);
 			}
 
 			if (!ctx.meta.restoring) {
@@ -1386,7 +1409,7 @@ const novely = <
 
 			match(action, props, {
 				ctx,
-				data: stack.value[1]
+				data: stack.value[1],
 			});
 		} else if (Object.values(story).some((branch) => branch === referred)) {
 			/**
@@ -1399,12 +1422,12 @@ const novely = <
 			 */
 			match('end', [], {
 				ctx,
-				data: stack.value[1]
-			})
+				data: stack.value[1],
+			});
 		} else {
 			match('exit', [], {
 				ctx,
-				data: stack.value[1]
+				data: stack.value[1],
 			});
 		}
 	};
@@ -1418,27 +1441,21 @@ const novely = <
 	 * Basically replaces content inside of {{braces}}.
 	 */
 	const templateReplace = (content: TextContent<$Language, Data>, values?: Data) => {
-		const { data, meta: [lang] } = storageData.get();
+		const {
+			data,
+			meta: [lang],
+		} = storageData.get();
 
 		// Object to take values from
 		const obj = values || data;
 
 		// String
-		const str = flattenAllowedContent(
-			!isFunction(content) && !isString(content) ? content[lang] : content,
-			obj
-		);
+		const str = flattenAllowedContent(!isFunction(content) && !isString(content) ? content[lang] : content, obj);
 
 		const t = translation[lang];
 		const pluralRules = (t.plural || t.actions) && new Intl.PluralRules(t.tag || lang);
 
-		return replaceTranslation(
-			str,
-			obj,
-			t.plural,
-			t.actions,
-			pluralRules
-		);
+		return replaceTranslation(str, obj, t.plural, t.actions, pluralRules);
 	};
 
 	const data = ((value) => {
@@ -1452,7 +1469,7 @@ const novely = <
 			prev.data = val;
 
 			return prev;
-		})
+		});
 
 		return undefined;
 	}) as StateFunction<$Data>;
@@ -1461,24 +1478,26 @@ const novely = <
 		l: null,
 		s: null,
 		d: null,
-		c: null
-	}
+		c: null,
+	};
 
 	const getCurrentStorageData = () => {
 		return coreData.get().dataLoaded ? clone(storageData.get()) : null;
-	}
+	};
 
 	const setStorageData = (data: StorageData<$Language, $Data>) => {
 		if (destroyed) {
 			if (DEV) {
-				throw new Error(`function \`setStorageData\` was called after novely instance was destroyed. Data is not updater nor synced after destroy.`)
+				throw new Error(
+					`function \`setStorageData\` was called after novely instance was destroyed. Data is not updater nor synced after destroy.`,
+				);
 			}
 
 			return;
 		}
 
 		storageData.set(data);
-	}
+	};
 
 	// #region Function Return
 	return {
@@ -1535,7 +1554,7 @@ const novely = <
 		 * @example
 		 * ```ts
 		 * import type { ConditionParams, StateFunction } from '@novely/core';
-     *
+		 *
 		 * const conditionCheck = (state: StateFunction<ConditionParams<typeof engine.typeEssintials>>) => {
 		 *   return state.age >= 18;
 		 * }
@@ -1555,7 +1574,7 @@ const novely = <
 		 * ```
 		 */
 		templateReplace(content: TextContent<$Language, $Data>) {
-			return templateReplace(content as TextContent<$Language, Data>)
+			return templateReplace(content as TextContent<$Language, Data>);
 		},
 		/**
 		 * Same as `templateReplace` but uses state and requires explicitly providing it
@@ -1601,7 +1620,7 @@ const novely = <
 		 * }
 		 * ```
 		 */
-		setStorageData
+		setStorageData,
 	};
 	// #endregion
 };

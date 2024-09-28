@@ -1,15 +1,15 @@
-import type { VoidComponent, JSX } from 'solid-js';
 import type { TypewriterSpeed } from '@novely/core';
+import type { JSX, VoidComponent } from 'solid-js';
 import type { SettingsIcons } from '../types';
 
-import { For } from 'solid-js';
-import { useData } from '$context';
 import { Range, Select } from '$components';
+import { useData } from '$context';
+import { For } from 'solid-js';
 
 interface SettingsProps {
-	icons: SettingsIcons
+	icons: SettingsIcons;
 
-	showAudioSettings: boolean
+	showAudioSettings: boolean;
 }
 
 const Settings: VoidComponent<SettingsProps> = (props) => {
@@ -43,10 +43,10 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 
 				return prev;
 			});
-		}
+		};
 
 		return fn;
-	}
+	};
 
 	return (
 		<div class="root settings">
@@ -74,11 +74,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 
 			<div class="settings__options">
 				<div>
-					<Select
-						icon={props.icons.language}
-						label={t('Language')}
-						onChange={onLanguageSelect}
-					>
+					<Select icon={props.icons.language} label={t('Language')} onChange={onLanguageSelect}>
 						<For each={options.languages}>
 							{(lang) => (
 								<option value={lang} selected={lang === language()}>
@@ -88,11 +84,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 						</For>
 					</Select>
 
-					<Select
-						icon={props.icons.typewriter_speed}
-						label={t('TextSpeed')}
-						onChange={onSpeedSelect}
-					>
+					<Select icon={props.icons.typewriter_speed} label={t('TextSpeed')} onChange={onSpeedSelect}>
 						<For each={['Slow', 'Medium', 'Fast', 'Auto']}>
 							{(speed) => (
 								<option value={speed} selected={speed === textSpeed()}>
@@ -105,13 +97,12 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 
 				<div
 					classList={{
-						"settings--hidden": !props.showAudioSettings
+						'settings--hidden': !props.showAudioSettings,
 					}}
 				>
 					<Range
 						icon={props.icons.music_volume}
 						label={t('MusicVolume')}
-
 						min={0}
 						max={1}
 						step={0.01}
@@ -122,7 +113,6 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 					<Range
 						icon={props.icons.sound_volume}
 						label={t('SoundVolume')}
-
 						min={0}
 						max={1}
 						step={0.01}
@@ -133,7 +123,6 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 					<Range
 						icon={props.icons.voice_volume}
 						label={t('VoiceVolume')}
-
 						min={0}
 						max={1}
 						step={0.01}

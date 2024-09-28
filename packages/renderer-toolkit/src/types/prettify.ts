@@ -3,7 +3,7 @@
  */
 
 type Prettify<T> = {
-  [K in keyof T]: T[K];
+	[K in keyof T]: T[K];
 } & {};
 
-export type { Prettify }
+export type { Prettify };

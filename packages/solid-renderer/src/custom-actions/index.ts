@@ -1,1 +1,1 @@
-export { showImage, hideImage } from './show-hide-image'
+export { showImage, hideImage } from './show-hide-image';
