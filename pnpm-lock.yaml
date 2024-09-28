@@ -112,18 +112,6 @@ importers:
         specifier: ~5.4.8
         version: 5.4.8(@types/node@20.3.1)(lightningcss@1.27.0)
 
-  packages/deepmerge:
-    devDependencies:
-      tsup:
-        specifier: ^8.2.3
-        version: 8.2.3(postcss@8.4.47)(typescript@5.5.4)
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-      uvu:
-        specifier: ^0.5.6
-        version: 0.5.6
-
   packages/flex-storage:
     dependencies:
       '@novely/core':

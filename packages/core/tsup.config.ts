@@ -4,7 +4,7 @@ export default defineConfig((options) => {
 	return {
 		entry: ['src/index.ts'],
 		external: [],
-		noExternal: ['klona', '@novely/deepmerge'],
+		noExternal: ['klona'],
 		sourcemap: true,
 		target: 'es2022',
 		format: ['esm', 'iife'],
