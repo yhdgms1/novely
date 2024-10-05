@@ -23,13 +23,14 @@ import type {
 	PathItem,
 	Save,
 	StackHolder,
+	State,
 	StorageData,
 	Thenable,
 	UseStackFunctionReturnType,
 } from './types';
 
 type MatchActionParams = {
-	data: Record<string, unknown>;
+	data: State;
 	ctx: Context;
 
 	push: () => void;
@@ -55,7 +56,7 @@ type MatchActionParameters = {
 	/**
 	 * Data from the save
 	 */
-	data: Record<string, unknown>;
+	data: State;
 };
 
 type MatchActionOptions = {

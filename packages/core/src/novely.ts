@@ -7,7 +7,7 @@ import pLimit from 'p-limit';
 import type {
 	ActionChoiceChoice,
 	ActionProxy,
-	ChoiceOnSelectFunction,
+	ChoiceCheckFunction,
 	CustomHandler,
 	Story,
 	TextContent,
@@ -980,10 +980,10 @@ const novely = <
 
 	// #region Match Action
 	const match = matchAction(matchActionOptions, {
-		wait({ ctx, push }, [time]) {
+		wait({ ctx, data, push }, [time]) {
 			if (ctx.meta.restoring) return;
 
-			setTimeout(push, isFunction(time) ? time(getStateAtCtx(ctx)) : time);
+			setTimeout(push, isFunction(time) ? time(data) : time);
 		},
 		showBackground({ ctx, push }, [background]) {
 			if (isString(background) || isAsset(background)) {
@@ -1129,26 +1129,24 @@ const novely = <
 				const active$ = store(false);
 				const visible$ = store(false);
 
+				const lang = getLanguageFromStore(storageData);
+
+				const getCheckValue = (fn: ChoiceCheckFunction<string, State> | undefined) => {
+					// If there is no explicit "no" choice will be active or visible, etc...
+					if (!fn) {
+						return true;
+					}
+
+					// Here we need to use "fresh" state instead of "data" parameter
+					return fn({
+						lang,
+						state: getStateAtCtx(ctx),
+					});
+				};
+
 				const update = () => {
-					const lang = getLanguageFromStore(storageData);
-					const state = getStateAtCtx(ctx);
-
-					const activeValue =
-						!active ||
-						active({
-							lang,
-							state,
-						});
-
-					const visibleValue =
-						!visible ||
-						visible({
-							lang,
-							state,
-						});
-
-					active$.set(activeValue);
-					visible$.set(visibleValue);
+					active$.set(getCheckValue(active));
+					visible$.set(getCheckValue(visible));
 				};
 
 				update();
@@ -1240,13 +1238,13 @@ const novely = <
 				push,
 			);
 		},
-		condition({ ctx }, [condition, variants]) {
+		condition({ ctx, data }, [condition, variants]) {
 			if (DEV && Object.values(variants).length === 0) {
 				throw new Error(`Attempt to use Condition action with empty variants object`);
 			}
 
 			if (!ctx.meta.restoring) {
-				const val = String(condition(getStateAtCtx(ctx)));
+				const val = String(condition(data));
 
 				if (DEV && !variants[val]) {
 					throw new Error(`Attempt to go to unknown variant "${val}"`);
@@ -1400,14 +1398,16 @@ const novely = <
 	// #region Render Function
 	const render = (ctx: Context) => {
 		const stack = useStack(ctx);
-		const referred = refer(stack.value[0]);
+		const [path, state] = stack.value;
+
+		const referred = refer(path);
 
 		if (isAction(referred)) {
 			const [action, ...props] = referred;
 
 			match(action, props, {
 				ctx,
-				data: stack.value[1],
+				data: state,
 			});
 		} else if (Object.values(story).some((branch) => branch === referred)) {
 			/**
@@ -1420,12 +1420,12 @@ const novely = <
 			 */
 			match('end', [], {
 				ctx,
-				data: stack.value[1],
+				data: state,
 			});
 		} else {
 			match('exit', [], {
 				ctx,
-				data: stack.value[1],
+				data: state,
 			});
 		}
 	};
