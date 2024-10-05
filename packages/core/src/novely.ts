@@ -992,9 +992,7 @@ const novely = <
 				});
 			} else {
 				ctx.background(
-					Object.fromEntries(
-						Object.entries(background).map(([media, asset]) => [media, handleImageAsset(asset)]),
-					),
+					Object.fromEntries(Object.entries(background).map(([media, asset]) => [media, handleImageAsset(asset)])),
 				);
 			}
 
