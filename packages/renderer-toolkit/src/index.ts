@@ -1,8 +1,6 @@
 export * from 'nanostores';
 export type * from 'nanostores';
 
-export { memo } from './atoms/memo';
-
 export { deepAtom } from './atoms/deep-atom';
 export type { DeepAtom } from './atoms/deep-atom';
 

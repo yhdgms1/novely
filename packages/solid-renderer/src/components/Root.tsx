@@ -4,13 +4,13 @@ import { from } from '$utils';
 import type { Renderer, RendererInit } from '@novely/core';
 import type { Context } from '@novely/core';
 import type { DeepAtom, RendererStateStore } from '@novely/renderer-toolkit';
-import { memo } from '@novely/renderer-toolkit';
 import type { Component } from 'solid-js';
 import { Match, Show, Switch, createEffect } from 'solid-js';
 import type { IContextState } from '../context-state';
 import type { Emitter } from '../emitter';
 import { useShared } from '../shared';
 import type { EmitterEventsMap, RendererStoreExtension, SettingsIcons } from '../types';
+import { destructure } from '@solid-primitives/destructure';
 
 type CreateRootComponentOpts = {
 	setRoot: (root: HTMLDivElement) => void;
@@ -49,8 +49,7 @@ const createRootComponent = ({
 	rendererContext,
 }: CreateRootComponentOpts) => {
 	const Root: Component = () => {
-		const screen = from(memo($rendererState, (state) => state.screen));
-		const loadingShown = from(memo($rendererState, (state) => state.loadingShown));
+		const { screen, loadingShown } = destructure(from($rendererState));
 
 		createEffect(() => {
 			const currentScreen = screen()!;
