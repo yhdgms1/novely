@@ -3,12 +3,6 @@ import { deepMap, setByKey } from 'nanostores';
 
 type AnyFunction = (...args: any[]) => any;
 
-/**
- * @deprecated
- * @todo remove it
- */
-type NoInfer<T> = [T][T extends any ? 0 : never];
-
 type GetPath<$AtomValue extends object, $MutateValue> = (object: $AtomValue) => $MutateValue;
 type Setter<T> = T extends AnyFunction ? () => T : T | ((prev: T) => T);
 

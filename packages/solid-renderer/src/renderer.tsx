@@ -161,7 +161,7 @@ const createSolidRenderer = ({
 								append(className, style) {
 									clearTimeout($contextState.get().characters[character]?.hideTimeoutId);
 
-									$contextState.mutate((s) => s.characters[character], { style, visible: true });
+									$contextState.mutate((s) => s.characters[character]!, { style, visible: true });
 
 									const { canvas: element } = chars[character];
 

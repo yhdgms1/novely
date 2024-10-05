@@ -153,7 +153,7 @@ const handleClearAction = (
 
 	for (const character of Object.keys(characters)) {
 		if (!keepCharacters.has(character)) {
-			$contextState.mutate((s) => s.characters[character], {
+			$contextState.mutate((s) => s.characters[character]!, {
 				style: undefined,
 				visible: false,
 			});
@@ -177,7 +177,7 @@ const handleCustomAction = (
 	fn: CustomHandler<string, State>,
 ): CustomActionHandle => {
 	if (!$contextState.get().custom[fn.key]) {
-		$contextState.mutate((s) => s.custom[fn.key], {
+		$contextState.mutate((s) => s.custom[fn.key]!, {
 			fn,
 			node: null,
 			clear: noop,
