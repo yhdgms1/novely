@@ -15,13 +15,13 @@
 		"build": "tsup --dts"
 	},
 	"devDependencies": {
-		"tsup": "^8.2.3",
-		"typescript": "^5.5.4",
-		"vite": "^5.0.0"
+		"tsup": "^8.3.0",
+		"typescript": "^5.6.2",
+		"vite": "^5.4.8"
 	},
 	"peerDependencies": {
 		"@novely/core": "*",
-		"vite": "^5.0.0"
+		"vite": "^5.4.8"
 	},
 	"license": "ISC",
 	"bugs": {

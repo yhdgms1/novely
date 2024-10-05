@@ -184,8 +184,7 @@ false &&
 		],
 	});
 
-false &&
-	engine.script({
+engine.script({
 		start: [
 			action.next(),
 			action.text({
@@ -359,7 +358,7 @@ false &&
 		],
 	});
 
-engine.script({
+false && engine.script({
 	start: [
 		action.showBackground(outdoor),
 		action.showCharacter('Lily', 'ok'),

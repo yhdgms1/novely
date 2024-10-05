@@ -8,7 +8,6 @@
 		"format": "biome format --write .",
 		"prepare": "husky",
 		"init-repo": "pnpm build:parser && pnpm build:vite-plugin-novely && pnpm build:core && pnpm build:typewriter && pnpm build:particles && pnpm build:toolkit && pnpm build:solid",
-
 		"dev": "pnpm dev:preview",
 		"dev:core": "pnpm --filter=@novely/core... --parallel dev",
 		"build:core": "pnpm --filter=@novely/core... --parallel build",
@@ -35,7 +34,7 @@
 		"build:flex-storage": "pnpm --filter=@novely/flex-storage... --parallel build"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^1.9.2",
+		"@biomejs/biome": "^1.9.3",
 		"husky": "^9.1.6"
 	}
 }

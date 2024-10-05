@@ -25,14 +25,14 @@
 		"build": "tsup --dts"
 	},
 	"devDependencies": {
-		"tsup": "^8.2.3",
-		"typescript": "^5.5.4"
+		"tsup": "^8.3.0",
+		"typescript": "^5.6.2"
 	},
 	"dependencies": {
 		"@novely/core": "workspace:*",
 		"dequal": "^2.0.3",
 		"esm-env": "^1.0.0",
-		"nanostores": "^0.11.2",
+		"nanostores": "^0.11.3",
 		"p-limit": "^6.1.0",
 		"simple-web-audio": "^0.7.0"
 	},
