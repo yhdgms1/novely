@@ -213,13 +213,9 @@ const huntAssets = ({ volume, lang, mode, characters, action, props, handle }: H
 	/**
 	 * Custom action assets
 	 */
-	if (
-		action === 'custom' &&
-		(props[0] as CustomHandler).assets &&
-		(props[0] as CustomHandler).assets!.length > 0
-	) {
+	if (action === 'custom' && (props[0] as CustomHandler).assets) {
 		for (const asset of (props[0] as CustomHandler).assets!) {
-			handle(asset);
+			isAsset(asset) ? handle(asset.source) : handle(asset);
 		}
 
 		return;
@@ -230,7 +226,7 @@ const huntAssets = ({ volume, lang, mode, characters, action, props, handle }: H
 			const data = props[i];
 
 			if (Array.isArray(data)) {
-				handle(handleImageAsset(data[4] as string));
+				handle(handleImageAsset(data[5] as string));
 			}
 		}
 	}

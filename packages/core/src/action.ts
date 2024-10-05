@@ -149,7 +149,7 @@ type CustomHandlerInfo = CustomHandlerCalling & {
 	/**
 	 * Assets (pictures, audio files) used by action
 	 */
-	assets?: string[];
+	assets?: (NovelyAsset | string)[];
 	/**
 	 * When true interacting with it will be saved in history
 	 */

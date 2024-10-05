@@ -993,7 +993,7 @@ const novely = <
 			} else {
 				ctx.background(
 					Object.fromEntries(
-						Object.entries(background).map(([media, asset]) => [media, handleImageAsset(asset as string)]),
+						Object.entries(background).map(([media, asset]) => [media, handleImageAsset(asset)]),
 					),
 				);
 			}
@@ -1258,7 +1258,7 @@ const novely = <
 					throw new Error(`Attempt to go to empty variant "${val}"`);
 				}
 
-				const stack = useStack(MAIN_CONTEXT_KEY);
+				const stack = useStack(ctx);
 
 				stack.value[0].push(['condition', val], [null, 0]);
 
