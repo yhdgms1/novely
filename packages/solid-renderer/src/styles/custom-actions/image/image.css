@@ -1,17 +1,17 @@
 .action-image {
-  position: fixed;
-  z-index: 1;
-  inset: 0;
+	position: fixed;
+	z-index: 1;
+	inset: 0;
 }
 
 .action-image__image {
-  z-index: var(--z-index, 1);
+	z-index: var(--z-index, 1);
 
-  object-fit: cover;
-  object-position: 50% 50%;
+	object-fit: cover;
+	object-position: 50% 50%;
 
-  width: 100vw;
-  height: 100vh;
+	width: 100vw;
+	height: 100vh;
 
-  position: absolute;
+	position: absolute;
 }

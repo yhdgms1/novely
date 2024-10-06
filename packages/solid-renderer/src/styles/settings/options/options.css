@@ -3,8 +3,8 @@
 
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(50%, 1fr));
-  justify-content: center;
-  align-items: center;
+	justify-content: center;
+	align-items: center;
 }
 
 @media (max-aspect-ratio: 0.8) {

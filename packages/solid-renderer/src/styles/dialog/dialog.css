@@ -33,7 +33,7 @@
 	border-radius: 0.25rem;
 }
 
-.dialog-label[data-used='true'] {
+.dialog-label[data-used="true"] {
 	background: var(--novely-dialog-label-background, #ffe9f3);
 	color: var(--novely-dialog-label-color, #000);
 }

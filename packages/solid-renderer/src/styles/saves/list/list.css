@@ -75,7 +75,7 @@
 	background-color: var(--novely-saves-list-item-background-color, #ffe9f3);
 
 	padding: 0.4rem;
-  border-radius: calc(0.4rem + var(--saves-list-iframe-border-radius));
+	border-radius: calc(0.4rem + var(--saves-list-iframe-border-radius));
 
 	align-self: flex-start;
 
@@ -93,7 +93,6 @@
 	}
 }
 
-
 .saves__list-item__description {
 	font-variant-numeric: tabular-nums;
 
@@ -108,8 +107,8 @@
 
 	/**
 	 * https://stackoverflow.com/a/38260951
-   *
-   * When some element takes whole screen in the `iframe` and uses `backdrop-filter` then `border-radius` will not work.
+	 *
+	 * When some element takes whole screen in the `iframe` and uses `backdrop-filter` then `border-radius` will not work.
 	 * Setting `backdrop-filter: blur(0)` fixes the problem.
 	 */
 	backdrop-filter: blur(0px);
@@ -141,7 +140,10 @@
 
 	pointer-events: none;
 
-	background-color: var(--novely-saves-list-overlay-item-background-color, var(--novely-saves-list-item-background-color, #ffe9f3));
+	background-color: var(
+		--novely-saves-list-overlay-item-background-color,
+		var(--novely-saves-list-item-background-color, #ffe9f3)
+	);
 }
 
 /**
@@ -149,12 +151,12 @@
  */
 .saves__list-item__overlay-enter-active,
 .saves__list-item__overlay-exit-active {
-  transition: opacity 0.3s, transform 0.3s;
+	transition: opacity 0.3s, transform 0.3s;
 }
 
 .saves__list-item__overlay-enter,
 .saves__list-item__overlay-exit-to {
-  opacity: 0;
+	opacity: 0;
 }
 
 @media (max-aspect-ratio: 0.8) {

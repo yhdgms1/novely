@@ -39,7 +39,11 @@
 	box-shadow: var(--novely-px) var(--novely-px) 0.25rem var(--novely-dialog-box-shadow-color, #00000072);
 
 	/* biome-ignore */
-	background-image: var(--novely-dialog-background-image, radial-gradient(#d6608998 20%, transparent 20%), radial-gradient(#d6608998 20%, transparent 20%));
+	background-image: var(
+		--novely-dialog-background-image,
+		radial-gradient(#d6608998 20%, transparent 20%),
+		radial-gradient(#d6608998 20%, transparent 20%)
+	);
 	background-color: var(--novely-dialog-background-color, #f092b4d8);
 	background-position: var(--novely-dialog-background-position, 0 0, 3.125rem 3.125rem);
 	background-size: var(--novely-dialog-background-size, 6.25rem 6.25rem);
@@ -90,7 +94,9 @@
 	word-break: break-word;
 
 	/* biome-ignore */
-	text-shadow: var(--novely-px) var(--novely-px) 0 black, calc(var(--novely-px) * -1) calc(var(--novely-px) * -1) 0 black, var(--novely-px) calc(var(--novely-px) * -1) 0 black, calc(var(--novely-px) * -1) var(--novely-px) 0 black;
+	text-shadow: var(--novely-px) var(--novely-px) 0 black, calc(var(--novely-px) * -1) calc(var(--novely-px) * -1) 0
+		black, var(--novely-px) calc(var(--novely-px) * -1) 0 black, calc(var(--novely-px) * -1) var(--novely-px) 0
+		black;
 }
 
 .action-dialog-content--disable-shadow {
@@ -164,12 +170,14 @@
 	}
 }
 
-.preview .action-dialog-name, .preview .action-dialog-content {
+.preview .action-dialog-name,
+.preview .action-dialog-content {
 	font-size: 2rem;
 }
 
 @media only screen and (min-aspect-ratio: 0.8) and (pointer: coarse) {
-	.preview .action-dialog-name, .preview .action-dialog-content {
+	.preview .action-dialog-name,
+	.preview .action-dialog-content {
 		font-size: 1.8rem;
 	}
 }

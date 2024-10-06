@@ -6,8 +6,8 @@
 
 	border: none;
 
-  border-radius: .25rem;
-  box-shadow: 0 0 0 var(--button-box-shadow-spread-radius, .25rem) var(--novely-button-border-color, #ffc7df);
+	border-radius: .25rem;
+	box-shadow: 0 0 0 var(--button-box-shadow-spread-radius, .25rem) var(--novely-button-border-color, #ffc7df);
 
 	margin: 0.4rem var(--button-box-shadow-spread-radius, .25rem);
 	padding: 0.4rem;
@@ -30,7 +30,7 @@
 	color: var(--novely-button-hover-color, #ffb7a2);
 }
 
-.button[aria-disabled='true'] {
+.button[aria-disabled="true"] {
 	cursor: not-allowed;
 	opacity: 0.9;
 }
@@ -39,10 +39,10 @@
  * enables :hover on box-shadow
  */
 .button::after {
-  content: '';
+	content: "";
 
-  position: absolute;
-  inset: -0.15rem;
+	position: absolute;
+	inset: -0.15rem;
 
-  border-radius: .25rem;
+	border-radius: .25rem;
 }

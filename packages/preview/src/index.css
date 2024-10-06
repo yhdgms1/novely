@@ -1,7 +1,7 @@
-@import 'animate.css';
-@import 'modern-normalize';
-@import '@novely/solid-renderer/dist/styles/index.css';
+@import "animate.css";
+@import "modern-normalize";
+@import "@novely/solid-renderer/dist/styles/index.css";
 
 :root {
-	--novely-root-background-image: url('./assets/outdoor.png');
+	--novely-root-background-image: url("./assets/outdoor.png");
 }

@@ -1,21 +1,23 @@
 input[name="novely-input"] {
-  position: relative;
-  display: block;
+	position: relative;
+	display: block;
 
-  border: none;
+	border: none;
 
-  padding: 0.25rem;
+	padding: 0.25rem;
 
-  border-radius: 0.25rem;
+	border-radius: 0.25rem;
 
-  min-width: min(10rem, 100%);
+	min-width: min(10rem, 100%);
 	max-width: 100%;
 }
 
-input[name="novely-input"][type="text"], input[name="novely-input"][type="number"], input[name="novely-input"][type="password"] {
-  box-shadow: 0 0 0 var(--input-box-shadow-spread-radius, .15rem) var(--novely-input-border-color, #ffc7df);
+input[name="novely-input"][type="text"],
+input[name="novely-input"][type="number"],
+input[name="novely-input"][type="password"] {
+	box-shadow: 0 0 0 var(--input-box-shadow-spread-radius, .15rem) var(--novely-input-border-color, #ffc7df);
 
-  outline-offset: var(--input-box-shadow-spread-radius, .15rem);
+	outline-offset: var(--input-box-shadow-spread-radius, .15rem);
 }
 
 input[name="novely-input"][type="checkbox"] {
@@ -23,7 +25,7 @@ input[name="novely-input"][type="checkbox"] {
 }
 
 @supports (-webkit-appearance: none) {
-  input[name="novely-input"][type="number"] {
-    appearance: textfield;
-  }
+	input[name="novely-input"][type="number"] {
+		appearance: textfield;
+	}
 }

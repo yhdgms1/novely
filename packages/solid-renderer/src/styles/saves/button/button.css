@@ -8,10 +8,10 @@
 }
 
 .saves__button-reset {
-  --button-box-shadow-spread-radius: 0.15rem;
+	--button-box-shadow-spread-radius: 0.15rem;
 
-  border-radius: 0.4rem;
-  margin: 0;
+	border-radius: 0.4rem;
+	margin: 0;
 }
 
 @media (max-aspect-ratio: 0.8) {

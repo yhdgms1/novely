@@ -1,6 +1,6 @@
 .select__label {
 	display: flex;
-  align-items: center;
+	align-items: center;
 
 	background: var(--novely-select-label-background, #ffe9f3);
 
@@ -15,8 +15,8 @@
 
 .select__label__icon {
 	display: flex;
-  align-items: center;
-  justify-content: center;
+	align-items: center;
+	justify-content: center;
 }
 
 @media (max-aspect-ratio: 0.8) {

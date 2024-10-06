@@ -1,11 +1,11 @@
 .select__icon {
-  pointer-events: none;
+	pointer-events: none;
 
-  position: absolute;
+	position: absolute;
 
-  width: 1.5rem;
-  height: 1.5rem;
+	width: 1.5rem;
+	height: 1.5rem;
 
-  top: 0.9rem;
-  right: 0.5rem;
+	top: 0.9rem;
+	right: 0.5rem;
 }

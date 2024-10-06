@@ -1,5 +1,5 @@
-@import 'modern-normalize';
-@import '@novely/solid-renderer/dist/styles/index.css';
+@import "modern-normalize";
+@import "@novely/solid-renderer/dist/styles/index.css";
 
 /**
  * Скрывает кнопку автоматического режима
@@ -24,5 +24,5 @@
 }
 
 :root {
-	--novely-root-background-image: url('./assets/outdoor.png');
+	--novely-root-background-image: url("./assets/outdoor.png");
 }

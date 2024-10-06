@@ -8,16 +8,16 @@
 		system-ui,
 		-apple-system,
 		BlinkMacSystemFont,
-		'Segoe UI',
+		"Segoe UI",
 		Roboto,
-		'Helvetica Neue',
+		"Helvetica Neue",
 		Arial,
-		'Noto Sans',
+		"Noto Sans",
 		sans-serif,
-		'Apple Color Emoji',
-		'Segoe UI Emoji',
-		'Segoe UI Symbol',
-		'Noto Color Emoji';
+		"Apple Color Emoji",
+		"Segoe UI Emoji",
+		"Segoe UI Symbol",
+		"Noto Color Emoji";
 
 	background-image: var(--novely-root-background-image);
 	background-repeat: var(--novely-root-background-repeat, no-repeat);
