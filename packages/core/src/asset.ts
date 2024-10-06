@@ -4,7 +4,7 @@ import { supportsMap as audioSupport } from './audio-codecs';
 import { HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from './constants';
 import { supportsMap as imageSupport } from './image-formats';
 import type { NovelyAsset } from './types';
-import { getUrlFileExtension } from './utils';
+import { getUrlFileExtension } from './utilities';
 
 /**
  * Function to get assets type. All assets must be of the same type. Only works with supported types.
@@ -114,8 +114,4 @@ const asset = (...variants: string[]) => {
 	return assetPrivate(variants);
 };
 
-const isAsset = (suspect: unknown): suspect is NovelyAsset => {
-	return suspect !== null && typeof suspect === 'object' && 'source' in suspect && 'type' in suspect;
-};
-
-export { isAsset, asset };
+export { asset };

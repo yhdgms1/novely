@@ -2,7 +2,7 @@ import type { CustomHandler, CustomHandlerFunctionGetFn, CustomHandlerGetResult 
 import type { Context, CustomActionHandle } from './renderer';
 import { CUSTOM_ACTION_MAP } from './shared';
 import type { Lang, Stack, State, StateFunction } from './types';
-import { noop } from './utils';
+import { noop } from './utilities';
 
 type CustomActionHolder = {
 	/**

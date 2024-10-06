@@ -1,18 +1,18 @@
 import type { CustomHandler, DefaultActionProxy } from './action';
-import { isAsset } from './asset';
 import type { Character } from './character';
 import { ASSETS_TO_PRELOAD, PRELOADED_ASSETS } from './shared';
 import type { AssetsPreloading, Lang } from './types';
 import {
-	getResourseType,
-	handleAudioAsset,
-	handleImageAsset,
 	isAudioAction,
 	isImageAsset,
 	isString,
+	isAsset,
+	getResourseType,
+	handleAudioAsset,
+	handleImageAsset,
 	mapSet,
 	toArray,
-} from './utils';
+} from './utilities';
 
 const ACTION_NAME_TO_VOLUME_MAP = {
 	playMusic: 'music',

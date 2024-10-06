@@ -14,7 +14,6 @@ import type {
 	ValidAction,
 	VirtualActions,
 } from './action';
-import { isAsset } from './asset';
 import { setupBrowserVisibilityChangeListeners } from './browser';
 import type { Character } from './character';
 import { DEFAULT_TYPEWRITER_SPEED, EMPTY_SET, MAIN_CONTEXT_KEY } from './constants';
@@ -38,26 +37,8 @@ import type {
 	StorageData,
 	TypeEssentials,
 } from './types';
-import type { ControlledPromise, MatchActionOptions } from './utils';
+import type { ControlledPromise } from './utilities';
 import {
-	capitalize,
-	collectActionsBeforeBlockingAction,
-	createControlledPromise,
-	createQueueProcessor,
-	createReferFunction,
-	createUseStackFunction,
-	getLanguage as defaultGetLanguage,
-	exitPath,
-	flatActions,
-	flattenStory,
-	getActionsFromPath,
-	getCharactersData,
-	getIntlLanguageDisplayName,
-	getLanguageFromStore,
-	getResourseType,
-	getVolumeFromStore,
-	handleAudioAsset,
-	handleImageAsset,
 	isAction,
 	isAudioAction,
 	isBlockingAction,
@@ -65,11 +46,31 @@ import {
 	isFunction,
 	isPromise,
 	isString,
+	isAsset,
 	matchAction,
+	createQueueProcessor,
+	getActionsFromPath,
+	createReferFunction,
+	exitPath,
+	collectActionsBeforeBlockingAction,
 	nextPath,
+	createControlledPromise,
+	getResourseType,
+	createUseStackFunction,
+	flatActions,
+	flatStory,
+	capitalize,
+	getLanguage as defaultGetLanguage,
+	getCharactersData,
+	getIntlLanguageDisplayName,
+	getLanguageFromStore,
+	getVolumeFromStore,
+	handleAudioAsset,
+	handleImageAsset,
 	noop,
 	toArray,
-} from './utils';
+} from './utilities';
+import type { MatchActionHandlers } from './utilities';
 
 const novely = <
 	$Language extends string,
@@ -135,7 +136,7 @@ const novely = <
 		 */
 		if (destroyed) return;
 
-		Object.assign(story, flattenStory(part));
+		Object.assign(story, flatStory(part));
 
 		let loadingIsShown = false;
 
@@ -925,7 +926,7 @@ const novely = <
 		nextPath(path);
 	};
 
-	const matchActionOptions: MatchActionOptions = {
+	const matchActionOptions: MatchActionHandlers = {
 		getContext: renderer.getContext,
 		push(ctx) {
 			if (ctx.meta.restoring) return;

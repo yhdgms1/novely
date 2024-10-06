@@ -4,7 +4,7 @@ import type { Renderer, RendererInit } from './renderer';
 import type { NovelyStorage } from './storage';
 import type { Pluralization, TranslationActions } from './translation';
 import type { BaseTranslationStrings } from './translations';
-import type { getLanguage as defaultGetLanguage } from './utils';
+import type { getLanguage as defaultGetLanguage } from './utilities';
 
 type NovelyAsset = {
 	readonly source: string;

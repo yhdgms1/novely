@@ -1,4 +1,4 @@
-import { noop } from './utils';
+import { noop } from './utilities';
 
 type SetupBrowserVisibilityChangeListenersOptions = {
 	onChange: () => void;
