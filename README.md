@@ -10,6 +10,8 @@ Novel Engine for creating interactive stories
 
 We have a [Discord](https://discord.gg/h2U63hx4GR) server
 
+And a [Telegram](https://t.me/novelyjs) chat
+
 ## Demo
 
 You can see working demo [here](https://novely-demo.deno.dev/)
