@@ -10,8 +10,8 @@
     "fetch-highlight": "node ./fetch-highlight.mjs"
   },
   "devDependencies": {
-    "@types/node": "20.16.0",
-    "vitepress": "~1.3.4"
+    "@types/node": "22.7.0",
+    "vitepress": "~1.4.0"
   },
   "pnpm": {
     "peerDependencyRules": {}

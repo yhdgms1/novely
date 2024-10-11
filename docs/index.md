@@ -7,10 +7,7 @@ titleTemplate: Create Interactive Stories with Ease
 head:
   - - meta
     - name: yandex-verification
-      content: 4df585abeb54fc17
-  - - meta
-    - name: google-site-verification
-      content: ef2QelIZDX8UBUhErFW-JlpKGAtmIc-_92lzC2cpBgs
+      content: 053146b5cf27336f
 
 hero:
   name: "Novely"
