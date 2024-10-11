@@ -2,32 +2,36 @@
 
 ## Scaffolding Your First Novely Project
 
-With NPM:
-
-```bash
+::: code-group
+```bash [NPM]
 npm create novely@latest
 ```
 
-With Yarn:
-
-```bash
-yarn create novely
-```
-
-With PNPM:
-
-```bash
+```bash [PNPM]
 pnpm create novely
 ```
 
-Then follow the prompts!
+```bash [Bun]
+bun create novely
+```
 
-## Project Root
+```bash [Yarn]
+yarn create novely
+```
+:::
 
-Novely's templates uses Vite, you can get all related information on [Vite's website](https://vitejs.dev/guide/#index-html-and-project-root).
+Then follow the prompts! Novely's templates uses Vite, you can get all related information on how to work with it on Vite's [website](https://vitejs.dev/guide/#index-html-and-project-root).
 
 ## Alternatives
 
 ### Standalone Package
 
-You might not want to use bundler. Here you go! We have a [@novely/standalone](https://www.npmjs.com/package/@novely/standalone) package. Basically, you just need to add it to your project using CDN or placing script alongside your `index.html`. You can read more about standalone package [here](/guide/standalone)
+::: warning
+Standalone is deprecated and will be removed.
+:::
+
+You might not want to use bundler. Here you go! We have a [@novely/standalone](https://www.npmjs.com/package/@novely/standalone) package. Basically, you just need to add it to your project using CDN or placing script alongside your `index.html`.
+
+### Download from GitHub
+
+You can download source code from GitHub. All the templates are located at [packages/create-novely](https://github.com/yhdgms1/novely/tree/main/packages/create-novely) folder.

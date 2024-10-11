@@ -93,10 +93,6 @@ export default defineConfig({
             text: "Demo",
             link: "/demo/demo",
           },
-          {
-            text: "Standalone Package",
-            link: "/guide/standalone",
-          },
         ],
       },
     ],

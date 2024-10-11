@@ -1,26 +1,24 @@
 # State
 
-State is an essential part of any game. Novely has a special `state` function for working with state. You can access this function through the `novely` function or, alternatively, some actions will provide you with this function.
+State is an essential part of any game. Novely has a special `state` function for working with state. Actions will provide this function to you, but also that function is provided by engine itself.
 
-State can be any JavaScript value that can be serialized. By default, it is limited to JSON values.
+State can be any JavaScript value that can be serialized. By default, it is limited to JSON values, but can be extended by configuring `storage` and `cloneFunction`, [read more](/guide/other-options) about these.
 
-Novely has two different types of state: "data" and, obviously, "state". Data is a global state shared across the entire game, while "state" is bound to each save.
-
-You can give default values by using "data" and "state" keys in configuration.
+Novely has two different types of state: global shared across the entire game "data" and "state" which is unique to every save in the game.
 
 ## Default values
 
-This is how you can declare default values.
+Declaring default values will make it more convenient to work and also will give you type hints.
 
 ```ts
 import { novely } from '@novely/core';
 
 const engine = novely({
   ...,
-  // default data
+  // default global data
   data: {
     purchases: {
-      // Hat that can be purchased by viewing ads
+      // Hat that can be purchased in example by viewing ads
       hat: false
     }
   },
@@ -60,7 +58,7 @@ engine.state((prev) => {
 
 ## State bound to context
 
-As previously mentioned, there is the `engine.state` function. However, this function works with the main context, regardless of which context the game is currently running in. That's why we provide you with a `state` function that is bound to the context in certain actions.
+As previously mentioned, there is the `engine.state` function. However, this function works with the main context, regardless of which context the game is currently running in. That's why we provide you with a `state` function that is bound to the context in certain actions. Some actiong will provide state itself, without ability to mutate it.
 
 ```ts
 // You will learn about story and actions later
@@ -75,7 +73,7 @@ engine.story({
 })
 ```
 
-If you can't use the `state` function bound to context, you should add some checks before calling the `engine.state`.
+If you can't use the `state` function bound to context, you should add some checks before calling the `engine.state`, but use it at your own risk.
 
 ```ts
 engine.story({

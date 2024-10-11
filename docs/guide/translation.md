@@ -4,7 +4,7 @@ Translation into different languages plays a crucial role, especially for an eng
 
 ## UI translation
 
-First, you need to import the languages into the game and declare them. Yes, languages are not included in the engine by default
+First, you need to import the languages into the game and declare them. Languages are not included in the engine by default, meaning that only used languages will get to final bundle.
 
 The only thing you should do is to pass it to the `internal` key as follows:
 
@@ -22,10 +22,10 @@ const engine = novely({
 
 ::: details Editing game translation
 
-You can customize the translation of the interface as you want, the only thing is you should follow the interface translation declaration.
+You can customize the translation of the UI as you want, the only thing is you should follow the translation scheme.
 
 ```ts
-interface InterfaceTranslation {
+type InterfaceTranslation = {
   NewGame: string;
   HomeScreen: string;
   ToTheGame: string;
