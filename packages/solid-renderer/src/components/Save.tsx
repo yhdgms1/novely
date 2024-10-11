@@ -16,6 +16,13 @@ const CURRENT_DATE = new Date();
 const CURRENT_YEAR = CURRENT_DATE.getFullYear();
 
 const stylesheet = createRetrieved(getDocumentStyles);
+const style = createRetrieved(() => {
+	const element = document.createElement('style');
+
+	element.innerHTML = stylesheet();
+
+	return element;
+});
 
 interface SaveProps {
 	save: NovelySave;
@@ -89,11 +96,19 @@ const Save: VoidComponent<SaveProps> = (props) => {
 		 * - Set black background
 		 * - Lower font size so because of `rem` everything will get smaller
 		 * - Disable pointer events so it looks static
+		 * - Stop animations
 		 */
 		contentDocument.head.insertAdjacentHTML(
 			'beforeend',
-			`<style>:root { font-size: 30%; background: black; cursor: pointer; } * { pointer-events: none; } *, *::before, *::after { animation-play-state: paused !important; }</style><style>${stylesheet()}</style>`,
+			`<style>:root { font-size: 30%; background: black; cursor: pointer; } * { pointer-events: none; } *, *::before, *::after { animation-play-state: paused !important; }</style>`,
 		);
+
+		/**
+		 * Copy styles from main window into an iframe
+		 */
+		const styleClone = contentDocument.importNode(style(), true);
+
+		contentDocument.head.appendChild(styleClone);
 
 		context.root = contentDocument.body;
 
