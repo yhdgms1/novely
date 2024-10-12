@@ -1,6 +1,6 @@
 # Custom
 
-Action that lets you define custom actions
+Custom Actions allows you to extend the variety of actions you can use.
 
 ## Parameters
 
@@ -8,72 +8,154 @@ Action that lets you define custom actions
 | :-----: | :-----------: | :------: | :-----------: |
 | handler | CustomHandler |    ❌    | Custom Action |
 
-::: details type declarations
+## Guide
+
+### Key and ID
+
+Let's explore how to make a simple custom action
+
 ```ts
-type CustomHandlerGetResultDataFunction = {
-  (data?: Record<string, unknown>): Record<string, unknown>;
-};
+import type { CustomHandler } from '@novely/core';
 
-type CustomHandlerGetResult<I extends boolean> = {
-  /**
-   * <div data-id={string}></div> element if `I` is true
-   */
-  element: I extends true ? HTMLDivElement : null;
-  /**
-   * Root Novely's element
-   */
-  root: HTMLElement;
-};
+const showPicture: CustomHandler = () => {
+  // currently does nothing
+}
 
-type CustomHandlerFunctionGetFn = <I extends boolean = true>(
-  insert?: I
-) => CustomHandlerGetResult<I>;
+showPicture.id = Symbol.for('SHOW_PICTURE');
+showPicture.key = `show-picture`;
+```
 
-type CustomHandlerFunctionParameters = {
-  getDomNodes: CustomHandlerFunctionGetFn;
+But hey, what's `id` and `key` are doing?
 
-  flags: {
-    goingBack: boolean;
-    preview: boolean;
-    restoring: boolean;
-  };
+`id` is used to distinguish actions of one type from another.
 
-  lang: string;
+`key` is used to separate instances of the actions.
 
-  rendererContext: Context;
+::: details Why do we need that
+It's a common practice to create a function that will return `CustomHandler`. However, each time reference to the function will be different.
 
-  /**
-   * Set's clear function (this is called when action should be cleared)
-   */
-  clear: (fn: () => void) => void;
-  /**
-   * Removes saved data, removes dom nodes, calls clear function
-   */
-  remove: () => void;
+```ts
+const createShowPicture = (url: string) => {
+  const showPicture: CustomHandler = () => {
+    // code here
+  }
 
-  /**
-   * Get or set data
-   */
-  data: CustomHandlerGetResultDataFunction;
-};
+  showPicture.id = Symbol.for('SHOW_PICTURE');
+  showPicture.key = `show-picture-${url}`;
 
-type CustomHandlerFunction = (
-  parameters: CustomHandlerFunctionParameters
-) => Thenable<void>;
+  return showPicture;
+}
 
-type CustomHandler = CustomHandlerFunction & {
-  callOnlyLatest?: boolean;
-  requireUserAction?: boolean;
-  skipClearOnGoingBack?: boolean;
+createShowPicture('./mountain.jpeg') == createShowPicture('./mountain.jpeg') // false
+```
 
-  id?: string | symbol;
+That's why we use `id`:
 
-  key: string;
-};
+```ts
+createShowPicture('./mountain.jpeg').id == createShowPicture('./forest.jpeg').id // true
+```
+
+But can a mountain and a forest passed into `createShowPicture` be the same? No, that's why `key` exists.
+
+```ts
+createShowPicture('./mountain.jpeg').key == createShowPicture('./mountain.jpeg').key // true
+createShowPicture('./mountain.jpeg').key == createShowPicture('./forest.jpeg').key   // false
 ```
 :::
 
-## Usage
+### Call Only Latest
+
+In our example we create a `showPicture` action. Actions are called one after another. It can be nice, but during restore process or when player hits the back button we will probably need to show only the last picture.
+
+So how to make the engine to call only latest custom action that we made?
+
+```ts
+const showPicture: CustomHandler = () => {}
+
+showPicture.callOnlyLatest = true;
+```
+
+### Assets 
+
+Engine does not know yet that our action uses assets. It's really simple to let it know:
+
+```ts
+const createShowPicture = (url: string) => {
+  const showPicture: CustomHandler = () => {
+    // code here
+  }
+
+  showPicture.id = Symbol.for('SHOW_PICTURE');
+  showPicture.key = `show-picture-${url}`;
+  showPicture.assets = [url]; // [!code ++]
+
+  return showPicture;
+}
+```
+
+::: details Why you should give engine that information
+Engine has different [preload strategies](/guide/other-options#preloadassets). For blocking and automatic strategies it's necessary to know what your actions uses to preload it.
+
+Preloading assets is used to avoid flashing and lagging.
+:::
+
+### Access the DOM
+
+Now we want to actually make our action work. How?
+
+```ts
+const createShowPicture = (url: string) => {
+  const showPicture: CustomHandler = ({ getDomNodes }) => {
+    const { root, element } = getDomNodes(true); // [!code ++]
+  }
+
+  showPicture.id = Symbol.for('SHOW_PICTURE');
+  showPicture.key = `show-picture-${url}`;
+  showPicture.assets = [url];
+
+  return showPicture;
+}
+```
+
+To get the element in which we can render an image we need to pass `true` to the `getDomNodes` function. In case you want to render something you need to render it to that element.
+
+Also you get the `root`. Novely can be ran in different roots, in example in an `iframe` to make the saves preview.
+All the stuff with calculating window size and etc should be made with root and not the `document` global.
+
+### Making an action that requires user action
+
+Actions can return promises. We will use that, and also we will say that our action requires user action by setting `requireUserAction` property to `true`.
+
+That way, we will 
+
+```ts
+const createShowPicture = (url: string) => {
+  const showPicture: CustomHandler = ({ getDomNodes }) => {
+    const { root, element } = getDomNodes(true);
+
+    return new Promise<void>((resolve) => {
+      const image = document.createElement('img');
+
+      image.src = image;
+      image.className = 'show-picture__image';
+
+      image.addEveneListener('click', () => {
+        image.remove();
+        resolve();
+      });
+
+      element.appendChild(image);
+    })
+  }
+
+  showPicture.id = Symbol.for('SHOW_PICTURE');
+  showPicture.key = `show-picture-${url}`;
+  showPicture.assets = [url];
+  showPicture.requireUserAction = true;  // [!code ++]
+
+  return showPicture;
+}
+```
 
 ```ts
 const action: CustomHandler = ({
