@@ -397,7 +397,7 @@ type DialogOverviewEntry = {
 	 * Text that character says
 	 */
 	text: string;
-}
+};
 
 type DialogOverview = DialogOverviewEntry[];
 
@@ -432,5 +432,5 @@ export type {
 	AssetsPreloading,
 	CloneFN,
 	DialogOverview,
-	DialogOverviewEntry
+	DialogOverviewEntry,
 };

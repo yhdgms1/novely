@@ -19,7 +19,7 @@ import type {
 	State,
 	StateFunction,
 	StorageData,
-	DialogOverview
+	DialogOverview,
 } from './types';
 
 type CharacterHandle = {
@@ -33,7 +33,7 @@ type CharacterHandle = {
 	animate: (classes: string[]) => void;
 
 	emotions: Record<string, HTMLImageElement[]>;
-}
+};
 
 type CustomActionHandle = {
 	/**

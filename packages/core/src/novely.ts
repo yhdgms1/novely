@@ -264,7 +264,7 @@ const novely = <
 			],
 			state,
 			[intime(Date.now()), 'auto'],
-			[]
+			[],
 		] as Save<$State>;
 	};
 
@@ -888,7 +888,7 @@ const novely = <
 		}
 
 		return String(c) || '';
-	}
+	};
 
 	const getDialogOverview = () => {
 		/**
@@ -908,12 +908,12 @@ const novely = <
 			return {
 				name: templateReplace(name ? getCharacterName(name as keyof $Characters) : '', state),
 				text: templateReplace(text, state),
-				voice: ''
+				voice: '',
 			} satisfies DialogOverviewEntry;
 		});
 
 		return entries;
-	}
+	};
 
 	// @ts-expect-error
 	window.view = getDialogOverview;

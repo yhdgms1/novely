@@ -92,7 +92,7 @@ const engine = novely({
 
 	state: {
 		age: 0,
-		money: 0
+		money: 0,
 	},
 
 	data: {
@@ -185,80 +185,81 @@ false &&
 		],
 	});
 
-false && engine.script({
-	start: [
-		action.next(),
-		action.text({
-			en: 'You wake up, but do not see your keyboard anymore, instead...',
-			ru: 'Вы просыпаетесь, но больше не видите своей клавиатуры, вместо неё...',
-		}),
-		action.playMusic(music),
-		action.particles(snow),
-		action.showBackground(outdoor),
-		action.showCharacter('Lily', 'ok', '', 'opacity: var(--character-Lily-opacity, 1)'),
-		action.talk('Lily', {
-			en: 'Hii~',
-			ru: 'Привет!',
-		}),
-		action.talk('Lily', {
-			en: 'Iʼm going to tell you about the Novely engine',
-			ru: 'Я расскажу тебе про движок Novely',
-		}),
-		action.say('You', {
-			en: 'Great, something new. What kind of features does it offer?',
-			ru: 'Отлично, что-то новое. Какие возможности он дает?',
-		}),
-		action.animateCharacter('Lily', 'animate__animated animate__pulse'),
-		action.say('Lily', {
-			en: 'Novely has many features: multi-language support, TypeScript support, and it is open source, multi-platform and lightweight.',
-			ru: 'У Novely есть много преимуществ: поддержка нескольких языков, типизация на TypeScript, открытый исходный код, мультплатформенность и легковесность.',
-		}),
-		action.animateCharacter('Lily', 'animate__animated animate__pulse'),
-		action.say('Lily', {
-			en: 'As a result, it can be used to create interactive stories and short stories with a minimum of effort.',
-			ru: 'В итоге с его помощью можно создавать интерактивные истории и новеллы с минимумом усилий.',
-		}),
-		action.say('You', {
-			en: 'Sounds promising. How easy is it to use?',
-			ru: 'Звучит многообещающе. Насколько просто им пользоваться?',
-		}),
-		action.animateCharacter('Lily', 'animate__animated animate__pulse'),
-		action.say('Lily', {
-			en: "The Novely API is very simple and intuitive, so even a little programming experience is enough to start creating visual novels. And once you've studied the documentation, you'll get the hang of it!",
-			ru: 'API Novely очень простой и интуитивный, так что даже небольшой опыт в программировании подойдёт чтобы начать создавать визуальные новеллы. А уж после изучения документации всё получится!',
-		}),
-		action.animateCharacter('Lily', 'animate__animated animate__pulse'),
-		action.say('Lily', {
-			en: 'By the way, how old are you?',
-			ru: 'Кстати, сколько тебе лет?',
-		}),
-		action.input(
-			{
-				en: 'Enter youʼr age',
-				ru: 'Введите ваш возраст',
-			},
-			({ input, error, state }) => {
-				error(input.validationMessage);
-				state({ age: input.valueAsNumber });
-			},
-			(input) => {
-				input.setAttribute('type', 'number');
-				input.setAttribute('min', '1');
-				input.setAttribute('max', '99');
-			},
-		),
-		action.animateCharacter('Lily', 'animate__animated animate__pulse'),
-		action.say('Lily', {
-			en: "Ah, {{age}} {{age@years}} old? It's a wonderful age",
-			ru: 'Ох, {{age}} {{age@years}}? Это прекрасный возраст',
-		}),
-		action.text({
-			en: 'The End',
-			ru: 'Конец',
-		}),
-		action.end(),
-	],
-});
+false &&
+	engine.script({
+		start: [
+			action.next(),
+			action.text({
+				en: 'You wake up, but do not see your keyboard anymore, instead...',
+				ru: 'Вы просыпаетесь, но больше не видите своей клавиатуры, вместо неё...',
+			}),
+			action.playMusic(music),
+			action.particles(snow),
+			action.showBackground(outdoor),
+			action.showCharacter('Lily', 'ok', '', 'opacity: var(--character-Lily-opacity, 1)'),
+			action.talk('Lily', {
+				en: 'Hii~',
+				ru: 'Привет!',
+			}),
+			action.talk('Lily', {
+				en: 'Iʼm going to tell you about the Novely engine',
+				ru: 'Я расскажу тебе про движок Novely',
+			}),
+			action.say('You', {
+				en: 'Great, something new. What kind of features does it offer?',
+				ru: 'Отлично, что-то новое. Какие возможности он дает?',
+			}),
+			action.animateCharacter('Lily', 'animate__animated animate__pulse'),
+			action.say('Lily', {
+				en: 'Novely has many features: multi-language support, TypeScript support, and it is open source, multi-platform and lightweight.',
+				ru: 'У Novely есть много преимуществ: поддержка нескольких языков, типизация на TypeScript, открытый исходный код, мультплатформенность и легковесность.',
+			}),
+			action.animateCharacter('Lily', 'animate__animated animate__pulse'),
+			action.say('Lily', {
+				en: 'As a result, it can be used to create interactive stories and short stories with a minimum of effort.',
+				ru: 'В итоге с его помощью можно создавать интерактивные истории и новеллы с минимумом усилий.',
+			}),
+			action.say('You', {
+				en: 'Sounds promising. How easy is it to use?',
+				ru: 'Звучит многообещающе. Насколько просто им пользоваться?',
+			}),
+			action.animateCharacter('Lily', 'animate__animated animate__pulse'),
+			action.say('Lily', {
+				en: "The Novely API is very simple and intuitive, so even a little programming experience is enough to start creating visual novels. And once you've studied the documentation, you'll get the hang of it!",
+				ru: 'API Novely очень простой и интуитивный, так что даже небольшой опыт в программировании подойдёт чтобы начать создавать визуальные новеллы. А уж после изучения документации всё получится!',
+			}),
+			action.animateCharacter('Lily', 'animate__animated animate__pulse'),
+			action.say('Lily', {
+				en: 'By the way, how old are you?',
+				ru: 'Кстати, сколько тебе лет?',
+			}),
+			action.input(
+				{
+					en: 'Enter youʼr age',
+					ru: 'Введите ваш возраст',
+				},
+				({ input, error, state }) => {
+					error(input.validationMessage);
+					state({ age: input.valueAsNumber });
+				},
+				(input) => {
+					input.setAttribute('type', 'number');
+					input.setAttribute('min', '1');
+					input.setAttribute('max', '99');
+				},
+			),
+			action.animateCharacter('Lily', 'animate__animated animate__pulse'),
+			action.say('Lily', {
+				en: "Ah, {{age}} {{age@years}} old? It's a wonderful age",
+				ru: 'Ох, {{age}} {{age@years}}? Это прекрасный возраст',
+			}),
+			action.text({
+				en: 'The End',
+				ru: 'Конец',
+			}),
+			action.end(),
+		],
+	});
 
 false &&
 	engine.script({
@@ -410,6 +411,6 @@ engine.script({
 		action.function(({ state }) => state({ money: state().money + 100 })),
 		action.say('Lily', 'My age is still {{age}}, but I have {{money}} money!!'),
 		action.function(({ state }) => state({ age: 18, money: 0 })),
-		action.say('Lily', 'I am {{age}} years old, but I have {{money}} money now')
-	]
-})
+		action.say('Lily', 'I am {{age}} years old, but I have {{money}} money now'),
+	],
+});
