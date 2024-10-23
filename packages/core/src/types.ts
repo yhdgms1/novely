@@ -34,7 +34,7 @@ type SaveType = 'manual' | 'auto';
 
 type SaveMeta = [date: SaveDate, type: SaveType];
 
-type Save<S extends State = State> = [path: Path, state: S, meta: SaveMeta];
+type Save<S extends State = State> = [path: Path, state: S, meta: SaveMeta, state_snapshots: S[]];
 
 type Lang = string;
 type TypewriterSpeed = 'Slow' | 'Medium' | 'Fast' | 'Auto';
@@ -384,6 +384,23 @@ type TypeEssentials<
 	readonly c: $Characters | null;
 };
 
+type DialogOverviewEntry = {
+	/**
+	 * Link to character voice
+	 */
+	voice: string | undefined;
+	/**
+	 * Character name
+	 */
+	name: string;
+	/**
+	 * Text that character says
+	 */
+	text: string;
+}
+
+type DialogOverview = DialogOverviewEntry[];
+
 export type {
 	Thenable,
 	PathItem,
@@ -414,4 +431,6 @@ export type {
 	CharactersData,
 	AssetsPreloading,
 	CloneFN,
+	DialogOverview,
+	DialogOverviewEntry
 };

@@ -28,7 +28,7 @@ const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidR
 
 const storage = flexStorage({
 	adapter: adapterLocalStorage({
-		key: 'test-purchases',
+		key: 'test-lyrics-overview',
 	}),
 });
 
@@ -92,6 +92,7 @@ const engine = novely({
 
 	state: {
 		age: 0,
+		money: 0
 	},
 
 	data: {
@@ -184,7 +185,7 @@ false &&
 		],
 	});
 
-engine.script({
+false && engine.script({
 	start: [
 		action.next(),
 		action.text({
@@ -399,3 +400,16 @@ false &&
 			),
 		],
 	});
+
+engine.script({
+	start: [
+		action.playMusic(music),
+		action.particles(snow),
+		action.showBackground(outdoor),
+		action.say('Lily', 'My age is {{age}} and I have {{money}} money'),
+		action.function(({ state }) => state({ money: state().money + 100 })),
+		action.say('Lily', 'My age is still {{age}}, but I have {{money}} money!!'),
+		action.function(({ state }) => state({ age: 18, money: 0 })),
+		action.say('Lily', 'I am {{age}} years old, but I have {{money}} money now')
+	]
+})

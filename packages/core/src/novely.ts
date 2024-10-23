@@ -29,6 +29,8 @@ import type { BaseTranslationStrings } from './translations';
 import type {
 	CoreData,
 	Data,
+	DialogOverview,
+	DialogOverviewEntry,
 	Lang,
 	NovelyInit,
 	Save,
@@ -262,6 +264,7 @@ const novely = <
 			],
 			state,
 			[intime(Date.now()), 'auto'],
+			[]
 		] as Save<$State>;
 	};
 
@@ -867,6 +870,54 @@ const novely = <
 		return toArray(characters[character].emotions[emotion]).map(handleImageAsset);
 	};
 
+	const getCharacterName = (character: keyof $Characters): string => {
+		const c = character;
+		const cs = characters;
+		const [lang] = storageData.get().meta;
+
+		if (c && c in cs) {
+			const block = cs[c].name;
+
+			if (typeof block === 'string') {
+				return block;
+			}
+
+			if (lang in block) {
+				return block[lang as $Language];
+			}
+		}
+
+		return String(c) || '';
+	}
+
+	const getDialogOverview = () => {
+		/**
+		 * Dialog Overview is possible only in main context
+		 */
+		const { value: save } = useStack(MAIN_CONTEXT_KEY);
+		const stateSnapshots = save[3];
+
+		const { queue } = getActionsFromPath(story, save[0], false);
+		const dialogActions = queue.filter((action) => action[0] === 'dialog');
+
+		const entries: DialogOverview = dialogActions.map((action, i) => {
+			const state = stateSnapshots[i];
+
+			const [_, name, text] = action;
+
+			return {
+				name: templateReplace(name ? getCharacterName(name as keyof $Characters) : '', state),
+				text: templateReplace(text, state),
+				voice: ''
+			} satisfies DialogOverviewEntry;
+		});
+
+		return entries;
+	}
+
+	// @ts-expect-error
+	window.view = getDialogOverview;
+
 	// #region Renderer Creation
 	const renderer = createRenderer({
 		mainContextKey: MAIN_CONTEXT_KEY,
@@ -891,6 +942,7 @@ const novely = <
 		getLanguageDisplayName,
 		getCharacterColor,
 		getCharacterAssets,
+		getDialogOverview,
 
 		getResourseType: getResourseTypeForRenderer,
 	});
@@ -1067,28 +1119,16 @@ const novely = <
 			ctx.character(character).remove(className, style, duration, ctx.meta.restoring).then(push);
 		},
 		dialog({ ctx, data, forward }, [character, content, emotion]) {
+			const name = getCharacterName(character);
+			const stack = useStack(ctx);
+
 			/**
-			 * Person name
+			 * For each "dialog" we save copy of current game state
+			 * It's used for dialog overview
 			 */
-			const name = (() => {
-				const c = character;
-				const cs = characters;
-				const [lang] = storageData.get().meta;
-
-				if (c && c in cs) {
-					const block = cs[c].name;
-
-					if (typeof block === 'string') {
-						return block;
-					}
-
-					if (lang in block) {
-						return block[lang as $Language];
-					}
-				}
-
-				return c || '';
-			})();
+			if (!ctx.meta.restoring && !ctx.meta.goingBack) {
+				stack.value[3].push(klona(data));
+			}
 
 			ctx.clearBlockingActions('dialog');
 
@@ -1217,6 +1257,8 @@ const novely = <
 				['jump', scene],
 				[null, -1],
 			];
+
+			stack.value[3] = [];
 
 			match('clear', [], {
 				ctx,

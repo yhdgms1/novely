@@ -1,7 +1,6 @@
 import type {
 	ActionInputOnInputMeta,
 	ActionInputSetup,
-	ChoiceOnSelectFunction,
 	CustomHandler,
 	DefaultActionProxy,
 	ValidAction,
@@ -20,9 +19,10 @@ import type {
 	State,
 	StateFunction,
 	StorageData,
+	DialogOverview
 } from './types';
 
-interface CharacterHandle {
+type CharacterHandle = {
 	canvas: HTMLCanvasElement;
 	ctx: CanvasRenderingContext2D;
 
@@ -251,6 +251,8 @@ type RendererInit<$Language extends Lang, $Characters extends Record<string, Cha
 	getCharacterAssets: (character: string, emotion: string) => string[];
 
 	getResourseType: (url: string) => Promise<'image' | 'audio' | 'other'>;
+
+	getDialogOverview: () => DialogOverview;
 };
 
 export type {
