@@ -4,13 +4,15 @@ import { Icon } from '$components';
 import { useData } from '$context';
 import { Show } from 'solid-js';
 
-interface ControlPanelButtonsProps {
+type ControlPanelButtonsProps = {
 	openSettings: () => void;
 	closeDropdown: () => void;
 
+	openDialogOverview: () => void;
+
 	auto: Accessor<boolean>;
 	setAuto: Setter<boolean>;
-}
+};
 
 const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => {
 	const data = useData();
@@ -26,6 +28,16 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
 			>
 				<span class="control-panel__button__content">{data.t('GoBack')}</span>
 				<Icon class="control-panel__button__icon" children={/* @once */ Icon.Back()} />
+			</button>
+			<button
+				role="menuitem"
+				type="button"
+				class="button control-panel__button"
+				title={''}
+				onClick={props.openDialogOverview}
+			>
+				<span class="control-panel__button__content">{'Dialog Overview'}</span>
+				<Icon class="control-panel__button__icon" children={/* @once */ Icon.Menu()} />
 			</button>
 			<button
 				role="menuitem"

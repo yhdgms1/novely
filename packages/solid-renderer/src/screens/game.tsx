@@ -27,7 +27,7 @@ interface GameProps {
 const Game: VoidComponent<GameProps> = (props) => {
 	const data = useData();
 
-	const { text, dialog, characters, choice, input, background, custom, images } = destructure(
+	const { text, dialog, characters, choice, input, background, custom, images, dialogOverviewShown } = destructure(
 		from(props.$contextState),
 	);
 
@@ -436,6 +436,9 @@ const Game: VoidComponent<GameProps> = (props) => {
 							closeDropdown={() => {
 								setControlPanelMenuExpanded(false);
 							}}
+							openDialogOverview={() => {
+								props.$contextState.setKey('dialogOverviewShown', true);
+							}}
 							auto={auto}
 							setAuto={setAuto}
 						/>
@@ -446,6 +449,32 @@ const Game: VoidComponent<GameProps> = (props) => {
 			<div class="action-image">
 				<For each={Object.values(images())}>{(image) => image}</For>
 			</div>
+
+			<Show when={dialogOverviewShown()}>
+				<div class="dialog-overview">
+					<div class="dialog-overview__head">
+						Dialog Overview
+						<button
+							type="button"
+							onClick={() => {
+								props.$contextState.setKey('dialogOverviewShown', false);
+							}}
+						>
+							Close
+						</button>
+					</div>
+
+					<div class="dialog-overview__list">
+						<For each={data.options.getDialogOverview()}>
+							{(entry) => (
+								<div class="dialog-overview__list-item">
+									{entry.name}: {entry.text}
+								</div>
+							)}
+						</For>
+					</div>
+				</div>
+			</Show>
 		</div>
 	);
 };

@@ -1,0 +1,32 @@
+.dialog-overview {
+	z-index: 50;
+
+	width: 100vw;
+	height: 100vh;
+
+	position: absolute;
+
+	backdrop-filter: blur(10px);
+
+	background-color: #00000072;
+}
+
+.dialog-overview__head {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+
+	color: #fff;
+
+	padding: 1rem;
+
+	border-bottom: 1px solid red;
+}
+
+.dialog-overview__list {
+	padding: 1rem;
+}
+
+.dialog-overview__list-item {
+	margin-bottom: 1rem;
+}
