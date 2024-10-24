@@ -905,9 +905,9 @@ const novely = <
 		const [lang] = storageData.get().meta;
 
 		type DialogItem = {
-			name: undefined | string,
-			text: TextContent<string, State>,
-			voice: undefined | string | NovelyAsset | Record<string, string | NovelyAsset>
+			name: undefined | string;
+			text: TextContent<string, State>;
+			voice: undefined | string | NovelyAsset | Record<string, string | NovelyAsset>;
 		};
 
 		const dialogItem: DialogItem[] = [];
@@ -936,7 +936,7 @@ const novely = <
 				dialogItem.push({
 					name,
 					text,
-					voice
+					voice,
 				});
 
 				p = i;
@@ -945,7 +945,13 @@ const novely = <
 
 		const entries: DialogOverview = dialogItem.map(({ name, text, voice }, i) => {
 			const state = stateSnapshots[i];
-			const audioSource = isString(voice) ? voice : isAsset(voice) ? voice : voice == undefined ? voice : voice[lang];
+			const audioSource = isString(voice)
+				? voice
+				: isAsset(voice)
+					? voice
+					: voice == undefined
+						? voice
+						: voice[lang];
 
 			return {
 				name: templateReplace(name as TextContent<$Language, Data>, state),
