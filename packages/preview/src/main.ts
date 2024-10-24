@@ -22,6 +22,11 @@ import outdoor_png from './assets/outdoor.png';
  */
 import sakura_girl from './assets/sakura_girl.mp3';
 
+import narrator0000 from './assets/narrator0000.mp3';
+import lily0000 from './assets/lily0000.mp3';
+import lily0001 from './assets/lily0001.mp3';
+import lily0002 from './assets/lily0002.mp3';
+
 const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidRenderer({
 	fullscreen: false,
 });
@@ -407,15 +412,14 @@ engine.script({
 		action.playMusic(music),
 		action.particles(snow),
 		action.showBackground(outdoor),
-		action.voice('./narrator-intro.ogg'),
+		action.voice(narrator0000),
 		action.text('Water, earth, fire, air. Long ago the four nations lived together in harmony'),
-		action.voice('./lyric-1.ogg'),
+		action.voice(lily0000),
 		action.say('Lily', 'My age is {{age}} and I have {{money}} money'),
 		action.function(({ state }) => state({ money: state().money + 100 })),
 		action.say('Lily', 'My age is still {{age}}, but I have {{money}} money!!'),
 		action.function(({ state }) => state({ age: 18, money: 0 })),
-		action.voice('./lyric-2.ogg'),
-		action.showBackground('orange'),
+		action.voice(lily0002),
 		action.say('Lily', 'I am {{age}} years old, but I have {{money}} money now'),
 	],
 });

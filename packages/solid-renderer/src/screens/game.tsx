@@ -107,6 +107,15 @@ const Game: VoidComponent<GameProps> = (props) => {
 		}, 0);
 	});
 
+	const [currentlyPlayingDialogOverview, setCurrentlyPlayingDialogOverview] = createSignal('');
+
+	createEffect(() => {
+		if (!dialogOverviewShown()) {
+			context.audio.voiceStop();
+			setCurrentlyPlayingDialogOverview('');
+		}
+	});
+
 	return (
 		<div
 			class={props.className}
@@ -481,10 +490,27 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 									<td>
 										<Show when={entry.voice}>
-											<button type="button" class="dialog-overview__button-audio-control" onClick={() => {}}>
+											<button
+												type="button"
+												class="dialog-overview__button-audio-control"
+												onClick={() => {
+													// todo: когда аудио закончило воспроизведение обнулить состояние
+
+													if (currentlyPlayingDialogOverview() === entry.voice) {
+														context.audio.voiceStop();
+														setCurrentlyPlayingDialogOverview('');
+													} else {
+														context.audio.voice(entry.voice!);
+														setCurrentlyPlayingDialogOverview(entry.voice!);
+													}
+												}}
+											>
 												<Icon fill="currentColor" viewBox="0 0 256 256">
-													<Show when={true} fallback={<Icon.StopMedia />}>
-														<Icon.PlayMedia />
+													<Show
+														when={currentlyPlayingDialogOverview() === entry.voice}
+														fallback={<Icon.PlayMedia />}
+													>
+														<Icon.StopMedia />
 													</Show>
 												</Icon>
 											</button>
