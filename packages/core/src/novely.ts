@@ -965,9 +965,6 @@ const novely = <
 		return entries;
 	};
 
-	// @ts-expect-error
-	window.view = getDialogOverview;
-
 	// #region Renderer Creation
 	const renderer = createRenderer({
 		mainContextKey: MAIN_CONTEXT_KEY,
