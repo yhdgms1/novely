@@ -468,7 +468,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 						<For each={data.options.getDialogOverview()}>
 							{(entry) => (
 								<div class="dialog-overview__list-item">
-									{entry.name}: {entry.text}
+									{entry.name}: {entry.voice} {entry.text}
 								</div>
 							)}
 						</For>

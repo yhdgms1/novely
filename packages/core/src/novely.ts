@@ -32,6 +32,7 @@ import type {
 	DialogOverview,
 	DialogOverviewEntry,
 	Lang,
+	NovelyAsset,
 	NovelyInit,
 	Save,
 	State,
@@ -71,6 +72,8 @@ import {
 	handleImageAsset,
 	noop,
 	toArray,
+	isUserRequiredAction,
+	isSkippedDuringRestore,
 } from './utilities';
 import type { MatchActionHandlers } from './utilities';
 
@@ -898,17 +901,56 @@ const novely = <
 		const stateSnapshots = save[3];
 
 		const { queue } = getActionsFromPath(story, save[0], false);
-		const dialogActions = queue.filter((action) => action[0] === 'dialog');
 
-		const entries: DialogOverview = dialogActions.map((action, i) => {
+		const [lang] = storageData.get().meta;
+
+		type DialogItem = {
+			name: undefined | string,
+			text: TextContent<string, State>,
+			voice: undefined | string | NovelyAsset | Record<string, string | NovelyAsset>
+		};
+
+		const dialogItem: DialogItem[] = [];
+
+		for (let p = 0, i = 0; i < queue.length; i++) {
+			const action = queue[i];
+
+			if (action[0] === 'dialog') {
+				const [_, name, text] = action;
+
+				let voice: undefined | string | NovelyAsset | Record<string, string | NovelyAsset> = undefined;
+
+				for (let j = i - 1; j > p; j--) {
+					const action = queue[j];
+
+					if (isUserRequiredAction(action) || isSkippedDuringRestore(action[0])) break;
+					if (action[0] === 'stopVoice') break;
+
+					if (action[0] === 'voice') {
+						voice = action[1];
+
+						break;
+					}
+				}
+
+				dialogItem.push({
+					name,
+					text,
+					voice
+				});
+
+				p = i;
+			}
+		}
+
+		const entries: DialogOverview = dialogItem.map(({ name, text, voice }, i) => {
 			const state = stateSnapshots[i];
-
-			const [_, name, text] = action;
+			const audioSource = isString(voice) ? voice : isAsset(voice) ? voice : voice == undefined ? voice : voice[lang];
 
 			return {
-				name: templateReplace(name ? getCharacterName(name as keyof $Characters) : '', state),
+				name: templateReplace(name as TextContent<$Language, Data>, state),
 				text: templateReplace(text, state),
-				voice: '',
+				voice: audioSource ? handleAudioAsset(audioSource) : '',
 			} satisfies DialogOverviewEntry;
 		});
 
