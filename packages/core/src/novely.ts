@@ -953,8 +953,10 @@ const novely = <
 						? voice
 						: voice[lang];
 
+			name = name ? getCharacterName(name as keyof $Characters) : '';
+
 			return {
-				name: templateReplace(name as TextContent<$Language, Data>, state),
+				name: templateReplace(name, state),
 				text: templateReplace(text, state),
 				voice: audioSource ? handleAudioAsset(audioSource) : '',
 			} satisfies DialogOverviewEntry;
