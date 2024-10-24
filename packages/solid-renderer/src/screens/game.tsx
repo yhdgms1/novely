@@ -456,33 +456,49 @@ const Game: VoidComponent<GameProps> = (props) => {
 				isOpen={() => !props.isPreview && dialogOverviewShown()}
 				trapFocus={() => !props.isPreview && dialogOverviewShown()}
 			>
-				<div class="dialog-overview">
-					<div class="dialog-overview__head">
-						<span>{data.t('DialogOverview')}</span>
+				<div class="dialog-overview__head">
+					<span>{data.t('DialogOverview')}</span>
 
-						<button
-							type="button"
-							class="button"
-							onClick={() => {
-								props.$contextState.setKey('dialogOverviewShown', false);
-							}}
-						>
-							{data.t('Close')}
-						</button>
-					</div>
-
-					<div class="dialog-overview__list">
-						<Show when={dialogOverviewShown()} keyed>
-							<For each={data.options.getDialogOverview()}>
-								{(entry) => (
-									<div class="dialog-overview__list-item">
-										{entry.name}: {entry.voice} {entry.text}
-									</div>
-								)}
-							</For>
-						</Show>
-					</div>
+					<button
+						type="button"
+						class="button"
+						onClick={() => {
+							props.$contextState.setKey('dialogOverviewShown', false);
+						}}
+					>
+						{data.t('Close')}
+					</button>
 				</div>
+
+				<table class="dialog-overview__list">
+					<Show when={dialogOverviewShown()} keyed>
+						<For each={data.options.getDialogOverview()}>
+							{(entry) => (
+								<tr class="dialog-overview__list-item">
+									<td class="dialog-overview__list-item__name">
+										<span>{entry.name}</span>
+									</td>
+
+									<td>
+										<Show when={entry.voice}>
+											<button type="button" class="dialog-overview__button-audio-control" onClick={() => {}}>
+												<Icon fill="currentColor" viewBox="0 0 256 256">
+													<Show when={true} fallback={<Icon.StopMedia />}>
+														<Icon.PlayMedia />
+													</Show>
+												</Icon>
+											</button>
+										</Show>
+									</td>
+
+									<td class="dialog-overview__list-item__text">
+										<span>{entry.text}</span>
+									</td>
+								</tr>
+							)}
+						</For>
+					</Show>
+				</table>
 			</Modal>
 		</div>
 	);
