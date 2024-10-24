@@ -9,8 +9,9 @@ import type { VoidComponent } from 'solid-js';
 import { For, Show, createEffect, createMemo, createSignal, createUniqueId, untrack } from 'solid-js';
 import type { IContextState } from '../context-state';
 import type { SolidRendererStore } from '../renderer';
+import type { createAudio } from '@novely/renderer-toolkit';
 
-interface GameProps {
+type GameProps = {
 	context: Context;
 
 	$contextState: IContextState;
@@ -22,7 +23,9 @@ interface GameProps {
 
 	isPreview?: boolean;
 	className?: string;
-}
+
+	audio: ReturnType<typeof createAudio>;
+};
 
 const Game: VoidComponent<GameProps> = (props) => {
 	const data = useData();
@@ -37,7 +40,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 	/**
 	 * Can be destructured because these are passed without getters
 	 */
-	const { store, context, controls, skipTypewriterWhenGoingBack } = props;
+	const { audio, store, context, controls, skipTypewriterWhenGoingBack } = props;
 
 	const [auto, setAuto] = createSignal(false);
 
@@ -107,12 +110,25 @@ const Game: VoidComponent<GameProps> = (props) => {
 		}, 0);
 	});
 
-	const [currentlyPlayingDialogOverview, setCurrentlyPlayingDialogOverview] = createSignal('');
+	const [currentlyPlayingSource, setCurrentlyPlayingSource] = createSignal<null | string>(null);
+	const [currentlyPlaying, setCurrentlyPlaying] = createSignal<null | ReturnType<typeof audio.getAudio>>(null);
+
+	let playingId = 0;
 
 	createEffect(() => {
-		if (!dialogOverviewShown()) {
+		const current = currentlyPlaying();
+
+		if (dialogOverviewShown()) {
+			/**
+			 * When I open dialog overview — stop currently playing voice
+			 */
 			context.audio.voiceStop();
-			setCurrentlyPlayingDialogOverview('');
+		} else {
+			/**
+			 * When I close it, stop currently playing voice from dialog overview
+			 */
+			current?.stop();
+			setCurrentlyPlaying(null);
 		}
 	});
 
@@ -493,23 +509,43 @@ const Game: VoidComponent<GameProps> = (props) => {
 											<button
 												type="button"
 												class="dialog-overview__button-audio-control"
-												onClick={() => {
-													// todo: когда аудио закончило воспроизведение обнулить состояние
+												onClick={async () => {
+													if (!entry.voice) return;
 
-													if (currentlyPlayingDialogOverview() === entry.voice) {
-														context.audio.voiceStop();
-														setCurrentlyPlayingDialogOverview('');
+													const voice = audio.getAudio('voice', entry.voice);
+													const source = currentlyPlayingSource();
+
+													if (currentlyPlayingSource() === entry.voice) {
+														await voice.stop();
+
+														setCurrentlyPlaying(null);
+														setCurrentlyPlayingSource('');
 													} else {
-														context.audio.voice(entry.voice!);
-														setCurrentlyPlayingDialogOverview(entry.voice!);
+														if (source) {
+															const previous = audio.getAudio('voice', source);
+
+															await previous.stop();
+														}
+
+														setCurrentlyPlaying(voice);
+														setCurrentlyPlayingSource(entry.voice);
+
+														await voice.reset();
+														await voice.play();
+
+														const currentPlayingId = ++playingId;
+
+														voice.onEnded(() => {
+															if (currentPlayingId === playingId) {
+																setCurrentlyPlaying(null);
+																setCurrentlyPlayingSource('');
+															}
+														});
 													}
 												}}
 											>
 												<Icon fill="currentColor" viewBox="0 0 256 256">
-													<Show
-														when={currentlyPlayingDialogOverview() === entry.voice}
-														fallback={<Icon.PlayMedia />}
-													>
+													<Show when={currentlyPlayingSource() === entry.voice} fallback={<Icon.PlayMedia />}>
 														<Icon.StopMedia />
 													</Show>
 												</Icon>

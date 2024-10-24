@@ -64,11 +64,12 @@ const createSolidRenderer = ({
 			const { characterAssetSizes } = options;
 			const { root, setRoot } = createRootSetter(() => renderer.getContext(options.mainContextKey));
 
+			const audio = createAudio(options.storageData);
+
 			const cleanup: Record<string, (() => void) | undefined> = {};
 
 			const renderer = {
 				getContext: getContextCached((name) => {
-					const audio = createAudio(options.storageData);
 					const $contextState = useContextState(name);
 
 					{
@@ -355,6 +356,8 @@ const createSolidRenderer = ({
 
 							$rendererState,
 							$contextState: useContextState(options.mainContextKey),
+
+							audio,
 						});
 
 						return render(() => <Root />, target);

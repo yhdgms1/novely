@@ -416,9 +416,17 @@ engine.script({
 		action.text('Water, earth, fire, air. Long ago the four nations lived together in harmony'),
 		action.voice(lily0000),
 		action.say('Lily', 'My age is {{age}} and I have {{money}} money'),
-		action.function(({ state }) => state({ money: state().money + 100 })),
+		action.function(({ state, restoring, goingBack }) => {
+			if (!restoring && !goingBack) {
+				state({ money: state().money + 100 });
+			}
+		}),
 		action.say('Lily', 'My age is still {{age}}, but I have {{money}} money!!'),
-		action.function(({ state }) => state({ age: 18, money: 0 })),
+		action.function(({ state, restoring, goingBack }) => {
+			if (!restoring && !goingBack) {
+				state({ age: 18, money: 0 });
+			}
+		}),
 		action.voice(lily0002),
 		action.say('Lily', 'I am {{age}} years old, but I have {{money}} money now'),
 	],

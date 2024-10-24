@@ -11,6 +11,7 @@ import type { Emitter } from '../emitter';
 import { useShared } from '../shared';
 import type { EmitterEventsMap, RendererStoreExtension, SettingsIcons } from '../types';
 import { destructure } from '@solid-primitives/destructure';
+import type { createAudio } from '@novely/renderer-toolkit';
 
 type CreateRootComponentOpts = {
 	setRoot: (root: HTMLDivElement) => void;
@@ -32,6 +33,8 @@ type CreateRootComponentOpts = {
 
 	$contextState: IContextState;
 	$rendererState: DeepAtom<RendererStateStore<RendererStoreExtension>>;
+
+	audio: ReturnType<typeof createAudio>;
 };
 
 const createRootComponent = ({
@@ -47,6 +50,7 @@ const createRootComponent = ({
 	skipTypewriterWhenGoingBack,
 	settingsIcons,
 	rendererContext,
+	audio,
 }: CreateRootComponentOpts) => {
 	const Root: Component = () => {
 		const { screen, loadingShown } = destructure(from($rendererState));
@@ -96,6 +100,7 @@ const createRootComponent = ({
 								controls={/* @once */ controls}
 								skipTypewriterWhenGoingBack={/* @once */ skipTypewriterWhenGoingBack}
 								store={useShared(coreOptions.mainContextKey)}
+								audio={audio}
 							/>
 						</Match>
 						<Match when={screen() === 'mainmenu'}>
