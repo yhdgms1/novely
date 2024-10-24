@@ -33,11 +33,11 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
 				role="menuitem"
 				type="button"
 				class="button control-panel__button"
-				title={''}
+				title={data.t('DialogOverview')}
 				onClick={props.openDialogOverview}
 			>
-				<span class="control-panel__button__content">{'Dialog Overview'}</span>
-				<Icon class="control-panel__button__icon" children={/* @once */ Icon.Menu()} />
+				<span class="control-panel__button__content">{data.t('DialogOverview')}</span>
+				<Icon class="control-panel__button__icon" children={/* @once */ Icon.Book()} />
 			</button>
 			<button
 				role="menuitem"

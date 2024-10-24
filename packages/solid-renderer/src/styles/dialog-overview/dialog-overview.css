@@ -1,19 +1,26 @@
 .dialog-overview {
-	z-index: 50;
+	width: 100%;
+	height: 100%;
 
-	width: 100vw;
-	height: 100vh;
+	border: none;
 
-	position: absolute;
+	background: transparent;
+}
 
+.dialog-overview:modal {
+	max-width: 100vw;
+	max-height: 100vh;
+}
+
+.dialog-overview::backdrop {
 	backdrop-filter: blur(10px);
-
 	background-color: #00000072;
 }
 
 .dialog-overview__head {
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 	gap: 1rem;
 
 	color: #fff;
@@ -21,6 +28,11 @@
 	padding: 1rem;
 
 	border-bottom: 1px solid red;
+}
+
+.dialog-overview__head > span {
+	font-size: 1.45rem;
+	line-height: 1.2;
 }
 
 .dialog-overview__list {

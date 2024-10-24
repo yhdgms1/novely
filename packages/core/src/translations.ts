@@ -33,6 +33,8 @@ const RU = {
 	MusicVolume: 'Громкость музыки',
 	SoundVolume: 'Громкость звуков',
 	VoiceVolume: 'Громкость речи',
+	Close: 'Закрыть',
+	DialogOverview: 'Обзор диалога',
 };
 
 type BaseTranslationStrings = keyof typeof RU;
@@ -72,6 +74,8 @@ const EN: Record<BaseTranslationStrings, string> = {
 	MusicVolume: 'Music volume',
 	SoundVolume: 'Sound volume',
 	VoiceVolume: 'Voice volume',
+	Close: 'Close',
+	DialogOverview: 'Dialog Overview',
 };
 
 /**
@@ -112,6 +116,8 @@ const KK: Record<BaseTranslationStrings, string> = {
 	MusicVolume: 'Музыканың көлемі',
 	SoundVolume: 'Дыбыстардың көлемі',
 	VoiceVolume: 'Сөйлеу көлемі',
+	Close: 'Жабу',
+	DialogOverview: 'Диалогқа Шолу',
 };
 
 /**
@@ -152,6 +158,8 @@ const JP: Record<BaseTranslationStrings, string> = {
 	MusicVolume: '音楽のボリューム',
 	SoundVolume: '音量',
 	VoiceVolume: 'スピーチの量',
+	Close: '閉じる',
+	DialogOverview: 'ダイアログの概要',
 };
 
 export { RU, EN, KK, JP };

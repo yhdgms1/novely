@@ -450,31 +450,40 @@ const Game: VoidComponent<GameProps> = (props) => {
 				<For each={Object.values(images())}>{(image) => image}</For>
 			</div>
 
-			<Show when={dialogOverviewShown()}>
+			<Modal
+				class="dialog-overview"
+				isModal={true}
+				isOpen={() => !props.isPreview && dialogOverviewShown()}
+				trapFocus={() => !props.isPreview && dialogOverviewShown()}
+			>
 				<div class="dialog-overview">
 					<div class="dialog-overview__head">
-						Dialog Overview
+						<span>{data.t('DialogOverview')}</span>
+
 						<button
 							type="button"
+							class="button"
 							onClick={() => {
 								props.$contextState.setKey('dialogOverviewShown', false);
 							}}
 						>
-							Close
+							{data.t('Close')}
 						</button>
 					</div>
 
 					<div class="dialog-overview__list">
-						<For each={data.options.getDialogOverview()}>
-							{(entry) => (
-								<div class="dialog-overview__list-item">
-									{entry.name}: {entry.voice} {entry.text}
-								</div>
-							)}
-						</For>
+						<Show when={dialogOverviewShown()} keyed>
+							<For each={data.options.getDialogOverview()}>
+								{(entry) => (
+									<div class="dialog-overview__list-item">
+										{entry.name}: {entry.voice} {entry.text}
+									</div>
+								)}
+							</For>
+						</Show>
 					</div>
 				</div>
-			</Show>
+			</Modal>
 		</div>
 	);
 };
