@@ -1174,7 +1174,7 @@ const novely = <
 			 * It's used for dialog overview
 			 */
 			if (!ctx.meta.restoring && !ctx.meta.goingBack) {
-				stack.value[3].push(klona(data));
+				stack.value[3].push(clone(data));
 			}
 
 			ctx.clearBlockingActions('dialog');
