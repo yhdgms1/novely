@@ -229,6 +229,14 @@ const from = <T>(producer: Atom<T> | Stored<T>) => {
 	return s;
 };
 
+const removeTagsFromHTML = (html: string) => {
+	const container = document.createElement('div');
+
+	container.innerHTML = html;
+
+	return container.textContent || '';
+};
+
 export {
 	createRetrieved,
 	isCSSImage,
@@ -244,4 +252,5 @@ export {
 	imagePreloadWithCaching,
 	imagePreloadWithCachingNotComplete,
 	from,
+	removeTagsFromHTML,
 };

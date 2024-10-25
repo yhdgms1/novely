@@ -8,6 +8,8 @@
 	border: none;
 
 	background: #00000085;
+
+	overflow: hidden;
 }
 
 .dialog-overview[open] {
@@ -25,6 +27,7 @@
 
 .dialog-overview__head {
 	width: 100%;
+	height: 4rem;
 
 	display: flex;
 	gap: 1rem;
@@ -42,6 +45,20 @@
 	line-height: 1.2;
 }
 
+/* todo: styled scroll */
+.dialog-overview__body {
+	width: 100%;
+	height: calc(100vh - 4rem);
+
+	display: flex;
+	align-items: baseline;
+	justify-content: center;
+
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+
+/* todo: fix spacing is too large in chromium */
 .dialog-overview__list {
 	border-collapse: separate;
 	border-spacing: .75rem;
@@ -55,6 +72,8 @@
 	height: 1.2rem;
 
 	font-size: 1.45rem;
+
+	vertical-align: top;
 }
 
 .dialog-overview__list-item__name {

@@ -1,7 +1,7 @@
 import { clickOutside } from '$actions';
 import { Canvas, Character, ControlPanelButtons, DialogName, Icon, Modal, createTypewriter } from '$components';
 import { useData } from '$context';
-import { canvasDrawImages, imagePreloadWithCaching, isCSSImage, onKey } from '$utils';
+import { canvasDrawImages, imagePreloadWithCaching, isCSSImage, onKey, removeTagsFromHTML } from '$utils';
 import { from } from '$utils';
 import type { Context } from '@novely/core';
 import { destructure } from '@solid-primitives/destructure';
@@ -495,72 +495,75 @@ const Game: VoidComponent<GameProps> = (props) => {
 					</button>
 				</div>
 
-				<table class="dialog-overview__list">
-					<Show when={dialogOverviewShown()} keyed>
-						<For each={data.options.getDialogOverview()}>
-							{(entry) => (
-								<tr class="dialog-overview__list-item">
-									<td class="dialog-overview__list-item__name">
-										<span>{entry.name}</span>
-									</td>
+				<div class="dialog-overview__body">
+					<table class="dialog-overview__list">
+						<Show when={dialogOverviewShown()} keyed>
+							<For each={data.options.getDialogOverview()}>
+								{(entry) => (
+									<tr class="dialog-overview__list-item">
+										<td class="dialog-overview__list-item__name">
+											<span>{removeTagsFromHTML(entry.name)}</span>
+										</td>
 
-									<td>
-										<Show when={entry.voice}>
-											<button
-												type="button"
-												class="dialog-overview__button-audio-control"
-												onClick={async () => {
-													if (!entry.voice) return;
+										<td>
+											<Show when={entry.voice}>
+												<button
+													type="button"
+													class="dialog-overview__button-audio-control"
+													onClick={async () => {
+														// todo: scroll to the latest <tr> element
+														if (!entry.voice) return;
 
-													const voice = audio.getAudio('voice', entry.voice);
-													const source = currentlyPlayingSource();
+														const voice = audio.getAudio('voice', entry.voice);
+														const source = currentlyPlayingSource();
 
-													if (currentlyPlayingSource() === entry.voice) {
-														await voice.stop();
+														if (currentlyPlayingSource() === entry.voice) {
+															await voice.stop();
 
-														setCurrentlyPlaying(null);
-														setCurrentlyPlayingSource('');
-													} else {
-														if (source) {
-															const previous = audio.getAudio('voice', source);
+															setCurrentlyPlaying(null);
+															setCurrentlyPlayingSource('');
+														} else {
+															if (source) {
+																const previous = audio.getAudio('voice', source);
 
-															await previous.stop();
-														}
-
-														setCurrentlyPlaying(voice);
-														setCurrentlyPlayingSource(entry.voice);
-
-														await voice.reset();
-														await voice.play();
-
-														const currentPlayingId = ++playingId;
-
-														voice.onEnded(() => {
-															if (currentPlayingId === playingId) {
-																setCurrentlyPlaying(null);
-																setCurrentlyPlayingSource('');
+																await previous.stop();
 															}
-														});
-													}
-												}}
-											>
-												<Icon fill="currentColor" viewBox="0 0 256 256">
-													<Show when={currentlyPlayingSource() === entry.voice} fallback={<Icon.PlayMedia />}>
-														<Icon.StopMedia />
-													</Show>
-												</Icon>
-											</button>
-										</Show>
-									</td>
 
-									<td class="dialog-overview__list-item__text">
-										<span>{entry.text}</span>
-									</td>
-								</tr>
-							)}
-						</For>
-					</Show>
-				</table>
+															setCurrentlyPlaying(voice);
+															setCurrentlyPlayingSource(entry.voice);
+
+															await voice.reset();
+															await voice.play();
+
+															const currentPlayingId = ++playingId;
+
+															voice.onEnded(() => {
+																if (currentPlayingId === playingId) {
+																	setCurrentlyPlaying(null);
+																	setCurrentlyPlayingSource('');
+																}
+															});
+														}
+													}}
+												>
+													<Icon fill="currentColor" viewBox="0 0 256 256">
+														<Show when={currentlyPlayingSource() === entry.voice} fallback={<Icon.PlayMedia />}>
+															<Icon.StopMedia />
+														</Show>
+													</Icon>
+												</button>
+											</Show>
+										</td>
+
+										<td class="dialog-overview__list-item__text">
+											<span>{removeTagsFromHTML(entry.text)}</span>
+										</td>
+									</tr>
+								)}
+							</For>
+						</Show>
+					</table>
+				</div>
 			</Modal>
 		</div>
 	);
