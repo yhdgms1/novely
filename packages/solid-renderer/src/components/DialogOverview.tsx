@@ -42,7 +42,7 @@ const DialogOverview: VoidComponent<DialogOverviewProps> = (props) => {
 
 			if (scrollAreaElement) {
 				Promise.resolve().then(() => {
-          scrollAreaElement.lastElementChild?.scrollIntoView()
+					scrollAreaElement.lastElementChild?.scrollIntoView();
 				});
 			}
 		} else {
