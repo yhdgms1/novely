@@ -45,7 +45,6 @@
 	line-height: 1.2;
 }
 
-/* todo: styled scroll */
 .dialog-overview__body {
 	width: 100%;
 	height: calc(100vh - 4rem);
@@ -56,6 +55,24 @@
 
 	overflow-x: hidden;
 	overflow-y: scroll;
+
+	padding: 0 var(--novely-saves-list-border-width, .675rem) 0 0;
+}
+
+.dialog-overview__body::-webkit-scrollbar {
+	width: var(--novely-saves-list-border-width, .675rem);
+}
+
+.dialog-overview__body::-webkit-scrollbar-track {
+	background-color: var(--novely-scrollbar-track-bg-color, #ffe9f3);
+}
+
+.dialog-overview__body::-webkit-scrollbar-thumb {
+	background-color: var(--novely-scrollbar-thumb-bg-color, #FF66A8);
+}
+
+.dialog-overview__body::-webkit-scrollbar-thumb:hover {
+	background-color: var(--novely-scrollbar-thumb-hover-bg-color, #FF4596);
 }
 
 /* todo: fix spacing is too large in chromium */
@@ -109,5 +126,18 @@
 @media (max-aspect-ratio: 0.8) {
 	.dialog-overview__list {
 		width: 100%;
+	}
+}
+
+@supports (-moz-appearance:none) {
+	.dialog-overview__body {
+		padding: 0;
+
+		scrollbar-gutter: stable;
+		scrollbar-color: var(--novely-scrollbar-thumb-bg-color, #FF66A8) var(--novely-scrollbar-track-bg-color, #FFCBE1);
+	}
+
+	.dialog-overview__body:active {
+		scrollbar-color: var(--novely-scrollbar-thumb-hover-bg-color, #FF4596) var(--novely-scrollbar-track-bg-color, #FFCBE1);
 	}
 }
