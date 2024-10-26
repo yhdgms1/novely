@@ -1,7 +1,16 @@
 import { clickOutside } from '$actions';
-import { Canvas, Character, ControlPanelButtons, DialogName, Icon, Modal, createTypewriter } from '$components';
+import {
+	Canvas,
+	Character,
+	ControlPanelButtons,
+	DialogName,
+	DialogOverview,
+	Icon,
+	Modal,
+	createTypewriter,
+} from '$components';
 import { useData } from '$context';
-import { canvasDrawImages, imagePreloadWithCaching, isCSSImage, onKey, removeTagsFromHTML } from '$utils';
+import { canvasDrawImages, imagePreloadWithCaching, isCSSImage, onKey } from '$utils';
 import { from } from '$utils';
 import type { Context } from '@novely/core';
 import { destructure } from '@solid-primitives/destructure';
@@ -108,28 +117,6 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 			return acc;
 		}, 0);
-	});
-
-	const [currentlyPlayingSource, setCurrentlyPlayingSource] = createSignal<null | string>(null);
-	const [currentlyPlaying, setCurrentlyPlaying] = createSignal<null | ReturnType<typeof audio.getAudio>>(null);
-
-	let playingId = 0;
-
-	createEffect(() => {
-		const current = currentlyPlaying();
-
-		if (dialogOverviewShown()) {
-			/**
-			 * When I open dialog overview — stop currently playing voice
-			 */
-			context.audio.voiceStop();
-		} else {
-			/**
-			 * When I close it, stop currently playing voice from dialog overview
-			 */
-			current?.stop();
-			setCurrentlyPlaying(null);
-		}
 	});
 
 	return (
@@ -475,96 +462,12 @@ const Game: VoidComponent<GameProps> = (props) => {
 				<For each={Object.values(images())}>{(image) => image}</For>
 			</div>
 
-			<Modal
-				class="dialog-overview"
-				isModal={true}
-				isOpen={() => !props.isPreview && dialogOverviewShown()}
-				trapFocus={() => !props.isPreview && dialogOverviewShown()}
-			>
-				<div class="dialog-overview__head">
-					<span>{data.t('DialogOverview')}</span>
-
-					<button
-						type="button"
-						class="button"
-						onClick={() => {
-							props.$contextState.setKey('dialogOverviewShown', false);
-						}}
-					>
-						{data.t('Close')}
-					</button>
-				</div>
-
-				<div class="dialog-overview__body">
-					<table class="dialog-overview__list">
-						<Show when={dialogOverviewShown()} keyed>
-							<For each={data.options.getDialogOverview()}>
-								{(entry) => (
-									<tr class="dialog-overview__list-item">
-										<td class="dialog-overview__list-item__name">
-											<span>{removeTagsFromHTML(entry.name)}</span>
-										</td>
-
-										<td>
-											<Show when={entry.voice}>
-												<button
-													type="button"
-													class="dialog-overview__button-audio-control"
-													onClick={async () => {
-														// todo: scroll to the latest <tr> element
-														if (!entry.voice) return;
-
-														const voice = audio.getAudio('voice', entry.voice);
-														const source = currentlyPlayingSource();
-
-														if (currentlyPlayingSource() === entry.voice) {
-															await voice.stop();
-
-															setCurrentlyPlaying(null);
-															setCurrentlyPlayingSource('');
-														} else {
-															if (source) {
-																const previous = audio.getAudio('voice', source);
-
-																await previous.stop();
-															}
-
-															setCurrentlyPlaying(voice);
-															setCurrentlyPlayingSource(entry.voice);
-
-															await voice.reset();
-															await voice.play();
-
-															const currentPlayingId = ++playingId;
-
-															voice.onEnded(() => {
-																if (currentPlayingId === playingId) {
-																	setCurrentlyPlaying(null);
-																	setCurrentlyPlayingSource('');
-																}
-															});
-														}
-													}}
-												>
-													<Icon fill="currentColor" viewBox="0 0 256 256">
-														<Show when={currentlyPlayingSource() === entry.voice} fallback={<Icon.PlayMedia />}>
-															<Icon.StopMedia />
-														</Show>
-													</Icon>
-												</button>
-											</Show>
-										</td>
-
-										<td class="dialog-overview__list-item__text">
-											<span>{removeTagsFromHTML(entry.text)}</span>
-										</td>
-									</tr>
-								)}
-							</For>
-						</Show>
-					</table>
-				</div>
-			</Modal>
+			<DialogOverview
+				context={context}
+				audio={audio}
+				shown={Boolean(!props.isPreview && dialogOverviewShown())}
+				close={() => props.$contextState.setKey('dialogOverviewShown', false)}
+			/>
 		</div>
 	);
 };

@@ -9,3 +9,4 @@ export { createRootComponent } from './Root';
 export { Canvas } from './Canvas';
 export { Select } from './Select';
 export { Range } from './Range';
+export { DialogOverview } from './DialogOverview';
