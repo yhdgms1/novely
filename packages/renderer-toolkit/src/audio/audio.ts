@@ -67,6 +67,7 @@ const createAudio = (storageData: StorageDataStore) => {
 					resource.pause();
 				},
 				play(loop) {
+					resource.volume = getVolume(method);
 					resource.loop = loop;
 					resource.play();
 				},
@@ -81,6 +82,7 @@ const createAudio = (storageData: StorageDataStore) => {
 
 			const resource = (store.voice = getAudio('voice', source));
 
+			resource.volume = getVolume('voice');
 			resource.play();
 		},
 		voiceStop() {
@@ -95,7 +97,7 @@ const createAudio = (storageData: StorageDataStore) => {
 			/**
 			 * Subscribe for volume changes in settings
 			 */
-			unsubscribe = storageData.subscribe(() => {
+			unsubscribe = storageData.subscribe(async () => {
 				for (const type of ['music', 'sound', 'voice'] as const) {
 					const volume = getVolume(type);
 

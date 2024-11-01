@@ -73,10 +73,6 @@ const createRootComponent = ({
 				}
 			}
 
-			if (currentScreen !== 'game' && currentScreen !== 'settings' && !loadingShown()) {
-				rendererContext.audio.destroy();
-			}
-
 			emitter.emit('screen:change', currentScreen);
 		});
 
