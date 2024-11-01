@@ -97,7 +97,7 @@ const createAudio = (storageData: StorageDataStore) => {
 			/**
 			 * Subscribe for volume changes in settings
 			 */
-			unsubscribe = storageData.subscribe(async () => {
+			unsubscribe = storageData.subscribe(() => {
 				for (const type of ['music', 'sound', 'voice'] as const) {
 					const volume = getVolume(type);
 
@@ -141,14 +141,22 @@ const createAudio = (storageData: StorageDataStore) => {
 	const clear = (keepAudio: KeepAudio) => {
 		context.voiceStop();
 
-		const musics = Object.entries(store.music)
-			.filter(([name]) => !keepAudio.music.has(name))
-			.map(([_, a]) => a);
-		const sounds = Object.entries(store.sound)
-			.filter(([name]) => !keepAudio.sounds.has(name))
-			.map(([_, a]) => a);
+		const entries = [
+			[
+				store.music,
+				keepAudio.music
+			],
+			[
+				store.sound,
+				keepAudio.sounds
+			]
+		] as const;
 
-		for (const music of [...musics, ...sounds]) {
+		const clearEntries = entries.flatMap(([incoming, keep]) => {
+			return Object.entries(incoming).filter(([name]) => !keep.has(name)).map(([_, a]) => a)
+		});
+
+		for (const music of clearEntries) {
 			if (!music) continue;
 
 			music.stop();
