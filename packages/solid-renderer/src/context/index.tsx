@@ -14,8 +14,9 @@ import type { Accessor, FlowComponent } from 'solid-js';
 import { Show, createContext, useContext } from 'solid-js';
 import type { Emitter } from '../emitter';
 import type { EmitterEventsMap, RendererStoreExtension } from '../types';
+import type { createAudio } from '@novely/renderer-toolkit';
 
-interface DataContext {
+type DataContext = {
 	$rendererState: DeepAtom<RendererStateStore<RendererStoreExtension>>;
 
 	storageData: Accessor<StorageData>;
@@ -37,11 +38,13 @@ interface DataContext {
 
 	getContext: (name: string) => Context;
 	removeContext: (name: string) => void;
-}
+
+	audio: ReturnType<typeof createAudio>;
+};
 
 const Context = createContext<DataContext>();
 
-interface ProviderProps {
+type ProviderProps = {
 	$rendererState: DeepAtom<RendererStateStore<RendererStoreExtension>>;
 
 	storageData: Stored<StorageData>;
@@ -54,7 +57,9 @@ interface ProviderProps {
 
 	getContext: (name: string) => Context;
 	removeContext: (name: string) => void;
-}
+
+	audio: ReturnType<typeof createAudio>;
+};
 
 const Provider: FlowComponent<ProviderProps> = (props) => {
 	const storageData = from(props.storageData) as Accessor<StorageData>;
@@ -84,6 +89,8 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
 
 		getContext: props.getContext,
 		removeContext: props.removeContext,
+
+		audio: props.audio,
 	};
 
 	return (

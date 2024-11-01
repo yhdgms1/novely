@@ -18,7 +18,6 @@ import type { VoidComponent } from 'solid-js';
 import { For, Show, createEffect, createMemo, createSignal, createUniqueId, untrack } from 'solid-js';
 import type { IContextState } from '../context-state';
 import type { SolidRendererStore } from '../renderer';
-import type { createAudio } from '@novely/renderer-toolkit';
 
 type GameProps = {
 	context: Context;
@@ -32,12 +31,11 @@ type GameProps = {
 
 	isPreview?: boolean;
 	className?: string;
-
-	audio: ReturnType<typeof createAudio>;
 };
 
 const Game: VoidComponent<GameProps> = (props) => {
 	const data = useData();
+	const { audio } = data;
 
 	const { text, dialog, characters, choice, input, background, custom, images, dialogOverviewShown } = destructure(
 		from(props.$contextState),
@@ -49,7 +47,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 	/**
 	 * Can be destructured because these are passed without getters
 	 */
-	const { audio, store, context, controls, skipTypewriterWhenGoingBack } = props;
+	const { store, context, controls, skipTypewriterWhenGoingBack } = props;
 
 	const [auto, setAuto] = createSignal(false);
 

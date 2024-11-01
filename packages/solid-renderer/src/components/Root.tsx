@@ -91,6 +91,7 @@ const createRootComponent = ({
 					emitter={emitter}
 					getContext={renderer.getContext}
 					removeContext={renderer.removeContext}
+					audio={audio}
 				>
 					<Switch>
 						<Match when={screen() === 'game'}>
@@ -100,7 +101,6 @@ const createRootComponent = ({
 								controls={/* @once */ controls}
 								skipTypewriterWhenGoingBack={/* @once */ skipTypewriterWhenGoingBack}
 								store={useShared(coreOptions.mainContextKey)}
-								audio={audio}
 							/>
 						</Match>
 						<Match when={screen() === 'mainmenu'}>
