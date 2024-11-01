@@ -142,18 +142,14 @@ const createAudio = (storageData: StorageDataStore) => {
 		context.voiceStop();
 
 		const entries = [
-			[
-				store.music,
-				keepAudio.music
-			],
-			[
-				store.sound,
-				keepAudio.sounds
-			]
+			[store.music, keepAudio.music],
+			[store.sound, keepAudio.sounds],
 		] as const;
 
 		const clearEntries = entries.flatMap(([incoming, keep]) => {
-			return Object.entries(incoming).filter(([name]) => !keep.has(name)).map(([_, a]) => a)
+			return Object.entries(incoming)
+				.filter(([name]) => !keep.has(name))
+				.map(([_, a]) => a);
 		});
 
 		for (const music of clearEntries) {
