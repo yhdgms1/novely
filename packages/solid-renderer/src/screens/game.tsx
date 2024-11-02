@@ -5,7 +5,6 @@ import {
 	ControlPanelButtons,
 	DialogName,
 	DialogOverview,
-	Icon,
 	Modal,
 	createTypewriter,
 } from '$components';
@@ -410,7 +409,9 @@ const Game: VoidComponent<GameProps> = (props) => {
 									setControlPanelMenuExpanded((prev) => !prev);
 								}}
 							>
-								<Icon children={Icon.Menu()} />
+								<svg width="24" height="24" viewBox="0 0 256 256">
+									<use href="#novely-list-icon" />
+								</svg>
 							</button>
 						</Show>
 					</Show>

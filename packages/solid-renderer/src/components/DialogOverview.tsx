@@ -2,7 +2,7 @@ import { removeTagsFromHTML } from '$utils';
 import type { Context } from '@novely/core';
 import type { VoidComponent } from 'solid-js';
 import { createSignal, createEffect, For, Show } from 'solid-js';
-import { Icon, Modal } from '$components';
+import { Modal } from '$components';
 import { createAudio } from '@novely/renderer-toolkit';
 import { useData } from '$context';
 
@@ -120,11 +120,9 @@ const DialogOverview: VoidComponent<DialogOverviewProps> = (props) => {
 													}
 												}}
 											>
-												<Icon fill="currentColor" viewBox="0 0 256 256">
-													<Show when={currentlyPlayingSource() === entry.voice} fallback={<Icon.PlayMedia />}>
-														<Icon.StopMedia />
-													</Show>
-												</Icon>
+												<svg width="24" height="24" viewBox="0 0 256 256">
+													<use href={currentlyPlayingSource() === entry.voice ? "#novely-stop-icon" : "#novely-play-icon"} />
+												</svg>
 											</button>
 										</Show>
 									</td>

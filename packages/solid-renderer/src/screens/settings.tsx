@@ -1,14 +1,11 @@
 import type { TypewriterSpeed } from '@novely/core';
 import type { JSX, VoidComponent } from 'solid-js';
-import type { SettingsIcons } from '../types';
 
 import { Range, Select } from '$components';
 import { useData } from '$context';
 import { For } from 'solid-js';
 
 interface SettingsProps {
-	icons: SettingsIcons;
-
 	showAudioSettings: boolean;
 }
 
@@ -74,7 +71,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 
 			<div class="settings__options">
 				<div>
-					<Select icon={props.icons.language} label={t('Language')} onChange={onLanguageSelect}>
+					<Select icon="#novely-globe-icon" label={t('Language')} onChange={onLanguageSelect}>
 						<For each={options.languages}>
 							{(lang) => (
 								<option value={lang} selected={lang === language()}>
@@ -84,7 +81,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 						</For>
 					</Select>
 
-					<Select icon={props.icons.typewriter_speed} label={t('TextSpeed')} onChange={onSpeedSelect}>
+					<Select icon="#novely-typewriter-speed-icon" label={t('TextSpeed')} onChange={onSpeedSelect}>
 						<For each={['Slow', 'Medium', 'Fast', 'Auto']}>
 							{(speed) => (
 								<option value={speed} selected={speed === textSpeed()}>
@@ -101,7 +98,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 					}}
 				>
 					<Range
-						icon={props.icons.music_volume}
+						icon="#novely-music-volume-icon"
 						label={t('MusicVolume')}
 						min={0}
 						max={1}
@@ -111,7 +108,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 					/>
 
 					<Range
-						icon={props.icons.sound_volume}
+						icon={volume(3) === 0 ? "#novely-sound-volume-muted-icon" : "#novely-sound-volume-icon"}
 						label={t('SoundVolume')}
 						min={0}
 						max={1}
@@ -121,7 +118,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 					/>
 
 					<Range
-						icon={props.icons.voice_volume}
+						icon="#novely-voice-volume-icon"
 						label={t('VoiceVolume')}
 						min={0}
 						max={1}

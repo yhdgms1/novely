@@ -9,7 +9,7 @@ import { Match, Show, Switch, createEffect } from 'solid-js';
 import type { IContextState } from '../context-state';
 import type { Emitter } from '../emitter';
 import { useShared } from '../shared';
-import type { EmitterEventsMap, RendererStoreExtension, SettingsIcons } from '../types';
+import type { EmitterEventsMap, RendererStoreExtension } from '../types';
 import { destructure } from '@solid-primitives/destructure';
 import type { createAudio } from '@novely/renderer-toolkit';
 
@@ -23,7 +23,6 @@ type CreateRootComponentOpts = {
 
 	skipTypewriterWhenGoingBack: boolean;
 	controls: 'inside' | 'outside';
-	settingsIcons: SettingsIcons;
 
 	showAudioSettings: boolean;
 
@@ -48,7 +47,6 @@ const createRootComponent = ({
 	emitter,
 	controls,
 	skipTypewriterWhenGoingBack,
-	settingsIcons,
 	rendererContext,
 	audio,
 }: CreateRootComponentOpts) => {
@@ -106,7 +104,7 @@ const createRootComponent = ({
 							<Saves />
 						</Match>
 						<Match when={screen() === 'settings'}>
-							<Settings icons={settingsIcons} showAudioSettings={showAudioSettings} />
+							<Settings showAudioSettings={showAudioSettings} />
 						</Match>
 					</Switch>
 

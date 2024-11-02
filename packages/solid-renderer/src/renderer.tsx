@@ -30,7 +30,6 @@ import {
 } from '@novely/renderer-toolkit';
 import { render } from 'solid-js/web';
 import { createRootComponent } from './components/Root';
-import { settingsIcons as settingsIconsDefault } from './constants';
 import { removeContextState, useContextState } from './context-state';
 import { hideImage, showImage } from './custom-actions';
 import { createEmitter } from './emitter';
@@ -43,7 +42,6 @@ const createSolidRenderer = ({
 	controls = 'outside',
 	skipTypewriterWhenGoingBack = true,
 	target = document.body,
-	settingsIcons = settingsIconsDefault,
 	showAudioSettings = true,
 }: CreateSolidRendererOptions = {}) => {
 	const emitter = createEmitter<EmitterEventsMap>();
@@ -345,8 +343,6 @@ const createSolidRenderer = ({
 
 							controls,
 							skipTypewriterWhenGoingBack,
-
-							settingsIcons,
 
 							showAudioSettings,
 

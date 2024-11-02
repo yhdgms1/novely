@@ -18,14 +18,6 @@ type SolidRendererStore = {
 	characters: Record<string, CharacterHandle>;
 };
 
-type SettingsIcons = {
-	language: string;
-	typewriter_speed: string;
-	music_volume: string;
-	sound_volume: string;
-	voice_volume: string;
-};
-
 type CreateSolidRendererOptions = {
 	/**
 	 * Enter fullscreen mode when opening a game, exit when opening main-menu
@@ -47,7 +39,6 @@ type CreateSolidRendererOptions = {
 	 * @default document.body
 	 */
 	target?: MountableElement;
-	settingsIcons?: SettingsIcons;
 	/**
 	 * Show audio settings in settings menu?
 	 * @default true
@@ -62,7 +53,6 @@ type EmitterEventsMap = {
 type RendererStoreExtension = { screens: Record<string, StateScreen>; mainmenu: StateMainmenuItems };
 
 export type {
-	SettingsIcons,
 	EmitterEventsMap,
 	StateScreen,
 	StateScreens,

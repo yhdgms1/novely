@@ -5,7 +5,7 @@ type NativeInputProps = Omit<JSX.InputHTMLAttributes<HTMLInputElement>, 'class' 
 
 type RangeProps = NativeInputProps & {
 	/**
-	 * Icon HTML string
+	 * Icon #path
 	 */
 	icon: string;
 	/**
@@ -21,7 +21,13 @@ const Range: VoidComponent<RangeProps> = (props) => {
 	return (
 		<div class="range">
 			<label class="range__label" for={id}>
-				<span class="range__label__icon" aria-hidden={true} innerHTML={local.icon} /> {local.label}
+				<span class="range__label__icon" aria-hidden={true}>
+					<svg width="24" height="24" viewBox="0 0 256 256">
+						<use href={local.icon} />
+					</svg>
+				</span>
+				{' '}
+				{local.label}
 			</label>
 
 			<input {...rest} class="range__range" type="range" id={id} />
