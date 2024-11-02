@@ -25,8 +25,7 @@ const Select: FlowComponent<SelectProps> = (props) => {
 					<svg width="24" height="24" viewBox="0 0 256 256">
 						<use href={local.icon} />
 					</svg>
-				</span>
-				{' '}
+				</span>{' '}
 				{local.label}
 			</label>
 

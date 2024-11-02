@@ -71,7 +71,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
 				<span class="control-panel__button__content">{data.t(props.auto() ? 'Stop' : 'Auto')}</span>
 
 				<svg class="control-panel__button__icon" width="24" height="24" viewBox="0 0 256 256">
-					<use href={props.auto() ? "#novely-stop-icon" : "#novely-play-icon"} />
+					<use href={props.auto() ? '#novely-stop-icon' : '#novely-play-icon'} />
 				</svg>
 			</button>
 			<button

@@ -108,7 +108,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 					/>
 
 					<Range
-						icon={volume(3) === 0 ? "#novely-sound-volume-muted-icon" : "#novely-sound-volume-icon"}
+						icon={volume(3) === 0 ? '#novely-sound-volume-muted-icon' : '#novely-sound-volume-icon'}
 						label={t('SoundVolume')}
 						min={0}
 						max={1}
