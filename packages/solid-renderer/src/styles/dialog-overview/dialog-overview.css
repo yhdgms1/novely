@@ -143,3 +143,7 @@
 			var(--novely-scrollbar-track-bg-color, #ffcbe1);
 	}
 }
+
+[data-dialog-overview-button] {
+	display: none;
+}

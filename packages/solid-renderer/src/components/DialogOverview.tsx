@@ -120,7 +120,7 @@ const DialogOverview: VoidComponent<DialogOverviewProps> = (props) => {
 													}
 												}}
 											>
-												<svg width="24" height="24" viewBox="0 0 256 256">
+												<svg fill="currentColor" width="24" height="24" viewBox="0 0 256 256">
 													<use
 														href={
 															currentlyPlayingSource() === entry.voice ? '#novely-stop-icon' : '#novely-play-icon'

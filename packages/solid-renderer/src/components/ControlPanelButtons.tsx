@@ -37,6 +37,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
 				class="button control-panel__button"
 				title={data.t('DialogOverview')}
 				onClick={props.openDialogOverview}
+				data-dialog-overview-button
 			>
 				<span class="control-panel__button__content">{data.t('DialogOverview')}</span>
 
