@@ -1,6 +1,6 @@
 {
 	"name": "@novely/solid-renderer",
-	"version": "0.41.1",
+	"version": "0.42.0-next.0",
 	"type": "module",
 	"publishConfig": {
 		"access": "public"
@@ -24,7 +24,7 @@
 		"@novely/typewriter": "workspace:*",
 		"@solid-primitives/destructure": "^0.1.17",
 		"clsx": "^2.1.1",
-		"solid-js": "~1.9.1",
+		"solid-js": "~1.9.3",
 		"solid-transition-group": "^0.2.3"
 	},
 	"peerDependencies": {
