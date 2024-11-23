@@ -24,7 +24,7 @@ const DialogName: VoidComponent<DialogNameProps> = (props) => {
 				visibility: props.character ? 'visible' : 'hidden',
 			}}
 		>
-			<span>{props.name || <>&#8197;</>}</span>
+			{props.name || <>&#8197;</>}
 
 			<Show when={props.mood}>
 				{(mood) => (

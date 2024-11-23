@@ -85,10 +85,8 @@
 }
 
 .action-dialog-mood-separator {
-	height: 100%;
 	font-size: 0.6rem;
 	vertical-align: middle;
-	display: inline-block;
 }
 
 .action-dialog-content {
