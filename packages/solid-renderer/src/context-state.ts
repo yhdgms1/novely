@@ -4,6 +4,7 @@ const { useContextState, removeContextState } = createContextStateRoot(() => {
 	return {
 		images: {} as Record<string, HTMLImageElement | undefined>,
 		dialogOverviewShown: false,
+		mood: '',
 	};
 });
 

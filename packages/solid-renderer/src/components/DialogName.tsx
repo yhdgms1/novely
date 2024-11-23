@@ -1,10 +1,12 @@
 import { useData } from '$context';
+import { Show } from 'solid-js';
 import type { VoidComponent } from 'solid-js';
 
-interface DialogNameProps {
+type DialogNameProps = {
 	character?: string;
 	name: string;
-}
+	mood: string;
+};
 
 const DialogName: VoidComponent<DialogNameProps> = (props) => {
 	const data = useData();
@@ -14,7 +16,7 @@ const DialogName: VoidComponent<DialogNameProps> = (props) => {
 	};
 
 	return (
-		<span
+		<div
 			class="action-dialog-name"
 			style={{
 				color: color(),
@@ -22,8 +24,19 @@ const DialogName: VoidComponent<DialogNameProps> = (props) => {
 				visibility: props.character ? 'visible' : 'hidden',
 			}}
 		>
-			{props.name || <>&#8197;</>}
-		</span>
+			<span>{props.name || <>&#8197;</>}</span>
+
+			<Show when={props.mood}>
+				{(mood) => (
+					<>
+						&nbsp;
+						<span class="action-dialog-mood-separator">&#10022;</span>
+						&nbsp;
+						{mood()}
+					</>
+				)}
+			</Show>
+		</div>
 	);
 };
 

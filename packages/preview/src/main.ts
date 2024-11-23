@@ -421,6 +421,7 @@ engine.script({
 				state({ money: state().money + 100 });
 			}
 		}),
+		action.setMood('rude'),
 		action.say('Lily', 'My age is still {{age}}, but I have {{money}} money!!'),
 		action.function(({ state, restoring, goingBack }) => {
 			if (!restoring && !goingBack) {
@@ -428,6 +429,7 @@ engine.script({
 			}
 		}),
 		action.voice(lily0002),
+		action.setMood(''),
 		action.say('Lily', 'I am {{age}} years old, but I have {{money}} money now'),
 	],
 });

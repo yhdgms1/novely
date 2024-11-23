@@ -31,7 +31,7 @@ import {
 import { render } from 'solid-js/web';
 import { createRootComponent } from './components/Root';
 import { removeContextState, useContextState } from './context-state';
-import { hideImage, showImage } from './custom-actions';
+import { hideImage, setMood, showImage } from './custom-actions';
 import { createEmitter } from './emitter';
 import { useShared } from './shared';
 
@@ -374,8 +374,9 @@ const createSolidRenderer = ({
 					preloadAudioBlocking,
 				},
 				actions: {
-					showImage: showImage,
-					hideImage: hideImage,
+					showImage,
+					hideImage,
+					setMood,
 				},
 			} satisfies Renderer;
 

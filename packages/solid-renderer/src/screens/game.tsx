@@ -36,9 +36,8 @@ const Game: VoidComponent<GameProps> = (props) => {
 	const data = useData();
 	const { audio } = data;
 
-	const { text, dialog, characters, choice, input, background, custom, images, dialogOverviewShown } = destructure(
-		from(props.$contextState),
-	);
+	const { text, dialog, characters, choice, input, background, custom, images, dialogOverviewShown, mood } =
+		destructure(from(props.$contextState));
 
 	const rendererState = from(data.$rendererState);
 	const exitPromptShown = () => rendererState().exitPromptShown;
@@ -179,7 +178,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 					'action-dialog--hidden': !dialog().visible,
 				}}
 			>
-				<DialogName character={dialog().miniature.character} name={dialog().name} />
+				<DialogName character={dialog().miniature.character} name={dialog().name} mood={mood()} />
 				<div
 					class="action-dialog-container"
 					data-no-person={!(dialog().miniature.character && dialog().miniature.emotion)}

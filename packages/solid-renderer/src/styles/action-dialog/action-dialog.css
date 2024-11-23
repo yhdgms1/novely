@@ -84,6 +84,13 @@
 	box-shadow: var(--novely-px) var(--novely-px) 0.18rem #00000042;
 }
 
+.action-dialog-mood-separator {
+	height: 100%;
+	font-size: 0.6rem;
+	vertical-align: middle;
+	display: inline-block;
+}
+
 .action-dialog-content {
 	width: 100%;
 
