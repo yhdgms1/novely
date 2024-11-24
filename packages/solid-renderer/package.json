@@ -28,7 +28,7 @@
 		"solid-transition-group": "^0.2.3"
 	},
 	"peerDependencies": {
-		"@novely/core": "*",
+		"@novely/core": "workspace:*",
 		"solid-js": "*"
 	},
 	"license": "ISC",

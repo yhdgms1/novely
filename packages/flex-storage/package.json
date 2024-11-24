@@ -30,7 +30,7 @@
 		"seroval": "^1.1.1"
 	},
 	"peerDependencies": {
-		"@novely/core": "*"
+		"@novely/core": "workspace:*"
 	},
 	"license": "ISC",
 	"bugs": {

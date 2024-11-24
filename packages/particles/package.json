@@ -1,7 +1,7 @@
 {
 	"name": "@novely/particles",
 	"description": "Particles Action",
-	"version": "0.6.0",
+	"version": "0.7.0",
 	"type": "module",
 	"sideEffects": false,
 	"types": "./dist/index.d.ts",
@@ -16,15 +16,15 @@
 	},
 	"dependencies": {
 		"@novely/core": "workspace:*",
-		"@tsparticles/engine": "~3.5.0",
-		"@tsparticles/slim": "~3.5.0"
+		"@tsparticles/engine": "~3.6.0",
+		"@tsparticles/slim": "~3.6.0"
 	},
 	"devDependencies": {
 		"tsup": "^8.3.0",
 		"typescript": "^5.6.2"
 	},
 	"peerDependencies": {
-		"@novely/core": "*"
+		"@novely/core": "workspace:*"
 	},
 	"license": "ISC",
 	"bugs": {

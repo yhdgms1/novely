@@ -20,7 +20,7 @@
 		"vite": "^5.4.8"
 	},
 	"peerDependencies": {
-		"@novely/core": "*",
+		"@novely/core": "workspace:*",
 		"vite": "^5.4.8"
 	},
 	"license": "ISC",

@@ -31,7 +31,7 @@
 		"typescript": "^5.6.2"
 	},
 	"peerDependencies": {
-		"@novely/core": "*"
+		"@novely/core": "workspace:*"
 	},
 	"license": "ISC",
 	"bugs": {

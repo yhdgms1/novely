@@ -190,8 +190,7 @@ false &&
 		],
 	});
 
-false &&
-	engine.script({
+true && engine.script({
 		start: [
 			action.next(),
 			action.text({
@@ -407,7 +406,7 @@ false &&
 		],
 	});
 
-engine.script({
+false && engine.script({
 	start: [
 		action.playMusic(music),
 		action.particles(snow),

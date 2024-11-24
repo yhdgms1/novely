@@ -86,9 +86,8 @@ const showParticles = (options: ParticlesOptions): CustomHandler => {
 				options: withDefault(options),
 			});
 
-			if (instance && instance.canvas.element) {
-				instance.canvas.element.style.setProperty('z-index', '2');
-			}
+			element.style.setProperty('position', 'absolute');
+			element.style.setProperty('z-index', '2');
 
 			data({ instance, options });
 		};
