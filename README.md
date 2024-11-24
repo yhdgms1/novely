@@ -8,9 +8,7 @@ Novel Engine for creating interactive stories
 
 ## Community
 
-We have a [Discord](https://discord.gg/h2U63hx4GR) server
-
-And a [Telegram](https://t.me/novelyjs) chat
+We have a [Discord](https://discord.gg/h2U63hx4GR) server and a [Telegram](https://t.me/novelyjs) chat
 
 ## Demo
 
