@@ -15,7 +15,7 @@
 		"solid-js": "~1.9.1"
 	},
 	"devDependencies": {
-		"@novely/vite-plugin-novely": "~0.5.1",
-		"vite": "~5.4.8"
+		"@novely/vite-plugin-novely": "~0.6.1",
+		"vite": "~6.0.1"
 	}
 }
