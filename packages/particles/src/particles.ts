@@ -10,6 +10,11 @@ const ID = Symbol();
 
 type ParticlesOptions = RecursivePartial<IOptions>;
 
+type Data = {
+	instance?: Container;
+	options?: ParticlesOptions
+}
+
 const withDefault = (options: ParticlesOptions) => {
 	options.autoPlay ||= true;
 	options.fullScreen ||= { enable: true, zIndex: 2 };
@@ -41,7 +46,7 @@ const showParticles = (options: ParticlesOptions): CustomHandler => {
 			/**
 			 * Get the instance
 			 */
-			const instance = data().instance as Container;
+			const { instance } = data<Data>();
 
 			if (!instance) return;
 
@@ -56,14 +61,17 @@ const showParticles = (options: ParticlesOptions): CustomHandler => {
 			data({});
 		});
 
-		const optionsEqual = data().options === options;
+		const _data = data<Data>();
+
+		const optionsEqual = _data.options === options;
+		const instancePresent = Boolean(_data.instance);
 
 		/**
 		 * Skip re-rendering if:
 		 * 1) Options has not changed and instance is present
 		 * 2) Options has not changed and we are goingBack
 		 */
-		if (optionsEqual && Boolean(data().instance)) return;
+		if (optionsEqual && instancePresent) return;
 		if (optionsEqual && goingBack) return;
 
 		/**
@@ -75,7 +83,7 @@ const showParticles = (options: ParticlesOptions): CustomHandler => {
 				options: withDefault(options),
 			});
 
-			data({ instance, options });
+			data<Data>({ instance, options });
 		};
 
 		/**
@@ -98,7 +106,7 @@ const hideParticles = () => {
 		/**
 		 * Get the instance
 		 */
-		const instance = data().instance as Container;
+		const { instance } = data<Data>();
 
 		/**
 		 * Destroy it
