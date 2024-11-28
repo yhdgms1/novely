@@ -12,8 +12,8 @@ type ParticlesOptions = RecursivePartial<IOptions>;
 
 type Data = {
 	instance?: Container;
-	options?: ParticlesOptions
-}
+	options?: ParticlesOptions;
+};
 
 const withDefault = (options: ParticlesOptions) => {
 	options.autoPlay ||= true;
