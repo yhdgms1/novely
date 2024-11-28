@@ -1,3 +1,4 @@
+import { Icon } from '$components';
 import type { JSX, VoidComponent } from 'solid-js';
 import { createUniqueId, splitProps } from 'solid-js';
 
@@ -21,11 +22,8 @@ const Range: VoidComponent<RangeProps> = (props) => {
 	return (
 		<div class="range">
 			<label class="range__label" for={id}>
-				<span class="range__label__icon" aria-hidden={true}>
-					<svg width="24" height="24" viewBox="0 0 256 256">
-						<use href={local.icon} />
-					</svg>
-				</span>{' '}
+				<span class="range__label__icon" aria-hidden={true} children={<Icon icon={local.icon} />} />
+				{' '}
 				{local.label}
 			</label>
 

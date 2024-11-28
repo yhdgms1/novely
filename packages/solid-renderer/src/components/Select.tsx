@@ -1,3 +1,4 @@
+import { Icon } from '$components';
 import type { FlowComponent, JSX } from 'solid-js';
 import { createUniqueId, splitProps } from 'solid-js';
 
@@ -22,9 +23,7 @@ const Select: FlowComponent<SelectProps> = (props) => {
 		<div class="select">
 			<label class="select__label" for={id}>
 				<span class="select__label__icon" aria-hidden={true}>
-					<svg width="24" height="24" viewBox="0 0 256 256">
-						<use href={local.icon} />
-					</svg>
+					<Icon icon={local.icon} />
 				</span>{' '}
 				{local.label}
 			</label>
@@ -34,9 +33,7 @@ const Select: FlowComponent<SelectProps> = (props) => {
 					{props.children}
 				</select>
 
-				<svg class="select__icon" aria-hidden={true} width="24" height="24" viewBox="0 0 256 256">
-					<use href="#novely-caret-down-icon" />
-				</svg>
+				<Icon class="select__icon" aria-hidden={true} icon="#novely-caret-down-icon" />
 			</div>
 		</div>
 	);

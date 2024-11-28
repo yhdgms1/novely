@@ -1,3 +1,4 @@
+import { Icon } from '$components';
 import { useData } from '$context';
 import { simple } from '$utils';
 import { from } from '$utils';
@@ -28,10 +29,7 @@ const MainMenu: VoidComponent = () => {
 					}}
 				>
 					<span class="main-menu__button__text">{t('NewGame')}</span>
-
-					<svg width="24" height="24" viewBox="0 0 256 256">
-						<use href="#novely-file-plus-icon" />
-					</svg>
+					<Icon icon="#novely-file-plus-icon" />
 				</button>
 				<button
 					type="button"
@@ -41,10 +39,7 @@ const MainMenu: VoidComponent = () => {
 					}}
 				>
 					<span class="main-menu__button__text">{t('LoadSave')}</span>
-
-					<svg width="24" height="24" viewBox="0 0 256 256">
-						<use href="#novely-play-game-icon" />
-					</svg>
+					<Icon icon="#novely-play-game-icon" />
 				</button>
 				<button
 					type="button"
@@ -54,10 +49,7 @@ const MainMenu: VoidComponent = () => {
 					}}
 				>
 					<span class="main-menu__button__text">{t('Saves')}</span>
-
-					<svg width="24" height="24" viewBox="0 0 256 256">
-						<use href="#novely-files-icon" />
-					</svg>
+					<Icon icon="#novely-files-icon" />
 				</button>
 				<button
 					type="button"
@@ -67,10 +59,7 @@ const MainMenu: VoidComponent = () => {
 					}}
 				>
 					<span class="main-menu__button__text">{t('Settings')}</span>
-
-					<svg width="24" height="24" viewBox="0 0 256 256">
-						<use href="#novely-settings-icon" />
-					</svg>
+					<Icon icon="#novely-settings-icon" />
 				</button>
 
 				<Show when={language()} keyed>

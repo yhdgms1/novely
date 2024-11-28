@@ -2,6 +2,7 @@ import type { Accessor, Setter, VoidComponent } from 'solid-js';
 
 import { useData } from '$context';
 import { Show } from 'solid-js';
+import { Icon } from './Icon';
 
 type ControlPanelButtonsProps = {
 	openSettings: () => void;
@@ -26,10 +27,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
 				onClick={data.options.back}
 			>
 				<span class="control-panel__button__content">{data.t('GoBack')}</span>
-
-				<svg class="control-panel__button__icon" width="24" height="24" viewBox="0 0 256 256">
-					<use href="#novely-back-icon" />
-				</svg>
+				<Icon class="control-panel__button__icon" icon="#novely-back-icon" />
 			</button>
 			<button
 				role="menuitem"
@@ -40,10 +38,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
 				data-dialog-overview-button
 			>
 				<span class="control-panel__button__content">{data.t('DialogOverview')}</span>
-
-				<svg class="control-panel__button__icon" width="24" height="24" viewBox="0 0 256 256">
-					<use href="#novely-book-open-icon" />
-				</svg>
+				<Icon class="control-panel__button__icon" icon="#novely-book-open-icon" />
 			</button>
 			<button
 				role="menuitem"
@@ -55,10 +50,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
 				}}
 			>
 				<span class="control-panel__button__content">{data.t('DoSave')}</span>
-
-				<svg class="control-panel__button__icon" width="24" height="24" viewBox="0 0 256 256">
-					<use href="#novely-save-icon" />
-				</svg>
+				<Icon class="control-panel__button__icon" icon="#novely-save-icon" />
 			</button>
 			<button
 				role="menuitem"
@@ -70,10 +62,10 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
 				}}
 			>
 				<span class="control-panel__button__content">{data.t(props.auto() ? 'Stop' : 'Auto')}</span>
-
-				<svg class="control-panel__button__icon" width="24" height="24" viewBox="0 0 256 256">
-					<use href={props.auto() ? '#novely-stop-icon' : '#novely-play-icon'} />
-				</svg>
+				<Icon
+					class="control-panel__button__icon"
+					icon={props.auto() ? '#novely-stop-icon' : '#novely-play-icon'}
+				/>
 			</button>
 			<button
 				role="menuitem"
@@ -87,10 +79,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
 				}}
 			>
 				<span class="control-panel__button__content">{data.t('Settings')}</span>
-
-				<svg class="control-panel__button__icon" width="24" height="24" viewBox="0 0 256 256">
-					<use href="#novely-files-icon" />
-				</svg>
+				<Icon class="control-panel__button__icon" icon="#novely-files-icon" />
 			</button>
 			<button
 				role="menuitem"
@@ -102,10 +91,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
 				}}
 			>
 				<span class="control-panel__button__content">{data.t('Exit')}</span>
-
-				<svg class="control-panel__button__icon" width="24" height="24" viewBox="0 0 256 256">
-					<use href="#novely-x-icon" />
-				</svg>
+				<Icon class="control-panel__button__icon" icon="#novely-x-icon" />
 			</button>
 
 			<Show when={data.media.hyperWide()}>
@@ -118,9 +104,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
 						props.closeDropdown();
 					}}
 				>
-					<svg width="24" height="24" viewBox="0 0 256 256">
-						<use href="#novely-x-icon" />
-					</svg>
+					<Icon icon="#novely-x-icon" />
 				</button>
 			</Show>
 		</>
