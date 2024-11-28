@@ -12,18 +12,10 @@ type ParticlesOptions = RecursivePartial<IOptions>;
 
 const withDefault = (options: ParticlesOptions) => {
 	options.autoPlay ||= true;
-	options.fullScreen ||= { enable: true };
+	options.fullScreen ||= { enable: true, zIndex: 2 };
 
 	return options;
 };
-
-const createUniqId = (() => {
-	let c = 0;
-
-	return () => {
-		return `np-${c++}`;
-	};
-})();
 
 const showParticles = (options: ParticlesOptions): CustomHandler => {
 	const handler: CustomHandler = async ({ clear, data, getDomNodes, flags: { goingBack, preview } }) => {
@@ -74,20 +66,14 @@ const showParticles = (options: ParticlesOptions): CustomHandler => {
 		if (optionsEqual && Boolean(data().instance)) return;
 		if (optionsEqual && goingBack) return;
 
-		const id = createUniqId();
-
 		/**
 		 * We can not wait until particles is loaded
 		 */
 		const load = async () => {
 			const instance = await tsParticles.load({
-				id: id,
 				element: element,
 				options: withDefault(options),
 			});
-
-			element.style.setProperty('position', 'absolute');
-			element.style.setProperty('z-index', '2');
 
 			data({ instance, options });
 		};
