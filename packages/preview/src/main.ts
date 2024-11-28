@@ -190,7 +190,8 @@ false &&
 		],
 	});
 
-true && engine.script({
+true &&
+	engine.script({
 		start: [
 			action.next(),
 			action.text({
@@ -406,29 +407,30 @@ false &&
 		],
 	});
 
-false && engine.script({
-	start: [
-		action.playMusic(music),
-		action.particles(snow),
-		action.showBackground(outdoor),
-		action.voice(narrator0000),
-		action.text('Water, earth, fire, air. Long ago the four nations lived together in harmony'),
-		action.voice(lily0000),
-		action.say('Lily', 'My age is {{age}} and I have {{money}} money'),
-		action.function(({ state, restoring, goingBack }) => {
-			if (!restoring && !goingBack) {
-				state({ money: state().money + 100 });
-			}
-		}),
-		action.setMood('rude'),
-		action.say('Lily', 'My age is still {{age}}, but I have {{money}} money!!'),
-		action.function(({ state, restoring, goingBack }) => {
-			if (!restoring && !goingBack) {
-				state({ age: 18, money: 0 });
-			}
-		}),
-		action.voice(lily0002),
-		action.setMood(''),
-		action.say('Lily', 'I am {{age}} years old, but I have {{money}} money now'),
-	],
-});
+false &&
+	engine.script({
+		start: [
+			action.playMusic(music),
+			action.particles(snow),
+			action.showBackground(outdoor),
+			action.voice(narrator0000),
+			action.text('Water, earth, fire, air. Long ago the four nations lived together in harmony'),
+			action.voice(lily0000),
+			action.say('Lily', 'My age is {{age}} and I have {{money}} money'),
+			action.function(({ state, restoring, goingBack }) => {
+				if (!restoring && !goingBack) {
+					state({ money: state().money + 100 });
+				}
+			}),
+			action.setMood('rude'),
+			action.say('Lily', 'My age is still {{age}}, but I have {{money}} money!!'),
+			action.function(({ state, restoring, goingBack }) => {
+				if (!restoring && !goingBack) {
+					state({ age: 18, money: 0 });
+				}
+			}),
+			action.voice(lily0002),
+			action.setMood(''),
+			action.say('Lily', 'I am {{age}} years old, but I have {{money}} money now'),
+		],
+	});

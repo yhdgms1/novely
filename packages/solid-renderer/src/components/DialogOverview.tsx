@@ -120,7 +120,11 @@ const DialogOverview: VoidComponent<DialogOverviewProps> = (props) => {
 													}
 												}}
 											>
-												<Icon icon={currentlyPlayingSource() === entry.voice ? '#novely-stop-icon' : '#novely-play-icon'} />
+												<Icon
+													icon={
+														currentlyPlayingSource() === entry.voice ? '#novely-stop-icon' : '#novely-play-icon'
+													}
+												/>
 											</button>
 										</Show>
 									</td>
