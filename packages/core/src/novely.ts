@@ -222,7 +222,9 @@ const novely = <
 						throw new Error(`Attempt to call Say action with unknown character "${character}"`);
 					}
 				} else if (action === 'choice') {
-					if (props.slice(1).every((choice) => !Array.isArray(choice))) {
+					const actions = props.slice(1);
+
+					if (actions.every((choice) => !Array.isArray(choice))) {
 						for (let i = 1; i < props.length; i++) {
 							const choice = props[i];
 
@@ -234,6 +236,14 @@ const novely = <
 								choice.onSelect,
 								choice.image,
 							];
+						}
+					} else {
+						for (let i = 1; i < props.length; i++) {
+							const choice = props[i];
+
+							if (Array.isArray(choice) && choice.length === 2) {
+								choice[1] = flatActions(choice[1]);
+							}
 						}
 					}
 				}
