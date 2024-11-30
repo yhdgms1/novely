@@ -126,7 +126,8 @@ const Game: VoidComponent<GameProps> = (props) => {
 		>
 			<Canvas
 				class="background"
-				resize={false}
+				resize={true}
+				throttle={150}
 				render={async (canvas, ctx) => {
 					const bg = background().background;
 					const isColor = !isCSSImage(bg);
