@@ -246,6 +246,12 @@ const novely = <
 							}
 						}
 					}
+				} else if (action === 'condition') {
+					const actions = props[1];
+
+					for (let key in actions) {
+						actions[key] = flatActions(actions[key]);
+					}
 				}
 
 				if (preloadAssets === 'blocking') {
