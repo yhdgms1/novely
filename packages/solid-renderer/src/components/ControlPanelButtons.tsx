@@ -79,7 +79,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
 				}}
 			>
 				<span class="control-panel__button__content">{data.t('Settings')}</span>
-				<Icon class="control-panel__button__icon" icon="#novely-files-icon" />
+				<Icon class="control-panel__button__icon" icon="#novely-settings-icon" />
 			</button>
 			<button
 				role="menuitem"
