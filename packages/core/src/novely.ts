@@ -1401,7 +1401,7 @@ const novely = <
 				push();
 			};
 
-			if (!ctx.meta.restoring) {
+			if (!ctx.meta.restoring || ctx.meta.goingBack) {
 				if (isPromise(result)) {
 					result.then(next);
 				} else {
