@@ -22,7 +22,7 @@ const parseVariables = (element: HTMLElement) => {
 		pillarBackground: get('--moment-presser-pillar-background', '#c4c3b5aa'),
 		wideMatchZoneBackground: get('--moment-presser-wide-match-zone-background', '#eaecb7'),
 		narrowMatchZoneBackground: get('--moment-presser-narrow-match-zone-background', '#ffc040'),
-		aimBackground: get('--moment-presser-narrow-match-zone-background', '#ffffff'),
+		aimBackground: get('--moment-presser-aim-background', '#ffffff'),
 	};
 };
 
