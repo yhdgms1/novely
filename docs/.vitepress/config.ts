@@ -80,8 +80,8 @@ export default defineConfig({
           {
             text: "Another Actions",
             items: [
-              { text: "Summary", link: "/guide/another-actions/summary" },
               { text: "Particles", link: "/guide/another-actions/particles" },
+              { text: "Moment Presser", link: "/guide/another-actions/moment-presser" },
             ],
             collapsed: true,
           },

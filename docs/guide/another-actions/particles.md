@@ -5,7 +5,7 @@ Show's Particles in the background
 ## Installation
 
 ```bash
-npm i @novely/particles tsparticles-engine tsparticles-slim
+npm i @novely/particles
 ```
 
 ## Usage

@@ -233,4 +233,4 @@ const engine = novely({
 })
 ```
 
-Function to clone data. Novely clones data a lot so there will be no unexpected mutations. In case you want to use things like [`Uint8Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array) or classes like `class SomeData` you must use advanced clonning.
+Function to clone data. Novely clones data a lot so there will be no unexpected mutations. In case you want to use things like [`Uint8Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array) or classes like `class SomeData {}` you must use advanced clonning.

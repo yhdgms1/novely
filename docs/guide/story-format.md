@@ -85,7 +85,7 @@ See it? No more parentheses, not so much quotes! Now let's look at it in more de
 3. Actions start with `!`
 4. Strings are wrapped in `""` or takes a new line and starts with `\`
 5. JS Values are starts with `%`
-6. Values from JS need to start with `$values1`, we'll see why later (however, it can be avoided)
+6. Values from JS need to start with `$values1`, we'll see why later
 7. Object is replaced with `*` and nested keys
 8. Arrays replaced with `=`
 
@@ -112,7 +112,7 @@ Type less!
 
 ## Details
 
-When you import `.novely` file, the [plugin](https://github.com/yhdgms1/novely/tree/main/packages/vite-plugin-nvl) starts it's work, then the [parser](https://github.com/yhdgms1/novely/tree/main/packages/parser) parses the source, and transformer transforms it to JavaScript.
+When you import `.novely` file, the [plugin](https://github.com/yhdgms1/novely/tree/main/packages/vite-plugin-novely) starts it's work, the [parser](https://github.com/yhdgms1/novely/tree/main/packages/parser) parses the source, and transforms it to JavaScript.
 
 Internal story format is basically what do you see. When you use the `engine.action.some(prop1, prop2)` syntax, it just changes to `['some', prop1, prop2]`.
 
@@ -141,7 +141,7 @@ start
 Will be transformed into
 
 ```js
-export default ($values1) => ({
+export default ($actions, $values1) => ({
   start: [
     ["function", () => $values1.state({ some: "value" })],
     ["function", $values1.someFunction],
@@ -155,7 +155,7 @@ And when you will run that, you will need to pass `state` and `someFunction`:
 ```js
 import setupStory from "./story.novely";
 
-const story = setupStory({
+const story = setupStory(engine.action, {
   state: engine.state,
   someFunction: () => {
     console.log("Do something here");
