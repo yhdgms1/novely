@@ -14,14 +14,14 @@ const flatActions = (item: (ValidAction | ValidAction[])[]): ValidAction[] => {
 };
 
 /**
- * Transforms `(ValidAction | ValidAction[])[]` to `ValidAction[]`
+ * Transforms `(ValidAction | ValidAction[])[]` to `ValidAction[]`. Mutates provided `Story`
  */
 const flatStory = (story: Story) => {
-	const entries = Object.entries(story).map(([name, items]) => {
-		return [name, flatActions(items)];
-	});
+	for (const key in story) {
+		story[key] = flatActions(story[key]);
+	}
 
-	return Object.fromEntries(entries);
+	return story;
 };
 
 export { flatActions, flatStory };
