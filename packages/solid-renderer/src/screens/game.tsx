@@ -270,7 +270,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 							const index = i();
 
 							return (
-								<Show when={visible}>
+								<Show when={visible()}>
 									<button
 										type="button"
 										class="button choice-dialog__choice"
