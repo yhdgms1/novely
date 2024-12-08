@@ -241,7 +241,7 @@ const novely = <
 						for (let i = 1; i < props.length; i++) {
 							const choice = props[i];
 
-							if (Array.isArray(choice) && choice.length === 2) {
+							if (Array.isArray(choice)) {
 								choice[1] = flatActions(choice[1]);
 							}
 						}
@@ -249,7 +249,7 @@ const novely = <
 				} else if (action === 'condition') {
 					const actions = props[1];
 
-					for (let key in actions) {
+					for (const key in actions) {
 						actions[key] = flatActions(actions[key]);
 					}
 				}
