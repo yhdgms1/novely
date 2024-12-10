@@ -1,7 +1,7 @@
 {
 	"name": "@novely/flex-storage",
 	"description": "Storage for @novely/core",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"type": "module",
 	"sideEffects": false,
 	"publishConfig": {
@@ -30,7 +30,7 @@
 		"seroval": "^1.1.1"
 	},
 	"peerDependencies": {
-		"@novely/core": "workspace:*"
+		"@novely/core": "*"
 	},
 	"license": "ISC",
 	"bugs": {

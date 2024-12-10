@@ -23,7 +23,7 @@
 		"typescript": "^5.6.2"
 	},
 	"peerDependencies": {
-		"@novely/core": "workspace:*",
+		"@novely/core": "*",
 		"@rive-app/canvas": "^2.21.5"
 	},
 	"license": "ISC",

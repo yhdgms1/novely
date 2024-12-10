@@ -9,8 +9,8 @@
 		"format": "prettier --write ."
 	},
 	"dependencies": {
-		"@novely/core": "~0.45.1",
-		"@novely/solid-renderer": "~0.41.1",
+		"@novely/core": "~0.46.0",
+		"@novely/solid-renderer": "~0.42.0",
 		"modern-normalize": "~3.0.1",
 		"solid-js": "~1.9.1"
 	},
