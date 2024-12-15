@@ -19,7 +19,7 @@ type CustomCharacterHandle = CharacterHandle & {
 	 * Node in which character is rendered
 	 */
 	canvas: HTMLCanvasElement;
-}
+};
 
 type SolidRendererStore = {
 	characters: Record<string, CustomCharacterHandle>;
@@ -69,5 +69,5 @@ export type {
 	SolidRendererStore,
 	CreateSolidRendererOptions,
 	RendererStoreExtension,
-	CustomCharacterHandle
+	CustomCharacterHandle,
 };
