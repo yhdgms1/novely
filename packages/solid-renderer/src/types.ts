@@ -14,8 +14,15 @@ type PossibleScreen = NovelyScreen | (string & Record<never, never>);
 type StateMainmenuItem = (goto: (name: PossibleScreen) => void) => JSX.ButtonHTMLAttributes<HTMLButtonElement>;
 type StateMainmenuItems = StateMainmenuItem[];
 
+type CustomCharacterHandle = CharacterHandle & {
+	/**
+	 * Node in which character is rendered
+	 */
+	canvas: HTMLCanvasElement;
+}
+
 type SolidRendererStore = {
-	characters: Record<string, CharacterHandle>;
+	characters: Record<string, CustomCharacterHandle>;
 };
 
 type CreateSolidRendererOptions = {
@@ -62,4 +69,5 @@ export type {
 	SolidRendererStore,
 	CreateSolidRendererOptions,
 	RendererStoreExtension,
+	CustomCharacterHandle
 };

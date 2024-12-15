@@ -1,6 +1,7 @@
-import type { Character, CharacterHandle, Context, Lang, Renderer, RendererInit } from '@novely/core';
+import type { Character, Context, Lang, Renderer, RendererInit } from '@novely/core';
 import type {
 	CreateSolidRendererOptions,
+	CustomCharacterHandle,
 	EmitterEventsMap,
 	RendererStoreExtension,
 	SolidRendererStore,
@@ -107,7 +108,6 @@ const createSolidRenderer = ({
 
 							const characterHandle = {
 								canvas,
-								ctx: canvasContext,
 								emotions: {},
 								emotion(emotion, shouldRender) {
 									let stored = this.emotions[emotion];
@@ -229,24 +229,17 @@ const createSolidRenderer = ({
 									});
 								},
 								animate(classes) {
-									const target = this.canvas;
+									const classNames = classes.filter((className) => !canvas.classList.contains(className));
 
-									/**
-									 * Character is not found
-									 */
-									if (!target) return;
-
-									const classNames = classes.filter((className) => !target.classList.contains(className));
-
-									target.classList.add(...classNames);
+									canvas.classList.add(...classNames);
 
 									const onAnimationEnd = () => {
-										target.classList.remove(...classNames);
+										canvas.classList.remove(...classNames);
 									};
 
-									target.addEventListener('animationend', onAnimationEnd, { once: true });
+									canvas.addEventListener('animationend', onAnimationEnd, { once: true });
 								},
-							} satisfies CharacterHandle;
+							} satisfies CustomCharacterHandle;
 
 							useShared(name).characters[character] = characterHandle;
 

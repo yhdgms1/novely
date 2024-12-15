@@ -167,7 +167,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				<For each={Object.entries(characters())}>
 					{([character, data]) => (
 						<Show when={data && data.visible}>
-							<Character character={character} data={data!} characters={store.characters} />
+							<Character character={character} characters={store.characters} />
 						</Show>
 					)}
 				</For>

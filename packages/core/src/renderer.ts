@@ -23,9 +23,6 @@ import type {
 } from './types';
 
 type CharacterHandle = {
-	canvas: HTMLCanvasElement;
-	ctx: CanvasRenderingContext2D;
-
 	emotion: (emotion: string, render: boolean) => void;
 	append: (className?: string, style?: string, restoring?: boolean) => void;
 	remove: (className?: string, style?: string, duration?: number, restoring?: boolean) => Promise<void>;

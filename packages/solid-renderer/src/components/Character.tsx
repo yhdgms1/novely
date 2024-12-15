@@ -1,21 +1,13 @@
-import type { CharacterHandle } from '@novely/core';
-import type { ContextStateCharacter } from '@novely/renderer-toolkit';
 import type { VoidComponent } from 'solid-js';
+import type { CustomCharacterHandle } from '../types';
 
-import { effect, setAttribute } from 'solid-js/web';
-
-interface CharacterProps {
+type CharacterProps = {
 	character: string;
-	characters: Record<string, CharacterHandle>;
-	data: ContextStateCharacter;
+	characters: Record<string, CustomCharacterHandle>;
 }
 
 const Character: VoidComponent<CharacterProps> = (props) => {
-	const canvas = () => props.characters[props.character].canvas;
-
-	effect(() => setAttribute(canvas(), 'style', props.data.style || ''));
-
-	return <>{canvas()}</>;
+	return props.characters[props.character].canvas;
 };
 
 export { Character };
