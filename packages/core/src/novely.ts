@@ -347,7 +347,18 @@ const novely = <
 	dataLoaded.promise.then(onDataLoadedPromise);
 
 	const onStorageDataChange = (value: StorageData) => {
-		if (coreData.get().dataLoaded) storage.set(value);
+		if (!coreData.get().dataLoaded) return;
+
+		const data = clone(value);
+
+		/**
+		 * Empty out data snapshots
+		 */
+		for (const save of data.saves) {
+			save[3] = [];
+		}
+
+		storage.set(data);
 	};
 
 	const throttledOnStorageDataChange = throttle(onStorageDataChange, throttleTimeout);
@@ -458,11 +469,16 @@ const novely = <
 			current[2][0] = intime(Date.now());
 			current[2][1] = type;
 
+			/**
+			 * Empty out state snapshots
+			 */
+			current[3] = [];
+
 			const isIdentical = dequal(last[0], current[0]) && dequal(last[1], current[1]);
 			const isLastMadeInCurrentSession = times.has(last[2][0]);
 
 			/**
-			 * Even in override is false, we will replace auto save with maual, because they are the same thing basically
+			 * Even if override is false, we will replace auto save with manual, because they are the same thing basically
 			 */
 			if (isLastMadeInCurrentSession && last[2][1] === 'auto' && type === 'manual') {
 				return replace();
@@ -916,6 +932,13 @@ const novely = <
 		const { value: save } = useStack(MAIN_CONTEXT_KEY);
 		const stateSnapshots = save[3];
 
+		/**
+		 * Easy mode
+		 */
+		if (stateSnapshots.length == 0) {
+			return [];
+		}
+
 		const { queue } = getActionsFromPath(story, save[0], false);
 
 		const [lang] = storageData.get().meta;
@@ -926,9 +949,12 @@ const novely = <
 			voice: undefined | string | NovelyAsset | Record<string, string | NovelyAsset>;
 		};
 
-		const dialogItem: DialogItem[] = [];
+		const dialogItems: DialogItem[] = [];
 
-		for (let p = 0, i = 0; i < queue.length; i++) {
+		/**
+		 * For every available state snapshot find dialog corresponding to it
+		 */
+		for (let p = 0, a = stateSnapshots.length, i = queue.length - 1; a > 0; i--) {
 			const action = queue[i];
 
 			if (action[0] === 'dialog') {
@@ -936,6 +962,9 @@ const novely = <
 
 				let voice: undefined | string | NovelyAsset | Record<string, string | NovelyAsset> = undefined;
 
+				/**
+				 * Search for the most recent `voice` action before current dialog
+				 */
 				for (let j = i - 1; j > p; j--) {
 					const action = queue[j];
 
@@ -949,17 +978,18 @@ const novely = <
 					}
 				}
 
-				dialogItem.push({
+				dialogItems.push({
 					name,
 					text,
 					voice,
 				});
 
 				p = i;
+				a--;
 			}
 		}
 
-		const entries: DialogOverview = dialogItem.map(({ name, text, voice }, i) => {
+		const entries: DialogOverview = dialogItems.reverse().map(({ name, text, voice }, i) => {
 			const state = stateSnapshots[i];
 			const audioSource = isString(voice)
 				? voice

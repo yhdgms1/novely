@@ -23,9 +23,6 @@ import outdoor_png from './assets/outdoor.png';
 import sakura_girl from './assets/sakura_girl.mp3';
 
 import narrator0000 from './assets/narrator0000.mp3';
-import lily0000 from './assets/lily0000.mp3';
-import lily0001 from './assets/lily0001.mp3';
-import lily0002 from './assets/lily0002.mp3';
 
 const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidRenderer({
 	fullscreen: false,
@@ -33,7 +30,7 @@ const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidR
 
 const storage = flexStorage({
 	adapter: adapterLocalStorage({
-		key: 'test-lyrics-overview',
+		key: 'test-dialog-overview-2',
 	}),
 });
 
@@ -97,7 +94,7 @@ const engine = novely({
 
 	state: {
 		age: 0,
-		money: 0,
+		current: 0
 	},
 
 	data: {
@@ -190,7 +187,7 @@ false &&
 		],
 	});
 
-true &&
+false &&
 	engine.script({
 		start: [
 			action.next(),
@@ -407,7 +404,7 @@ false &&
 		],
 	});
 
-false &&
+true &&
 	engine.script({
 		start: [
 			action.playMusic(music),
@@ -415,22 +412,37 @@ false &&
 			action.showBackground(outdoor),
 			action.voice(narrator0000),
 			action.text('Water, earth, fire, air. Long ago the four nations lived together in harmony'),
-			action.voice(lily0000),
-			action.say('Lily', 'My age is {{age}} and I have {{money}} money'),
+			action.say('Lily', 'Current: {{current}}'),
 			action.function(({ state, restoring, goingBack }) => {
 				if (!restoring && !goingBack) {
-					state({ money: state().money + 100 });
+					state({ current: state().current + 1 });
 				}
 			}),
-			action.setMood('rude'),
-			action.say('Lily', 'My age is still {{age}}, but I have {{money}} money!!'),
+			action.say('Lily', 'Current: {{current}}'),
 			action.function(({ state, restoring, goingBack }) => {
 				if (!restoring && !goingBack) {
-					state({ age: 18, money: 0 });
+					state({ current: state().current + 1 });
 				}
 			}),
-			action.voice(lily0002),
-			action.setMood(''),
-			action.say('Lily', 'I am {{age}} years old, but I have {{money}} money now'),
+			action.say('Lily', 'Current: {{current}}'),
+			action.function(({ state, restoring, goingBack }) => {
+				if (!restoring && !goingBack) {
+					state({ current: state().current + 1 });
+				}
+			}),
+			action.voice(narrator0000),
+			action.say('Lily', 'Current: {{current}}'),
+			action.function(({ state, restoring, goingBack }) => {
+				if (!restoring && !goingBack) {
+					state({ current: state().current + 1 });
+				}
+			}),
+			action.say('Lily', 'Current: {{current}}'),
+			action.function(({ state, restoring, goingBack }) => {
+				if (!restoring && !goingBack) {
+					state({ current: state().current + 1 });
+				}
+			}),
+			action.say('Lily', 'End')
 		],
 	});

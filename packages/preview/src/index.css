@@ -5,3 +5,7 @@
 :root {
 	--novely-root-background-image: url("./assets/outdoor.png");
 }
+
+[data-dialog-overview-button] {
+	display: flex;
+}
