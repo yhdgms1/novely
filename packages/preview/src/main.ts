@@ -94,7 +94,7 @@ const engine = novely({
 
 	state: {
 		age: 0,
-		current: 0
+		current: 0,
 	},
 
 	data: {
@@ -443,6 +443,6 @@ true &&
 					state({ current: state().current + 1 });
 				}
 			}),
-			action.say('Lily', 'End')
+			action.say('Lily', 'End'),
 		],
 	});
