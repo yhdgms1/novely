@@ -1,16 +1,14 @@
 import { hideParticles, showParticles } from './particles';
 import { loadSlim, tsParticles } from './tsparticles';
 
-const getParticles = () => Promise.resolve({
-  loadSlim,
-  tsParticles
-});
+const getParticles = () =>
+	Promise.resolve({
+		loadSlim,
+		tsParticles,
+	});
 
 const showParticlesEager = showParticles.bind({
-  getParticles
+	getParticles,
 });
 
-export {
-  showParticlesEager as showParticles,
-  hideParticles
-}
+export { showParticlesEager as showParticles, hideParticles };

@@ -13,15 +13,15 @@ type Data = {
 };
 
 type TSParticles = {
-	tsParticles: typeof import('@tsparticles/engine').tsParticles
-	loadSlim: typeof import('@tsparticles/slim').loadSlim
+	tsParticles: typeof import('@tsparticles/engine').tsParticles;
+	loadSlim: typeof import('@tsparticles/slim').loadSlim;
 };
 
 type TSParticlesGetter = () => Promise<TSParticles>;
 
 type ParticlesThis = {
-	getParticles: TSParticlesGetter
-}
+	getParticles: TSParticlesGetter;
+};
 
 const withDefault = (options: ParticlesOptions) => {
 	options.autoPlay ||= true;
