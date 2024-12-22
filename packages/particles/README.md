@@ -1,32 +1,31 @@
 # @novely/particles
 
-Эффект частиц на основе ts-particles
+Particles effect based on [ts-particles](https://particles.js.org/).
 
-## Использование
+## Usage
 
 ```ts
 import { showParticles, hideParticles } from '@novely/particles';
 
 const snow = {
-  // Смотрите больше здесь
   // @see https://particles.js.org/
   ...
 };
 
-engine.withStory({
+engine.script({
   start: [
     /**
-     * Показывает частицы
+     * Will show particles
      */
     engine.action.custom(showParticles(snow)),
     /**
-     * Скрывает частицы
+     * Will hide particles
      */
     engine.action.custom(hideParticles()),
   ]
 });
 ```
 
-## Дополнительная информация
+## Additional Info
 
-CSS `zIndex` слоя с частицами - 2.
+CSS `zIndex` of layer with particles is `2`.

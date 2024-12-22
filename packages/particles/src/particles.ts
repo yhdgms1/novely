@@ -1,12 +1,9 @@
 import type { CustomHandler } from '@novely/core';
 import type { Container, IOptions, RecursivePartial } from '@tsparticles/engine';
 
-import { tsParticles } from '@tsparticles/engine';
-import { loadSlim } from '@tsparticles/slim';
-
 let loaded = false;
 
-const ID = Symbol();
+const PARTICLES_ID = Symbol();
 
 type ParticlesOptions = RecursivePartial<IOptions>;
 
@@ -15,6 +12,17 @@ type Data = {
 	options?: ParticlesOptions;
 };
 
+type TSParticles = {
+	tsParticles: typeof import('@tsparticles/engine').tsParticles
+	loadSlim: typeof import('@tsparticles/slim').loadSlim
+};
+
+type TSParticlesGetter = () => Promise<TSParticles>;
+
+type ParticlesThis = {
+	getParticles: TSParticlesGetter
+}
+
 const withDefault = (options: ParticlesOptions) => {
 	options.autoPlay ||= true;
 	options.fullScreen ||= { enable: true, zIndex: 2 };
@@ -22,9 +30,11 @@ const withDefault = (options: ParticlesOptions) => {
 	return options;
 };
 
-const showParticles = (options: ParticlesOptions): CustomHandler => {
+const showParticles = function (this: ParticlesThis, options: ParticlesOptions): CustomHandler {
 	const handler: CustomHandler = async ({ clear, data, getDomNodes, flags: { goingBack, preview } }) => {
 		if (preview) return;
+
+		const { loadSlim, tsParticles } = await this.getParticles();
 
 		if (!loaded) {
 			/**
@@ -93,7 +103,7 @@ const showParticles = (options: ParticlesOptions): CustomHandler => {
 	};
 
 	handler.callOnlyLatest = handler.skipClearOnGoingBack = true;
-	handler.id = ID;
+	handler.id = PARTICLES_ID;
 	handler.key = 'particles';
 
 	return handler;
@@ -120,7 +130,7 @@ const hideParticles = () => {
 	};
 
 	handler.callOnlyLatest = true;
-	handler.id = ID;
+	handler.id = PARTICLES_ID;
 	handler.key = 'particles';
 
 	return handler;

@@ -2,7 +2,7 @@ import { defineConfig } from 'tsup';
 
 export default defineConfig((options) => {
 	return {
-		entry: ['src/index.ts'],
+		entry: ['src/eager.ts', 'src/lazy.ts'],
 		external: ['@novely/core'],
 		noExternal: ['@tsparticles/engine', '@tsparticles/slim'],
 		sourcemap: true,
@@ -10,7 +10,7 @@ export default defineConfig((options) => {
 		format: ['esm'],
 		minify: true,
 		bundle: true,
-		splitting: false,
+		splitting: true,
 		dts: options.dts,
 		watch: options.watch,
 	};

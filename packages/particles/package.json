@@ -1,12 +1,23 @@
 {
 	"name": "@novely/particles",
 	"description": "Particles Action",
-	"version": "0.8.1",
+	"version": "0.9.0",
 	"type": "module",
 	"sideEffects": false,
-	"types": "./dist/index.d.ts",
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
+	"exports": {
+		".": {
+			"types": "./dist/lazy.d.ts",
+			"import": "./dist/lazy.js",
+			"default": "./dist/lazy.js"
+		},
+		"./eager": {
+			"types": "./dist/eager.d.ts",
+			"import": "./dist/eager.js",
+			"default": "./dist/eager.js"
+		},
+		"./*": "./dist/*",
+		"./package.json": "./package.json"
+	},
 	"publishConfig": {
 		"access": "public"
 	},
