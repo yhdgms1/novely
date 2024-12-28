@@ -56,6 +56,7 @@ export type {
 	TypeEssentials,
 	CharacterAssetSizes,
 	CharactersData,
+	NovelyAsset,
 } from './types';
 export type { Stored } from './store';
 export type { BaseTranslationStrings } from './translations';
