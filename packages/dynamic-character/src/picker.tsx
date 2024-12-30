@@ -209,21 +209,25 @@ const showPicker = function (this: DynCharacterThis) {
 								const currentVariant = variants[slide];
 
 								if (tab.type === 'base') {
-									const emotion = getEmotionString(setAppearance({
-										base: currentVariant,
-										attributes: currentAppearance.attributes,
-									}));
+									const emotion = getEmotionString(
+										setAppearance({
+											base: currentVariant,
+											attributes: currentAppearance.attributes,
+										}),
+									);
 
 									character.emotion(emotion, true);
 									PRELOADED_EMOTIONS.add(emotion);
 								} else {
-									const emotion = getEmotionString(setAppearance({
-										base: currentAppearance.base,
-										attributes: {
-											...currentAppearance.attributes,
-											[tab.value]: currentVariant,
-										},
-									}));
+									const emotion = getEmotionString(
+										setAppearance({
+											base: currentAppearance.base,
+											attributes: {
+												...currentAppearance.attributes,
+												[tab.value]: currentVariant,
+											},
+										}),
+									);
 
 									character.emotion(emotion, true);
 									PRELOADED_EMOTIONS.add(emotion);
@@ -233,9 +237,13 @@ const showPicker = function (this: DynCharacterThis) {
 								const prevIndex = slide > 0 ? slide - 1 : variants.length - 1;
 
 								for (const index of [nextIndex, prevIndex]) {
-									const emotion = tab.type === 'base'
-										? getEmotionString({ base: variants[index], attributes: currentAppearance.attributes })
-										: getEmotionString({ base: currentAppearance.base, attributes: { ...currentAppearance.attributes, [tab.value]: variants[index] } });
+									const emotion =
+										tab.type === 'base'
+											? getEmotionString({ base: variants[index], attributes: currentAppearance.attributes })
+											: getEmotionString({
+													base: currentAppearance.base,
+													attributes: { ...currentAppearance.attributes, [tab.value]: variants[index] },
+												});
 
 									if (PRELOADED_EMOTIONS.has(emotion)) {
 										continue;
@@ -243,7 +251,7 @@ const showPicker = function (this: DynCharacterThis) {
 										PRELOADED_EMOTIONS.add(emotion);
 									}
 
-									console.log(`Preloading ${emotion}`)
+									console.log(`Preloading ${emotion}`);
 
 									character.emotion(emotion, false);
 								}
