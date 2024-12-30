@@ -5,6 +5,7 @@ import { getKeys, getEmotionString, getSavedEmotion, saveEmotion } from './utils
 import { createEffect, createSignal, createUniqueId, For, untrack } from 'solid-js';
 
 const CHARACTER_STYLE_PICKER = Symbol();
+const PRELOADED_EMOTIONS = new Set<string>();
 
 type GetTabsOptions = ClothingData<string, Attributes> & {
 	excludeAttributes: string[] | undefined;
@@ -204,23 +205,45 @@ const showPicker = function (this: DynCharacterThis) {
 								}
 
 								const currentAppearance = untrack(appearance);
-								const currentVariant = variants[currentSlide()];
+								const slide = currentSlide();
+								const currentVariant = variants[slide];
 
 								if (tab.type === 'base') {
-									const emotion = getEmotionString({
+									const emotion = getEmotionString(setAppearance({
 										base: currentVariant,
 										attributes: currentAppearance.attributes,
-									});
+									}));
 
-									character.emotion(emotion, false);
+									character.emotion(emotion, true);
+									PRELOADED_EMOTIONS.add(emotion);
 								} else {
-									const emotion = getEmotionString({
+									const emotion = getEmotionString(setAppearance({
 										base: currentAppearance.base,
 										attributes: {
 											...currentAppearance.attributes,
 											[tab.value]: currentVariant,
 										},
-									});
+									}));
+
+									character.emotion(emotion, true);
+									PRELOADED_EMOTIONS.add(emotion);
+								}
+
+								const nextIndex = slide < variants.length ? slide : 0;
+								const prevIndex = slide > 0 ? slide - 1 : variants.length - 1;
+
+								for (const index of [nextIndex, prevIndex]) {
+									const emotion = tab.type === 'base'
+										? getEmotionString({ base: variants[index], attributes: currentAppearance.attributes })
+										: getEmotionString({ base: currentAppearance.base, attributes: { ...currentAppearance.attributes, [tab.value]: variants[index] } });
+
+									if (PRELOADED_EMOTIONS.has(emotion)) {
+										continue;
+									} else {
+										PRELOADED_EMOTIONS.add(emotion);
+									}
+
+									console.log(`Preloading ${emotion}`)
 
 									character.emotion(emotion, false);
 								}
@@ -310,31 +333,6 @@ const showPicker = function (this: DynCharacterThis) {
 															</p>
 
 															<div class="ndc-control-buttons">
-																<button
-																	type="button"
-																	class="button"
-																	onClick={() => {
-																		setAppearance((object) => {
-																			if (tab.type === 'attribute') {
-																				return {
-																					...object,
-																					attributes: {
-																						...object.attributes,
-																						[tab.value]: variant,
-																					},
-																				};
-																			}
-
-																			return {
-																				...object,
-																				base: variant,
-																			};
-																		});
-																	}}
-																>
-																	{translation.ui.apply}
-																</button>
-
 																<button
 																	type="button"
 																	class="button"

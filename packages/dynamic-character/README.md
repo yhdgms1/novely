@@ -102,8 +102,7 @@ const { showPicker: showPickerYou, showCharacter: showYou } = createPickerAction
 				variants: 'Options',
 				slidesControl: 'Slides Control',
 				prevSlide: 'Previous',
-				nextSlide: "Next",
-				apply: 'Apply',
+				nextSlide: 'Next',
 				sumbit: 'Submit'
 			}
 		}

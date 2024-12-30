@@ -150,7 +150,6 @@ type DynCharacterOptions<
 				slidesControl: string;
 				prevSlide: string;
 				nextSlide: string;
-				apply: string;
 				sumbit: string;
 			};
 		};

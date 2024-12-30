@@ -14,6 +14,10 @@ import type { CreateMomentPresserOptions } from '@novely/moment-presser';
 import lily_ok_png from './assets/lily.png';
 import outdoor_png from './assets/outdoor.png';
 
+import { generateEmotions } from '@novely/dynamic-character';
+
+generateEmotions;
+
 /**
  * Peach by Sakura Girl | https://soundcloud.com/sakuragirl_official
  * Music promoted by https://www.chosic.com/free-music/all/
