@@ -31,7 +31,9 @@
 		"dev:moment-presser": "pnpm --filter=@novely/moment-presser... --parallel dev",
 		"build:moment-presser": "pnpm --filter=@novely/moment-presser... --parallel build",
 		"dev:flex-storage": "pnpm --filter=@novely/flex-storage... --parallel dev",
-		"build:flex-storage": "pnpm --filter=@novely/flex-storage... --parallel build"
+		"build:flex-storage": "pnpm --filter=@novely/flex-storage... --parallel build",
+		"dev:dynamic-character": "pnpm --filter=@novely/dynamic-character... --parallel dev",
+		"build:dynamic-character": "pnpm --filter=@novely/dynamic-character... --parallel build"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",

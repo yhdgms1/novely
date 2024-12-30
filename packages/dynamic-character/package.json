@@ -1,0 +1,45 @@
+{
+	"name": "@novely/dynamic-character",
+	"version": "0.1.0",
+	"type": "module",
+	"publishConfig": {
+		"access": "public"
+	},
+	"types": "./dist/index.d.ts",
+	"main": "./dist/index.jsx",
+	"module": "./dist/index.jsx",
+	"sideEffects": false,
+	"scripts": {
+		"dev": "node ./build.js --w",
+		"build": "node ./build.js && tsc"
+	},
+	"devDependencies": {
+		"esbuild": "^0.24.0",
+		"esbuild-plugin-solid": "^0.6.0",
+		"typescript": "^5.6.2"
+	},
+	"dependencies": {
+		"@novely/core": "workspace:*",
+		"solid-js": "~1.9.3"
+	},
+	"peerDependencies": {
+		"@novely/core": "*",
+		"solid-js": "*"
+	},
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/yhdgms1/novely/issues"
+	},
+	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/dynamic-character",
+	"keywords": ["novely"],
+	"author": {
+		"name": "Artemiy Schukin",
+		"url": "https://github.com/yhdgms1"
+	},
+	"contributors": [],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/yhdgms1/novely.git"
+	},
+	"files": ["dist/*"]
+}

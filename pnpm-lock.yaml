@@ -123,6 +123,25 @@ importers:
         specifier: ~6.0.1
         version: 6.0.1(@types/node@20.3.1)(lightningcss@1.28.1)
 
+  packages/dynamic-character:
+    dependencies:
+      '@novely/core':
+        specifier: workspace:*
+        version: link:../core
+      solid-js:
+        specifier: ~1.9.3
+        version: 1.9.3
+    devDependencies:
+      esbuild:
+        specifier: ^0.24.0
+        version: 0.24.0
+      esbuild-plugin-solid:
+        specifier: ^0.6.0
+        version: 0.6.0(esbuild@0.24.0)(solid-js@1.9.3)
+      typescript:
+        specifier: ^5.6.2
+        version: 5.6.2
+
   packages/flex-storage:
     dependencies:
       '@novely/core':
@@ -191,6 +210,9 @@ importers:
       '@novely/core':
         specifier: workspace:*
         version: link:../core
+      '@novely/dynamic-character':
+        specifier: workspace:*
+        version: link:../dynamic-character
       '@novely/flex-storage':
         specifier: workspace:*
         version: link:../flex-storage
