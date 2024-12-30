@@ -68,7 +68,7 @@ const engine = novely({
 });
 
 const { showPicker: showPickerYou, showCharacter: showYou } = createPickerActions(engine.typeEssentials, clothingDataKyo, {
-	character: 'You',
+	character: 'Ryan',
 	defaultBase: 'default',
 	defaultAttributes: {
 		bottoms: 'jeans',
