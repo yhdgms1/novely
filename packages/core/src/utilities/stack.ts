@@ -30,10 +30,8 @@ const createUseStackFunction = (renderer: Renderer) => {
 			},
 
 			back() {
-				if (stack.length > 1) {
-					stack.previous = stack.pop();
-					ctx.meta.goingBack = true;
-				}
+				stack.previous = stack.length > 1 ? stack.pop() : this.value;
+				ctx.meta.goingBack = true;
 			},
 			push(value: Save) {
 				stack.push(value);
