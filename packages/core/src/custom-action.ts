@@ -1,7 +1,7 @@
-import type { CustomHandler, CustomHandlerFunctionGetFn, CustomHandlerGetResult } from './action';
+import type { CustomHandler, CustomHandlerFunctionGetFn, CustomHandlerGetResult, TextContent } from './action';
 import type { Context, CustomActionHandle } from './renderer';
 import { CUSTOM_ACTION_MAP } from './shared';
-import type { Lang, Stack, State, StateFunction } from './types';
+import type { Data, Lang, Stack, State, StateFunction } from './types';
 import { noop } from './utilities';
 
 type CustomActionHolder = {
@@ -36,6 +36,10 @@ type HandleCustomActionOptions = CustomActionHandle & {
 	 * Function to get Stack
 	 */
 	getStack: (ctx: Context) => Stack;
+	/**
+	 * Template Replace Function
+	 */
+	templateReplace: (content: TextContent<Lang, Data>, values?: Data) => string;
 };
 
 const createCustomActionNode = (id: string) => {
@@ -68,7 +72,15 @@ const getCustomActionHolder = (ctx: Context, fn: CustomHandler) => {
 const handleCustomAction = (
 	ctx: Context,
 	fn: CustomHandler,
-	{ lang, state, setMountElement, setClear, remove: renderersRemove, getStack }: HandleCustomActionOptions,
+	{
+		lang,
+		state,
+		setMountElement,
+		setClear,
+		remove: renderersRemove,
+		getStack,
+		templateReplace,
+	}: HandleCustomActionOptions,
 ) => {
 	const holder = getCustomActionHolder(ctx, fn);
 
@@ -140,6 +152,8 @@ const handleCustomAction = (
 
 		state,
 		data,
+
+		templateReplace,
 
 		clear,
 		remove,

@@ -121,6 +121,11 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 	 * Game language
 	 */
 	lang: L;
+
+	/**
+	 * Function to replace template content
+	 */
+	templateReplace: (content: TextContent<L, State>, values?: State) => string;
 };
 
 type CustomHandlerFunction<L extends string, S extends State> = (

@@ -1420,6 +1420,7 @@ const novely = <
 				state,
 				lang,
 				getStack: useStack,
+				templateReplace,
 			});
 
 			const next = () => {
