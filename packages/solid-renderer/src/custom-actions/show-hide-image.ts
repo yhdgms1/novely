@@ -40,7 +40,7 @@ const showImage = (source: string | NovelyAsset, params: ShowImageParams = {}) =
 
 		ctx.mutate((s) => s.images[src], image);
 
-		const inClasses = (params.in || '').split(' ');
+		const inClasses = params.in ? params.in.split(' ') : [];
 
 		data<ShowImageData>({
 			image,
