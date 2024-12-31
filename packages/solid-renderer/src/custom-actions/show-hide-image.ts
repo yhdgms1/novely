@@ -1,4 +1,4 @@
-import type { CustomHandler, ValidAction } from '@novely/core';
+import type { CustomHandler, ValidAction, NovelyAsset } from '@novely/core';
 import { noop } from '@novely/renderer-toolkit';
 import { useContextState } from '../context-state';
 
@@ -22,22 +22,23 @@ type ShowImageData = {
 	inClasses: string[];
 };
 
-const showImage = (source: string, params: ShowImageParams = {}) => {
+const showImage = (source: string | NovelyAsset, params: ShowImageParams = {}) => {
 	const handler: CustomHandler = ({ contextKey, clear, flags, data, rendererContext }) => {
 		const ctx = useContextState(contextKey);
 
 		const { promise, resolve } = Promise.withResolvers<void>();
 
 		const image = document.createElement('img');
+		const src = typeof source === 'object' ? source.source : source;
 
 		{
-			image.src = source;
+			image.src = src;
 			image.className = 'action-image__image ' + (params.class || '');
 			image.style.cssText = params.style || '';
 			image.style.setProperty('--z-index', String(params.z || 1));
 		}
 
-		ctx.mutate((s) => s.images[source], image);
+		ctx.mutate((s) => s.images[src], image);
 
 		const inClasses = (params.in || '').split(' ');
 
@@ -81,11 +82,9 @@ const showImage = (source: string, params: ShowImageParams = {}) => {
 	};
 
 	handler.id = SHOW_IMAGE;
-	handler.key = source;
+	handler.key = typeof source === 'object' ? source.id : source;
 	handler.assets = [source];
-	handler.skipOnRestore = (getNext) => {
-		return getNext().some(([name, fn]) => name === 'custom' && fn.key === source);
-	};
+	handler.callOnlyLatest = true;
 
 	return ['custom', handler] as ValidAction;
 };
@@ -95,13 +94,13 @@ type HideImageParams = {
 	await?: boolean;
 };
 
-const hideImage = (source: string, params: HideImageParams = {}) => {
+const hideImage = (source: string | NovelyAsset, params: HideImageParams = {}) => {
 	const handler: CustomHandler = async ({ data, rendererContext, contextKey, flags }) => {
 		const ctx = useContextState(contextKey);
 		const { promise, resolve } = Promise.withResolvers<void>();
 
 		const done = () => {
-			ctx.mutate((s) => s.images[source], undefined);
+			ctx.mutate((s) => s.images[typeof source === 'object' ? source.id : source], undefined);
 			resolve();
 		};
 
@@ -141,13 +140,10 @@ const hideImage = (source: string, params: HideImageParams = {}) => {
 	};
 
 	handler.id = SHOW_IMAGE;
-	handler.key = source;
+	handler.key = typeof source === 'object' ? source.id : source;
 	// We're gonna hide image, we do not need to preload assets
 	handler.assets = [];
-	// todo: we need that?
-	handler.skipOnRestore = (getNext) => {
-		return getNext().some(([name, fn]) => name === 'custom' && fn.key === source);
-	};
+	handler.callOnlyLatest = true;
 
 	return ['custom', handler] as ValidAction;
 };

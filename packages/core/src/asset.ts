@@ -6,6 +6,8 @@ import { supportsMap as imageSupport } from './image-formats';
 import type { NovelyAsset } from './types';
 import { getUrlFileExtension } from './utilities';
 
+const generateRandomId = () => Math.random().toString(36);
+
 /**
  * Function to get assets type. All assets must be of the same type. Only works with supported types.
  */
@@ -79,6 +81,7 @@ const assetPrivate = memoize(
 			get type() {
 				return type;
 			},
+			id: generateRandomId()
 		};
 	},
 	{
@@ -118,6 +121,7 @@ asset.image = (source: string): NovelyAsset => {
 	return {
 		type: 'image',
 		source,
+		id: generateRandomId()
 	};
 };
 
@@ -125,6 +129,7 @@ asset.audio = (source: string): NovelyAsset => {
 	return {
 		type: 'audio',
 		source,
+		id: generateRandomId()
 	};
 };
 

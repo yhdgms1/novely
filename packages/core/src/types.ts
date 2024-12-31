@@ -8,6 +8,7 @@ import type { getLanguage as defaultGetLanguage } from './utilities';
 
 type NovelyAsset = {
 	readonly source: string;
+	readonly id: string;
 	readonly type: 'audio' | 'image';
 };
 
