@@ -114,4 +114,18 @@ const asset = (...variants: string[]) => {
 	return assetPrivate(variants);
 };
 
+asset.image = (source: string): NovelyAsset => {
+	return {
+		type: 'image',
+		source
+	}
+}
+
+asset.audio = (source: string): NovelyAsset => {
+	return {
+		type: 'audio',
+		source
+	}
+}
+
 export { asset };
