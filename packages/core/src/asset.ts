@@ -117,15 +117,15 @@ const asset = (...variants: string[]) => {
 asset.image = (source: string): NovelyAsset => {
 	return {
 		type: 'image',
-		source
-	}
-}
+		source,
+	};
+};
 
 asset.audio = (source: string): NovelyAsset => {
 	return {
 		type: 'audio',
-		source
-	}
-}
+		source,
+	};
+};
 
 export { asset };
