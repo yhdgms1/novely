@@ -81,7 +81,7 @@ const assetPrivate = memoize(
 			get type() {
 				return type;
 			},
-			id: generateRandomId()
+			id: generateRandomId(),
 		};
 	},
 	{
@@ -121,7 +121,7 @@ asset.image = (source: string): NovelyAsset => {
 	return {
 		type: 'image',
 		source,
-		id: generateRandomId()
+		id: generateRandomId(),
 	};
 };
 
@@ -129,7 +129,7 @@ asset.audio = (source: string): NovelyAsset => {
 	return {
 		type: 'audio',
 		source,
-		id: generateRandomId()
+		id: generateRandomId(),
 	};
 };
 
