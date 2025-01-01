@@ -100,7 +100,7 @@ const Save: VoidComponent<SaveProps> = (props) => {
 		 */
 		contentDocument.head.insertAdjacentHTML(
 			'beforeend',
-			`<style>:root { font-size: 30%; background: black; cursor: pointer; } * { pointer-events: none; } *, *::before, *::after { animation-play-state: paused !important; }</style>`,
+			`<style>:root { font-size: 30%; background: black; cursor: pointer; } * { pointer-events: none; } *, *::before, *::after { animation-play-state: paused !important; animation-fill-mode: forwards !important; animation-direction: reverse !important; }</style>`,
 		);
 
 		/**

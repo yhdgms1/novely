@@ -33,7 +33,6 @@ type ShowImageData = {
 	key: string;
 	image: HTMLImageElement;
 	visible: boolean;
-	animate: boolean;
 
 	onIn: () => void;
 	onOut: () => void;
@@ -44,7 +43,7 @@ type ContextImages = ShowImageData[];
 const showImage = (asset: NovelyAsset, { classesBase, classesIn, wait }: ShowImageParams = {}) => {
 	const key = `show-image--${asset.id}`;
 
-	const handler: CustomHandler = ({ contextKey, clear, flags, rendererContext }) => {
+	const handler: CustomHandler = ({ contextKey, clear, rendererContext }) => {
 		const { promise, resolve } = Promise.withResolvers<void>();
 		const ctx = useContextState(contextKey);
 		const index = getIndex(ctx, key);
@@ -56,12 +55,6 @@ const showImage = (asset: NovelyAsset, { classesBase, classesIn, wait }: ShowIma
 
 		image.classList.add(...classesBaseSplitted);
 		image.classList.add('action-image__image');
-
-		if (wait) {
-			rendererContext.clearBlockingActions(undefined);
-		} else {
-			resolve();
-		}
 
 		const onIn = () => {
 			if (wait) {
@@ -76,12 +69,17 @@ const showImage = (asset: NovelyAsset, { classesBase, classesIn, wait }: ShowIma
 			key,
 			image,
 			visible: false,
-			animate: !flags.preview,
 			onIn,
 			onOut: noop,
 		});
 
 		setTimeout(() => ctx.mutate((s) => s.images[index].visible, true));
+
+		if (wait) {
+			rendererContext.clearBlockingActions(undefined);
+		} else {
+			resolve();
+		}
 
 		clear(() => {
 			ctx.mutate((s) => s.images[index], {
@@ -90,7 +88,6 @@ const showImage = (asset: NovelyAsset, { classesBase, classesIn, wait }: ShowIma
 				key,
 				image,
 				visible: false,
-				animate: !flags.preview,
 				onIn: noop,
 				onOut: noop,
 			});
@@ -104,7 +101,11 @@ const showImage = (asset: NovelyAsset, { classesBase, classesIn, wait }: ShowIma
 	handler.id = SHOW_HIDE_IMAGE;
 	handler.key = key;
 	handler.assets = [asset];
-	handler.callOnlyLatest = true;
+	handler.skipOnRestore = (getNext) => {
+		return getNext().some(
+			(action) => action[0] === 'custom' && action[1].id === SHOW_HIDE_IMAGE && action[1].key === key,
+		);
+	};
 
 	return ['custom', handler] as ValidAction;
 };
@@ -117,22 +118,21 @@ type HideImageParams = {
 const hideImage = (asset: NovelyAsset, { classesOut, wait }: HideImageParams = {}) => {
 	const key = `show-image--${asset.id}`;
 
-	const handler: CustomHandler = ({ contextKey, flags, rendererContext }) => {
-		const { promise, resolve } = Promise.withResolvers<void>();
+	const handler: CustomHandler = ({ contextKey, rendererContext }) => {
 		const ctx = useContextState(contextKey);
 		const index = getIndex(ctx, key);
 
-		const { image, classesBase } = ctx.get().images[index];
+		const context = ctx.get().images[index];
+
+		if (!context) {
+			return;
+		}
+
+		const { promise, resolve } = Promise.withResolvers<void>();
+		const { image, classesBase } = context;
 
 		const classesBaseSplitted = classesBase || [];
 		const classesOutSplitted = classesOut?.split(' ') || [];
-
-		if (wait) {
-			rendererContext.clearBlockingActions(undefined);
-		} else {
-			image.classList.remove(...classesBaseSplitted);
-			resolve();
-		}
 
 		const onOut = () => {
 			if (wait) {
@@ -142,13 +142,24 @@ const hideImage = (asset: NovelyAsset, { classesOut, wait }: HideImageParams = {
 		};
 
 		ctx.mutate(
-			(s) => s.images[index].onOut,
-			() => onOut,
+			(s) => s.images[index],
+			(prev) => {
+				return {
+					...prev,
+					onOut,
+					classesOut: classesOutSplitted,
+				};
+			},
 		);
-		ctx.mutate((s) => s.images[index].animate, !flags.preview);
-		ctx.mutate((s) => s.images[index].classesOut, classesOutSplitted);
 
 		setTimeout(() => ctx.mutate((s) => s.images[index].visible, false));
+
+		if (wait) {
+			rendererContext.clearBlockingActions(undefined);
+		} else {
+			image.classList.remove(...classesBaseSplitted);
+			resolve();
+		}
 
 		return promise;
 	};

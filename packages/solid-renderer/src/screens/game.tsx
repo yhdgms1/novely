@@ -469,7 +469,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 									image().onIn();
 								};
 
-								if (!image().animate || !classesIn || classesIn.length === 0) {
+								if (!classesIn || classesIn.length === 0) {
 									return onCompleted();
 								}
 
@@ -484,7 +484,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 									image().onOut();
 								};
 
-								if (!image().animate || !classesOut || classesOut.length === 0) {
+								if (!classesOut || classesOut.length === 0) {
 									return onCompleted();
 								}
 
