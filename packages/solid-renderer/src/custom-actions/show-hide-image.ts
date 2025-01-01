@@ -43,7 +43,7 @@ type ContextImages = ShowImageData[];
 const showImage = (asset: NovelyAsset, { classesBase, classesIn, wait }: ShowImageParams = {}) => {
 	const key = `show-image--${asset.id}`;
 
-	const handler: CustomHandler = ({ contextKey, clear, rendererContext }) => {
+	const handler: CustomHandler = ({ contextKey, clear, flags, rendererContext }) => {
 		const { promise, resolve } = Promise.withResolvers<void>();
 		const ctx = useContextState(contextKey);
 		const index = getIndex(ctx, key);
@@ -75,7 +75,7 @@ const showImage = (asset: NovelyAsset, { classesBase, classesIn, wait }: ShowIma
 
 		setTimeout(() => ctx.mutate((s) => s.images[index].visible, true));
 
-		if (wait) {
+		if (wait && !flags.preview && !flags.restoring) {
 			rendererContext.clearBlockingActions(undefined);
 		} else {
 			resolve();
