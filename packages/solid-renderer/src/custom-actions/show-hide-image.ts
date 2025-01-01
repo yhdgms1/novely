@@ -100,7 +100,7 @@ const hideImage = (source: string | NovelyAsset, params: HideImageParams = {}) =
 		const { promise, resolve } = Promise.withResolvers<void>();
 
 		const done = () => {
-			ctx.mutate((s) => s.images[typeof source === 'object' ? source.id : source], undefined);
+			ctx.mutate((s) => s.images[typeof source === 'object' ? source.source : source], undefined);
 			resolve();
 		};
 

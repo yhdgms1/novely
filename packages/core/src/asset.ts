@@ -118,19 +118,35 @@ const asset = (...variants: string[]) => {
 };
 
 asset.image = (source: string): NovelyAsset => {
-	return {
+	if (assetPrivate.cache.has(source)) {
+		return assetPrivate.cache.get(source)!;
+	}
+
+	const asset = {
 		type: 'image',
 		source,
 		id: generateRandomId(),
-	};
+	} as NovelyAsset;
+
+	assetPrivate.cache.set(source, asset);
+
+	return asset;
 };
 
 asset.audio = (source: string): NovelyAsset => {
-	return {
+	if (assetPrivate.cache.has(source)) {
+		return assetPrivate.cache.get(source)!;
+	}
+
+	const asset = {
 		type: 'audio',
 		source,
 		id: generateRandomId(),
-	};
+	} as NovelyAsset;
+
+	assetPrivate.cache.set(source, asset);
+
+	return asset;
 };
 
 export { asset };
