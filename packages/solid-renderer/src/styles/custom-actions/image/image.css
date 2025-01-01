@@ -4,14 +4,18 @@
 	inset: 0;
 }
 
-.action-image__image {
+.action-image__image-container {
+	position: absolute;
 	z-index: var(--z-index, 1);
+}
 
-	object-fit: cover;
-	object-position: 50% 50%;
-
+.action-image__image-container,
+.action-image__image {
 	width: 100vw;
 	height: 100vh;
+}
 
-	position: absolute;
+.action-image__image {
+	object-fit: cover;
+	object-position: 50% 50%;
 }

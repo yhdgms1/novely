@@ -13,6 +13,8 @@ import type { CreateMomentPresserOptions } from '@novely/moment-presser';
 
 import lily_ok_png from './assets/lily.png';
 import outdoor_png from './assets/outdoor.png';
+import green from './assets/green.png';
+import orange from './assets/orange.png';
 
 import { generateEmotions } from '@novely/dynamic-character';
 
@@ -34,7 +36,7 @@ const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidR
 
 const storage = flexStorage({
 	adapter: adapterLocalStorage({
-		key: 'test-dialog-overview-2',
+		key: 'askdn',
 	}),
 });
 
@@ -348,21 +350,23 @@ false &&
 		],
 	});
 
-false &&
+true &&
 	engine.script({
 		start: [
-			action.showBackground('https://i.imgur.com/YUSqhw8.png'),
-			action.say('Lily', 'Привет!'),
-			action.showImage('https://i.imgur.com/QQl8atN.png', {
-				in: 'animate__animated animate__pulse',
-				await: true,
+			action.showBackground(outdoor),
+			action.showImage(asset.image(green), {
+				classesIn: 'animate__animated animate__fadeIn',
+				wait: true,
 			}),
-			action.say('Lily', 'Хотя, пока'),
-			action.hideImage('https://i.imgur.com/QQl8atN.png', {
-				out: 'animate__animated animate__pulse',
-				await: true,
+			action.say('Lily', '1'),
+			action.hideImage(asset.image(green), {
+				classesOut: 'animate__animated animate__fadeOut',
+				wait: true,
 			}),
-			action.say('You', '...'),
+			action.showImage(asset.image(orange)),
+			action.say('Lily', '2'),
+			action.hideImage(asset.image(orange)),
+			action.say('Lily', '3'),
 		],
 	});
 
@@ -408,7 +412,7 @@ false &&
 		],
 	});
 
-true &&
+false &&
 	engine.script({
 		start: [
 			action.playMusic(music),

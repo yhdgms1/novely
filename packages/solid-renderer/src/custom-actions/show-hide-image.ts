@@ -1,148 +1,160 @@
 import type { CustomHandler, ValidAction, NovelyAsset } from '@novely/core';
 import { noop } from '@novely/renderer-toolkit';
 import { useContextState } from '../context-state';
+import { imagePreloadWithCachingNotComplete } from '$utils';
 
-// todo: refactor
+const getIndex = (ctx: ReturnType<typeof useContextState>, key: string) => {
+	const images = ctx.get().images;
+	const index = images.findIndex((value) => value.key === key);
 
-const SHOW_IMAGE = Symbol();
+	if (index === -1) {
+		return images.length;
+	}
+
+	return index;
+};
+
+const SHOW_HIDE_IMAGE = Symbol();
 
 type ShowImageParams = {
-	z?: number;
+	classesBase?: string;
 
-	in?: string;
+	classesIn?: string;
 
-	class?: string;
-	style?: string;
-
-	await?: boolean;
+	wait?: boolean;
 };
 
 type ShowImageData = {
+	classesBase?: string[];
+
+	classesIn?: string[];
+	classesOut?: string[];
+
+	key: string;
 	image: HTMLImageElement;
-	inClasses: string[];
+	visible: boolean;
+	animate: boolean;
+
+	onIn: () => void;
+	onOut: () => void;
 };
 
-const showImage = (source: string | NovelyAsset, params: ShowImageParams = {}) => {
-	const handler: CustomHandler = ({ contextKey, clear, flags, data, remove, rendererContext }) => {
-		const ctx = useContextState(contextKey);
+type ContextImages = ShowImageData[];
 
+const showImage = (asset: NovelyAsset, { classesBase, classesIn, wait }: ShowImageParams = {}) => {
+	const key = `show-image--${asset.id}`;
+
+	const handler: CustomHandler = ({ contextKey, clear, flags, rendererContext }) => {
 		const { promise, resolve } = Promise.withResolvers<void>();
+		const ctx = useContextState(contextKey);
+		const index = getIndex(ctx, key);
 
-		const image = document.createElement('img');
-		const src = typeof source === 'object' ? source.source : source;
+		const image = imagePreloadWithCachingNotComplete(asset.source).cloneNode(true) as HTMLImageElement;
 
-		{
-			image.src = src;
-			image.className = 'action-image__image ' + (params.class || '');
-			image.style.cssText = params.style || '';
-			image.style.setProperty('--z-index', String(params.z || 1));
-		}
+		const classesBaseSplitted = classesBase?.split(' ') || [];
+		const classesInSplitted = classesIn?.split(' ') || [];
 
-		ctx.mutate((s) => s.images[src], image);
+		image.classList.add(...classesBaseSplitted);
+		image.classList.add('action-image__image');
 
-		const inClasses = params.in ? params.in.split(' ') : [];
-
-		data<ShowImageData>({
-			image,
-			inClasses,
-		});
-
-		let clearAnimation = noop;
-
-		if (params.in && !flags.preview) {
-			image.classList.add(...inClasses);
-
-			// In case we will await for animation then we need to manually "clear" (remove) actions on the screen
-			// I think it will not clear "blocking" custom actions
-			// todo: implement
-			if (params.await) {
-				rendererContext.clearBlockingActions(undefined);
-			}
-
-			clearAnimation = () => {
-				image.classList.remove(...inClasses);
-				resolve();
-			};
-
-			image.addEventListener('animationend', clearAnimation, { once: true });
+		if (wait) {
+			rendererContext.clearBlockingActions(undefined);
 		} else {
 			resolve();
 		}
 
-		clear(() => {
-			ctx.mutate((s) => s.images[src], undefined);
-			data({});
-			clearAnimation();
+		const onIn = () => {
+			if (wait) {
+				resolve();
+			}
+		};
+
+		ctx.mutate((s) => s.images[index], {
+			classesBase: classesBaseSplitted,
+			classesIn: classesInSplitted,
+			classesOut: undefined,
+			key,
+			image,
+			visible: false,
+			animate: !flags.preview,
+			onIn,
+			onOut: noop,
 		});
 
-		if (!params.await) {
-			resolve();
-		}
+		setTimeout(() => ctx.mutate((s) => s.images[index].visible, true));
+
+		clear(() => {
+			ctx.mutate((s) => s.images[index], {
+				classesIn: undefined,
+				classesOut: undefined,
+				key,
+				image,
+				visible: false,
+				animate: !flags.preview,
+				onIn: noop,
+				onOut: noop,
+			});
+
+			image.classList.remove(...classesBaseSplitted);
+		});
 
 		return promise;
 	};
 
-	handler.id = SHOW_IMAGE;
-	handler.key = typeof source === 'object' ? source.id : source;
-	handler.assets = [source];
+	handler.id = SHOW_HIDE_IMAGE;
+	handler.key = key;
+	handler.assets = [asset];
 	handler.callOnlyLatest = true;
 
 	return ['custom', handler] as ValidAction;
 };
 
 type HideImageParams = {
-	out?: string;
-	await?: boolean;
+	classesOut?: string;
+	wait?: boolean;
 };
 
-const hideImage = (source: string | NovelyAsset, params: HideImageParams = {}) => {
-	const handler: CustomHandler = async ({ data, rendererContext, contextKey, flags }) => {
-		const ctx = useContextState(contextKey);
-		const { promise, resolve } = Promise.withResolvers<void>();
+const hideImage = (asset: NovelyAsset, { classesOut, wait }: HideImageParams = {}) => {
+	const key = `show-image--${asset.id}`;
 
-		const done = () => {
-			ctx.mutate((s) => s.images[typeof source === 'object' ? source.source : source], undefined);
+	const handler: CustomHandler = ({ contextKey, flags, rendererContext }) => {
+		const { promise, resolve } = Promise.withResolvers<void>();
+		const ctx = useContextState(contextKey);
+		const index = getIndex(ctx, key);
+
+		const { image, classesBase } = ctx.get().images[index];
+
+		const classesBaseSplitted = classesBase || [];
+		const classesOutSplitted = classesOut?.split(' ') || [];
+
+		if (wait) {
+			rendererContext.clearBlockingActions(undefined);
+		} else {
+			image.classList.remove(...classesBaseSplitted);
 			resolve();
+		}
+
+		const onOut = () => {
+			if (wait) {
+				image.classList.remove(...classesBaseSplitted);
+				resolve();
+			}
 		};
 
-		const { image, inClasses } = data<ShowImageData>();
+		ctx.mutate(
+			(s) => s.images[index].onOut,
+			() => onOut,
+		);
+		ctx.mutate((s) => s.images[index].animate, !flags.preview);
+		ctx.mutate((s) => s.images[index].classesOut, classesOutSplitted);
 
-		if (!image) {
-			resolve();
-			return promise;
-		}
-
-		if (inClasses) {
-			image.classList.remove(...inClasses);
-		}
-
-		if (params.out && !flags.preview) {
-			const classes = params.out.split(' ');
-
-			image.classList.add(...classes);
-
-			rendererContext.clearBlockingActions(undefined);
-
-			const onAnimationEnd = () => {
-				image.classList.remove(...classes);
-				done();
-			};
-
-			image.addEventListener('animationend', onAnimationEnd, { once: true });
-
-			if (!params.await) {
-				done();
-			}
-		} else {
-			done();
-		}
+		setTimeout(() => ctx.mutate((s) => s.images[index].visible, false));
 
 		return promise;
 	};
 
-	handler.id = SHOW_IMAGE;
-	handler.key = typeof source === 'object' ? source.id : source;
-	// We're gonna hide image, we do not need to preload assets
+	handler.id = SHOW_HIDE_IMAGE;
+	handler.key = key;
 	handler.assets = [];
 	handler.callOnlyLatest = true;
 
@@ -150,3 +162,4 @@ const hideImage = (source: string | NovelyAsset, params: HideImageParams = {}) =
 };
 
 export { showImage, hideImage };
+export type { ContextImages };

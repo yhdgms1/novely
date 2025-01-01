@@ -15,9 +15,10 @@ import { from } from '$utils';
 import type { Context } from '@novely/core';
 import { destructure } from '@solid-primitives/destructure';
 import type { VoidComponent } from 'solid-js';
-import { For, Show, createEffect, createMemo, createSignal, createUniqueId, untrack } from 'solid-js';
+import { For, Index, Show, createEffect, createMemo, createSignal, createUniqueId, untrack } from 'solid-js';
 import type { IContextState } from '../context-state';
 import type { SolidRendererStore } from '../renderer';
+import { Transition } from 'solid-transition-group';
 
 type GameProps = {
 	context: Context;
@@ -457,7 +458,46 @@ const Game: VoidComponent<GameProps> = (props) => {
 			</Show>
 
 			<div class="action-image">
-				<For each={Object.values(images())}>{(image) => image}</For>
+				<Index each={images()}>
+					{(image) => (
+						<Transition
+							onEnter={(el, done) => {
+								const classesIn = image().classesIn;
+
+								const onCompleted = () => {
+									done();
+									image().onIn();
+								};
+
+								if (!image().animate || !classesIn || classesIn.length === 0) {
+									return onCompleted();
+								}
+
+								el.classList.add(...classesIn);
+								el.addEventListener('animationend', onCompleted, { once: true });
+							}}
+							onExit={(el, done) => {
+								const classesOut = image().classesOut;
+
+								const onCompleted = () => {
+									done();
+									image().onOut();
+								};
+
+								if (!image().animate || !classesOut || classesOut.length === 0) {
+									return onCompleted();
+								}
+
+								el.classList.add(...classesOut);
+								el.addEventListener('animationend', onCompleted, { once: true });
+							}}
+						>
+							<Show when={image().visible}>
+								<div class="action-image__image-container">{image().image}</div>
+							</Show>
+						</Transition>
+					)}
+				</Index>
 			</div>
 
 			<DialogOverview
