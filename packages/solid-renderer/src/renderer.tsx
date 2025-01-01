@@ -10,7 +10,7 @@ import type {
 	StateScreens,
 } from './types';
 
-import { canvasDrawImages, imagePreloadWithCaching, imagePreloadWithCachingNotComplete } from '$utils';
+import { imageLoaded, imagePreloadWithCaching, imagePreloadWithCachingNotComplete } from '$utils';
 import {
 	createAudio,
 	createAudioMisc,
@@ -103,11 +103,12 @@ const createSolidRenderer = ({
 								return chars[character];
 							}
 
-							const canvas = (<canvas data-character={character} />) as HTMLCanvasElement;
-							const canvasContext = canvas.getContext('2d')!;
+							const element = document.createElement('div');
+
+							element.setAttribute('data-character', character);
 
 							const characterHandle = {
-								canvas,
+								element,
 								emotions: {},
 								emotion(emotion, shouldRender) {
 									let stored = this.emotions[emotion];
@@ -118,43 +119,21 @@ const createSolidRenderer = ({
 											.map((src) => imagePreloadWithCachingNotComplete(src));
 									}
 
+									const images = stored.map((image) => `url(\"${image.src}\")`).reverse();
+
+									// todo: actually use it
+									characterAssetSizes;
+
 									if (shouldRender && stored) {
-										/**
-										 * Clear previous emotion
-										 */
-										canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+										Promise.allSettled(stored.map((image) => imageLoaded(image))).then(() => {
+											const sizesSorted = stored.slice().sort((a, b) => b.width - a.width);
+											const sizes = sizesSorted[0];
 
-										/**
-										 * Will resize canvas to image size
-										 */
-										canvas.dataset.resized = 'false';
+											element.style.setProperty('width', sizes.naturalWidth + 'px')
+											element.style.setProperty('height', sizes.naturalHeight + 'px')
 
-										if (root() !== context.root) {
-											const { clientWidth: mainClientWidth, clientHeight: mainClientHeight } = root();
-											const { clientWidth: contextClientWidth, clientHeight: contextClientHeight } = context.root;
-
-											const widthFactor = mainClientWidth / contextClientWidth;
-											const heightFactor = mainClientHeight / contextClientHeight;
-
-											const maxFactor = Math.ceil(Math.max(widthFactor, heightFactor));
-
-											canvas.dataset.scaleBy = (1 / maxFactor).toFixed(3);
-										} else {
-											canvas.dataset.scalyBy = '1';
-										}
-
-										const sizes = characterAssetSizes[character];
-
-										if (sizes) {
-											const scaleBy = canvas.dataset.scaleBy ? Number(canvas.dataset.scaleBy) : 1;
-
-											canvas.width = Math.min(sizes.width * scaleBy * 2, sizes.width) * devicePixelRatio;
-											canvas.height = Math.min(sizes.height * scaleBy * 2, sizes.height) * devicePixelRatio;
-
-											canvas.dataset.resized = 'true';
-										}
-
-										canvasDrawImages(canvas, canvasContext, stored);
+											element.style.setProperty('--background-image', images.join(', '));
+										})
 									}
 								},
 								append(className, style) {
@@ -162,7 +141,7 @@ const createSolidRenderer = ({
 
 									$contextState.mutate((s) => s.characters[character]!, { style, visible: true });
 
-									const { canvas: element } = chars[character];
+									const { element } = chars[character];
 
 									/**
 									 * Remove className directly
@@ -213,7 +192,7 @@ const createSolidRenderer = ({
 										 * Set className directly
 										 */
 										if (className) {
-											chars[character].canvas.className = className as string;
+											chars[character].element.className = className as string;
 										}
 
 										$contextState.mutate(
@@ -229,15 +208,15 @@ const createSolidRenderer = ({
 									});
 								},
 								animate(classes) {
-									const classNames = classes.filter((className) => !canvas.classList.contains(className));
+									const classNames = classes.filter((className) => !element.classList.contains(className));
 
-									canvas.classList.add(...classNames);
+									element.classList.add(...classNames);
 
 									const onAnimationEnd = () => {
-										canvas.classList.remove(...classNames);
+										element.classList.remove(...classNames);
 									};
 
-									canvas.addEventListener('animationend', onAnimationEnd, { once: true });
+									element.addEventListener('animationend', onAnimationEnd, { once: true });
 								},
 							} satisfies CustomCharacterHandle;
 

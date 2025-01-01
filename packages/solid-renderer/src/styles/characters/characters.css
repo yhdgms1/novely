@@ -14,7 +14,12 @@
 	pointer-events: none;
 }
 
-.characters > canvas {
+.characters > div {
+	background-image: var(--background-image);
+	background-repeat: no-repeat;
+  background-size: contain;
+	background-position: bottom;
+
 	position: relative;
 
 	min-width: unset;

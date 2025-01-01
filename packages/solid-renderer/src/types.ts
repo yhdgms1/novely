@@ -18,7 +18,7 @@ type CustomCharacterHandle = CharacterHandle & {
 	/**
 	 * Node in which character is rendered
 	 */
-	canvas: HTMLCanvasElement;
+	element: HTMLDivElement;
 };
 
 type SolidRendererStore = {

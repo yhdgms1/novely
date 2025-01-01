@@ -7,7 +7,7 @@ type CharacterProps = {
 };
 
 const Character: VoidComponent<CharacterProps> = (props) => {
-	return props.characters[props.character].canvas;
+	return props.characters[props.character].element;
 };
 
 export { Character };
