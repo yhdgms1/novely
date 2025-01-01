@@ -8,7 +8,7 @@ const dev = process.argv.at(2) === '--w';
 
 const context = await esbuild.context({
 	entryPoints: ['./src/index.ts', './src/index.css'],
-	external: ['@slidy/core'],
+	external: ['solid-js', '@slidy/core'],
 	charset: 'utf8',
 	jsx: 'preserve',
 	platform: 'browser',
