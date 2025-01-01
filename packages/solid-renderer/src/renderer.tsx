@@ -129,11 +129,11 @@ const createSolidRenderer = ({
 											const sizesSorted = stored.slice().sort((a, b) => b.width - a.width);
 											const sizes = sizesSorted[0];
 
-											element.style.setProperty('width', sizes.naturalWidth + 'px')
-											element.style.setProperty('height', sizes.naturalHeight + 'px')
+											element.style.setProperty('width', sizes.naturalWidth + 'px');
+											element.style.setProperty('height', sizes.naturalHeight + 'px');
 
 											element.style.setProperty('--background-image', images.join(', '));
-										})
+										});
 									}
 								},
 								append(className, style) {
