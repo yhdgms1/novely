@@ -2,7 +2,8 @@ import type { CustomHandler } from '@novely/core';
 import type { Attributes, ClothingData, DynCharacterThis, EmotionObject } from './types';
 import { render } from 'solid-js/web';
 import { getKeys, getEmotionString, getSavedEmotion, saveEmotion } from './utils';
-import { createEffect, createSignal, createUniqueId, For, untrack } from 'solid-js';
+import { createEffect, createSignal, createUniqueId, For, onCleanup, untrack } from 'solid-js';
+import { slidy } from '@slidy/core';
 
 const CHARACTER_STYLE_PICKER = Symbol();
 const PRELOADED_EMOTIONS = new Set<string>();
@@ -124,6 +125,7 @@ const showPicker = function (this: DynCharacterThis) {
 					<div
 						role="tablist"
 						aria-label={translation.ui.tablist}
+						ref={(element) => onCleanup(slidy(element, { axis: 'x' }).destroy)}
 						classList={{
 							'ndc-tablist': true,
 							'ndc-tablist-picker-collapsed': !expanded(),
@@ -250,8 +252,6 @@ const showPicker = function (this: DynCharacterThis) {
 									} else {
 										PRELOADED_EMOTIONS.add(emotion);
 									}
-
-									console.log(`Preloading ${emotion}`);
 
 									character.emotion(emotion, false);
 								}
