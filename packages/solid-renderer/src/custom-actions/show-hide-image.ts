@@ -23,7 +23,7 @@ type ShowImageData = {
 };
 
 const showImage = (source: string | NovelyAsset, params: ShowImageParams = {}) => {
-	const handler: CustomHandler = ({ contextKey, clear, flags, data, rendererContext }) => {
+	const handler: CustomHandler = ({ contextKey, clear, flags, data, remove, rendererContext }) => {
 		const ctx = useContextState(contextKey);
 
 		const { promise, resolve } = Promise.withResolvers<void>();
@@ -70,6 +70,7 @@ const showImage = (source: string | NovelyAsset, params: ShowImageParams = {}) =
 		}
 
 		clear(() => {
+			ctx.mutate((s) => s.images[src], undefined);
 			data({});
 			clearAnimation();
 		});
