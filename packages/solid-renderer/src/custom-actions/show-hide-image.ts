@@ -14,7 +14,10 @@ const getIndex = (ctx: ReturnType<typeof useContextState>, key: string) => {
 	return index;
 };
 
-const SHOW_HIDE_IMAGE = Symbol();
+const SHOW_IMAGE = Symbol();
+const HIDE_IMAGE = Symbol();
+
+const SHOW_HIDE_IMAGE = new Set<any>([SHOW_IMAGE, HIDE_IMAGE]);
 
 type ShowImageParams = {
 	classesBase?: string;
@@ -43,7 +46,12 @@ type ContextImages = ShowImageData[];
 const showImage = (asset: NovelyAsset, { classesBase, classesIn, wait }: ShowImageParams = {}) => {
 	const key = `show-image--${asset.id}`;
 
-	const handler: CustomHandler = ({ contextKey, clear, flags, rendererContext }) => {
+	const handler: CustomHandler = ({
+		contextKey,
+		clear,
+		flags: { preview, restoring, goingBack },
+		rendererContext,
+	}) => {
 		const { promise, resolve } = Promise.withResolvers<void>();
 		const ctx = useContextState(contextKey);
 		const index = getIndex(ctx, key);
@@ -75,7 +83,9 @@ const showImage = (asset: NovelyAsset, { classesBase, classesIn, wait }: ShowIma
 
 		setTimeout(() => ctx.mutate((s) => s.images[index].visible, true));
 
-		if (wait && (!flags.preview || !flags.restoring)) {
+		if (wait && preview) {
+			resolve();
+		} else if (wait && (!restoring || !goingBack)) {
 			rendererContext.clearBlockingActions(undefined);
 		} else {
 			resolve();
@@ -98,12 +108,12 @@ const showImage = (asset: NovelyAsset, { classesBase, classesIn, wait }: ShowIma
 		return promise;
 	};
 
-	handler.id = SHOW_HIDE_IMAGE;
+	handler.id = SHOW_IMAGE;
 	handler.key = key;
 	handler.assets = [asset];
 	handler.skipOnRestore = (getNext) => {
 		return getNext().some(
-			(action) => action[0] === 'custom' && action[1].id === SHOW_HIDE_IMAGE && action[1].key === key,
+			(action) => action[0] === 'custom' && SHOW_HIDE_IMAGE.has(action[1].id) && action[1].key === key,
 		);
 	};
 
@@ -118,13 +128,17 @@ type HideImageParams = {
 const hideImage = (asset: NovelyAsset, { classesOut, wait }: HideImageParams = {}) => {
 	const key = `show-image--${asset.id}`;
 
-	const handler: CustomHandler = ({ contextKey, rendererContext }) => {
+	const handler: CustomHandler = ({ contextKey, flags: { restoring, goingBack, preview } }) => {
 		const ctx = useContextState(contextKey);
 		const index = getIndex(ctx, key);
 
 		const context = ctx.get().images[index];
 
 		if (!context) {
+			return;
+		}
+
+		if (!context.visible) {
 			return;
 		}
 
@@ -154,8 +168,10 @@ const hideImage = (asset: NovelyAsset, { classesOut, wait }: HideImageParams = {
 
 		setTimeout(() => ctx.mutate((s) => s.images[index].visible, false));
 
-		if (wait) {
-			rendererContext.clearBlockingActions(undefined);
+		if (wait && preview) {
+			resolve();
+		} else if (wait && (!restoring || !goingBack)) {
+			//
 		} else {
 			image.classList.remove(...classesBaseSplitted);
 			resolve();
@@ -164,7 +180,7 @@ const hideImage = (asset: NovelyAsset, { classesOut, wait }: HideImageParams = {
 		return promise;
 	};
 
-	handler.id = SHOW_HIDE_IMAGE;
+	handler.id = HIDE_IMAGE;
 	handler.key = key;
 	handler.assets = [];
 	handler.callOnlyLatest = true;
