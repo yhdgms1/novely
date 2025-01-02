@@ -119,7 +119,7 @@ const createSolidRenderer = ({
 											.map((src) => imagePreloadWithCachingNotComplete(src));
 									}
 
-									const images = stored.map((image) => `url(\"${image.src}\")`).reverse();
+									const images = stored.map((image) => `url(${JSON.stringify(image.src)})`).reverse();
 
 									// todo: actually use it
 									characterAssetSizes;

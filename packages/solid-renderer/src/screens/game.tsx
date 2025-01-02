@@ -117,6 +117,22 @@ const Game: VoidComponent<GameProps> = (props) => {
 		}, 0);
 	});
 
+	const [bg, setBg] = createSignal(background().background);
+
+	createEffect(() => {
+		const currentBackground = background().background;
+
+		if (isCSSImage(currentBackground)) {
+			imagePreloadWithCaching(currentBackground).then(() => {
+				if (currentBackground === background().background) {
+					setBg(`url(${JSON.stringify(currentBackground)})`);
+				}
+			});
+		} else {
+			setBg(background().background)
+		}
+	});
+
 	return (
 		<div
 			class={props.className}
@@ -125,36 +141,11 @@ const Game: VoidComponent<GameProps> = (props) => {
 				preview: props.isPreview,
 			}}
 		>
-			<Canvas
+			<div
 				class="background"
-				resize={true}
-				throttle={150}
-				render={async (canvas, ctx) => {
-					const bg = background().background;
-					const isColor = !isCSSImage(bg);
-
-					if (isColor) {
-						ctx.fillStyle = bg;
-						ctx.fillRect(0, 0, canvas.width, canvas.height);
-					} else {
-						const img = await imagePreloadWithCaching(bg);
-
-						/**
-						 * Prevent race of promises
-						 */
-						if (bg !== background().background) {
-							return;
-						}
-
-						const { clientWidth, clientHeight } = context.root;
-
-						const maxFactor = 1 / Math.ceil(Math.max(img.width / clientWidth, img.height / clientHeight));
-
-						canvas.width = Math.min(img.width * maxFactor, img.width) * devicePixelRatio;
-						canvas.height = Math.min(img.height * maxFactor, img.height) * devicePixelRatio;
-
-						ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-					}
+				style={{
+					'--background-color': bg().startsWith('url') ? undefined : bg(),
+					'--background-image': bg().startsWith('url') ? bg() : undefined
 				}}
 			/>
 
