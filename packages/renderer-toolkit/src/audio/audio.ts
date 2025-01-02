@@ -67,9 +67,11 @@ const createAudio = (storageData: StorageDataStore) => {
 					resource.pause();
 				},
 				play(loop) {
-					resource.volume = getVolume(method);
-					resource.loop = loop;
-					resource.play();
+					resource.reset().then(() => {
+						resource.volume = getVolume(method);
+						resource.loop = loop;
+						resource.play();
+					});
 				},
 				stop() {
 					resource.stop();
