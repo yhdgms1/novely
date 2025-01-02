@@ -450,7 +450,7 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 	const characters = new Set();
 	const audio = {
 		music: new Set(),
-		sound: new Set(),
+		sounds: new Set(),
 	};
 
 	/**
@@ -497,12 +497,28 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 			}
 
 			processedQueue.push(item);
-		} else if (
-			action === 'showCharacter' ||
-			action === 'playSound' ||
-			action === 'playMusic' ||
-			action === 'voice'
-		) {
+		} else if (action === 'playSound') {
+			const closing = getOppositeAction(action);
+
+			const skip = next(i).some((item) => {
+				if (isUserRequiredAction(item) || isSkippedDuringRestore(item[0])) {
+					return true;
+				}
+
+				const [_action, target] = item;
+
+				if (target !== params[0]) {
+					return false;
+				}
+
+				return _action === closing || _action === action;
+			});
+
+			if (skip) continue;
+
+			audio.sounds.add(unwrapAsset(params[0] as NovelyAsset));
+			processedQueue.push(item);
+		} else if (action === 'showCharacter' || action === 'playMusic' || action === 'voice') {
 			const closing = getOppositeAction(action);
 
 			const skip = next(i).some(([_action, target]) => {
@@ -510,13 +526,12 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 					return false;
 				}
 
-				const musicGonnaBePaused = action === 'playMusic' && _action === 'pauseMusic';
-				const soundGonnaBePaused = action === 'playSound' && _action === 'pauseSound';
+				const musicWillBePaused = action === 'playMusic' && _action === 'pauseMusic';
 
 				/**
 				 * It either will be closed OR same action will be ran again
 				 */
-				return musicGonnaBePaused || soundGonnaBePaused || _action === closing || _action === action;
+				return musicWillBePaused || _action === closing || _action === action;
 			});
 
 			if (skip) continue;
@@ -528,8 +543,6 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 				characters.add(params[0]);
 			} else if (action === 'playMusic') {
 				audio.music.add(unwrapAsset(params[0] as NovelyAsset));
-			} else if (action === 'playSound') {
-				audio.sound.add(unwrapAsset(params[0] as NovelyAsset));
 			}
 
 			processedQueue.push(item);
