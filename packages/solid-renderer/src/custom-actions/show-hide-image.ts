@@ -75,7 +75,7 @@ const showImage = (asset: NovelyAsset, { classesBase, classesIn, wait }: ShowIma
 
 		setTimeout(() => ctx.mutate((s) => s.images[index].visible, true));
 
-		if (wait && !flags.preview && !flags.restoring) {
+		if (wait && (!flags.preview || !flags.restoring)) {
 			rendererContext.clearBlockingActions(undefined);
 		} else {
 			resolve();

@@ -111,30 +111,35 @@ const createSolidRenderer = ({
 								element,
 								emotions: {},
 								emotion(emotion, shouldRender) {
-									let stored = this.emotions[emotion];
-
-									if (!stored) {
-										stored = this.emotions[emotion] = options
+									if (!this.emotions[emotion]) {
+										this.emotions[emotion] = options
 											.getCharacterAssets(character, emotion)
 											.map((src) => imagePreloadWithCachingNotComplete(src));
 									}
 
+									if (!shouldRender) return;
+
+									const stored = this.emotions[emotion];
+
+									const assetSize = characterAssetSizes[character];
 									const images = stored.map((image) => `url(${JSON.stringify(image.src)})`).reverse();
 
-									// todo: actually use it
-									characterAssetSizes;
+									if (assetSize) {
+										const { width, height } = assetSize;
 
-									if (shouldRender && stored) {
-										Promise.allSettled(stored.map((image) => imageLoaded(image))).then(() => {
-											const sizesSorted = stored.slice().sort((a, b) => b.width - a.width);
-											const sizes = sizesSorted[0];
-
-											element.style.setProperty('width', sizes.naturalWidth + 'px');
-											element.style.setProperty('height', sizes.naturalHeight + 'px');
-
-											element.style.setProperty('--background-image', images.join(', '));
-										});
+										element.style.setProperty('width', width + 'px');
+										element.style.setProperty('height', height + 'px');
 									}
+
+									Promise.allSettled(stored.map((image) => imageLoaded(image))).then(() => {
+										const sizesSorted = stored.slice().sort((a, b) => b.width - a.width);
+										const sizes = sizesSorted[0];
+
+										element.style.setProperty('width', sizes.naturalWidth + 'px');
+										element.style.setProperty('height', sizes.naturalHeight + 'px');
+
+										element.style.setProperty('--background-image', images.join(', '));
+									});
 								},
 								append(className, style) {
 									clearTimeout($contextState.get().characters[character]?.hideTimeoutId);

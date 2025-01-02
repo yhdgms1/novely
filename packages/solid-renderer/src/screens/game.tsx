@@ -129,7 +129,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				}
 			});
 		} else {
-			setBg(background().background)
+			setBg(background().background);
 		}
 	});
 
@@ -145,7 +145,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				class="background"
 				style={{
 					'--background-color': bg().startsWith('url') ? undefined : bg(),
-					'--background-image': bg().startsWith('url') ? bg() : undefined
+					'--background-image': bg().startsWith('url') ? bg() : undefined,
 				}}
 			/>
 
