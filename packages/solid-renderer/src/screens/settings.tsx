@@ -92,34 +92,34 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 
 				<Show when={props.showAudioSettings}>
 					<Range
-							icon="#novely-music-volume-icon"
-							label={t('MusicVolume')}
-							min={0}
-							max={1}
-							step={0.01}
-							value={volume(2)}
-							onChange={volumeChange(2)}
-						/>
+						icon="#novely-music-volume-icon"
+						label={t('MusicVolume')}
+						min={0}
+						max={1}
+						step={0.01}
+						value={volume(2)}
+						onChange={volumeChange(2)}
+					/>
 
-						<Range
-							icon="#novely-sound-volume-icon"
-							label={t('SoundVolume')}
-							min={0}
-							max={1}
-							step={0.01}
-							value={volume(3)}
-							onChange={volumeChange(3)}
-						/>
+					<Range
+						icon="#novely-sound-volume-icon"
+						label={t('SoundVolume')}
+						min={0}
+						max={1}
+						step={0.01}
+						value={volume(3)}
+						onChange={volumeChange(3)}
+					/>
 
-						<Range
-							icon="#novely-voice-volume-icon"
-							label={t('VoiceVolume')}
-							min={0}
-							max={1}
-							step={0.01}
-							value={volume(4)}
-							onChange={volumeChange(4)}
-						/>
+					<Range
+						icon="#novely-voice-volume-icon"
+						label={t('VoiceVolume')}
+						min={0}
+						max={1}
+						step={0.01}
+						value={volume(4)}
+						onChange={volumeChange(4)}
+					/>
 				</Show>
 			</div>
 		</div>
