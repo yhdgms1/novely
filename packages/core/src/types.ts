@@ -369,7 +369,7 @@ interface NovelyInit<
 	/**
 	 * Typewriter speed set by default
 	 */
-	defaultTypewriterSpeed?: TypewriterSpeed
+	defaultTypewriterSpeed?: TypewriterSpeed;
 }
 
 type StateFunction<S extends State> = {

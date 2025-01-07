@@ -558,7 +558,9 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 				const characterWillAnimate = next.some(([__action, __character]) => action === __action);
 				const hasBlockingActions = next.some((item) => options.skip.has(item));
 
-				const differentCharacterWillAnimate = !hasBlockingActions && next.some(([__action, __character]) => __action === action && __character !== params[0]);
+				const differentCharacterWillAnimate =
+					!hasBlockingActions &&
+					next.some(([__action, __character]) => __action === action && __character !== params[0]);
 
 				// todo
 				return (characterWillAnimate && hasBlockingActions) || differentCharacterWillAnimate;

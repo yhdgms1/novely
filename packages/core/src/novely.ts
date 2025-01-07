@@ -106,7 +106,7 @@ const novely = <
 	cloneFunction: clone = klona,
 	saveOnUnload = true,
 	startKey = 'start',
-	defaultTypewriterSpeed = DEFAULT_TYPEWRITER_SPEED
+	defaultTypewriterSpeed = DEFAULT_TYPEWRITER_SPEED,
 }: NovelyInit<$Language, $Characters, $State, $Data, $Actions>) => {
 	/**
 	 * All action functions
