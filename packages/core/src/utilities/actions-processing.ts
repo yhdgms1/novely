@@ -5,7 +5,6 @@ import { unwrapAsset } from './ungrupped';
 import {
 	isNull,
 	isNumber,
-	isFunction,
 	isAction,
 	isSkippedDuringRestore,
 	isUserRequiredAction,
@@ -472,25 +471,20 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 				const fn = params[0] as CustomHandler;
 
 				if ('callOnlyLatest' in fn && fn.callOnlyLatest) {
-					/**
-					 * We'll calculate it is `latest` or not
-					 */
-					const notLatest = next(i).some(([, func]) => {
-						if (!isFunction(func)) return false;
+					const notLatest = next(i).some(([name, func]) => {
+						if (name !== 'custom') return;
 
-						const c0 = func as CustomHandler;
-						const c1 = fn;
+						// Checks for `undefined`. In case two id's are undefined it would not be true
+						const isIdenticalId = Boolean(func.id && fn.id && func.id === fn.id);
+						const isIdenticalByReference = func === fn;
+						const isIdenticalByCode = String(func) === String(fn);
 
-						// Also check for `undefined` so if two id's were undefined it would not be true
-						const isIdenticalID = Boolean(c0.id && c1.id && c0.id === c1.id);
-						const isIdenticalByReference = c0 === c1;
-
-						return isIdenticalID || isIdenticalByReference || String(c0) === String(c1);
+						return isIdenticalId || isIdenticalByReference || isIdenticalByCode;
 					});
 
 					if (notLatest) continue;
 				} else if ('skipOnRestore' in fn && fn.skipOnRestore) {
-					if (fn.skipOnRestore(() => next(i))) {
+					if (fn.skipOnRestore(next(i))) {
 						continue;
 					}
 				}
@@ -554,9 +548,7 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 			processedQueue.push(item);
 		} else if (action === 'animateCharacter') {
 			const skip = next(i).some(([_action, character], j, array) => {
-				/**
-				 * Same character will be animated again. Ignore.
-				 */
+				// Same character will be animated again.
 				if (action === _action && character === params[0]) {
 					return true;
 				}
@@ -566,12 +558,10 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 				const characterWillAnimate = next.some(([__action, __character]) => action === __action);
 				const hasBlockingActions = next.some((item) => options.skip.has(item));
 
-				/**
-				 * This is not a best check.
-				 *
-				 * @todo: make two animations for two different characters animate when not separeted by "blocking actions"
-				 */
-				return characterWillAnimate && hasBlockingActions;
+				const differentCharacterWillAnimate = !hasBlockingActions && next.some(([__action, __character]) => __action === action && __character !== params[0]);
+
+				// todo
+				return (characterWillAnimate && hasBlockingActions) || differentCharacterWillAnimate;
 			});
 
 			if (skip) continue;

@@ -366,6 +366,10 @@ interface NovelyInit<
 	 * ```
 	 */
 	startKey?: 'start' | (string & Record<never, never>);
+	/**
+	 * Typewriter speed set by default
+	 */
+	defaultTypewriterSpeed?: TypewriterSpeed
 }
 
 type StateFunction<S extends State> = {

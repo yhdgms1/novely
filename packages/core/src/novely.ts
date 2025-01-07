@@ -106,6 +106,7 @@ const novely = <
 	cloneFunction: clone = klona,
 	saveOnUnload = true,
 	startKey = 'start',
+	defaultTypewriterSpeed = DEFAULT_TYPEWRITER_SPEED
 }: NovelyInit<$Language, $Characters, $State, $Data, $Actions>) => {
 	/**
 	 * All action functions
@@ -388,7 +389,7 @@ const novely = <
 		/**
 		 * Default `localStorageStorage` returns empty array
 		 */
-		stored.meta[1] ||= DEFAULT_TYPEWRITER_SPEED;
+		stored.meta[1] ||= defaultTypewriterSpeed;
 
 		/**
 		 * Sound Volumes

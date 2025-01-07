@@ -145,9 +145,9 @@ type CustomHandlerCalling = {
 	callOnlyLatest?: boolean;
 	/**
 	 * Manually check should be skipped or not during restore
-	 * @param getNext Function which will return next actions in queue
+	 * @param nextActions Next actions in the restoring queue
 	 */
-	skipOnRestore?: (getNext: () => Exclude<ValidAction, ValidAction[]>[]) => boolean;
+	skipOnRestore?: (nextActions: Exclude<ValidAction, ValidAction[]>[]) => boolean;
 };
 
 type CustomHandlerInfo = CustomHandlerCalling & {

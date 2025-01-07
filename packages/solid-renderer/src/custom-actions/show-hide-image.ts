@@ -111,8 +111,8 @@ const showImage = (asset: NovelyAsset, { classesBase, classesIn, wait }: ShowIma
 	handler.id = SHOW_IMAGE;
 	handler.key = key;
 	handler.assets = [asset];
-	handler.skipOnRestore = (getNext) => {
-		return getNext().some(
+	handler.skipOnRestore = (next) => {
+		return next.some(
 			(action) => action[0] === 'custom' && SHOW_HIDE_IMAGE.has(action[1].id) && action[1].key === key,
 		);
 	};
