@@ -81,8 +81,8 @@ const matchAction = (callbacks: MatchActionHandlers, values: MatchActionMapCompl
 
 	return {
 		match,
-		nativeActions: Object.keys(values)
-	}
+		nativeActions: Object.keys(values),
+	};
 };
 
 export { matchAction };

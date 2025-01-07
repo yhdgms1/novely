@@ -1469,7 +1469,7 @@ const novely = <
 		nativeActions,
 		characters,
 		preloadAssets,
-		storageData
+		storageData,
 	});
 	// #endregion
 

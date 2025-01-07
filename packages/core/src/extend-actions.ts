@@ -16,11 +16,14 @@ type Part = Record<string, (...args: any[]) => ValidAction>;
  * })
  * ```
  */
-const extendAction = <Part0 extends Part, Part1 extends Part>(base: Part0, extension: Part1): Readonly<Assign<Part0, Part1>> => {
+const extendAction = <Part0 extends Part, Part1 extends Part>(
+	base: Part0,
+	extension: Part1,
+): Readonly<Assign<Part0, Part1>> => {
 	return {
 		...extension,
-		...base
-	}
+		...base,
+	};
 };
 
 export { extendAction };
