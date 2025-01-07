@@ -60,7 +60,6 @@ import {
 	createControlledPromise,
 	getResourseType,
 	createUseStackFunction,
-	flatActions,
 	flatStory,
 	capitalize,
 	getLanguage as defaultGetLanguage,
@@ -76,6 +75,7 @@ import {
 	isSkippedDuringRestore,
 } from './utilities';
 import type { MatchActionHandlers } from './utilities';
+import { buildActionObject } from './utilities/actions';
 
 const novely = <
 	$Language extends string,
@@ -205,76 +205,6 @@ const novely = <
 	const script = (part: Story) => {
 		return limitScript(() => scriptBase(part));
 	};
-
-	// #region Action Proxy
-	const action = new Proxy({} as Actions, {
-		get(_: unknown, action: string) {
-			if (action in renderer.actions) {
-				return renderer.actions[action];
-			}
-
-			return (...props: Parameters<Actions[keyof Actions]>) => {
-				if (action === 'say') {
-					action = 'dialog';
-
-					const [character] = props;
-
-					if (DEV && !characters[character]) {
-						throw new Error(`Attempt to call Say action with unknown character "${character}"`);
-					}
-				} else if (action === 'choice') {
-					const actions = props.slice(1);
-
-					if (actions.every((choice) => !Array.isArray(choice))) {
-						for (let i = 1; i < props.length; i++) {
-							const choice = props[i];
-
-							props[i] = [
-								choice.title,
-								flatActions(choice.children),
-								choice.active,
-								choice.visible,
-								choice.onSelect,
-								choice.image,
-							];
-						}
-					} else {
-						for (let i = 1; i < props.length; i++) {
-							const choice = props[i];
-
-							if (Array.isArray(choice)) {
-								choice[1] = flatActions(choice[1]);
-							}
-						}
-					}
-				} else if (action === 'condition') {
-					const actions = props[1];
-
-					for (const key in actions) {
-						actions[key] = flatActions(actions[key]);
-					}
-				}
-
-				if (preloadAssets === 'blocking') {
-					huntAssets({
-						action: action as any,
-						props: props as any,
-
-						mode: preloadAssets,
-						characters,
-
-						lang: getLanguageFromStore(storageData),
-						volume: getVolumeFromStore(storageData),
-
-						handle: enqueueAssetForPreloading,
-					});
-				}
-
-				return [action, ...props] as ValidAction;
-			};
-		},
-	});
-	// #endregion
 
 	const getDefaultSave = (state: $State) => {
 		return [
@@ -1126,7 +1056,7 @@ const novely = <
 	};
 
 	// #region Match Action
-	const match = matchAction(matchActionOptions, {
+	const { match, nativeActions } = matchAction(matchActionOptions, {
 		wait({ ctx, data, push }, [time]) {
 			if (ctx.meta.restoring) return;
 
@@ -1533,6 +1463,16 @@ const novely = <
 	});
 	// #endregion
 
+	// #region Action
+	const action = buildActionObject({
+		rendererActions: renderer.actions,
+		nativeActions,
+		characters,
+		preloadAssets,
+		storageData
+	});
+	// #endregion
+
 	// #region Render Function
 	const render = (ctx: Context) => {
 		const stack = useStack(ctx);
@@ -1664,7 +1604,8 @@ const novely = <
 		 */
 		action: action as Actions,
 		/**
-		 * @deprecated Will be removed BUT replaced with state passed into actions as a parameter
+		 * State bound to `$MAIN` game context
+		 * @deprecated Use `state` function provided from action arguments
 		 */
 		state: getStateFunction(MAIN_CONTEXT_KEY),
 		/**

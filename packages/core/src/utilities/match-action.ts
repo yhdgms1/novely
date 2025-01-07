@@ -47,10 +47,10 @@ type MatchActionHandlers = {
 	onBeforeActionCall: (payload: OnBeforeActionCallPayload) => void;
 };
 
-const matchAction = <M extends MatchActionMapComplete>(callbacks: MatchActionHandlers, values: M) => {
+const matchAction = (callbacks: MatchActionHandlers, values: MatchActionMapComplete) => {
 	const { getContext, onBeforeActionCall, push, forward } = callbacks;
 
-	return (action: keyof MatchActionMapComplete, props: any, { ctx, data }: MatchActionParameters) => {
+	const match = (action: keyof MatchActionMapComplete, props: any, { ctx, data }: MatchActionParameters) => {
 		const context = typeof ctx === 'string' ? getContext(ctx) : ctx;
 
 		onBeforeActionCall({
@@ -78,6 +78,11 @@ const matchAction = <M extends MatchActionMapComplete>(callbacks: MatchActionHan
 			props,
 		);
 	};
+
+	return {
+		match,
+		nativeActions: Object.keys(values)
+	}
 };
 
 export { matchAction };

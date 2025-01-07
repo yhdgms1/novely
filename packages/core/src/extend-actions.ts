@@ -1,6 +1,8 @@
 import type { ValidAction } from './action';
 import type { Assign } from './types';
 
+type Part = Record<string, (...args: any[]) => ValidAction>;
+
 /**
  * Extens core action with custom actions
  * @param base Actions object you will extend, `engine.action`
@@ -14,18 +16,11 @@ import type { Assign } from './types';
  * })
  * ```
  */
-const extendAction = <
-	Part0 extends Record<string, (...args: any[]) => ValidAction>,
-	Part1 extends Record<string, (...args: any[]) => ValidAction>,
->(
-	base: Part0,
-	extension: Part1,
-): Readonly<Assign<Part0, Part1>> => {
-	return new Proxy({} as Readonly<Assign<Part0, Part1>>, {
-		get(_, key, receiver) {
-			return Reflect.get(key in extension ? extension : base, key, receiver);
-		},
-	});
+const extendAction = <Part0 extends Part, Part1 extends Part>(base: Part0, extension: Part1): Readonly<Assign<Part0, Part1>> => {
+	return {
+		...extension,
+		...base
+	}
 };
 
 export { extendAction };
