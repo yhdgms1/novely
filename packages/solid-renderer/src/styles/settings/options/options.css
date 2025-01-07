@@ -1,14 +1,14 @@
 .settings__options {
-	width: 100%;
+	flex-grow: 1;
 
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(50%, 1fr));
-	justify-content: center;
+	display: flex;
+	flex-direction: column;
 	align-items: center;
+	justify-content: center;
 }
 
 @media (max-aspect-ratio: 0.8) {
 	.settings__options {
-		grid-template-columns: 1fr;
+		flex-grow: unset;
 	}
 }

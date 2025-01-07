@@ -12,7 +12,3 @@
 		flex-direction: column-reverse;
 	}
 }
-
-.settings--hidden {
-	display: none;
-}

@@ -1,3 +1,9 @@
 .select__select-container {
 	position: relative;
 }
+
+@media (max-aspect-ratio: 0.8) {
+	.select__select-container {
+		min-width: 70%;
+	}
+}

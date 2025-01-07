@@ -14,27 +14,15 @@
 
 	font-size: 1rem;
 
-	max-width: 100%;
+	width: calc(100% - (var(--select-box-shadow-spread-radius, 0.25rem) * 2));
 
 	border-radius: .25rem;
 }
 
-@supports (-webkit-appearance: none) {
+ @supports (-webkit-appearance: none) {
 	.select__select {
 		appearance: none;
 
 		padding-right: 2rem;
-	}
-}
-
-@media (max-aspect-ratio: 0.8) {
-	.select__select {
-		min-width: calc(70% - var(--select-box-shadow-spread-radius, 0.25rem) * 2);
-	}
-}
-
-@media (max-aspect-ratio: 0.26) {
-	.select__select {
-		min-width: 100%;
 	}
 }
