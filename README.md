@@ -51,6 +51,12 @@ engine.script({
 })
 ```
 
+## Donations
+Your support is appreciated! You can make a donation to help keep this project alive:
+
+- **Toncoin (TON):** `UQDP7u4ZgCkNkk4jGcTkhmlWl6pXtXoJZpCUAH7pj_BDWjpZ`
+- **Tether (USDT-TRC20):** `TW3nWLvz6zQLg4SRLdLxfj2Qt4KoH248aW`
+
 ## License
 
 Novely is [ISC licensed](https://github.com/yhdgms1/novely/blob/main/license).
