@@ -2,6 +2,12 @@
 
 Will give a way to dynamically dress characters.
 
+<div style="width: 100%; display: flex; justify-content: flex-start;">
+  <img alt="" src="https://raw.githubusercontent.com/yhdgms1/novely/main/packages/dynamic-character/preview.jpg" style="max-height: 20vh; max-width: 100vw;" />
+</div>
+
+## Usage
+
 ```ts
 import { generateEmotions } from '@novely/dynamic-character';
 import '@novely/dynamic-character/dist/index.css';
