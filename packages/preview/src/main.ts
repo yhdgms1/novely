@@ -126,9 +126,6 @@ const engine = novely({
 	],
 
 	onUnknownSceneHit: async (scene) => {
-		// One scene may be ran multilpe times
-		// It would be better to run once scene only once. Keep promise somewhere and return it.
-
 		if (scene === 'part_2') {
 			await new Promise((r) => setTimeout(r, 1000));
 

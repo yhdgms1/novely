@@ -1,5 +1,5 @@
 import { dequal } from 'dequal/lite';
-import { throttle } from 'es-toolkit/function';
+import { memoize, throttle } from 'es-toolkit/function';
 import { merge as deepmerge } from 'es-toolkit/object';
 import { DEV } from 'esm-env';
 import { klona } from 'klona/full';
@@ -107,7 +107,7 @@ const novely = <
 	saveOnUnload = true,
 	startKey = 'start',
 	defaultTypewriterSpeed = DEFAULT_TYPEWRITER_SPEED,
-	onUnknownSceneHit = noop,
+	onUnknownSceneHit: onUnknownSceneHitRaw = noop,
 }: NovelyInit<$Language, $Characters, $State, $Data, $Actions>) => {
 	/**
 	 * All action functions
@@ -129,6 +129,8 @@ const novely = <
 
 	let initialScreenWasShown = false;
 	let destroyed = false;
+
+	const onUnknownSceneHit = memoize(onUnknownSceneHitRaw);
 
 	/**
 	 * Saves timestamps created in this session
