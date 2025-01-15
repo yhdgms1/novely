@@ -2,7 +2,7 @@ import { removeTagsFromHTML } from '$utils';
 import type { Context } from '@novely/core';
 import type { VoidComponent } from 'solid-js';
 import { createSignal, createEffect, For, Show } from 'solid-js';
-import { Icon, Modal } from '$components';
+import { Icon, Modal, Await } from '$components';
 import { createAudio } from '@novely/renderer-toolkit';
 import { useData } from '$context';
 
@@ -73,68 +73,74 @@ const DialogOverview: VoidComponent<DialogOverviewProps> = (props) => {
 			<div class="dialog-overview__body">
 				<table class="dialog-overview__list" ref={setScrollArea}>
 					<Show when={props.shown} keyed>
-						<For each={data.options.getDialogOverview()}>
-							{(entry) => (
-								<tr class="dialog-overview__list-item">
-									<td class="dialog-overview__list-item__name">
-										<span>{removeTagsFromHTML(entry.name)}</span>
-									</td>
+						<Await for={data.options.getDialogOverview()}>
+							{(entries) => (
+								<For each={entries()}>
+									{(entry) => (
+										<tr class="dialog-overview__list-item">
+											<td class="dialog-overview__list-item__name">
+												<span>{removeTagsFromHTML(entry.name)}</span>
+											</td>
 
-									<td>
-										<Show when={entry.voice}>
-											<button
-												type="button"
-												class="dialog-overview__button-audio-control"
-												onClick={async () => {
-													if (!entry.voice) return;
+											<td>
+												<Show when={entry.voice}>
+													<button
+														type="button"
+														class="dialog-overview__button-audio-control"
+														onClick={async () => {
+															if (!entry.voice) return;
 
-													const voice = props.audio.getAudio('voice', entry.voice);
-													const source = currentlyPlayingSource();
+															const voice = props.audio.getAudio('voice', entry.voice);
+															const source = currentlyPlayingSource();
 
-													if (currentlyPlayingSource() === entry.voice) {
-														await voice.stop();
+															if (currentlyPlayingSource() === entry.voice) {
+																await voice.stop();
 
-														setCurrentlyPlaying(null);
-														setCurrentlyPlayingSource('');
-													} else {
-														if (source) {
-															const previous = props.audio.getAudio('voice', source);
-
-															await previous.stop();
-														}
-
-														setCurrentlyPlaying(voice);
-														setCurrentlyPlayingSource(entry.voice);
-
-														await voice.reset();
-														await voice.play();
-
-														const currentPlayingId = ++playingId;
-
-														voice.onEnded(() => {
-															if (currentPlayingId === playingId) {
 																setCurrentlyPlaying(null);
 																setCurrentlyPlayingSource('');
-															}
-														});
-													}
-												}}
-											>
-												<Icon
-													icon={
-														currentlyPlayingSource() === entry.voice ? '#novely-stop-icon' : '#novely-play-icon'
-													}
-												/>
-											</button>
-										</Show>
-									</td>
+															} else {
+																if (source) {
+																	const previous = props.audio.getAudio('voice', source);
 
-									<td class="dialog-overview__list-item__text">
-										<span>{removeTagsFromHTML(entry.text)}</span>
-									</td>
-								</tr>
+																	await previous.stop();
+																}
+
+																setCurrentlyPlaying(voice);
+																setCurrentlyPlayingSource(entry.voice);
+
+																await voice.reset();
+																await voice.play();
+
+																const currentPlayingId = ++playingId;
+
+																voice.onEnded(() => {
+																	if (currentPlayingId === playingId) {
+																		setCurrentlyPlaying(null);
+																		setCurrentlyPlayingSource('');
+																	}
+																});
+															}
+														}}
+													>
+														<Icon
+															icon={
+																currentlyPlayingSource() === entry.voice
+																	? '#novely-stop-icon'
+																	: '#novely-play-icon'
+															}
+														/>
+													</button>
+												</Show>
+											</td>
+
+											<td class="dialog-overview__list-item__text">
+												<span>{removeTagsFromHTML(entry.text)}</span>
+											</td>
+										</tr>
+									)}
+								</For>
 							)}
-						</For>
+						</Await>
 					</Show>
 				</table>
 			</div>

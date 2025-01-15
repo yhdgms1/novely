@@ -10,3 +10,4 @@ export { Select } from './Select';
 export { Range } from './Range';
 export { DialogOverview } from './DialogOverview';
 export { Icon } from './Icon';
+export { Await } from './Await';

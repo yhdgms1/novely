@@ -246,10 +246,9 @@ type RendererInit<$Language extends Lang, $Characters extends Record<string, Cha
 	getLanguageDisplayName: (lang: Lang) => string;
 	getCharacterColor: (character: string) => string;
 	getCharacterAssets: (character: string, emotion: string) => string[];
+	getDialogOverview: () => Promise<DialogOverview>;
 
 	getResourseType: (url: string) => Promise<'image' | 'audio' | 'other'>;
-
-	getDialogOverview: () => DialogOverview;
 };
 
 export type {

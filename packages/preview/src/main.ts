@@ -36,7 +36,7 @@ const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidR
 
 const storage = flexStorage({
 	adapter: adapterLocalStorage({
-		key: 'askdn',
+		key: 'askd2192n',
 	}),
 });
 
@@ -118,12 +118,25 @@ const engine = novely({
 	migrations: [
 		(saved) => {
 			if (saved && typeof saved === 'object' && 'saves' in saved && Array.isArray(saved.saves)) {
-				saved.saves = saved.saves.filter((item) => Array.isArray(item) && item[2][0] > 1714120271394);
+				saved.saves = saved.saves.filter((item) => Array.isArray(item) && item[2][0] > 1736950090610);
 			}
 
 			return saved;
 		},
 	],
+
+	onUnknownSceneHit: async (scene) => {
+		// One scene may be ran multilpe times
+		// It would be better to run once scene only once. Keep promise somewhere and return it.
+
+		if (scene === 'part_2') {
+			await new Promise((r) => setTimeout(r, 1000));
+
+			await engine.script({
+				part_2: [engine.action.showBackground('red'), engine.action.dialog('Lily', 'PART 2 HERE YO')],
+			});
+		}
+	},
 });
 
 const action = extendAction(engine.action, {
@@ -170,6 +183,11 @@ const action = extendAction(engine.action, {
 		return ['custom', fn];
 	},
 });
+
+true &&
+	engine.script({
+		start: [action.showBackground(outdoor), action.dialog('Lily', 'HELLO'), action.jump('part_2')],
+	});
 
 false &&
 	engine.script({
@@ -350,7 +368,7 @@ false &&
 		],
 	});
 
-true &&
+false &&
 	engine.script({
 		start: [
 			action.showBackground(outdoor),

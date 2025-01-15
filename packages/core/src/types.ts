@@ -370,6 +370,10 @@ interface NovelyInit<
 	 * Typewriter speed set by default
 	 */
 	defaultTypewriterSpeed?: TypewriterSpeed;
+	/**
+	 *
+	 */
+	onUnknownSceneHit?: (scene: string) => Thenable<void>;
 }
 
 type StateFunction<S extends State> = {

@@ -13,6 +13,7 @@ import {
 	isBlockStatement,
 	isBlockingAction,
 } from './assertions';
+import { DEV } from 'esm-env';
 
 // #region Is Exit Impossible
 const isExitImpossible = (path: Path) => {
@@ -38,15 +39,32 @@ const isExitImpossible = (path: Path) => {
 // #endregion
 
 // #region Refer
-const createReferFunction = (story: Story) => {
-	const refer = (path: Path) => {
+type CreateReferFunctionParams = {
+	story: Story;
+	onUnknownSceneHit: (scene: string) => Thenable<void>;
+};
+
+const createReferFunction = ({ story, onUnknownSceneHit }: CreateReferFunctionParams) => {
+	const refer = async (path: Path) => {
 		let current: any = story;
 		let precurrent: any = story;
 
 		const blocks: any[] = [];
 
-		for (const [type, val] of path) {
+		for await (const [type, val] of path) {
 			if (type === 'jump') {
+				if (!current[val]) {
+					await onUnknownSceneHit(val);
+				}
+
+				if (DEV && !story[val]) {
+					throw new Error(`Attempt to jump to unknown scene "${val}"`);
+				}
+
+				if (DEV && story[val].length === 0) {
+					throw new Error(`Attempt to jump to empty scene "${val}"`);
+				}
+
 				precurrent = story;
 				current = current[val];
 			} else if (type === null) {
@@ -83,7 +101,7 @@ type ExitPathConfig = {
 };
 
 // #region Exit Path
-const exitPath = ({ path, refer, onExitImpossible }: ExitPathConfig) => {
+const exitPath = async ({ path, refer, onExitImpossible }: ExitPathConfig) => {
 	const last = path.at(-1);
 	const ignore: ('choice:exit' | 'condition:exit' | 'block:exit')[] = [];
 
@@ -93,7 +111,7 @@ const exitPath = ({ path, refer, onExitImpossible }: ExitPathConfig) => {
 	 * - should be an array
 	 * - first element is action name
 	 */
-	if (!isAction(refer(path))) {
+	if (!isAction(await refer(path))) {
 		if (last && isNull(last[0]) && isNumber(last[1])) {
 			last[1]--;
 		} else {
@@ -102,7 +120,7 @@ const exitPath = ({ path, refer, onExitImpossible }: ExitPathConfig) => {
 	}
 
 	if (isExitImpossible(path)) {
-		const referred = refer(path);
+		const referred = await refer(path);
 
 		if (isAction(referred) && isSkippedDuringRestore(referred[0])) {
 			onExitImpossible?.();
@@ -156,7 +174,7 @@ const exitPath = ({ path, refer, onExitImpossible }: ExitPathConfig) => {
 		 * - remove that item
 		 * - close another block
 		 */
-		if (!isAction(refer(path))) {
+		if (!isAction(await refer(path))) {
 			path.pop();
 			continue;
 		}
@@ -194,14 +212,18 @@ type CollectActionsBeforeBlockingActionOptions = {
 	clone: CloneFN;
 };
 
-const collectActionsBeforeBlockingAction = ({ path, refer, clone }: CollectActionsBeforeBlockingActionOptions) => {
+const collectActionsBeforeBlockingAction = async ({
+	path,
+	refer,
+	clone,
+}: CollectActionsBeforeBlockingActionOptions) => {
 	const collection: Exclude<ValidAction, ValidAction[]>[] = [];
 
-	let action = refer(path);
+	let action = await refer(path);
 
 	while (true) {
 		if (action == undefined) {
-			const { exitImpossible } = exitPath({
+			const { exitImpossible } = await exitPath({
 				path,
 				refer,
 			});
@@ -233,7 +255,7 @@ const collectActionsBeforeBlockingAction = ({ path, refer, clone }: CollectActio
 
 					virtualPath.push(['choice', i], [null, 0]);
 
-					const innerActions = collectActionsBeforeBlockingAction({
+					const innerActions = await collectActionsBeforeBlockingAction({
 						path: virtualPath,
 						refer,
 						clone,
@@ -250,7 +272,7 @@ const collectActionsBeforeBlockingAction = ({ path, refer, clone }: CollectActio
 
 					virtualPath.push(['condition', condition], [null, 0]);
 
-					const innerActions = collectActionsBeforeBlockingAction({
+					const innerActions = await collectActionsBeforeBlockingAction({
 						path: virtualPath,
 						refer,
 						clone,
@@ -279,7 +301,7 @@ const collectActionsBeforeBlockingAction = ({ path, refer, clone }: CollectActio
 			nextPath(path);
 		}
 
-		action = refer(path);
+		action = await refer(path);
 	}
 
 	return collection;
@@ -312,12 +334,23 @@ const getOppositeAction = (action: 'showCharacter' | 'playSound' | 'playMusic' |
 // #endregion
 
 // #region Get Actions From Path
-/**
- * @param story A story object
- * @param path A path by that actions will be gathered
- * @param filter true — actions that should be skipped would not be returned
- */
-const getActionsFromPath = (story: Story, path: Path, filter: boolean) => {
+type GetActionsFromPathParams = {
+	/**
+	 * A story object
+	 */
+	story: Story;
+	/**
+	 *  A path by that actions will be gathered
+	 */
+	path: Path;
+	/**
+	 * true — actions that should be skipped would not be returned
+	 */
+	filter: boolean;
+	onUnknownSceneHit: (scene: string) => Thenable<void>;
+};
+
+const getActionsFromPath = async ({ story, path, filter, onUnknownSceneHit }: GetActionsFromPathParams) => {
 	/**
 	 * Current item in the story
 	 */
@@ -357,8 +390,20 @@ const getActionsFromPath = (story: Story, path: Path, filter: boolean) => {
 	const queue = [] as Exclude<ValidAction, ValidAction[]>[];
 	const blocks = [];
 
-	for (const [type, val] of path) {
+	for await (const [type, val] of path) {
 		if (type === 'jump') {
+			if (!current[val]) {
+				await onUnknownSceneHit(val);
+			}
+
+			if (DEV && !story[val]) {
+				throw new Error(`Attempt to jump to unknown scene "${val}"`);
+			}
+
+			if (DEV && story[val].length === 0) {
+				throw new Error(`Attempt to jump to empty scene "${val}"`);
+			}
+
 			precurrent = story;
 			current = current[val];
 		} else if (type === null) {

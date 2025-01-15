@@ -107,6 +107,7 @@ const novely = <
 	saveOnUnload = true,
 	startKey = 'start',
 	defaultTypewriterSpeed = DEFAULT_TYPEWRITER_SPEED,
+	onUnknownSceneHit = noop,
 }: NovelyInit<$Language, $Characters, $State, $Data, $Actions>) => {
 	/**
 	 * All action functions
@@ -516,7 +517,13 @@ const novely = <
 
 		renderer.ui.showScreen('game');
 
-		const { queue, skip, skipPreserve } = getActionsFromPath(story, path, false);
+		const { queue, skip, skipPreserve } = await getActionsFromPath({
+			story,
+			path,
+			filter: false,
+			onUnknownSceneHit,
+		});
+
 		const {
 			run,
 			keep: { keep, characters, audio },
@@ -526,7 +533,12 @@ const novely = <
 		});
 
 		if (previous) {
-			const { queue: prevQueue } = getActionsFromPath(story, previous[0], false);
+			const { queue: prevQueue } = await getActionsFromPath({
+				story,
+				path: previous[0],
+				filter: false,
+				onUnknownSceneHit,
+			});
 
 			for (let i = prevQueue.length - 1; i > queue.length - 1; i--) {
 				const element = prevQueue[i];
@@ -604,13 +616,16 @@ const novely = <
 			context.meta.restoring = false;
 		}
 
-		render(context);
+		await render(context);
 
 		context.meta.restoring = context.meta.goingBack = false;
 	};
 	// #endregion
 
-	const refer = createReferFunction(story);
+	const refer = createReferFunction({
+		story,
+		onUnknownSceneHit,
+	});
 
 	// #region Exit Function
 	/**
@@ -729,7 +744,13 @@ const novely = <
 
 		const [path, data] = save;
 
-		const { queue } = getActionsFromPath(story, path, true);
+		const { queue } = await getActionsFromPath({
+			story,
+			path,
+			filter: true,
+			onUnknownSceneHit,
+		});
+
 		const ctx = renderer.getContext(name);
 
 		/**
@@ -856,7 +877,7 @@ const novely = <
 		return String(c) || '';
 	};
 
-	const getDialogOverview = () => {
+	const getDialogOverview = async () => {
 		/**
 		 * Dialog Overview is possible only in main context
 		 */
@@ -870,7 +891,12 @@ const novely = <
 			return [];
 		}
 
-		const { queue } = getActionsFromPath(story, save[0], false);
+		const { queue } = await getActionsFromPath({
+			story,
+			path: save[0],
+			filter: false,
+			onUnknownSceneHit,
+		});
 
 		const [lang] = storageData.get().meta;
 
@@ -885,7 +911,7 @@ const novely = <
 		/**
 		 * For every available state snapshot find dialog corresponding to it
 		 */
-		for (let p = 0, a = stateSnapshots.length, i = queue.length - 1; a > 0; i--) {
+		for (let p = 0, a = stateSnapshots.length, i = queue.length - 1; a > 0 && i > 0; i--) {
 			const action = queue[i];
 
 			if (action[0] === 'dialog') {
@@ -896,7 +922,7 @@ const novely = <
 				/**
 				 * Search for the most recent `voice` action before current dialog
 				 */
-				for (let j = i - 1; j > p; j--) {
+				for (let j = i - 1; j > p && j > 0; j--) {
 					const action = queue[j];
 
 					if (isUserRequiredAction(action) || isSkippedDuringRestore(action[0])) break;
@@ -1017,13 +1043,13 @@ const novely = <
 
 			if (!ctx.meta.preview) interactivity(true);
 		},
-		onBeforeActionCall({ action, props, ctx }) {
+		async onBeforeActionCall({ action, props, ctx }) {
 			if (preloadAssets !== 'automatic') return;
 			if (ctx.meta.preview || ctx.meta.restoring) return;
 			if (!isBlockingAction([action, ...props] as unknown as Exclude<ValidAction, ValidAction[]>)) return;
 
 			try {
-				const collection = collectActionsBeforeBlockingAction({
+				const collection = await collectActionsBeforeBlockingAction({
 					path: nextPath(clone(useStack(ctx).value[0])),
 					refer,
 					clone,
@@ -1264,14 +1290,6 @@ const novely = <
 			});
 		},
 		jump({ ctx, data }, [scene]) {
-			if (DEV && !story[scene]) {
-				throw new Error(`Attempt to jump to unknown scene "${scene}"`);
-			}
-
-			if (DEV && story[scene].length === 0) {
-				throw new Error(`Attempt to jump to empty scene "${scene}"`);
-			}
-
 			const stack = useStack(ctx);
 
 			/**
@@ -1406,10 +1424,10 @@ const novely = <
 
 			ctx.text(string, forward);
 		},
-		exit({ ctx, data }) {
+		async exit({ ctx, data }) {
 			if (ctx.meta.restoring) return;
 
-			const { exitImpossible } = exitPath({
+			const { exitImpossible } = await exitPath({
 				path: useStack(ctx).value[0],
 				refer: refer,
 				onExitImpossible: () => {
@@ -1474,11 +1492,11 @@ const novely = <
 	// #endregion
 
 	// #region Render Function
-	const render = (ctx: Context) => {
+	const render = async (ctx: Context) => {
 		const stack = useStack(ctx);
 		const [path, state] = stack.value;
 
-		const referred = refer(path);
+		const referred = await refer(path);
 
 		if (isAction(referred)) {
 			const [action, ...props] = referred;
