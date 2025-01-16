@@ -1,5 +1,5 @@
 import { dequal } from 'dequal/lite';
-import { throttle } from 'es-toolkit/function';
+import { memoize, throttle } from 'es-toolkit/function';
 import { merge as deepmerge } from 'es-toolkit/object';
 import { DEV } from 'esm-env';
 import { klona } from 'klona/full';
@@ -107,13 +107,13 @@ const novely = <
 	saveOnUnload = true,
 	startKey = 'start',
 	defaultTypewriterSpeed = DEFAULT_TYPEWRITER_SPEED,
+	storyOptions = { mode: 'static' },
 }: NovelyInit<$Language, $Characters, $State, $Data, $Actions>) => {
-	/**
-	 * All action functions
-	 */
-	type Actions = $Actions &
-		ActionProxy<$Characters, $Language, $State> &
-		VirtualActions<$Characters, $Language, $State>;
+	type $ActionProxy = ActionProxy<$Characters, $Language, $State>;
+	type $VirtualActions = VirtualActions<$Characters, $Language, $State>;
+
+	// All action functions
+	type Actions = $Actions & $ActionProxy & $VirtualActions;
 
 	const languages = Object.keys(translation) as $Language[];
 
@@ -129,6 +129,19 @@ const novely = <
 	let initialScreenWasShown = false;
 	let destroyed = false;
 
+	if (storyOptions.mode === 'dynamic') {
+		storyOptions.preloadSaves ??= 4;
+	}
+
+	const storyLoad = storyOptions.mode === 'static' ? noop : storyOptions.load;
+	const onUnknownSceneHit = memoize(async (scene: string) => {
+		const part = await storyLoad(scene);
+
+		if (part) {
+			await script(part);
+		}
+	});
+
 	/**
 	 * Saves timestamps created in this session
 	 */
@@ -137,31 +150,18 @@ const novely = <
 	};
 
 	const scriptBase = async (part: Story) => {
-		/**
-		 * In case script was called after destroy
-		 */
+		// In case script was called after destroy
 		if (destroyed) return;
 
 		Object.assign(story, flatStory(part));
 
-		let loadingIsShown = false;
-
-		/**
-		 * This is the first `script` call, likely data did not loaded yet
-		 */
+		// This is the first `script` call, likely data did not loaded yet
 		if (!initialScreenWasShown) {
 			renderer.ui.showLoading();
-			loadingIsShown = true;
 		}
 
 		if (preloadAssets === 'blocking' && ASSETS_TO_PRELOAD.size > 0) {
-			/**
-			 * Likely updating this will not break anything, but just to be sure nothing breaks
-			 * We want to avoid flashes, and who knows how some renderer will use it
-			 */
-			if (!loadingIsShown) {
-				renderer.ui.showLoading();
-			}
+			renderer.ui.showLoading();
 
 			await handleAssetsPreloading({
 				...renderer.misc,
@@ -256,13 +256,30 @@ const novely = <
 		dataLoaded: false,
 	});
 
-	const onDataLoadedPromise = ({ cancelled }: Awaited<ControlledPromise<void>>) => {
+	const onDataLoadedPromise = async ({ cancelled }: Awaited<ControlledPromise<void>>) => {
 		/**
 		 * Promise cancelled? Re-subscribe
 		 */
 		if (cancelled) {
 			dataLoaded.promise.then(onDataLoadedPromise);
 			return;
+		}
+
+		const preload = () => {
+			const saves = [...storageData.get().saves].reverse();
+			const sliced = saves.slice(0, storyOptions.mode === 'dynamic' ? storyOptions.preloadSaves : 0);
+
+			for (const [path] of sliced) {
+				referGuarded(path);
+			}
+		};
+
+		// It does not work really well. Do we need `blocking` strategy anyway?
+		// It is a waste of resources
+		if (preloadAssets === 'blocking') {
+			await preload();
+		} else {
+			void preload();
 		}
 
 		/**
@@ -432,6 +449,7 @@ const novely = <
 	};
 	// #endregion
 
+	// #region New Game
 	const newGame = () => {
 		if (!coreData.get().dataLoaded) return;
 
@@ -456,6 +474,7 @@ const novely = <
 
 		render(context);
 	};
+	// #endregion
 
 	/**
 	 * Set's the save and restores onto it
@@ -516,7 +535,17 @@ const novely = <
 
 		renderer.ui.showScreen('game');
 
-		const { queue, skip, skipPreserve } = getActionsFromPath(story, path, false);
+		const { found } = await refer(path);
+
+		if (found) context.loading(true);
+
+		const { queue, skip, skipPreserve } = await getActionsFromPath({
+			story,
+			path,
+			filter: false,
+			referGuarded,
+		});
+
 		const {
 			run,
 			keep: { keep, characters, audio },
@@ -526,7 +555,12 @@ const novely = <
 		});
 
 		if (previous) {
-			const { queue: prevQueue } = getActionsFromPath(story, previous[0], false);
+			const { queue: prevQueue } = await getActionsFromPath({
+				story,
+				path: previous[0],
+				filter: false,
+				referGuarded,
+			});
 
 			for (let i = prevQueue.length - 1; i > queue.length - 1; i--) {
 				const element = prevQueue[i];
@@ -575,6 +609,8 @@ const novely = <
 			});
 		}
 
+		context.loading(false);
+
 		const lastQueueItem = queue.at(-1);
 		const lastQueueItemRequiresUserAction = lastQueueItem && isBlockingAction(lastQueueItem);
 
@@ -604,13 +640,16 @@ const novely = <
 			context.meta.restoring = false;
 		}
 
-		render(context);
+		await render(context);
 
 		context.meta.restoring = context.meta.goingBack = false;
 	};
 	// #endregion
 
-	const refer = createReferFunction(story);
+	const { refer, referGuarded } = createReferFunction({
+		story,
+		onUnknownSceneHit,
+	});
 
 	// #region Exit Function
 	/**
@@ -729,8 +768,20 @@ const novely = <
 
 		const [path, data] = save;
 
-		const { queue } = getActionsFromPath(story, path, true);
 		const ctx = renderer.getContext(name);
+
+		const { found } = await refer(path);
+
+		if (found) ctx.loading(true);
+
+		const { queue } = await getActionsFromPath({
+			story,
+			path,
+			filter: true,
+			referGuarded,
+		});
+
+		ctx.loading(false);
 
 		/**
 		 * Enter restoring mode in action
@@ -856,7 +907,7 @@ const novely = <
 		return String(c) || '';
 	};
 
-	const getDialogOverview = () => {
+	const getDialogOverview = async () => {
 		/**
 		 * Dialog Overview is possible only in main context
 		 */
@@ -870,7 +921,12 @@ const novely = <
 			return [];
 		}
 
-		const { queue } = getActionsFromPath(story, save[0], false);
+		const { queue } = await getActionsFromPath({
+			story,
+			path: save[0],
+			filter: false,
+			referGuarded,
+		});
 
 		const [lang] = storageData.get().meta;
 
@@ -885,7 +941,7 @@ const novely = <
 		/**
 		 * For every available state snapshot find dialog corresponding to it
 		 */
-		for (let p = 0, a = stateSnapshots.length, i = queue.length - 1; a > 0; i--) {
+		for (let p = 0, a = stateSnapshots.length, i = queue.length - 1; a > 0 && i > 0; i--) {
 			const action = queue[i];
 
 			if (action[0] === 'dialog') {
@@ -896,7 +952,7 @@ const novely = <
 				/**
 				 * Search for the most recent `voice` action before current dialog
 				 */
-				for (let j = i - 1; j > p; j--) {
+				for (let j = i - 1; j > p && j > 0; j--) {
 					const action = queue[j];
 
 					if (isUserRequiredAction(action) || isSkippedDuringRestore(action[0])) break;
@@ -1017,15 +1073,15 @@ const novely = <
 
 			if (!ctx.meta.preview) interactivity(true);
 		},
-		onBeforeActionCall({ action, props, ctx }) {
+		async onBeforeActionCall({ action, props, ctx }) {
 			if (preloadAssets !== 'automatic') return;
 			if (ctx.meta.preview || ctx.meta.restoring) return;
 			if (!isBlockingAction([action, ...props] as unknown as Exclude<ValidAction, ValidAction[]>)) return;
 
 			try {
-				const collection = collectActionsBeforeBlockingAction({
+				const collection = await collectActionsBeforeBlockingAction({
 					path: nextPath(clone(useStack(ctx).value[0])),
-					refer,
+					refer: referGuarded,
 					clone,
 				});
 
@@ -1264,14 +1320,6 @@ const novely = <
 			});
 		},
 		jump({ ctx, data }, [scene]) {
-			if (DEV && !story[scene]) {
-				throw new Error(`Attempt to jump to unknown scene "${scene}"`);
-			}
-
-			if (DEV && story[scene].length === 0) {
-				throw new Error(`Attempt to jump to empty scene "${scene}"`);
-			}
-
 			const stack = useStack(ctx);
 
 			/**
@@ -1406,12 +1454,12 @@ const novely = <
 
 			ctx.text(string, forward);
 		},
-		exit({ ctx, data }) {
+		async exit({ ctx, data }) {
 			if (ctx.meta.restoring) return;
 
-			const { exitImpossible } = exitPath({
+			const { exitImpossible } = await exitPath({
 				path: useStack(ctx).value[0],
-				refer: refer,
+				refer: referGuarded,
 				onExitImpossible: () => {
 					match('end', [], {
 						ctx,
@@ -1474,11 +1522,21 @@ const novely = <
 	// #endregion
 
 	// #region Render Function
-	const render = (ctx: Context) => {
+	const render = async (ctx: Context) => {
 		const stack = useStack(ctx);
 		const [path, state] = stack.value;
 
-		const referred = refer(path);
+		const { found, value } = await refer(path);
+
+		if (found) {
+			ctx.loading(true);
+		}
+
+		const referred = await value;
+
+		if (found) {
+			ctx.loading(false);
+		}
 
 		if (isAction(referred)) {
 			const [action, ...props] = referred;

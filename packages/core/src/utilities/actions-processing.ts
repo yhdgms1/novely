@@ -13,6 +13,7 @@ import {
 	isBlockStatement,
 	isBlockingAction,
 } from './assertions';
+import { DEV } from 'esm-env';
 
 // #region Is Exit Impossible
 const isExitImpossible = (path: Path) => {
@@ -38,52 +39,96 @@ const isExitImpossible = (path: Path) => {
 // #endregion
 
 // #region Refer
-const createReferFunction = (story: Story) => {
-	const refer = (path: Path) => {
+type CreateReferFunctionParams = {
+	story: Story;
+	onUnknownSceneHit: (scene: string) => Thenable<void>;
+};
+
+const createReferFunction = ({ story, onUnknownSceneHit }: CreateReferFunctionParams) => {
+	const refer = async (path: Path) => {
+		/**
+		 * Are we ready to return a value.
+		 * We need to know are there any "unknown" scenes or not
+		 */
+		const { promise: ready, resolve: setReady } = Promise.withResolvers<boolean>();
+
 		let current: any = story;
 		let precurrent: any = story;
 
 		const blocks: any[] = [];
 
-		for (const [type, val] of path) {
-			if (type === 'jump') {
-				precurrent = story;
-				current = current[val];
-			} else if (type === null) {
-				precurrent = current;
-				current = current[val];
-			} else if (type === 'choice') {
-				blocks.push(precurrent);
-				current = current[(val as number) + 1][1];
-			} else if (type === 'condition') {
-				blocks.push(precurrent);
-				current = current[2][val];
-			} else if (type === 'block') {
-				blocks.push(precurrent);
-				current = story[val];
-			} else if (type === 'block:exit' || type === 'choice:exit' || type === 'condition:exit') {
-				current = blocks.pop();
-			}
-		}
+		const refer = async () => {
+			for (const [type, val] of path) {
+				if (type === 'jump') {
+					if (!current[val]) {
+						setReady(true);
+						await onUnknownSceneHit(val);
+					}
 
-		return current as Exclude<ValidAction, ValidAction[]>;
+					if (DEV && !story[val]) {
+						throw new Error(`Attempt to jump to unknown scene "${val}"`);
+					}
+
+					if (DEV && story[val].length === 0) {
+						throw new Error(`Attempt to jump to empty scene "${val}"`);
+					}
+
+					precurrent = story;
+					current = current[val];
+				} else if (type === null) {
+					precurrent = current;
+					current = current[val];
+				} else if (type === 'choice') {
+					blocks.push(precurrent);
+					current = current[(val as number) + 1][1];
+				} else if (type === 'condition') {
+					blocks.push(precurrent);
+					current = current[2][val];
+				} else if (type === 'block') {
+					blocks.push(precurrent);
+					current = story[val];
+				} else if (type === 'block:exit' || type === 'choice:exit' || type === 'condition:exit') {
+					current = blocks.pop();
+				}
+			}
+
+			setReady(false);
+
+			return current as Exclude<ValidAction, ValidAction[]>;
+		};
+
+		const value = refer();
+		const found = await ready;
+
+		return {
+			found,
+			value,
+		};
 	};
 
-	return refer;
+	const referGuarded = async (path: Path) => {
+		return await (await refer(path)).value;
+	};
+
+	return {
+		refer,
+		referGuarded,
+	};
 };
 
-type ReferFunction = ReturnType<typeof createReferFunction>;
+type GuardedReferFunction = ReturnType<typeof createReferFunction>['referGuarded'];
+
 // #endregion
 
 type ExitPathConfig = {
 	path: Path;
-	refer: ReferFunction;
+	refer: GuardedReferFunction;
 
 	onExitImpossible?: () => void;
 };
 
 // #region Exit Path
-const exitPath = ({ path, refer, onExitImpossible }: ExitPathConfig) => {
+const exitPath = async ({ path, refer, onExitImpossible }: ExitPathConfig) => {
 	const last = path.at(-1);
 	const ignore: ('choice:exit' | 'condition:exit' | 'block:exit')[] = [];
 
@@ -93,7 +138,7 @@ const exitPath = ({ path, refer, onExitImpossible }: ExitPathConfig) => {
 	 * - should be an array
 	 * - first element is action name
 	 */
-	if (!isAction(refer(path))) {
+	if (!isAction(await refer(path))) {
 		if (last && isNull(last[0]) && isNumber(last[1])) {
 			last[1]--;
 		} else {
@@ -102,7 +147,7 @@ const exitPath = ({ path, refer, onExitImpossible }: ExitPathConfig) => {
 	}
 
 	if (isExitImpossible(path)) {
-		const referred = refer(path);
+		const referred = await refer(path);
 
 		if (isAction(referred) && isSkippedDuringRestore(referred[0])) {
 			onExitImpossible?.();
@@ -156,7 +201,7 @@ const exitPath = ({ path, refer, onExitImpossible }: ExitPathConfig) => {
 		 * - remove that item
 		 * - close another block
 		 */
-		if (!isAction(refer(path))) {
+		if (!isAction(await refer(path))) {
 			path.pop();
 			continue;
 		}
@@ -190,18 +235,22 @@ const nextPath = (path: Path) => {
 // #region Collect Actions Before Blocking Action
 type CollectActionsBeforeBlockingActionOptions = {
 	path: Path;
-	refer: ReferFunction;
+	refer: GuardedReferFunction;
 	clone: CloneFN;
 };
 
-const collectActionsBeforeBlockingAction = ({ path, refer, clone }: CollectActionsBeforeBlockingActionOptions) => {
+const collectActionsBeforeBlockingAction = async ({
+	path,
+	refer,
+	clone,
+}: CollectActionsBeforeBlockingActionOptions) => {
 	const collection: Exclude<ValidAction, ValidAction[]>[] = [];
 
-	let action = refer(path);
+	let action = await refer(path);
 
 	while (true) {
 		if (action == undefined) {
-			const { exitImpossible } = exitPath({
+			const { exitImpossible } = await exitPath({
 				path,
 				refer,
 			});
@@ -233,7 +282,7 @@ const collectActionsBeforeBlockingAction = ({ path, refer, clone }: CollectActio
 
 					virtualPath.push(['choice', i], [null, 0]);
 
-					const innerActions = collectActionsBeforeBlockingAction({
+					const innerActions = await collectActionsBeforeBlockingAction({
 						path: virtualPath,
 						refer,
 						clone,
@@ -250,7 +299,7 @@ const collectActionsBeforeBlockingAction = ({ path, refer, clone }: CollectActio
 
 					virtualPath.push(['condition', condition], [null, 0]);
 
-					const innerActions = collectActionsBeforeBlockingAction({
+					const innerActions = await collectActionsBeforeBlockingAction({
 						path: virtualPath,
 						refer,
 						clone,
@@ -279,7 +328,7 @@ const collectActionsBeforeBlockingAction = ({ path, refer, clone }: CollectActio
 			nextPath(path);
 		}
 
-		action = refer(path);
+		action = await refer(path);
 	}
 
 	return collection;
@@ -312,12 +361,23 @@ const getOppositeAction = (action: 'showCharacter' | 'playSound' | 'playMusic' |
 // #endregion
 
 // #region Get Actions From Path
-/**
- * @param story A story object
- * @param path A path by that actions will be gathered
- * @param filter true — actions that should be skipped would not be returned
- */
-const getActionsFromPath = (story: Story, path: Path, filter: boolean) => {
+type GetActionsFromPathParams = {
+	/**
+	 * A story object
+	 */
+	story: Story;
+	/**
+	 *  A path by that actions will be gathered
+	 */
+	path: Path;
+	/**
+	 * true — actions that should be skipped would not be returned
+	 */
+	filter: boolean;
+	referGuarded: GuardedReferFunction;
+};
+
+const getActionsFromPath = async ({ story, path, filter, referGuarded }: GetActionsFromPathParams) => {
 	/**
 	 * Current item in the story
 	 */
@@ -356,6 +416,9 @@ const getActionsFromPath = (story: Story, path: Path, filter: boolean) => {
 
 	const queue = [] as Exclude<ValidAction, ValidAction[]>[];
 	const blocks = [];
+
+	// Will guard future usage
+	await referGuarded(path);
 
 	for (const [type, val] of path) {
 		if (type === 'jump') {
@@ -575,7 +638,7 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 	}
 
 	const run = async (match: (item: Exclude<ValidAction, ValidAction[]>) => Thenable<void>) => {
-		for await (const item of processedQueue) {
+		for (const item of processedQueue) {
 			const result = match(item);
 
 			if (isPromise(result)) {

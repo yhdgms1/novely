@@ -38,8 +38,19 @@ const Game: VoidComponent<GameProps> = (props) => {
 	const data = useData();
 	const { audio } = data;
 
-	const { text, dialog, characters, choice, input, background, custom, images, dialogOverviewShown, mood } =
-		destructure(from(props.$contextState));
+	const {
+		text,
+		dialog,
+		characters,
+		choice,
+		input,
+		background,
+		custom,
+		images,
+		dialogOverviewShown,
+		mood,
+		loading,
+	} = destructure(from(props.$contextState));
 
 	const rendererState = from(data.$rendererState);
 	const exitPromptShown = () => rendererState().exitPromptShown;
@@ -144,8 +155,8 @@ const Game: VoidComponent<GameProps> = (props) => {
 			<div
 				class="background"
 				style={{
-					'--background-color': bg().startsWith('url') ? undefined : bg(),
-					'--background-image': bg().startsWith('url') ? bg() : undefined,
+					'background-color': bg().startsWith('url') ? undefined : bg(),
+					'background-image': bg().startsWith('url') ? bg() : undefined,
 				}}
 			/>
 
@@ -497,6 +508,17 @@ const Game: VoidComponent<GameProps> = (props) => {
 				shown={Boolean(!props.isPreview && dialogOverviewShown())}
 				close={() => props.$contextState.setKey('dialogOverviewShown', false)}
 			/>
+
+			<Show when={loading()}>
+				<div class="loading overlay game">
+					<div class="loading__animation">
+						<div />
+						<div />
+						<div />
+						<div />
+					</div>
+				</div>
+			</Show>
 		</div>
 	);
 };

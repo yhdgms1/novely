@@ -16,3 +16,7 @@
 
 	inset: 0;
 }
+
+.loading.game {
+	z-index: 30;
+}

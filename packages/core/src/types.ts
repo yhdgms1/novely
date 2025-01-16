@@ -1,4 +1,4 @@
-import type { DefaultActionProxy, ValidAction } from './action';
+import type { DefaultActionProxy, Story, ValidAction } from './action';
 import type { Character } from './character';
 import type { Renderer, RendererInit } from './renderer';
 import type { NovelyStorage } from './storage';
@@ -145,6 +145,53 @@ type CharactersData<$Characters extends Record<string, Character<Lang>>> = {
 type AssetsPreloading = 'lazy' | 'blocking' | 'automatic';
 
 type CloneFN = <T>(value: T) => T;
+
+type StoryOptionsStatic = {
+	/**
+	 * Static mode means that story is static
+	 */
+	mode: 'static';
+};
+
+type StoryOptionsDynamic = {
+	/**
+	 * Dynamic mode means that story parts can be loaded dynamically
+	 */
+	mode: 'dynamic';
+	/**
+	 * Number of saves to preload story for
+	 * @default 4
+	 */
+	preloadSaves?: number;
+	/**
+	 * Function to dynamically load story parts.
+	 *
+	 * When engine find's unknown scene it will run this function.
+	 * @example
+	 * ```
+	 * const load = async (scene: string): Promise<Story> => {
+	 *   if (['part_2__act_1', 'part_2__act_2', 'part_2__act_3'].includes(scene)) {
+	 *     const { getStory } = await import('./part-2.ts');
+	 *
+	 *     return getStory(engine.action);
+	 *   }
+	 *
+	 *   if (scene === 'end') {
+	 *     return {
+	 *       'end': [
+	 *         engine.action.text('The End')
+	 *       ]
+	 *     }
+	 *   }
+	 *
+	 *   throw new Error(`Unknown scene: ${scene}`);
+	 * }
+	 * ```
+	 */
+	load: (scene: string) => Promise<Story>;
+};
+
+type StoryOptions = StoryOptionsStatic | StoryOptionsDynamic;
 
 interface NovelyInit<
 	$Language extends Lang,
@@ -370,6 +417,10 @@ interface NovelyInit<
 	 * Typewriter speed set by default
 	 */
 	defaultTypewriterSpeed?: TypewriterSpeed;
+	/**
+	 *
+	 */
+	storyOptions?: StoryOptions;
 }
 
 type StateFunction<S extends State> = {
