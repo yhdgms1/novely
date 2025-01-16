@@ -109,12 +109,11 @@ const novely = <
 	defaultTypewriterSpeed = DEFAULT_TYPEWRITER_SPEED,
 	storyOptions = { mode: 'static' },
 }: NovelyInit<$Language, $Characters, $State, $Data, $Actions>) => {
-	/**
-	 * All action functions
-	 */
-	type Actions = $Actions &
-		ActionProxy<$Characters, $Language, $State> &
-		VirtualActions<$Characters, $Language, $State>;
+	type $ActionProxy = ActionProxy<$Characters, $Language, $State>;
+	type $VirtualActions = VirtualActions<$Characters, $Language, $State>;
+
+	// All action functions
+	type Actions = $Actions & $ActionProxy & $VirtualActions;
 
 	const languages = Object.keys(translation) as $Language[];
 
@@ -134,8 +133,6 @@ const novely = <
 		storyOptions.preloadSaves ??= 4;
 	}
 
-	// todo: preload `n` saves
-
 	const storyLoad = storyOptions.mode === 'static' ? noop : storyOptions.load;
 	const onUnknownSceneHit = memoize(async (scene: string) => {
 		const part = await storyLoad(scene);
@@ -153,16 +150,12 @@ const novely = <
 	};
 
 	const scriptBase = async (part: Story) => {
-		/**
-		 * In case script was called after destroy
-		 */
+		// In case script was called after destroy
 		if (destroyed) return;
 
 		Object.assign(story, flatStory(part));
 
-		/**
-		 * This is the first `script` call, likely data did not loaded yet
-		 */
+		// This is the first `script` call, likely data did not loaded yet
 		if (!initialScreenWasShown) {
 			renderer.ui.showLoading();
 		}
@@ -261,10 +254,9 @@ const novely = <
 	const storageData = store(initialData);
 	const coreData = store<CoreData>({
 		dataLoaded: false,
-		afterJump: false,
 	});
 
-	const onDataLoadedPromise = ({ cancelled }: Awaited<ControlledPromise<void>>) => {
+	const onDataLoadedPromise = async ({ cancelled }: Awaited<ControlledPromise<void>>) => {
 		/**
 		 * Promise cancelled? Re-subscribe
 		 */
@@ -273,18 +265,22 @@ const novely = <
 			return;
 		}
 
-		const saves = [...storageData.get().saves]
-			.reverse()
-			.slice(0, storyOptions.mode === 'dynamic' ? storyOptions.preloadSaves : 0);
+		const preload = () => {
+			const saves = [...storageData.get().saves].reverse();
+			const sliced = saves.slice(0, storyOptions.mode === 'dynamic' ? storyOptions.preloadSaves : 0);
 
-		// todo: blocking preload strategy
-		const boo = async () => {
-			for (const [path] of saves) {
+			for (const [path] of sliced) {
 				referGuarded(path);
 			}
 		};
 
-		void boo();
+		// It does not work really well. Do we need `blocking` strategy anyway?
+		// It is a waste of resources
+		if (preloadAssets === 'blocking') {
+			await preload();
+		} else {
+			void preload();
+		}
 
 		/**
 		 * When promise is resolved data is marked loaded
@@ -1324,8 +1320,6 @@ const novely = <
 			});
 		},
 		jump({ ctx, data }, [scene]) {
-			coreData.update((data) => ((data.afterJump = true), data));
-
 			const stack = useStack(ctx);
 
 			/**
@@ -1532,28 +1526,17 @@ const novely = <
 		const stack = useStack(ctx);
 		const [path, state] = stack.value;
 
-		// todo: NOT THIS WAY
-		// todo: maybe add some action call stack to the context?
-		const isShowLoading = coreData.get().afterJump;
-		const isMainContext = ctx.id === MAIN_CONTEXT_KEY;
-
 		const { found, value } = await refer(path);
 
 		if (found) {
-			if (isMainContext && isShowLoading) {
-				ctx.loading(true);
-			}
-
-			await value;
-
-			if (isMainContext && isShowLoading) {
-				ctx.loading(false);
-			}
+			ctx.loading(true);
 		}
 
-		coreData.update((data) => ((data.afterJump = false), data));
-
 		const referred = await value;
+
+		if (found) {
+			ctx.loading(false);
+		}
 
 		if (isAction(referred)) {
 			const [action, ...props] = referred;

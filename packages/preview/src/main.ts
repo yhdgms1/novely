@@ -127,6 +127,7 @@ const engine = novely({
 
 	storyOptions: {
 		mode: 'dynamic',
+		preloadSaves: 9,
 		load: async (scene): Promise<Story> => {
 			console.log(`Load called ${scene}`);
 
@@ -138,6 +139,19 @@ const engine = novely({
 						engine.action.showBackground('red'),
 						engine.action.showCharacter('Lily', 'ok'),
 						engine.action.dialog('Lily', 'PART 2 HERE YO'),
+						engine.action.jump('part_3'),
+					],
+				};
+			}
+
+			if (scene === 'part_3') {
+				await new Promise((r) => setTimeout(r, 5000));
+
+				return {
+					part_3: [
+						engine.action.showBackground('hotpink'),
+						engine.action.showCharacter('Lily', 'ok'),
+						engine.action.dialog('Lily', 'This is part three'),
 					],
 				};
 			}

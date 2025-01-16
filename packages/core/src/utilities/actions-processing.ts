@@ -58,7 +58,7 @@ const createReferFunction = ({ story, onUnknownSceneHit }: CreateReferFunctionPa
 		const blocks: any[] = [];
 
 		const refer = async () => {
-			for await (const [type, val] of path) {
+			for (const [type, val] of path) {
 				if (type === 'jump') {
 					if (!current[val]) {
 						setReady(true);
@@ -638,7 +638,7 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 	}
 
 	const run = async (match: (item: Exclude<ValidAction, ValidAction[]>) => Thenable<void>) => {
-		for await (const item of processedQueue) {
+		for (const item of processedQueue) {
 			const result = match(item);
 
 			if (isPromise(result)) {
