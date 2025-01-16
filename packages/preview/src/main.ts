@@ -134,7 +134,11 @@ const engine = novely({
 				await new Promise((r) => setTimeout(r, 2700));
 
 				return {
-					part_2: [engine.action.showBackground('red'), engine.action.dialog('Lily', 'PART 2 HERE YO')],
+					part_2: [
+						engine.action.showBackground('red'),
+						engine.action.showCharacter('Lily', 'ok'),
+						engine.action.dialog('Lily', 'PART 2 HERE YO'),
+					],
 				};
 			}
 

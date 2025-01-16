@@ -155,8 +155,8 @@ const Game: VoidComponent<GameProps> = (props) => {
 			<div
 				class="background"
 				style={{
-					'--background-color': bg().startsWith('url') ? undefined : bg(),
-					'--background-image': bg().startsWith('url') ? bg() : undefined,
+					'background-color': bg().startsWith('url') ? undefined : bg(),
+					'background-image': bg().startsWith('url') ? bg() : undefined,
 				}}
 			/>
 

@@ -273,6 +273,19 @@ const novely = <
 			return;
 		}
 
+		const saves = [...storageData.get().saves]
+			.reverse()
+			.slice(0, storyOptions.mode === 'dynamic' ? storyOptions.preloadSaves : 0);
+
+		// todo: blocking preload strategy
+		const boo = async () => {
+			for (const [path] of saves) {
+				referGuarded(path);
+			}
+		};
+
+		void boo();
+
 		/**
 		 * When promise is resolved data is marked loaded
 		 */
