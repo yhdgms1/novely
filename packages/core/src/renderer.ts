@@ -122,6 +122,8 @@ type Context = {
 		start: () => void;
 	};
 
+	loading: (shown: boolean) => void;
+
 	meta: {
 		get restoring(): boolean;
 		set restoring(value: boolean);

@@ -107,7 +107,7 @@ const novely = <
 	saveOnUnload = true,
 	startKey = 'start',
 	defaultTypewriterSpeed = DEFAULT_TYPEWRITER_SPEED,
-	onUnknownSceneHit: onUnknownSceneHitRaw = noop,
+	storyOptions = { mode: 'static' },
 }: NovelyInit<$Language, $Characters, $State, $Data, $Actions>) => {
 	/**
 	 * All action functions
@@ -130,7 +130,20 @@ const novely = <
 	let initialScreenWasShown = false;
 	let destroyed = false;
 
-	const onUnknownSceneHit = memoize(onUnknownSceneHitRaw);
+	if (storyOptions.mode === 'dynamic') {
+		storyOptions.preloadSaves ??= 4;
+	}
+
+	// todo: preload `n` saves
+
+	const storyLoad = storyOptions.mode === 'static' ? noop : storyOptions.load;
+	const onUnknownSceneHit = memoize(async (scene: string) => {
+		const part = await storyLoad(scene);
+
+		if (part) {
+			await script(part);
+		}
+	});
 
 	/**
 	 * Saves timestamps created in this session
@@ -147,24 +160,15 @@ const novely = <
 
 		Object.assign(story, flatStory(part));
 
-		let loadingIsShown = false;
-
 		/**
 		 * This is the first `script` call, likely data did not loaded yet
 		 */
 		if (!initialScreenWasShown) {
 			renderer.ui.showLoading();
-			loadingIsShown = true;
 		}
 
 		if (preloadAssets === 'blocking' && ASSETS_TO_PRELOAD.size > 0) {
-			/**
-			 * Likely updating this will not break anything, but just to be sure nothing breaks
-			 * We want to avoid flashes, and who knows how some renderer will use it
-			 */
-			if (!loadingIsShown) {
-				renderer.ui.showLoading();
-			}
+			renderer.ui.showLoading();
 
 			await handleAssetsPreloading({
 				...renderer.misc,
@@ -257,6 +261,7 @@ const novely = <
 	const storageData = store(initialData);
 	const coreData = store<CoreData>({
 		dataLoaded: false,
+		afterJump: false,
 	});
 
 	const onDataLoadedPromise = ({ cancelled }: Awaited<ControlledPromise<void>>) => {
@@ -435,6 +440,7 @@ const novely = <
 	};
 	// #endregion
 
+	// #region New Game
 	const newGame = () => {
 		if (!coreData.get().dataLoaded) return;
 
@@ -459,6 +465,7 @@ const novely = <
 
 		render(context);
 	};
+	// #endregion
 
 	/**
 	 * Set's the save and restores onto it
@@ -519,11 +526,15 @@ const novely = <
 
 		renderer.ui.showScreen('game');
 
+		const { found } = await refer(path);
+
+		if (found) context.loading(true);
+
 		const { queue, skip, skipPreserve } = await getActionsFromPath({
 			story,
 			path,
 			filter: false,
-			onUnknownSceneHit,
+			referGuarded,
 		});
 
 		const {
@@ -539,7 +550,7 @@ const novely = <
 				story,
 				path: previous[0],
 				filter: false,
-				onUnknownSceneHit,
+				referGuarded,
 			});
 
 			for (let i = prevQueue.length - 1; i > queue.length - 1; i--) {
@@ -589,6 +600,8 @@ const novely = <
 			});
 		}
 
+		context.loading(false);
+
 		const lastQueueItem = queue.at(-1);
 		const lastQueueItemRequiresUserAction = lastQueueItem && isBlockingAction(lastQueueItem);
 
@@ -624,7 +637,7 @@ const novely = <
 	};
 	// #endregion
 
-	const refer = createReferFunction({
+	const { refer, referGuarded } = createReferFunction({
 		story,
 		onUnknownSceneHit,
 	});
@@ -746,14 +759,20 @@ const novely = <
 
 		const [path, data] = save;
 
+		const ctx = renderer.getContext(name);
+
+		const { found } = await refer(path);
+
+		if (found) ctx.loading(true);
+
 		const { queue } = await getActionsFromPath({
 			story,
 			path,
 			filter: true,
-			onUnknownSceneHit,
+			referGuarded,
 		});
 
-		const ctx = renderer.getContext(name);
+		ctx.loading(false);
 
 		/**
 		 * Enter restoring mode in action
@@ -897,7 +916,7 @@ const novely = <
 			story,
 			path: save[0],
 			filter: false,
-			onUnknownSceneHit,
+			referGuarded,
 		});
 
 		const [lang] = storageData.get().meta;
@@ -1053,7 +1072,7 @@ const novely = <
 			try {
 				const collection = await collectActionsBeforeBlockingAction({
 					path: nextPath(clone(useStack(ctx).value[0])),
-					refer,
+					refer: referGuarded,
 					clone,
 				});
 
@@ -1292,6 +1311,8 @@ const novely = <
 			});
 		},
 		jump({ ctx, data }, [scene]) {
+			coreData.update((data) => ((data.afterJump = true), data));
+
 			const stack = useStack(ctx);
 
 			/**
@@ -1431,7 +1452,7 @@ const novely = <
 
 			const { exitImpossible } = await exitPath({
 				path: useStack(ctx).value[0],
-				refer: refer,
+				refer: referGuarded,
 				onExitImpossible: () => {
 					match('end', [], {
 						ctx,
@@ -1498,7 +1519,28 @@ const novely = <
 		const stack = useStack(ctx);
 		const [path, state] = stack.value;
 
-		const referred = await refer(path);
+		// todo: NOT THIS WAY
+		// todo: maybe add some action call stack to the context?
+		const isShowLoading = coreData.get().afterJump;
+		const isMainContext = ctx.id === MAIN_CONTEXT_KEY;
+
+		const { found, value } = await refer(path);
+
+		if (found) {
+			if (isMainContext && isShowLoading) {
+				ctx.loading(true);
+			}
+
+			await value;
+
+			if (isMainContext && isShowLoading) {
+				ctx.loading(false);
+			}
+		}
+
+		coreData.update((data) => ((data.afterJump = false), data));
+
+		const referred = await value;
 
 		if (isAction(referred)) {
 			const [action, ...props] = referred;

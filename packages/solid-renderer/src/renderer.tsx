@@ -257,6 +257,9 @@ const createSolidRenderer = ({
 						text(content, resolve) {
 							handleTextAction($contextState, content, resolve);
 						},
+						loading(shown) {
+							$contextState.setKey('loading', shown);
+						},
 
 						audio: audio.context,
 

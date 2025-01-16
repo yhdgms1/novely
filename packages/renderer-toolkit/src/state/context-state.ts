@@ -224,6 +224,10 @@ type ContextState = {
 	 * Custom Action store
 	 */
 	custom: ContextStateCustomHandlers;
+	/**
+	 * Is loading shown
+	 */
+	loading: boolean;
 };
 
 const defaultEmpty = {} satisfies BaseDeepMap;
@@ -233,7 +237,7 @@ type ContextStateStore<Extension extends BaseDeepMap = typeof defaultEmpty> = Co
 const getDefaultContextState = (): ContextState => {
 	return {
 		background: {
-			background: '#000',
+			background: '#0000',
 		},
 		characters: {},
 		choice: {
@@ -262,6 +266,7 @@ const getDefaultContextState = (): ContextState => {
 			goingBack: false,
 			preview: false,
 		},
+		loading: false,
 	};
 };
 

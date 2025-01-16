@@ -1,4 +1,4 @@
-import { CustomHandler, EN, RU, TextContent, ValidAction, asset, extendAction, novely } from '@novely/core';
+import { CustomHandler, EN, RU, Story, TextContent, ValidAction, asset, extendAction, novely } from '@novely/core';
 import { adapterLocalStorage, cloneFunction, flexStorage } from '@novely/flex-storage';
 import { createSolidRenderer } from '@novely/solid-renderer';
 
@@ -125,14 +125,21 @@ const engine = novely({
 		},
 	],
 
-	onUnknownSceneHit: async (scene) => {
-		if (scene === 'part_2') {
-			await new Promise((r) => setTimeout(r, 1000));
+	storyOptions: {
+		mode: 'dynamic',
+		load: async (scene): Promise<Story> => {
+			console.log(`Load called ${scene}`);
 
-			await engine.script({
-				part_2: [engine.action.showBackground('red'), engine.action.dialog('Lily', 'PART 2 HERE YO')],
-			});
-		}
+			if (scene === 'part_2') {
+				await new Promise((r) => setTimeout(r, 2700));
+
+				return {
+					part_2: [engine.action.showBackground('red'), engine.action.dialog('Lily', 'PART 2 HERE YO')],
+				};
+			}
+
+			throw new Error(`Unknown scene: ${scene}`);
+		},
 	},
 });
 

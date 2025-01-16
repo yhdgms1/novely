@@ -46,56 +46,83 @@ type CreateReferFunctionParams = {
 
 const createReferFunction = ({ story, onUnknownSceneHit }: CreateReferFunctionParams) => {
 	const refer = async (path: Path) => {
+		/**
+		 * Are we ready to return a value.
+		 * We need to know are there any "unknown" scenes or not
+		 */
+		const { promise: ready, resolve: setReady } = Promise.withResolvers<boolean>();
+
 		let current: any = story;
 		let precurrent: any = story;
 
 		const blocks: any[] = [];
 
-		for await (const [type, val] of path) {
-			if (type === 'jump') {
-				if (!current[val]) {
-					await onUnknownSceneHit(val);
-				}
+		const refer = async () => {
+			for await (const [type, val] of path) {
+				if (type === 'jump') {
+					if (!current[val]) {
+						setReady(true);
+						await onUnknownSceneHit(val);
+					}
 
-				if (DEV && !story[val]) {
-					throw new Error(`Attempt to jump to unknown scene "${val}"`);
-				}
+					if (DEV && !story[val]) {
+						throw new Error(`Attempt to jump to unknown scene "${val}"`);
+					}
 
-				if (DEV && story[val].length === 0) {
-					throw new Error(`Attempt to jump to empty scene "${val}"`);
-				}
+					if (DEV && story[val].length === 0) {
+						throw new Error(`Attempt to jump to empty scene "${val}"`);
+					}
 
-				precurrent = story;
-				current = current[val];
-			} else if (type === null) {
-				precurrent = current;
-				current = current[val];
-			} else if (type === 'choice') {
-				blocks.push(precurrent);
-				current = current[(val as number) + 1][1];
-			} else if (type === 'condition') {
-				blocks.push(precurrent);
-				current = current[2][val];
-			} else if (type === 'block') {
-				blocks.push(precurrent);
-				current = story[val];
-			} else if (type === 'block:exit' || type === 'choice:exit' || type === 'condition:exit') {
-				current = blocks.pop();
+					precurrent = story;
+					current = current[val];
+				} else if (type === null) {
+					precurrent = current;
+					current = current[val];
+				} else if (type === 'choice') {
+					blocks.push(precurrent);
+					current = current[(val as number) + 1][1];
+				} else if (type === 'condition') {
+					blocks.push(precurrent);
+					current = current[2][val];
+				} else if (type === 'block') {
+					blocks.push(precurrent);
+					current = story[val];
+				} else if (type === 'block:exit' || type === 'choice:exit' || type === 'condition:exit') {
+					current = blocks.pop();
+				}
 			}
-		}
 
-		return current as Exclude<ValidAction, ValidAction[]>;
+			setReady(false);
+
+			return current as Exclude<ValidAction, ValidAction[]>;
+		};
+
+		const value = refer();
+		const found = await ready;
+
+		return {
+			found,
+			value,
+		};
 	};
 
-	return refer;
+	const referGuarded = async (path: Path) => {
+		return await (await refer(path)).value;
+	};
+
+	return {
+		refer,
+		referGuarded,
+	};
 };
 
-type ReferFunction = ReturnType<typeof createReferFunction>;
+type GuardedReferFunction = ReturnType<typeof createReferFunction>['referGuarded'];
+
 // #endregion
 
 type ExitPathConfig = {
 	path: Path;
-	refer: ReferFunction;
+	refer: GuardedReferFunction;
 
 	onExitImpossible?: () => void;
 };
@@ -208,7 +235,7 @@ const nextPath = (path: Path) => {
 // #region Collect Actions Before Blocking Action
 type CollectActionsBeforeBlockingActionOptions = {
 	path: Path;
-	refer: ReferFunction;
+	refer: GuardedReferFunction;
 	clone: CloneFN;
 };
 
@@ -347,10 +374,10 @@ type GetActionsFromPathParams = {
 	 * true — actions that should be skipped would not be returned
 	 */
 	filter: boolean;
-	onUnknownSceneHit: (scene: string) => Thenable<void>;
+	referGuarded: GuardedReferFunction;
 };
 
-const getActionsFromPath = async ({ story, path, filter, onUnknownSceneHit }: GetActionsFromPathParams) => {
+const getActionsFromPath = async ({ story, path, filter, referGuarded }: GetActionsFromPathParams) => {
 	/**
 	 * Current item in the story
 	 */
@@ -390,20 +417,11 @@ const getActionsFromPath = async ({ story, path, filter, onUnknownSceneHit }: Ge
 	const queue = [] as Exclude<ValidAction, ValidAction[]>[];
 	const blocks = [];
 
-	for await (const [type, val] of path) {
+	// Will guard future usage
+	await referGuarded(path);
+
+	for (const [type, val] of path) {
 		if (type === 'jump') {
-			if (!current[val]) {
-				await onUnknownSceneHit(val);
-			}
-
-			if (DEV && !story[val]) {
-				throw new Error(`Attempt to jump to unknown scene "${val}"`);
-			}
-
-			if (DEV && story[val].length === 0) {
-				throw new Error(`Attempt to jump to empty scene "${val}"`);
-			}
-
 			precurrent = story;
 			current = current[val];
 		} else if (type === null) {
