@@ -116,7 +116,3 @@ const { showPicker: showPickerYou, showCharacter: showYou } = createPickerAction
 });
 
 ```
-
-## Credits
-
-This project uses [Slidy](https://github.com/Valexr/Slidy) for drag-scrolling functionality.

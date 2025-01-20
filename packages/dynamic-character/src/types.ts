@@ -104,10 +104,6 @@ type DynCharacterOptions<
 		[Attribute in keyof Attribs]: keyof Attribs[Attribute] & string;
 	};
 	/**
-	 * Attributes to exclude from picker
-	 */
-	excludeAttributes?: (keyof Attribs & string)[];
-	/**
 	 * Translation
 	 */
 	translation: {
@@ -127,16 +123,10 @@ type DynCharacterOptions<
 				[Base in BaseKeys]: string;
 			};
 			/**
-			 * Tabs translations
+			 * Title translations
 			 */
-			tabs: {
-				/**
-				 * Base tab translation
-				 */
+			title: {
 				base: string;
-				/**
-				 * Attribute translations
-				 */
 				attributes: {
 					[Attribute in keyof Attribs]: string;
 				};
@@ -145,12 +135,12 @@ type DynCharacterOptions<
 			 * Translation of UI components
 			 */
 			ui: {
-				tablist: string;
 				variants: string;
 				slidesControl: string;
 				prevSlide: string;
 				nextSlide: string;
 				sumbit: string;
+				buy: string;
 			};
 		};
 	};
