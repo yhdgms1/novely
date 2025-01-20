@@ -2,7 +2,7 @@ import type { Component, JSX } from 'solid-js';
 import type { DynCharacterThis } from '../types';
 import { createSignal, createEffect, untrack, createSelector, For } from 'solid-js';
 
-type Props = {
+type SliderProps = {
 	initialSlideIndex: number;
 	slides: string[];
 	expanded: boolean;
@@ -12,7 +12,7 @@ type Props = {
 	onIndexChange: (currentIndex: number) => void;
 };
 
-const Slider: Component<Props> = (props) => {
+const Slider: Component<SliderProps> = (props) => {
 	const [currentSlide, setCurrentSlide] = createSignal(props.initialSlideIndex);
 	const isSelected = createSelector(currentSlide);
 
