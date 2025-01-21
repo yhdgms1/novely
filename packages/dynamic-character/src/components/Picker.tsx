@@ -1,6 +1,6 @@
 import type { Component, Setter } from 'solid-js';
 import type { DynCharacterThis, EmotionObject } from '../types';
-import { createSignal, createEffect } from 'solid-js';
+import { createSignal, Show } from 'solid-js';
 import { Slider } from './Slider';
 
 type PickerProps = {
@@ -10,6 +10,8 @@ type PickerProps = {
 	initialEmotion: EmotionObject;
 
 	slides: string[];
+	pricing: number[];
+
 	translationGroup: Record<string, string>;
 	translation: DynCharacterThis['options']['translation'][string];
 
@@ -23,10 +25,6 @@ type PickerProps = {
 const Picker: Component<PickerProps> = (props) => {
 	const [expanded, setExpanded] = createSignal(props.initialExpanded);
 	const [appearance, setAppearance] = createSignal(props.initialEmotion);
-
-	createEffect(() => {
-		props.saveEmotion(appearance());
-	});
 
 	const initialSlideIndex = props.getInitialSlideIndex(appearance());
 
@@ -74,7 +72,7 @@ const Picker: Component<PickerProps> = (props) => {
 				translation={props.translation}
 				onIndexChange={(index) => props.onIndexChange(appearance(), setAppearance, index)}
 			>
-				{(variant) => (
+				{(variant, i) => (
 					<>
 						<p class="ndc-variant-name">{props.translationGroup[variant]}</p>
 
@@ -83,12 +81,23 @@ const Picker: Component<PickerProps> = (props) => {
 								type="button"
 								class="button"
 								onClick={() => {
-									if (true) {
+									// todo: make function to check if item is already bought
+									const free = !props.pricing[i()];
+
+									if (free) {
 										props.sumbit();
+										props.saveEmotion(appearance());
+									} else {
+										// todo: props.buy(variant).then((result) => if (result) /** then save and go next */)
+										console.log(`Trying to buy ${variant}`);
 									}
 								}}
 							>
-								{props.translation.ui.sumbit}
+								<Show when={props.pricing[i()]} fallback={props.translation.ui.sumbit}>
+									{props.translation.ui.buy}
+									&nbsp;
+									{props.pricing[i()]}
+								</Show>
 							</button>
 						</div>
 					</>

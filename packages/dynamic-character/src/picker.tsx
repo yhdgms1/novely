@@ -41,15 +41,18 @@ const showPicker = function (this: DynCharacterThis, options: ShowPickerOptions)
 		character.emotion(getEmotionString(initialEmotion), true);
 		character.append();
 
-		const { title, slides, translationGroup, getInitialSlideIndex } = (() => {
+		const { title, slides, translationGroup, pricing, getInitialSlideIndex } = (() => {
 			if (options.type === 'attribute') {
+				const slides = attributes[options.name];
+
 				return {
 					title: translation.title.attributes[options.name],
 					slides: attributes[options.name],
 					translationGroup: translation.attributes[options.name],
+					pricing: slides.map((slide) => clothingData.pricing[options.name][slide]),
 
-					getInitialSlideIndex(appearance: EmotionObject): number {
-						return this.slides.indexOf(appearance.attributes[options.name]);
+					getInitialSlideIndex: (appearance: EmotionObject): number => {
+						return slides.indexOf(appearance.attributes[options.name]);
 					},
 				};
 			}
@@ -58,8 +61,9 @@ const showPicker = function (this: DynCharacterThis, options: ShowPickerOptions)
 				title: translation.title.base,
 				slides: base,
 				translationGroup: translation.base,
+				pricing: [],
 
-				getInitialSlideIndex(appearance: EmotionObject): number {
+				getInitialSlideIndex: (appearance: EmotionObject): number => {
 					return base.indexOf(appearance.base);
 				},
 			};
@@ -134,6 +138,7 @@ const showPicker = function (this: DynCharacterThis, options: ShowPickerOptions)
 					initialExpanded={/* @once */ !flags.preview}
 					initialEmotion={/* @once */ initialEmotion}
 					slides={/* @once */ slides}
+					pricing={/* @once */ pricing}
 					translation={/* @once */ translation}
 					translationGroup={/* @once */ translationGroup}
 					getInitialSlideIndex={/* @once */ getInitialSlideIndex}

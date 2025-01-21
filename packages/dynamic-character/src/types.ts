@@ -8,6 +8,9 @@ type Attributes<BaseKeys extends string = string> = Record<
 type EmotionsDefinition<BaseKeys extends string, Attribs extends Attributes<BaseKeys>> = {
 	base: Record<BaseKeys, NovelyAsset | NovelyAsset[]>;
 	attributes: Attribs;
+	pricing: {
+		[Attribute in keyof Attribs]: Record<keyof Attribs[Attribute], number>;
+	};
 };
 
 /**
@@ -69,6 +72,9 @@ type ClothingData<BaseKeys extends string, Attribs extends Attributes<BaseKeys>>
 	base: BaseKeys[];
 	attributes: {
 		[Attribute in keyof Attribs]: (keyof Attribs[Attribute] & string)[];
+	};
+	pricing: {
+		[Attribute in keyof Attribs]: Record<keyof Attribs[Attribute], number>;
 	};
 
 	// Without this the `attributes` property is `Attributes` and not a narrow `Attribs`

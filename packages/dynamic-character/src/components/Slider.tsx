@@ -1,4 +1,4 @@
-import type { Component, JSX } from 'solid-js';
+import type { Accessor, Component, JSX } from 'solid-js';
 import type { DynCharacterThis } from '../types';
 import { createSignal, createEffect, untrack, createSelector, For } from 'solid-js';
 
@@ -8,7 +8,7 @@ type SliderProps = {
 	expanded: boolean;
 	translation: DynCharacterThis['options']['translation'][string];
 
-	children: (slide: string) => JSX.Element;
+	children: (slide: string, i: Accessor<number>) => JSX.Element;
 	onIndexChange: (currentIndex: number) => void;
 };
 
@@ -89,7 +89,7 @@ const Slider: Component<SliderProps> = (props) => {
 									'ndc-slide-active': isSelected(i()),
 								}}
 							>
-								{props.children(variant)}
+								{props.children(variant, i)}
 							</div>
 						);
 					}}

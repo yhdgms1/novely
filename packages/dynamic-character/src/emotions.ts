@@ -5,6 +5,7 @@ import { toArray, getEntries, getKeys, permutation } from './utils';
 const generateEmotions = <BaseKeys extends string, Attribs extends Attributes<BaseKeys>>({
 	base,
 	attributes,
+	pricing,
 }: EmotionsDefinition<BaseKeys, Attribs>): EmotionsResult<BaseKeys, Attribs> => {
 	const emotions: Record<string, NovelyAsset[]> = {};
 
@@ -46,6 +47,7 @@ const generateEmotions = <BaseKeys extends string, Attribs extends Attributes<Ba
 	const clothingData = {
 		base: getKeys(base),
 		attributes: Object.fromEntries(getEntries(attributes).map(([name, value]) => [name, getKeys(value)])),
+		pricing,
 	};
 
 	return {
