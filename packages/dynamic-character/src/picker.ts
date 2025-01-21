@@ -1,6 +1,7 @@
 import type { CustomHandler } from '@novely/core';
 import type { Setter } from 'solid-js';
 import type { DynCharacterThis, EmotionObject } from './types';
+import { createComponent } from 'solid-js';
 import { render } from 'solid-js/web';
 import { getEmotionString, getSavedEmotion, once, saveEmotion } from './utils';
 import { Picker } from './components/Picker';
@@ -18,7 +19,13 @@ type ShowPickerOptions =
 			name: string;
 	  };
 
-const showPicker = function (this: DynCharacterThis, options: ShowPickerOptions) {
+// todo: make it optional
+type ShowPickerBuyOptions = {
+	buy: (variant: string) => Promise<boolean>;
+	isBought: (variant: string) => boolean;
+};
+
+const showPicker = function (this: DynCharacterThis, options: ShowPickerOptions & ShowPickerBuyOptions) {
 	const {
 		clothingData,
 		options: { character: characterId, defaultAttributes, defaultBase, translation: translations },
@@ -132,21 +139,22 @@ const showPicker = function (this: DynCharacterThis, options: ShowPickerOptions)
 		};
 
 		const cleanup = render(
-			() => (
-				<Picker
-					title={/* @once */ title}
-					initialExpanded={/* @once */ !flags.preview}
-					initialEmotion={/* @once */ initialEmotion}
-					slides={/* @once */ slides}
-					pricing={/* @once */ pricing}
-					translation={/* @once */ translation}
-					translationGroup={/* @once */ translationGroup}
-					getInitialSlideIndex={/* @once */ getInitialSlideIndex}
-					onIndexChange={/* @once */ onIndexChange}
-					saveEmotion={/* @once */ saveEmotionWrapper}
-					sumbit={/* @once */ resolve}
-				/>
-			),
+			() =>
+				createComponent(Picker, {
+					title,
+					initialExpanded: !flags.preview,
+					initialEmotion,
+					slides,
+					pricing,
+					translation,
+					translationGroup,
+					getInitialSlideIndex,
+					onIndexChange,
+					saveEmotion: saveEmotionWrapper,
+					sumbit: resolve,
+					buy: options.buy,
+					isBought: options.isBought,
+				}),
 			element,
 		);
 

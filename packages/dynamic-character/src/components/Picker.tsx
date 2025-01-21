@@ -2,6 +2,10 @@ import type { Component, Setter } from 'solid-js';
 import type { DynCharacterThis, EmotionObject } from '../types';
 import { createSignal, Show } from 'solid-js';
 import { Slider } from './Slider';
+import { once } from '../utils';
+import pLimit from 'p-limit';
+
+const limitClick = pLimit(1);
 
 type PickerProps = {
 	title: string;
@@ -20,6 +24,9 @@ type PickerProps = {
 	saveEmotion: (appearance: EmotionObject) => void;
 
 	sumbit: () => void;
+
+	buy: (variant: string) => Promise<boolean>;
+	isBought: (variant: string) => boolean;
 };
 
 const Picker: Component<PickerProps> = (props) => {
@@ -72,36 +79,44 @@ const Picker: Component<PickerProps> = (props) => {
 				translation={props.translation}
 				onIndexChange={(index) => props.onIndexChange(appearance(), setAppearance, index)}
 			>
-				{(variant, i) => (
-					<>
-						<p class="ndc-variant-name">{props.translationGroup[variant]}</p>
+				{(variant, i) => {
+					const hasPrice = props.pricing[i()];
 
-						<div class="ndc-control-buttons">
-							<button
-								type="button"
-								class="button"
-								onClick={() => {
-									// todo: make function to check if item is already bought
-									const free = !props.pricing[i()];
+					const apply = once(() => {
+						props.sumbit();
+						props.saveEmotion(appearance());
+					});
 
-									if (free) {
-										props.sumbit();
-										props.saveEmotion(appearance());
-									} else {
-										// todo: props.buy(variant).then((result) => if (result) /** then save and go next */)
-										console.log(`Trying to buy ${variant}`);
-									}
-								}}
-							>
-								<Show when={props.pricing[i()]} fallback={props.translation.ui.sumbit}>
-									{props.translation.ui.buy}
-									&nbsp;
-									{props.pricing[i()]}
-								</Show>
-							</button>
-						</div>
-					</>
-				)}
+					const onClick = () =>
+						limitClick(async () => {
+							if (!hasPrice) {
+								apply();
+							} else if (props.isBought(variant)) {
+								apply();
+							} else {
+								// todo: more advanced
+								if (await props.buy(variant)) {
+									apply();
+								}
+							}
+						});
+
+					return (
+						<>
+							<p class="ndc-variant-name">{props.translationGroup[variant]}</p>
+
+							<div class="ndc-control-buttons">
+								<button type="button" class="button" onClick={onClick}>
+									<Show when={hasPrice && !props.isBought(variant)} fallback={props.translation.ui.sumbit}>
+										{props.translation.ui.buy}
+										&nbsp;
+										{props.pricing[i()]}
+									</Show>
+								</button>
+							</div>
+						</>
+					);
+				}}
 			</Slider>
 		</div>
 	);

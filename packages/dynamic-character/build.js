@@ -8,7 +8,7 @@ const dev = process.argv.at(2) === '--w';
 
 const context = await esbuild.context({
 	entryPoints: ['./src/index.ts', './src/index.css'],
-	external: ['solid-js'],
+	external: ['solid-js', 'p-limit'],
 	charset: 'utf8',
 	jsx: 'preserve',
 	platform: 'browser',
