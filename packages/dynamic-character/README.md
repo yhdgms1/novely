@@ -14,75 +14,77 @@ import '@novely/dynamic-character/dist/index.css';
 ```
 
 ```ts
-import Ryan_zombie from './assets/Ryan-zombie-body.png';
-import Ryan_zombie_bottoms__shorts from './assets/Ryan-zombie-bottoms--shorts.png'
-import Ryan_zombie_bottoms__jeans from './assets/Ryan-zombie-bottoms--jeans.png'
-import Ryan_zombie_tops__pink_tshirt from './assets/Ryan-zombie-tops--pink-t-shirt.png';
-import Ryan_zombie_tops__white_tshirt from './assets/Ryan-zombie-tops--white-t-shirt.png';
+import { novely, asset, EN } from '@novely/core';
 
-import Ryan_default from './assets/Ryan-default-body.png';
-import Ryan_default_bottoms__shorts from './assets/Ryan-default-bottoms--shorts.png'
-import Ryan_default_bottoms__jeans from './assets/Ryan-default-bottoms--jeans.png'
-import Ryan_default_tops__pink_tshirt from './assets/Ryan-default-tops--pink-t-shirt.png';
-import Ryan_default_tops__white_tshirt from './assets/Ryan-default-tops--white-t-shirt.png';
+import You_female from './assets/You-female-body.png';
+import You_female_bottoms__shorts from './assets/You-female-bottoms--shorts.png'
+import You_female_bottoms__jeans from './assets/You-female-bottoms--jeans.png'
+import You_female_tops__pink_tshirt from './assets/You-female-tops--pink-t-shirt.png';
+import You_female_tops__white_tshirt from './assets/You-female-tops--white-t-shirt.png';
 
-const { emotions: emotionsRyan, clothingData: clothingDataRyan } = generateEmotions({
+import You_male from './assets/You-male-body.png';
+import You_male_bottoms__shorts from './assets/You-male-bottoms--shorts.png'
+import You_male_bottoms__jeans from './assets/You-male-bottoms--jeans.png'
+import You_male_tops__pink_tshirt from './assets/You-male-tops--pink-t-shirt.png';
+import You_male_tops__white_tshirt from './assets/You-male-tops--white-t-shirt.png';
+
+const { emotions: emotionsYou, createActions: createActionsYou } = generateEmotions({
 	base: {
-		default: asset(Ryan_default),
-		zombie: asset(Ryan_zombie)
+		male: asset(You_male),
+		female: asset(You_female)
 	},
 	attributes: {
 		bottoms: {
 			shorts: {
-				zombie: asset(Ryan_zombie_bottoms__shorts),
-				default: asset(Ryan_default_bottoms__shorts)
+				female: asset(You_female_bottoms__shorts),
+				male: asset(You_male_bottoms__shorts)
 			},
 			jeans: {
-				zombie: asset(Ryan_zombie_bottoms__jeans),
-				default: asset(Ryan_default_bottoms__jeans)
+				female: asset(You_female_bottoms__jeans),
+				male: asset(You_male_bottoms__jeans)
 			}
 		},
 		tops: {
 			pink: {
-				default: asset(Ryan_default_tops__pink_tshirt),
-				zombie: asset(Ryan_zombie_tops__pink_tshirt)
+				male: asset(You_male_tops__pink_tshirt),
+				female: asset(You_female_tops__pink_tshirt)
 			},
 			white: {
-				default: asset(Ryan_default_tops__white_tshirt),
-				zombie: asset(Ryan_zombie_tops__white_tshirt)
+				male: asset(You_male_tops__white_tshirt),
+				female: asset(You_female_tops__white_tshirt)
 			}
 		}
 	}
 });
 
 const engine = novely({
-  ...,
+	...,
 	translation: {
 		en: {
 			internal: EN
 		}
 	},
 	characters: {
-		Ryan: {
+		You: {
 			name: {
-				en: 'Ryan Gosling',
+				en: 'You',
 			},
 			color: '#000000',
-			emotions: emotionsRyan
+			emotions: emotionsYou
 		},
 	},
 });
 
-const { showPicker: showPickerYou, showCharacter: showYou } = createPickerActions(engine.typeEssentials, clothingDataKyo, {
-	character: 'Ryan',
-	defaultBase: 'default',
+const dynamicYou = createActionsYou(engine, {
+	character: 'You',
+	defaultBase: 'male',
 	defaultAttributes: {
 		bottoms: 'jeans',
 		tops: 'white'
 	},
 	translation: {
 		en: {
-			tabs: {
+			title: {
 				base: 'Body',
 				attributes: {
 					bottoms: 'Bottoms',
@@ -90,8 +92,8 @@ const { showPicker: showPickerYou, showCharacter: showYou } = createPickerAction
 				}
 			},
 			base: {
-				default: 'Default',
-				zombie: 'Zombie'
+				male: 'Male',
+				female: 'Female'
 			},
 			attributes: {
 				bottoms: {
@@ -104,15 +106,32 @@ const { showPicker: showPickerYou, showCharacter: showYou } = createPickerAction
 				}
 			},
 			ui: {
-				tablist: 'Clothing Options',
 				variants: 'Options',
 				slidesControl: 'Slides Control',
 				prevSlide: 'Previous',
 				nextSlide: 'Next',
-				sumbit: 'Submit'
+				sumbit: 'Submit',
+				sumbit: 'Submit',
+				buy: 'Buy'
 			}
 		}
 	}
 });
+
+engine.script({
+	start: [
+		// Male or Female
+		dynamicYou.showBasePicker(),
+		// Jeans or Shorts
+		dynamicYou.showAttributePicker({ name: 'bottoms' }),
+		// Pink or White t-shirt
+		dynamicYou.showAttributePicker({ name: 'tops' }),
+		// Show the character
+		dynamicYou.showCharacter(),
+		// Admire the appearance :)
+		engine.action.say("You", "Mirror, Mirror on the Wall, Who’s the Fairest of Them All?"),
+		engine.action.end()
+	]
+})
 
 ```
