@@ -1,6 +1,6 @@
 import type { CustomHandler } from '@novely/core';
 import type { Setter } from 'solid-js';
-import type { DynCharacterThis, EmotionObject } from './types';
+import type { DynCharacterThis, EmotionObject, ShowPickerOptions } from './types';
 import { createComponent } from 'solid-js';
 import { render } from 'solid-js/web';
 import { getEmotionString, getSavedEmotion, once, saveEmotion } from './utils';
@@ -9,23 +9,7 @@ import { Picker } from './components/Picker';
 const CHARACTER_STYLE_PICKER = Symbol();
 const PRELOADED_EMOTIONS = new Set<string>();
 
-// todo: generic type in index.ts
-type ShowPickerOptions =
-	| {
-			type: 'base';
-	  }
-	| {
-			type: 'attribute';
-			name: string;
-	  };
-
-// todo: make it optional
-type ShowPickerBuyOptions = {
-	buy: (variant: string) => Promise<boolean>;
-	isBought: (variant: string) => boolean;
-};
-
-const showPicker = function (this: DynCharacterThis, options: ShowPickerOptions & ShowPickerBuyOptions) {
+const showPicker = function (this: DynCharacterThis, options: ShowPickerOptions) {
 	const {
 		clothingData,
 		options: { character: characterId, defaultAttributes, defaultBase, translation: translations },
@@ -56,7 +40,7 @@ const showPicker = function (this: DynCharacterThis, options: ShowPickerOptions 
 					title: translation.title.attributes[options.name],
 					slides: attributes[options.name],
 					translationGroup: translation.attributes[options.name],
-					pricing: slides.map((slide) => clothingData.pricing[options.name][slide]),
+					pricing: slides.map((slide) => (clothingData.pricing ? clothingData.pricing[options.name][slide] : 0)),
 
 					getInitialSlideIndex: (appearance: EmotionObject): number => {
 						return slides.indexOf(appearance.attributes[options.name]);

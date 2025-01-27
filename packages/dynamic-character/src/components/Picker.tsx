@@ -80,26 +80,24 @@ const Picker: Component<PickerProps> = (props) => {
 				onIndexChange={(index) => props.onIndexChange(appearance(), setAppearance, index)}
 			>
 				{(variant, i) => {
-					const hasPrice = props.pricing[i()];
+					const price = props.pricing[i()];
 
 					const apply = once(() => {
 						props.sumbit();
 						props.saveEmotion(appearance());
 					});
 
-					const onClick = () =>
+					const onClick = () => {
 						limitClick(async () => {
-							if (!hasPrice) {
+							if (!price || props.isBought(variant)) {
+								return apply();
+							}
+
+							if (await props.buy(variant)) {
 								apply();
-							} else if (props.isBought(variant)) {
-								apply();
-							} else {
-								// todo: more advanced
-								if (await props.buy(variant)) {
-									apply();
-								}
 							}
 						});
+					};
 
 					return (
 						<>
@@ -107,11 +105,17 @@ const Picker: Component<PickerProps> = (props) => {
 
 							<div class="ndc-control-buttons">
 								<button type="button" class="button" onClick={onClick}>
-									<Show when={hasPrice && !props.isBought(variant)} fallback={props.translation.ui.sumbit}>
-										{props.translation.ui.buy}
-										&nbsp;
-										{props.pricing[i()]}
-									</Show>
+									<Show
+										when={price && !props.isBought(variant)}
+										children={
+											<>
+												{props.translation.ui.buy}
+												&nbsp;
+												{price}
+											</>
+										}
+										fallback={props.translation.ui.sumbit}
+									/>
 								</button>
 							</div>
 						</>

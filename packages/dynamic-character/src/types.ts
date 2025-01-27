@@ -1,4 +1,4 @@
-import type { Character, Data, Lang, NovelyAsset, State, TypeEssentials } from '@novely/core';
+import type { Character, Data, Lang, NovelyAsset, State, TypeEssentials, ValidAction } from '@novely/core';
 
 type Attributes<BaseKeys extends string = string> = Record<
 	string,
@@ -8,7 +8,7 @@ type Attributes<BaseKeys extends string = string> = Record<
 type EmotionsDefinition<BaseKeys extends string, Attribs extends Attributes<BaseKeys>> = {
 	base: Record<BaseKeys, NovelyAsset | NovelyAsset[]>;
 	attributes: Attribs;
-	pricing: {
+	pricing?: {
 		[Attribute in keyof Attribs]: Record<keyof Attribs[Attribute], number>;
 	};
 };
@@ -73,7 +73,7 @@ type ClothingData<BaseKeys extends string, Attribs extends Attributes<BaseKeys>>
 	attributes: {
 		[Attribute in keyof Attribs]: (keyof Attribs[Attribute] & string)[];
 	};
-	pricing: {
+	pricing?: {
 		[Attribute in keyof Attribs]: Record<keyof Attribs[Attribute], number>;
 	};
 
@@ -162,6 +162,53 @@ type EmotionObject = {
 	attributes: Record<string, string>;
 };
 
+// todo: mark internal
+type ShowPickerBase = {
+	type: 'base';
+};
+
+type ShowPickerAttribute = {
+	type: 'attribute';
+	name: string;
+};
+
+type ShowPickerBuyOptions = {
+	buy: (variant: string) => Promise<boolean>;
+	isBought: (variant: string) => boolean;
+};
+
+type ShowPickerOptions = (ShowPickerBase | ShowPickerAttribute) & ShowPickerBuyOptions;
+
+type ShowPickerBuyFunctions = {
+	/**
+	 * Function to buy attribute variant
+	 * @param variant Attribute variant
+	 * @returns Boolean indicating is item bought or not
+	 */
+	buy?: (variant: string) => Promise<boolean>;
+	/**
+	 * Function to check is attribute variant is bought
+	 * @param variant Attribute variant
+	 * @returns Boolean indicating is item bought or not
+	 */
+	isBought?: (variant: string) => boolean;
+};
+
+// todo: remove typed
+type ShowPickerOptionsTypedAttribute<Attribs extends Attributes> = ShowPickerBuyFunctions & {
+	/**
+	 * Name of the attribute
+	 */
+	name: keyof Attribs & string;
+};
+
+type ShowPickerOptionsTypedBase = ShowPickerBuyFunctions;
+
+type EngineInstance = {
+	action: Record<string, (...args: any[]) => ValidAction>;
+	typeEssentials: DefaultTypeEssentials;
+};
+
 export type {
 	Entries,
 	EmotionsDefinition,
@@ -172,4 +219,8 @@ export type {
 	DynCharacterOptions,
 	DynCharacterThis,
 	DefaultTypeEssentials,
+	ShowPickerOptions,
+	ShowPickerOptionsTypedAttribute,
+	ShowPickerOptionsTypedBase,
+	EngineInstance,
 };
