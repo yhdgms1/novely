@@ -10,17 +10,17 @@
 	},
 	"devDependencies": {
 		"@novely/vite-plugin-novely": "workspace:^",
-		"typescript": "^5.6.2",
-		"vite": "^6.0.1"
+		"typescript": "^5.7.3",
+		"vite": "~6.0.11"
 	},
 	"dependencies": {
 		"@novely/core": "workspace:*",
-		"@novely/particles": "workspace:*",
-		"@novely/solid-renderer": "workspace:*",
-		"@novely/rive": "workspace:*",
-		"@novely/moment-presser": "workspace:*",
-		"@novely/flex-storage": "workspace:*",
 		"@novely/dynamic-character": "workspace:*",
+		"@novely/flex-storage": "workspace:*",
+		"@novely/moment-presser": "workspace:*",
+		"@novely/particles": "workspace:*",
+		"@novely/rive": "workspace:*",
+		"@novely/solid-renderer": "workspace:*",
 		"animate.css": "^4.1.1",
 		"modern-normalize": "~3.0.1"
 	}

@@ -13,9 +13,9 @@
 		"build": "tsup --dts"
 	},
 	"devDependencies": {
-		"@types/prompts": "^2.4.4",
-		"tsup": "^8.3.0",
-		"typescript": "^5.6.2"
+		"@types/prompts": "^2.4.9",
+		"tsup": "^8.3.6",
+		"typescript": "^5.7.3"
 	},
 	"dependencies": {
 		"kolorist": "^1.8.0",

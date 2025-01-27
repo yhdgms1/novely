@@ -25,15 +25,15 @@
 		"build": "tsup --dts"
 	},
 	"devDependencies": {
-		"tsup": "^8.3.0",
-		"typescript": "^5.6.2"
+		"tsup": "^8.3.6",
+		"typescript": "^5.7.3"
 	},
 	"dependencies": {
 		"dequal": "^2.0.3",
-		"es-toolkit": "^1.23.0",
-		"esm-env": "^1.0.0",
+		"es-toolkit": "^1.31.0",
+		"esm-env": "^1.2.2",
 		"klona": "^2.0.6",
-		"p-limit": "^6.1.0"
+		"p-limit": "^6.2.0"
 	},
 	"peerDependencies": {
 		"klona": "^2.0.6"

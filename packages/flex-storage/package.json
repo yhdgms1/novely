@@ -21,13 +21,13 @@
 		"build": "tsup --dts"
 	},
 	"devDependencies": {
-		"tsup": "^8.3.0",
-		"typescript": "^5.6.2"
+		"tsup": "^8.3.6",
+		"typescript": "^5.7.3"
 	},
 	"dependencies": {
 		"@novely/core": "workspace:*",
 		"lz-string": "^1.5.0",
-		"seroval": "^1.1.1"
+		"seroval": "^1.2.0"
 	},
 	"peerDependencies": {
 		"@novely/core": "*"

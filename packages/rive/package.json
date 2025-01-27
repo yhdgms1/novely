@@ -16,11 +16,11 @@
 	},
 	"dependencies": {
 		"@novely/core": "workspace:*",
-		"@rive-app/canvas": "^2.21.5"
+		"@rive-app/canvas": "^2.25.7"
 	},
 	"devDependencies": {
-		"tsup": "^8.3.0",
-		"typescript": "^5.6.2"
+		"tsup": "^8.3.6",
+		"typescript": "^5.7.3"
 	},
 	"peerDependencies": {
 		"@novely/core": "*",
