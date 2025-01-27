@@ -82,6 +82,7 @@ export default defineConfig({
             items: [
               { text: "Particles", link: "/guide/another-actions/particles" },
               { text: "Moment Presser", link: "/guide/another-actions/moment-presser" },
+              { text: "Dynamic Character", link: "/guide/another-actions/dynamic-character" },
             ],
             collapsed: true,
           },
@@ -103,7 +104,7 @@ export default defineConfig({
 
     footer: {
       message: 'Released under the ISC License.',
-      copyright: "Copyright © 2023-present Artemiy Schukin & Contributors",
+      copyright: "Copyright © 2023-present Artem Schukin",
     },
   },
 
