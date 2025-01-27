@@ -1,6 +1,6 @@
 {
 	"name": "@novely/solid-renderer",
-	"version": "0.47.0-experemental.0",
+	"version": "0.47.0",
 	"type": "module",
 	"publishConfig": {
 		"access": "public"
@@ -22,7 +22,7 @@
 		"@novely/core": "workspace:*",
 		"@novely/renderer-toolkit": "workspace:*",
 		"@novely/typewriter": "workspace:*",
-		"@solid-primitives/destructure": "^0.1.17",
+		"@solid-primitives/destructure": "^0.2.0",
 		"clsx": "^2.1.1",
 		"es-toolkit": "^1.23.0",
 		"solid-js": "~1.9.3",
