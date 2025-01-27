@@ -33,6 +33,8 @@ const showPicker = function (this: AllThis, options: InternalShowPickerOptions) 
 		character.append();
 
 		const { title, slides, translationGroup, pricing, getInitialSlideIndex } = (() => {
+			const { pricing } = clothingData;
+
 			if (options.type === 'attribute') {
 				const slides = attributes[options.name];
 
@@ -40,7 +42,7 @@ const showPicker = function (this: AllThis, options: InternalShowPickerOptions) 
 					title: translation.title.attributes[options.name],
 					slides: attributes[options.name],
 					translationGroup: translation.attributes[options.name],
-					pricing: slides.map((slide) => (clothingData.pricing ? clothingData.pricing[options.name][slide] : 0)),
+					pricing: pricing ? slides.map((s) => pricing.attributes[options.name][s]) : Array(slides.length).fill(0),
 
 					getInitialSlideIndex: (appearance: EmotionObject): number => {
 						return slides.indexOf(appearance.attributes[options.name]);
@@ -52,7 +54,7 @@ const showPicker = function (this: AllThis, options: InternalShowPickerOptions) 
 				title: translation.title.base,
 				slides: base,
 				translationGroup: translation.base,
-				pricing: [],
+				pricing: pricing ? base.map((s) => pricing.base[s]) : Array(base.length).fill(0),
 
 				getInitialSlideIndex: (appearance: EmotionObject): number => {
 					return base.indexOf(appearance.base);

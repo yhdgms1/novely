@@ -9,7 +9,10 @@ type EmotionsDefinition<BaseKeys extends string, Attribs extends Attributes<Base
 	base: Record<BaseKeys, NovelyAsset | NovelyAsset[]>;
 	attributes: Attribs;
 	pricing?: {
-		[Attribute in keyof Attribs]: Record<keyof Attribs[Attribute], number>;
+		base: Record<BaseKeys, number>;
+		attributes: {
+			[Attribute in keyof Attribs]: Record<keyof Attribs[Attribute], number>;
+		};
 	};
 };
 
@@ -74,7 +77,10 @@ type ClothingData<BaseKeys extends string, Attribs extends Attributes<BaseKeys>>
 		[Attribute in keyof Attribs]: (keyof Attribs[Attribute] & string)[];
 	};
 	pricing?: {
-		[Attribute in keyof Attribs]: Record<keyof Attribs[Attribute], number>;
+		base: Record<BaseKeys, number>;
+		attributes: {
+			[Attribute in keyof Attribs]: Record<keyof Attribs[Attribute], number>;
+		};
 	};
 };
 
