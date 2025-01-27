@@ -1,6 +1,17 @@
 import type { StateFunction, State } from '@novely/core';
 import type { EmotionObject, ClothingData, Attributes } from './types';
 
+const once = (fn: () => void) => {
+	let called = false;
+
+	return () => {
+		if (!called) {
+			called = true;
+			fn();
+		}
+	};
+};
+
 const getEntries = <T extends PropertyKey, K>(object: Record<T, K>): [T, K][] => {
 	return Object.entries(object) as any;
 };
@@ -86,4 +97,4 @@ const saveEmotion = (state: StateFunction<State>, character: string, emotion: Em
 	state({ [`$$emotion_${character}`]: emotion });
 };
 
-export { getEntries, getKeys, toArray, permutation, getEmotionString, saveEmotion, getSavedEmotion };
+export { once, getEntries, getKeys, toArray, permutation, getEmotionString, saveEmotion, getSavedEmotion };

@@ -1,4 +1,4 @@
-import type { Character, Data, Lang, NovelyAsset, State, TypeEssentials } from '@novely/core';
+import type { Character, Data, Lang, NovelyAsset, State, TypeEssentials, ValidAction } from '@novely/core';
 
 type Attributes<BaseKeys extends string = string> = Record<
 	string,
@@ -8,6 +8,12 @@ type Attributes<BaseKeys extends string = string> = Record<
 type EmotionsDefinition<BaseKeys extends string, Attribs extends Attributes<BaseKeys>> = {
 	base: Record<BaseKeys, NovelyAsset | NovelyAsset[]>;
 	attributes: Attribs;
+	pricing?: {
+		base: Record<BaseKeys, number>;
+		attributes: {
+			[Attribute in keyof Attribs]: Record<keyof Attribs[Attribute], number>;
+		};
+	};
 };
 
 /**
@@ -70,21 +76,35 @@ type ClothingData<BaseKeys extends string, Attribs extends Attributes<BaseKeys>>
 	attributes: {
 		[Attribute in keyof Attribs]: (keyof Attribs[Attribute] & string)[];
 	};
+	pricing?: {
+		base: Record<BaseKeys, number>;
+		attributes: {
+			[Attribute in keyof Attribs]: Record<keyof Attribs[Attribute], number>;
+		};
+	};
+};
 
-	// Without this the `attributes` property is `Attributes` and not a narrow `Attribs`
-	__attributes?: Attribs;
+type CreateActionsFN<BaseKeys extends string, Attribs extends Attributes<BaseKeys>> = {
+	<Engine extends EngineInstance>(
+		engine: Engine,
+		options: AllOptions<NoInfer<Engine['typeEssentials']>, NoInfer<BaseKeys>, NoInfer<Attribs>>,
+	): {
+		showBasePicker: (options?: ShowPickerOptionsBase) => ValidAction;
+		showAttributePicker: (options: ShowPickerOptionsAttribute<Attribs>) => ValidAction;
+		showCharacter: () => ValidAction;
+	};
 };
 
 type EmotionsResult<BaseKeys extends string, Attribs extends Attributes<BaseKeys>> = {
 	emotions: GeneratedEmotions<BaseKeys, Attribs>;
-	clothingData: Prettify<ClothingData<BaseKeys, Attribs>>;
+	createActions: CreateActionsFN<BaseKeys, Attribs>;
 };
 
 type Entries<T> = T extends Record<infer T, infer K> ? [T, K][] : never;
 
 type DefaultTypeEssentials = TypeEssentials<Lang, State, Data, Record<string, Character>>;
 
-type DynCharacterOptions<
+type AllOptions<
 	TE extends DefaultTypeEssentials,
 	BaseKeys extends string,
 	Attribs extends Attributes<BaseKeys>,
@@ -103,10 +123,6 @@ type DynCharacterOptions<
 	defaultAttributes: {
 		[Attribute in keyof Attribs]: keyof Attribs[Attribute] & string;
 	};
-	/**
-	 * Attributes to exclude from picker
-	 */
-	excludeAttributes?: (keyof Attribs & string)[];
 	/**
 	 * Translation
 	 */
@@ -127,16 +143,10 @@ type DynCharacterOptions<
 				[Base in BaseKeys]: string;
 			};
 			/**
-			 * Tabs translations
+			 * Title translations
 			 */
-			tabs: {
-				/**
-				 * Base tab translation
-				 */
+			title: {
 				base: string;
-				/**
-				 * Attribute translations
-				 */
 				attributes: {
 					[Attribute in keyof Attribs]: string;
 				};
@@ -145,25 +155,71 @@ type DynCharacterOptions<
 			 * Translation of UI components
 			 */
 			ui: {
-				tablist: string;
 				variants: string;
 				slidesControl: string;
 				prevSlide: string;
 				nextSlide: string;
 				sumbit: string;
+				buy: string;
 			};
 		};
 	};
 };
 
-type DynCharacterThis = {
+type AllThis = {
 	clothingData: ClothingData<string, Attributes>;
-	options: DynCharacterOptions<DefaultTypeEssentials, string, Attributes>;
+	options: AllOptions<DefaultTypeEssentials, string, Attributes>;
 };
 
 type EmotionObject = {
 	base: string;
 	attributes: Record<string, string>;
+};
+
+type InternalShowPickerBase = {
+	type: 'base';
+};
+
+type InternalShowPickerAttribute = {
+	type: 'attribute';
+	name: string;
+};
+
+type InternalShowPickerBuyOptions = {
+	buy: (variant: string) => Promise<boolean>;
+	isBought: (variant: string) => boolean;
+};
+
+type InternalShowPickerOptions = (InternalShowPickerBase | InternalShowPickerAttribute) &
+	InternalShowPickerBuyOptions;
+
+type ShowPickerBuyFunctions = {
+	/**
+	 * Function to buy attribute variant
+	 * @param variant Attribute variant
+	 * @returns Boolean indicating is item bought or not
+	 */
+	buy?: (variant: string) => Promise<boolean>;
+	/**
+	 * Function to check is attribute variant is bought
+	 * @param variant Attribute variant
+	 * @returns Boolean indicating is item bought or not
+	 */
+	isBought?: (variant: string) => boolean;
+};
+
+type ShowPickerOptionsAttribute<Attribs extends Attributes> = ShowPickerBuyFunctions & {
+	/**
+	 * Name of the attribute
+	 */
+	name: keyof Attribs & string;
+};
+
+type ShowPickerOptionsBase = ShowPickerBuyFunctions;
+
+type EngineInstance = {
+	action: Record<string, (...args: any[]) => ValidAction>;
+	typeEssentials: DefaultTypeEssentials;
 };
 
 export type {
@@ -173,7 +229,11 @@ export type {
 	Attributes,
 	ClothingData,
 	EmotionObject,
-	DynCharacterOptions,
-	DynCharacterThis,
+	AllOptions,
+	AllThis,
 	DefaultTypeEssentials,
+	InternalShowPickerOptions,
+	ShowPickerOptionsAttribute,
+	ShowPickerOptionsBase,
+	EngineInstance,
 };

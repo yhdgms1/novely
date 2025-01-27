@@ -79,11 +79,11 @@ importers:
   packages/create-novely/template-solid-js:
     dependencies:
       '@novely/core':
-        specifier: ~0.46.0
-        version: 0.46.0(klona@2.0.6)
+        specifier: ~0.48.0
+        version: 0.48.0(klona@2.0.6)
       '@novely/solid-renderer':
-        specifier: ~0.42.0
-        version: 0.42.0(@novely/core@0.46.0(klona@2.0.6))(klona@2.0.6)(postcss@8.4.49)(solid-js@1.9.1)
+        specifier: ~0.46.0
+        version: 0.46.0(@novely/core@0.48.0(klona@2.0.6))(klona@2.0.6)(postcss@8.4.49)(solid-js@1.9.1)
       modern-normalize:
         specifier: ~3.0.1
         version: 3.0.1
@@ -93,7 +93,7 @@ importers:
     devDependencies:
       '@novely/vite-plugin-novely':
         specifier: ~0.6.1
-        version: 0.6.1(@novely/core@0.46.0(klona@2.0.6))(vite@6.0.1(@types/node@20.3.1)(lightningcss@1.28.1))
+        version: 0.6.1(@novely/core@0.48.0(klona@2.0.6))(vite@6.0.1(@types/node@20.3.1)(lightningcss@1.28.1))
       vite:
         specifier: ~6.0.1
         version: 6.0.1(@types/node@20.3.1)(lightningcss@1.28.1)
@@ -101,11 +101,11 @@ importers:
   packages/create-novely/template-solid-js-yagames:
     dependencies:
       '@novely/core':
-        specifier: ~0.46.0
-        version: 0.46.0(klona@2.0.6)
+        specifier: ~0.48.0
+        version: 0.48.0(klona@2.0.6)
       '@novely/solid-renderer':
-        specifier: ~0.42.0
-        version: 0.42.0(@novely/core@0.46.0(klona@2.0.6))(klona@2.0.6)(postcss@8.4.49)(solid-js@1.9.1)
+        specifier: ~0.46.0
+        version: 0.46.0(@novely/core@0.48.0(klona@2.0.6))(klona@2.0.6)(postcss@8.4.49)(solid-js@1.9.1)
       modern-normalize:
         specifier: ~3.0.1
         version: 3.0.1
@@ -115,7 +115,7 @@ importers:
     devDependencies:
       '@novely/vite-plugin-novely':
         specifier: ~0.6.1
-        version: 0.6.1(@novely/core@0.46.0(klona@2.0.6))(vite@6.0.1(@types/node@20.3.1)(lightningcss@1.28.1))
+        version: 0.6.1(@novely/core@0.48.0(klona@2.0.6))(vite@6.0.1(@types/node@20.3.1)(lightningcss@1.28.1))
       '@vitejs/plugin-basic-ssl':
         specifier: ^1.2.0
         version: 1.2.0(vite@6.0.1(@types/node@20.3.1)(lightningcss@1.28.1))
@@ -128,9 +128,9 @@ importers:
       '@novely/core':
         specifier: workspace:*
         version: link:../core
-      '@slidy/core':
-        specifier: ^3.8.0
-        version: 3.8.0
+      p-limit:
+        specifier: ^6.1.0
+        version: 6.1.0
       solid-js:
         specifier: ~1.9.3
         version: 1.9.3
@@ -923,24 +923,24 @@ packages:
     peerDependencies:
       klona: ^2.0.6
 
-  '@novely/core@0.45.2':
-    resolution: {integrity: sha512-PgrzhE7qBMeIVAjbKGilshct7D3AwVd51W55FKI4ZFOEeV4xpXdaOFqaY1LcDn85cXu+Zi6nAbYWiCtTo91ZpQ==}
+  '@novely/core@0.47.2':
+    resolution: {integrity: sha512-kmUkX6RYWuKNwNYuvfW6plvsBFXwqgEmhsJa55EzvmTmmsVO9PrZogiRyeKm3Kdms1HmU/+LP5TX6zHrrWov/w==}
     peerDependencies:
       klona: ^2.0.6
 
-  '@novely/core@0.46.0':
-    resolution: {integrity: sha512-vW3WhX3WAOxYA/yb/jaG5G7OrwdPk+hWvK912OBpy17Z4pHwhH3R+iYD275Hsh0fcCByuovKlHNRz50YVuUwsA==}
+  '@novely/core@0.48.0':
+    resolution: {integrity: sha512-OCoqEMfqZJblTGn8HoSHOkhgcYTFxXwEL9suMhou8PiUPPqKp+ePbG4gXypSj+MQ7epuP60KzeFWTnr3GrkEyQ==}
     peerDependencies:
       klona: ^2.0.6
 
   '@novely/parser@0.7.0':
     resolution: {integrity: sha512-pX4E1oNluqUn27sfkFi7k1Q0JRx9+PfmTlSiKTF6ix1sjeQv1aey5mIz9CV5xytRrz6QzO2SU8qNGFnyZwduWQ==}
 
-  '@novely/renderer-toolkit@0.12.0':
-    resolution: {integrity: sha512-XraodWodxOAgfd1hFVplxIXxA4vsw6FGP2GfJ1Y/0wsa89lFOPlr6GWZfrHAjU/xhCg4qywJaTFnVdyflhrjDA==}
+  '@novely/renderer-toolkit@0.12.1':
+    resolution: {integrity: sha512-kNEizqP4i+HOBJFJKigKDWLgUjKG0Mkj1JgEMfVcniDNssRcZRQZI9hsojkiyMBlm4/+7PQAKJamfQSHaOT0vw==}
 
-  '@novely/solid-renderer@0.42.0':
-    resolution: {integrity: sha512-OgHWIdYwh3nWFi+fzmZaWQfQKG0NT+4+W+sVuEfwn8+GrJGgzAoX0jRffi9IikSakGZ5pCauNDm+O2TlXSql/g==}
+  '@novely/solid-renderer@0.46.0':
+    resolution: {integrity: sha512-Mg7ffbnLy8ZgBcW2r0AImp0E4cbjda89k2mUa69L5g5EVSOxkO3m9x2PsCD+wUtD80M8/occ3d5/FryBkgymXg==}
     peerDependencies:
       '@novely/core': '*'
       solid-js: '*'
@@ -1050,9 +1050,6 @@ packages:
     resolution: {integrity: sha512-3j4jx1TppORdTAoBJRd+/wJRGCPC0ETWkXOecJ6PPZLj6SptXkrXcNqdj0oclbKML6FkQltdz7bBA3rUSirZug==}
     cpu: [x64]
     os: [win32]
-
-  '@slidy/core@3.8.0':
-    resolution: {integrity: sha512-rtPI5ZrlueiS8wTFLVefPPFnv4VF667VUA0o28y7H2hrRn3f58EdOjefHrvYjepcUCJ2mF3jpsx/FWOEUNj/7w==}
 
   '@solid-primitives/destructure@0.1.17':
     resolution: {integrity: sha512-MTjEIIeiw36Png0tze70XnhQ79IbkreX8v0qpjJ77+CLT5MkVQtFoiNHGkZPyw7UtkZQE08qvV6KAJw8s9dCwg==}
@@ -2437,7 +2434,7 @@ snapshots:
       klona: 2.0.6
       p-limit: 6.1.0
 
-  '@novely/core@0.45.2(klona@2.0.6)':
+  '@novely/core@0.47.2(klona@2.0.6)':
     dependencies:
       dequal: 2.0.3
       es-toolkit: 1.23.0
@@ -2445,7 +2442,7 @@ snapshots:
       klona: 2.0.6
       p-limit: 6.1.0
 
-  '@novely/core@0.46.0(klona@2.0.6)':
+  '@novely/core@0.48.0(klona@2.0.6)':
     dependencies:
       dequal: 2.0.3
       es-toolkit: 1.23.0
@@ -2455,9 +2452,9 @@ snapshots:
 
   '@novely/parser@0.7.0': {}
 
-  '@novely/renderer-toolkit@0.12.0(klona@2.0.6)(postcss@8.4.49)':
+  '@novely/renderer-toolkit@0.12.1(klona@2.0.6)(postcss@8.4.49)':
     dependencies:
-      '@novely/core': 0.45.2(klona@2.0.6)
+      '@novely/core': 0.47.2(klona@2.0.6)
       dequal: 2.0.3
       esm-env: 1.0.0
       nanostores: 0.11.3
@@ -2473,10 +2470,10 @@ snapshots:
       - tsx
       - yaml
 
-  '@novely/solid-renderer@0.42.0(@novely/core@0.46.0(klona@2.0.6))(klona@2.0.6)(postcss@8.4.49)(solid-js@1.9.1)':
+  '@novely/solid-renderer@0.46.0(@novely/core@0.48.0(klona@2.0.6))(klona@2.0.6)(postcss@8.4.49)(solid-js@1.9.1)':
     dependencies:
-      '@novely/core': 0.46.0(klona@2.0.6)
-      '@novely/renderer-toolkit': 0.12.0(klona@2.0.6)(postcss@8.4.49)
+      '@novely/core': 0.48.0(klona@2.0.6)
+      '@novely/renderer-toolkit': 0.12.1(klona@2.0.6)(postcss@8.4.49)
       '@novely/typewriter': 0.5.1
       '@solid-primitives/destructure': 0.1.17(solid-js@1.9.1)
       clsx: 2.1.1
@@ -2495,9 +2492,9 @@ snapshots:
 
   '@novely/typewriter@0.5.1': {}
 
-  '@novely/vite-plugin-novely@0.6.1(@novely/core@0.46.0(klona@2.0.6))(vite@6.0.1(@types/node@20.3.1)(lightningcss@1.28.1))':
+  '@novely/vite-plugin-novely@0.6.1(@novely/core@0.48.0(klona@2.0.6))(vite@6.0.1(@types/node@20.3.1)(lightningcss@1.28.1))':
     dependencies:
-      '@novely/core': 0.46.0(klona@2.0.6)
+      '@novely/core': 0.48.0(klona@2.0.6)
       '@novely/parser': 0.7.0
       vite: 6.0.1(@types/node@20.3.1)(lightningcss@1.28.1)
 
@@ -2559,8 +2556,6 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.27.4':
     optional: true
-
-  '@slidy/core@3.8.0': {}
 
   '@solid-primitives/destructure@0.1.17(solid-js@1.9.1)':
     dependencies:

@@ -1,10 +1,12 @@
 import type { NovelyAsset } from '@novely/core';
 import type { Attributes, EmotionsDefinition, EmotionsResult, Entries } from './types';
 import { toArray, getEntries, getKeys, permutation } from './utils';
+import { createActions } from './actions';
 
 const generateEmotions = <BaseKeys extends string, Attribs extends Attributes<BaseKeys>>({
 	base,
 	attributes,
+	pricing,
 }: EmotionsDefinition<BaseKeys, Attribs>): EmotionsResult<BaseKeys, Attribs> => {
 	const emotions: Record<string, NovelyAsset[]> = {};
 
@@ -46,12 +48,13 @@ const generateEmotions = <BaseKeys extends string, Attribs extends Attributes<Ba
 	const clothingData = {
 		base: getKeys(base),
 		attributes: Object.fromEntries(getEntries(attributes).map(([name, value]) => [name, getKeys(value)])),
+		pricing,
 	};
 
 	return {
 		emotions,
-		clothingData,
-	} as any;
+		createActions: createActions.bind(clothingData),
+	};
 };
 
 export { generateEmotions };
