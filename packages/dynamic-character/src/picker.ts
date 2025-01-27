@@ -1,6 +1,6 @@
 import type { CustomHandler } from '@novely/core';
 import type { Setter } from 'solid-js';
-import type { DynCharacterThis, EmotionObject, ShowPickerOptions } from './types';
+import type { DynCharacterThis, EmotionObject, InternalShowPickerOptions } from './types';
 import { createComponent } from 'solid-js';
 import { render } from 'solid-js/web';
 import { getEmotionString, getSavedEmotion, once, saveEmotion } from './utils';
@@ -9,7 +9,7 @@ import { Picker } from './components/Picker';
 const CHARACTER_STYLE_PICKER = Symbol();
 const PRELOADED_EMOTIONS = new Set<string>();
 
-const showPicker = function (this: DynCharacterThis, options: ShowPickerOptions) {
+const showPicker = function (this: DynCharacterThis, options: InternalShowPickerOptions) {
 	const {
 		clothingData,
 		options: { character: characterId, defaultAttributes, defaultBase, translation: translations },

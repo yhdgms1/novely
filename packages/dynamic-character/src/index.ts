@@ -4,8 +4,8 @@ import type {
 	ClothingData,
 	DynCharacterOptions,
 	DynCharacterThis,
-	ShowPickerOptionsTypedAttribute,
-	ShowPickerOptionsTypedBase,
+	ShowPickerOptionsAttribute,
+	ShowPickerOptionsBase,
 } from './types';
 
 import { showPicker } from './picker';
@@ -38,7 +38,7 @@ const createDynamicCharacter = <
 	};
 
 	return {
-		showBasePicker: (options: ShowPickerOptionsTypedBase = {}) => {
+		showBasePicker: (options: ShowPickerOptionsBase = {}) => {
 			const handler = showPicker.call(that, {
 				...DEFAULT_SHOW_BASE_OPTIONS,
 				...options,
@@ -46,7 +46,7 @@ const createDynamicCharacter = <
 
 			return engine.action.custom(handler);
 		},
-		showAttributePicker: (options: ShowPickerOptionsTypedAttribute<Attribs>) => {
+		showAttributePicker: (options: ShowPickerOptionsAttribute<Attribs>) => {
 			const handler = showPicker.call(that, {
 				...DEFAULT_SHOW_ATTRIBUTE_OPTIONS,
 				...options,

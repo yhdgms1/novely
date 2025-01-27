@@ -162,22 +162,22 @@ type EmotionObject = {
 	attributes: Record<string, string>;
 };
 
-// todo: mark internal
-type ShowPickerBase = {
+type InternalShowPickerBase = {
 	type: 'base';
 };
 
-type ShowPickerAttribute = {
+type InternalShowPickerAttribute = {
 	type: 'attribute';
 	name: string;
 };
 
-type ShowPickerBuyOptions = {
+type InternalShowPickerBuyOptions = {
 	buy: (variant: string) => Promise<boolean>;
 	isBought: (variant: string) => boolean;
 };
 
-type ShowPickerOptions = (ShowPickerBase | ShowPickerAttribute) & ShowPickerBuyOptions;
+type InternalShowPickerOptions = (InternalShowPickerBase | InternalShowPickerAttribute) &
+	InternalShowPickerBuyOptions;
 
 type ShowPickerBuyFunctions = {
 	/**
@@ -194,15 +194,14 @@ type ShowPickerBuyFunctions = {
 	isBought?: (variant: string) => boolean;
 };
 
-// todo: remove typed
-type ShowPickerOptionsTypedAttribute<Attribs extends Attributes> = ShowPickerBuyFunctions & {
+type ShowPickerOptionsAttribute<Attribs extends Attributes> = ShowPickerBuyFunctions & {
 	/**
 	 * Name of the attribute
 	 */
 	name: keyof Attribs & string;
 };
 
-type ShowPickerOptionsTypedBase = ShowPickerBuyFunctions;
+type ShowPickerOptionsBase = ShowPickerBuyFunctions;
 
 type EngineInstance = {
 	action: Record<string, (...args: any[]) => ValidAction>;
@@ -219,8 +218,8 @@ export type {
 	DynCharacterOptions,
 	DynCharacterThis,
 	DefaultTypeEssentials,
-	ShowPickerOptions,
-	ShowPickerOptionsTypedAttribute,
-	ShowPickerOptionsTypedBase,
+	InternalShowPickerOptions,
+	ShowPickerOptionsAttribute,
+	ShowPickerOptionsBase,
 	EngineInstance,
 };
