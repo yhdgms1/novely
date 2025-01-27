@@ -1,6 +1,7 @@
 import type { NovelyAsset } from '@novely/core';
 import type { Attributes, EmotionsDefinition, EmotionsResult, Entries } from './types';
 import { toArray, getEntries, getKeys, permutation } from './utils';
+import { createActions } from './actions';
 
 const generateEmotions = <BaseKeys extends string, Attribs extends Attributes<BaseKeys>>({
 	base,
@@ -52,8 +53,8 @@ const generateEmotions = <BaseKeys extends string, Attribs extends Attributes<Ba
 
 	return {
 		emotions,
-		clothingData,
-	} as any;
+		createActions: createActions.bind(clothingData),
+	};
 };
 
 export { generateEmotions };

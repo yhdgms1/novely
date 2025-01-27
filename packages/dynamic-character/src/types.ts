@@ -76,21 +76,29 @@ type ClothingData<BaseKeys extends string, Attribs extends Attributes<BaseKeys>>
 	pricing?: {
 		[Attribute in keyof Attribs]: Record<keyof Attribs[Attribute], number>;
 	};
+};
 
-	// Without this the `attributes` property is `Attributes` and not a narrow `Attribs`
-	__attributes?: Attribs;
+type CreateActionsFN<BaseKeys extends string, Attribs extends Attributes<BaseKeys>> = {
+	<Engine extends EngineInstance>(
+		engine: Engine,
+		options: AllOptions<NoInfer<Engine['typeEssentials']>, NoInfer<BaseKeys>, NoInfer<Attribs>>,
+	): {
+		showBasePicker: (options?: ShowPickerOptionsBase) => ValidAction;
+		showAttributePicker: (options: ShowPickerOptionsAttribute<Attribs>) => ValidAction;
+		showCharacter: () => ValidAction;
+	};
 };
 
 type EmotionsResult<BaseKeys extends string, Attribs extends Attributes<BaseKeys>> = {
 	emotions: GeneratedEmotions<BaseKeys, Attribs>;
-	clothingData: Prettify<ClothingData<BaseKeys, Attribs>>;
+	createActions: CreateActionsFN<BaseKeys, Attribs>;
 };
 
 type Entries<T> = T extends Record<infer T, infer K> ? [T, K][] : never;
 
 type DefaultTypeEssentials = TypeEssentials<Lang, State, Data, Record<string, Character>>;
 
-type DynCharacterOptions<
+type AllOptions<
 	TE extends DefaultTypeEssentials,
 	BaseKeys extends string,
 	Attribs extends Attributes<BaseKeys>,
@@ -152,9 +160,9 @@ type DynCharacterOptions<
 	};
 };
 
-type DynCharacterThis = {
+type AllThis = {
 	clothingData: ClothingData<string, Attributes>;
-	options: DynCharacterOptions<DefaultTypeEssentials, string, Attributes>;
+	options: AllOptions<DefaultTypeEssentials, string, Attributes>;
 };
 
 type EmotionObject = {
@@ -215,8 +223,8 @@ export type {
 	Attributes,
 	ClothingData,
 	EmotionObject,
-	DynCharacterOptions,
-	DynCharacterThis,
+	AllOptions,
+	AllThis,
 	DefaultTypeEssentials,
 	InternalShowPickerOptions,
 	ShowPickerOptionsAttribute,

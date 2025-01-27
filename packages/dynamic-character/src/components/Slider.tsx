@@ -1,12 +1,12 @@
 import type { Accessor, Component, JSX } from 'solid-js';
-import type { DynCharacterThis } from '../types';
+import type { AllThis } from '../types';
 import { createSignal, createEffect, untrack, createSelector, For } from 'solid-js';
 
 type SliderProps = {
 	initialSlideIndex: number;
 	slides: string[];
 	expanded: boolean;
-	translation: DynCharacterThis['options']['translation'][string];
+	translation: AllThis['options']['translation'][string];
 
 	children: (slide: string, i: Accessor<number>) => JSX.Element;
 	onIndexChange: (currentIndex: number) => void;

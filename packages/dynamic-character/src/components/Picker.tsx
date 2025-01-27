@@ -1,5 +1,5 @@
 import type { Component, Setter } from 'solid-js';
-import type { DynCharacterThis, EmotionObject } from '../types';
+import type { AllThis, EmotionObject } from '../types';
 import { createSignal, Show } from 'solid-js';
 import { Slider } from './Slider';
 import { once } from '../utils';
@@ -17,7 +17,7 @@ type PickerProps = {
 	pricing: number[];
 
 	translationGroup: Record<string, string>;
-	translation: DynCharacterThis['options']['translation'][string];
+	translation: AllThis['options']['translation'][string];
 
 	getInitialSlideIndex: (appearance: EmotionObject) => number;
 	onIndexChange: (appearance: EmotionObject, setAppearance: Setter<EmotionObject>, slide: number) => void;
