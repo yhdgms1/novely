@@ -14,13 +14,12 @@ import type {
 	ValidAction,
 	VirtualActions,
 } from './action';
-import { setupBrowserVisibilityChangeListeners } from './browser';
 import type { Character } from './character';
 import { DEFAULT_TYPEWRITER_SPEED, EMPTY_SET, MAIN_CONTEXT_KEY } from './constants';
 import { getCustomActionHolder, handleCustomAction } from './custom-action';
 import { enqueueAssetForPreloading, handleAssetsPreloading, huntAssets } from './preloading';
 import type { Context, RendererInitPreviewReturn } from './renderer';
-import { ASSETS_TO_PRELOAD, PRELOADED_ASSETS, STACK_MAP } from './shared';
+import { PRELOADED_ASSETS, STACK_MAP } from './shared';
 import { localStorageStorage } from './storage';
 import type { Stored } from './store';
 import { store } from './store';
@@ -294,14 +293,16 @@ const novely = <
 		storage.set(data);
 	};
 
-	const throttledOnStorageDataChange = throttle(onStorageDataChange, throttleTimeout);
 	const throttledEmergencyOnStorageDataChange = throttle(() => {
 		if (saveOnUnload === true || (saveOnUnload === 'prod' && !DEV)) {
 			onStorageDataChange(storageData.get());
 		}
 	}, 10);
 
+	const throttledOnStorageDataChange = throttle(throttledEmergencyOnStorageDataChange, throttleTimeout);
+
 	storageData.subscribe(throttledOnStorageDataChange);
+	addEventListener('beforeunload', throttledEmergencyOnStorageDataChange);
 
 	const getStoredData = async () => {
 		let stored = await storage.get();
@@ -353,10 +354,6 @@ const novely = <
 	storageDelay.then(getStoredData);
 
 	const initial = getDefaultSave(clone(defaultState));
-
-	const unsubscribeFromBrowserVisibilityChange = setupBrowserVisibilityChangeListeners({
-		onChange: throttledEmergencyOnStorageDataChange,
-	});
 
 	// #region Save Function
 	const save = (type: Save[2][1]) => {
@@ -1728,7 +1725,7 @@ const novely = <
 
 			UIInstance.unmount();
 
-			unsubscribeFromBrowserVisibilityChange();
+			removeEventListener('beforeunload', throttledEmergencyOnStorageDataChange);
 
 			destroyed = true;
 		},
