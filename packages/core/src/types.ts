@@ -432,16 +432,19 @@ type StateFunction<S extends State> = {
 	(): S;
 };
 
+/**
+ * It does NOT actually provide any values and should be used only for types inferring
+ */
 type TypeEssentials<
 	$Lang extends Lang,
 	$State extends State,
 	$Data extends Data,
 	$Characters extends Record<string, Character<$Lang>>,
 > = {
-	readonly l: $Lang | null;
-	readonly s: $State | null;
-	readonly d: $Data | null;
-	readonly c: $Characters | null;
+	readonly l: $Lang;
+	readonly s: $State;
+	readonly d: $Data;
+	readonly c: $Characters;
 };
 
 type DialogOverviewEntry = {

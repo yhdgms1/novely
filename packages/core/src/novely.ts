@@ -293,16 +293,18 @@ const novely = <
 		storage.set(data);
 	};
 
-	const throttledEmergencyOnStorageDataChange = throttle(() => {
-		if (saveOnUnload === true || (saveOnUnload === 'prod' && !DEV)) {
-			onStorageDataChange(storageData.get());
-		}
-	}, 10);
-
-	const throttledOnStorageDataChange = throttle(throttledEmergencyOnStorageDataChange, throttleTimeout);
+	/**
+	 * Short one is used in conditions like `beforeunload` when waiting for too long is not a case
+	 * Another one relies on short one to prevent double saving
+	 */
+	const throttledShortOnStorageDataChange = throttle(() => onStorageDataChange(storageData.get()), 10);
+	const throttledOnStorageDataChange = throttle(throttledShortOnStorageDataChange, throttleTimeout);
 
 	storageData.subscribe(throttledOnStorageDataChange);
-	addEventListener('beforeunload', throttledEmergencyOnStorageDataChange);
+
+	if (saveOnUnload === true || (saveOnUnload === 'prod' && !DEV)) {
+		addEventListener('beforeunload', throttledShortOnStorageDataChange);
+	}
 
 	const getStoredData = async () => {
 		let stored = await storage.get();
@@ -1607,12 +1609,7 @@ const novely = <
 		return undefined;
 	}) as StateFunction<$Data>;
 
-	const typeEssentials: TypeEssentials<$Language, $State, $Data, $Characters> = {
-		l: null,
-		s: null,
-		d: null,
-		c: null,
-	};
+	const typeEssentials = {} as unknown as TypeEssentials<$Language, $State, $Data, $Characters>;
 
 	const getCurrentStorageData = () => {
 		return coreData.get().dataLoaded ? clone(storageData.get()) : null;
@@ -1696,6 +1693,11 @@ const novely = <
 		 */
 		typeEssentials,
 		/**
+		 * Same as `engine.typeEssentials`
+		 * @deprecated Will replace `engine.typeEssentials` in the future
+		 */
+		types: typeEssentials,
+		/**
 		 * Replaces content inside {{braces}} using global data
 		 * @example
 		 * ```ts
@@ -1725,7 +1727,7 @@ const novely = <
 
 			UIInstance.unmount();
 
-			removeEventListener('beforeunload', throttledEmergencyOnStorageDataChange);
+			removeEventListener('beforeunload', throttledShortOnStorageDataChange);
 
 			destroyed = true;
 		},
