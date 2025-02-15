@@ -142,7 +142,7 @@ type CharactersData<$Characters extends Record<string, Character<Lang>>> = {
 	};
 };
 
-type AssetsPreloading = 'lazy' | 'blocking' | 'automatic';
+type AssetsPreloading = 'lazy' | 'automatic';
 
 type CloneFN = <T>(value: T) => T;
 
@@ -376,7 +376,11 @@ interface NovelyInit<
 	 */
 	askBeforeExit?: boolean;
 	/**
-	 * @default "lazy"
+	 * "automatic" will try to preload assets when possible
+	 *
+	 * "lazy" will load assets only when they are shown
+	 *
+	 * @default "automatic"
 	 */
 	preloadAssets?: AssetsPreloading;
 	/**

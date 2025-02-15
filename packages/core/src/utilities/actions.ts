@@ -1,20 +1,14 @@
 import { DEV } from 'esm-env';
 import type { ActionChoiceChoiceObject, DefaultActionProxy, ValidAction, VirtualActions } from '../action';
-import { huntAssets, enqueueAssetForPreloading } from '../preloading';
 import { flatActions } from './story';
-import { getLanguageFromStore, getVolumeFromStore } from './ungrupped';
-import type { AssetsPreloading, Data, Lang, State, StorageData } from '../types';
+import type { Data, Lang, State } from '../types';
 import type { Character } from '../character';
-import type { Stored } from '../store';
 
 type BuildActionObjectParams<$Lang extends Lang, $Data extends Data> = {
 	rendererActions: Record<string, (...args: any[]) => ValidAction>;
 	nativeActions: string[];
 
 	characters: Record<string, Character>;
-
-	preloadAssets: AssetsPreloading;
-	storageData: Stored<StorageData<$Lang, $Data>>;
 };
 
 type VirtualActionsGlobal = VirtualActions<Record<string, Character>, Lang, State>;
@@ -29,8 +23,6 @@ const buildActionObject = <$Lang extends Lang, $Data extends Data>({
 	rendererActions,
 	nativeActions,
 	characters,
-	preloadAssets,
-	storageData,
 }: BuildActionObjectParams<$Lang, $Data>) => {
 	const allActions = [...nativeActions, ...VIRTUAL_ACTIONS];
 	const object = { ...rendererActions };
@@ -74,21 +66,6 @@ const buildActionObject = <$Lang extends Lang, $Data extends Data>({
 				for (const key in actions) {
 					actions[key] = flatActions(actions[key]);
 				}
-			}
-
-			if (preloadAssets === 'blocking') {
-				huntAssets({
-					action: action as any,
-					props: props as any,
-
-					mode: preloadAssets,
-					characters,
-
-					lang: getLanguageFromStore(storageData),
-					volume: getVolumeFromStore(storageData),
-
-					handle: enqueueAssetForPreloading,
-				});
 			}
 
 			return [action, ...props] as ValidAction;

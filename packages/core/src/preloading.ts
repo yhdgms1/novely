@@ -1,7 +1,7 @@
 import type { CustomHandler, DefaultActionProxy } from './action';
 import type { Character } from './character';
 import { ASSETS_TO_PRELOAD, PRELOADED_ASSETS } from './shared';
-import type { AssetsPreloading, Lang } from './types';
+import type { Lang } from './types';
 import {
 	isAudioAction,
 	isImageAsset,
@@ -96,10 +96,6 @@ type HuntAssetsOptions = {
 	 */
 	lang: Lang;
 	/**
-	 * Assets Preloading Mode
-	 */
-	mode: AssetsPreloading;
-	/**
 	 * Characters object from user config
 	 */
 	characters: Record<string, Character>;
@@ -117,7 +113,7 @@ type HuntAssetsOptions = {
 	handle: (asset: string) => void;
 };
 
-const huntAssets = ({ volume, lang, mode, characters, action, props, handle }: HuntAssetsOptions) => {
+const huntAssets = ({ volume, lang, characters, action, props, handle }: HuntAssetsOptions) => {
 	if (action === 'showBackground') {
 		/**
 		 * There are two types of showBackground currently
@@ -175,20 +171,12 @@ const huntAssets = ({ volume, lang, mode, characters, action, props, handle }: H
 		}
 
 		for (const [language, value] of Object.entries(props[0])) {
-			/**
-			 * In case of blocking mode we are going to preload every language possible
-			 * This is not optimal, but preferred language is unknown (language saved in cloud may be different from language choosen from function to get language)
-			 */
-			if (mode === 'blocking') {
-				/**
-				 * This check is not necessary, but just in case undefined
-				 */
-				value && handle(handleAudioAsset(value));
-			} else if (language === lang) {
+			if (language === lang) {
 				/**
 				 * todo: decide how to make language comparison (maybe use some function)
 				 *
-				 * We can use en-US for both en-US and en-GB. Same thing applies to `dialog` and `text` action. But should we? Should it be explicit?
+				 * We can use en-US for both en-US and en-GB. Same thing applies to `dialog` and `text` action.
+				 * Maybe voice over language can be selected separately
 				 */
 				value && handle(handleAudioAsset(value));
 			}

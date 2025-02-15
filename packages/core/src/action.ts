@@ -29,7 +29,7 @@ type ValidAction =
 	| ['next']
 	| ['text', ...TextContent<string, State>[]]
 	| ['exit']
-	| ['preload', string]
+	| ['preload', string | NovelyAsset]
 	| ['block', string]
 	| ValidAction[];
 
@@ -376,7 +376,7 @@ type ActionProxy<Characters extends Record<string, Character>, Languages extends
 
 	text: (...text: TextContent<Languages, S>[]) => ValidAction;
 
-	preload: (source: string) => ValidAction;
+	preload: (source: string | NovelyAsset) => ValidAction;
 
 	block: (scene: string) => ValidAction;
 };

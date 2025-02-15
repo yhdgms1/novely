@@ -73,6 +73,7 @@ import {
 	toArray,
 	isUserRequiredAction,
 	isSkippedDuringRestore,
+	unwrapAsset,
 } from './utilities';
 import type { MatchActionHandlers } from './utilities';
 import { buildActionObject } from './utilities/actions';
@@ -100,7 +101,7 @@ const novely = <
 	getLanguage = defaultGetLanguage,
 	overrideLanguage = false,
 	askBeforeExit = true,
-	preloadAssets = 'lazy',
+	preloadAssets = 'automatic',
 	parallelAssetsDownloadLimit = 15,
 	fetch: request = fetch,
 	cloneFunction: clone = klona,
@@ -158,16 +159,6 @@ const novely = <
 		// This is the first `script` call, likely data did not loaded yet
 		if (!initialScreenWasShown) {
 			renderer.ui.showLoading();
-		}
-
-		if (preloadAssets === 'blocking' && ASSETS_TO_PRELOAD.size > 0) {
-			renderer.ui.showLoading();
-
-			await handleAssetsPreloading({
-				...renderer.misc,
-				limiter: limitAssetsDownload,
-				request,
-			});
 		}
 
 		await dataLoaded.promise;
@@ -274,13 +265,7 @@ const novely = <
 			}
 		};
 
-		// It does not work really well. Do we need `blocking` strategy anyway?
-		// It is a waste of resources
-		if (preloadAssets === 'blocking') {
-			await preload();
-		} else {
-			void preload();
-		}
+		preload();
 
 		/**
 		 * When promise is resolved data is marked loaded
@@ -806,7 +791,6 @@ const novely = <
 				action,
 				props: props as any,
 
-				mode: preloadAssets,
 				characters,
 
 				lang: getLanguageFromStore(storageData),
@@ -872,7 +856,7 @@ const novely = <
 		getCustomActionHolder(ctx, fn).cleanup();
 	};
 
-	const getResourseTypeForRenderer = (url: string) => {
+	const getResourseTypeWrapper = (url: string) => {
 		return getResourseType({
 			url,
 			request,
@@ -1024,7 +1008,7 @@ const novely = <
 		getCharacterAssets,
 		getDialogOverview,
 
-		getResourseType: getResourseTypeForRenderer,
+		getResourseType: getResourseTypeWrapper,
 	});
 	// #endregion
 
@@ -1090,7 +1074,6 @@ const novely = <
 						action,
 						props: props as any,
 
-						mode: preloadAssets,
 						characters,
 
 						lang: getLanguageFromStore(storageData),
@@ -1478,15 +1461,36 @@ const novely = <
 		preload({ ctx, push }, [source]) {
 			if (DEV && preloadAssets !== 'lazy') {
 				console.error(
-					`You do not need a preload action becase "preloadAssets" strategy was set to "${preloadAssets}"`,
+					`You do not need a preload action because "preloadAssets" strategy was set to "${preloadAssets}"`,
 				);
+
+				push();
+				return;
 			}
 
-			if (!ctx.meta.goingBack && !ctx.meta.restoring && !PRELOADED_ASSETS.has(source)) {
-				/**
-				 * Add to preloaded before it was loaded to prevent save image downloading multiple times
-				 */
-				PRELOADED_ASSETS.add(renderer.misc.preloadImage(source));
+			const src = unwrapAsset(source);
+
+			if (!ctx.meta.goingBack && !ctx.meta.restoring && !PRELOADED_ASSETS.has(src)) {
+				const process = async () => {
+					const type = isAsset(source) ? source.type : await getResourseTypeWrapper(src);
+
+					if (type === 'image') {
+						renderer.misc.preloadAudioBlocking(src);
+					} else if (type === 'audio') {
+						renderer.misc.preloadImage(src);
+					} else {
+						if (DEV) {
+							console.error(`Preload error: Unknown type of the following resource: `, source);
+						}
+
+						return;
+					}
+
+					// Add to preloaded before it was loaded to prevent downloading multiple times
+					PRELOADED_ASSETS.add(src);
+				};
+
+				process();
 			}
 
 			push();
@@ -1516,8 +1520,6 @@ const novely = <
 		rendererActions: renderer.actions,
 		nativeActions,
 		characters,
-		preloadAssets,
-		storageData,
 	});
 	// #endregion
 
