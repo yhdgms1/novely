@@ -433,13 +433,25 @@ type StateFunction<S extends State> = {
 };
 
 /**
- * It does NOT actually provide any values and should be used only for types inferring
+ * @deprecated `EngineTypes` should be used instead
  */
 type TypeEssentials<
 	$Lang extends Lang,
 	$State extends State,
 	$Data extends Data,
 	$Characters extends Record<string, Character<$Lang>>,
+> = {
+	readonly l: $Lang | null;
+	readonly s: $State | null;
+	readonly d: $Data | null;
+	readonly c: $Characters | null;
+};
+
+type EngineTypes<
+	$Lang extends Lang = Lang,
+	$State extends State = State,
+	$Data extends Data = Data,
+	$Characters extends Record<string, Character<$Lang>> = Record<string, Character<$Lang>>,
 > = {
 	readonly l: $Lang;
 	readonly s: $State;
@@ -496,4 +508,5 @@ export type {
 	CloneFN,
 	DialogOverview,
 	DialogOverviewEntry,
+	EngineTypes,
 };

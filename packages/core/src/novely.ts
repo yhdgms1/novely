@@ -30,6 +30,7 @@ import type {
 	Data,
 	DialogOverview,
 	DialogOverviewEntry,
+	EngineTypes,
 	Lang,
 	NovelyAsset,
 	NovelyInit,
@@ -1609,8 +1610,6 @@ const novely = <
 		return undefined;
 	}) as StateFunction<$Data>;
 
-	const typeEssentials = {} as unknown as TypeEssentials<$Language, $State, $Data, $Characters>;
-
 	const getCurrentStorageData = () => {
 		return coreData.get().dataLoaded ? clone(storageData.get()) : null;
 	};
@@ -1681,7 +1680,7 @@ const novely = <
 		data,
 		/**
 		 * Used in combination with type utilities
-		 *
+		 * @deprecated Use `engine.types` instead
 		 * @example
 		 * ```ts
 		 * import type { ConditionParams, StateFunction } from '@novely/core';
@@ -1691,12 +1690,21 @@ const novely = <
 		 * }
 		 * ```
 		 */
-		typeEssentials,
+		typeEssentials: {} as TypeEssentials<$Language, $State, $Data, $Characters>,
 		/**
-		 * Same as `engine.typeEssentials`
-		 * @deprecated Will replace `engine.typeEssentials` in the future
+		 * Used in combination with type utilities
+		 * @example
+		 * ```ts
+		 * import type { TypesFromEngine, ConditionParams, StateFunction } from '@novely/core';
+		 *
+		 * type Types = TypesFromEngine<typeof engine>;
+		 *
+		 * const conditionCheck = (state: StateFunction<ConditionParams<Types>>) => {
+		 *   return state.age >= 18;
+		 * }
+		 * ```
 		 */
-		types: typeEssentials,
+		types: null as EngineTypes<$Language, $State, $Data, $Characters> | null,
 		/**
 		 * Replaces content inside {{braces}} using global data
 		 * @example

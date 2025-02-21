@@ -57,6 +57,7 @@ export type {
 	CharacterAssetSizes,
 	CharactersData,
 	NovelyAsset,
+	EngineTypes,
 } from './types';
 export type { Stored } from './store';
 export type { BaseTranslationStrings } from './translations';
@@ -67,6 +68,7 @@ export type {
 	InputHandler,
 	FunctionParams,
 	ChoiceParams,
+	TypesFromEngine,
 } from './type-utils';
 
 export { novely } from './novely';

@@ -1,4 +1,15 @@
-import { CustomHandler, EN, RU, Story, TextContent, ValidAction, asset, extendAction, novely } from '@novely/core';
+import {
+	TypesFromEngine,
+	CustomHandler,
+	EN,
+	RU,
+	Story,
+	TextContent,
+	ValidAction,
+	asset,
+	extendAction,
+	novely,
+} from '@novely/core';
 import { adapterLocalStorage, cloneFunction, flexStorage } from '@novely/flex-storage';
 import { createSolidRenderer } from '@novely/solid-renderer';
 
@@ -160,6 +171,8 @@ const engine = novely({
 		},
 	},
 });
+
+type Types = TypesFromEngine<typeof engine>;
 
 const action = extendAction(engine.action, {
 	particles: (options: Parameters<typeof showParticles>[0]) => {
