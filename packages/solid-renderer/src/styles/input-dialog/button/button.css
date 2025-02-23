@@ -5,3 +5,9 @@
 	width: -moz-fit-content;
 	width: fit-content;
 }
+
+@media (max-aspect-ratio: 0.8) {
+	.dialog-input__button {
+		font-size: 1.1rem;
+	}
+}

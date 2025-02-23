@@ -1,5 +1,7 @@
 .action-dialog {
-	min-height: 26vh;
+	--min-dialog-height: 26vh;
+
+	min-height: var(--min-dialog-height);
 	width: 75%;
 
 	display: flex;
@@ -34,19 +36,14 @@
 
 	color: var(--novely-dialog-color, #ffffff);
 
-	border: var(--novely-dialog-border-width, 0.18rem) solid var(--novely-dialog-border-color, #ffffff);
-	border-radius: var(--novely-dialog-border-radius, .875rem);
-	box-shadow: var(--novely-px) var(--novely-px) 0.25rem var(--novely-dialog-box-shadow-color, #00000072);
+	border: var(--novely-dialog-border-width, 0.15rem) solid var(--novely-dialog-border-color, #ffffff);
+	border-radius: var(--novely-dialog-border-radius, .4rem);
+	box-shadow: var(--novely-px) var(--novely-px) 0.2rem var(--novely-dialog-box-shadow-color, #00000072);
 
-	/* biome-ignore */
-	background-image: var(
-		--novely-dialog-background-image,
-		radial-gradient(#d6608998 20%, transparent 20%),
-		radial-gradient(#d6608998 20%, transparent 20%)
-	);
-	background-color: var(--novely-dialog-background-color, #f092b4d8);
-	background-position: var(--novely-dialog-background-position, 0 0, 3.125rem 3.125rem);
-	background-size: var(--novely-dialog-background-size, 6.25rem 6.25rem);
+	background-image: var(--novely-dialog-background-image, none);
+	background-color: var(--novely-dialog-background-color, #f092b4df);
+	background-position: var(--novely-dialog-background-position);
+	background-size: var(--novely-dialog-background-size);
 
 	display: flex;
 	flex-wrap: nowrap;
@@ -75,13 +72,13 @@
 	line-height: 1.2;
 
 	background: #ffffff;
-	border-radius: 0.438rem 0.438rem 0 0;
+	border-radius: 0.3rem 0.3rem 0 0;
 
 	width: -moz-fit-content;
 	width: fit-content;
 	margin-left: 5vmin;
 
-	box-shadow: var(--novely-px) var(--novely-px) 0.18rem #00000042;
+	box-shadow: var(--novely-px) var(--novely-px) 0.15rem #00000042;
 }
 
 .action-dialog-mood-separator {
@@ -121,10 +118,26 @@
 
 @media (max-aspect-ratio: 0.8) {
 	.action-dialog {
-		width: 100%;
-		bottom: 0;
-		left: unset;
+		--min-dialog-height: 20vh;
+		--dialog-bottom-offset: min(calc(2.8rem * 4), 22vh);
+
+		width: calc(100% - 0.4rem * 2);
+		left: 0.4rem;
+
+		top: calc(100vh - var(--min-dialog-height) - var(--dialog-bottom-offset) - 6vh);
+		bottom: unset;
+
 		transform: unset;
+
+		justify-content: flex-start;
+	}
+
+	.action-dialog-container {
+		min-height: 12vh;
+		height: auto;
+
+		flex-grow: unset;
+		padding-block-end: 0;
 	}
 
 	.action-dialog-name {
@@ -133,13 +146,7 @@
 
 	.action-dialog-content {
 		font-size: 1.2rem;
-	}
 
-	.action-dialog-container {
-		border-radius: var(--novely-dialog-border-radius, .875rem .875rem 0 0);
-	}
-
-	.action-dialog-content {
 		text-shadow: none;
 	}
 }
