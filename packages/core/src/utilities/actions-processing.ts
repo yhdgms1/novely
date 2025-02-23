@@ -671,3 +671,5 @@ export {
 	nextPath,
 	isExitImpossible,
 };
+
+export type { GuardedReferFunction };

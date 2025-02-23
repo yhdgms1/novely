@@ -28,11 +28,8 @@ import type { BaseTranslationStrings } from './translations';
 import type {
 	CoreData,
 	Data,
-	DialogOverview,
-	DialogOverviewEntry,
 	EngineTypes,
 	Lang,
-	NovelyAsset,
 	NovelyInit,
 	Save,
 	State,
@@ -69,12 +66,11 @@ import {
 	getVolumeFromStore,
 	noop,
 	toArray,
-	isUserRequiredAction,
-	isSkippedDuringRestore,
 } from './utilities';
 import type { MatchActionHandlers } from './utilities';
 import { buildActionObject } from './utilities/actions';
 import { unwrapAsset, unwrapAudioAsset, unwrapImageAsset } from './asset';
+import { getDialogOverview } from './utilities/dialog-overview';
 
 const novely = <
 	$Language extends string,
@@ -889,97 +885,6 @@ const novely = <
 		return String(c) || '';
 	};
 
-	const getDialogOverview = async () => {
-		/**
-		 * Dialog Overview is possible only in main context
-		 */
-		const { value: save } = useStack(MAIN_CONTEXT_KEY);
-		const stateSnapshots = save[3];
-
-		/**
-		 * Easy mode
-		 */
-		if (stateSnapshots.length == 0) {
-			return [];
-		}
-
-		const { queue } = await getActionsFromPath({
-			story,
-			path: save[0],
-			filter: false,
-			referGuarded,
-		});
-
-		const [lang] = storageData.get().meta;
-
-		type DialogItem = {
-			name: undefined | string;
-			text: TextContent<string, State>;
-			voice: undefined | string | NovelyAsset | Record<string, string | NovelyAsset>;
-		};
-
-		const dialogItems: DialogItem[] = [];
-
-		/**
-		 * For every available state snapshot find dialog corresponding to it
-		 */
-		for (let p = 0, a = stateSnapshots.length, i = queue.length - 1; a > 0 && i > 0; i--) {
-			const action = queue[i];
-
-			if (action[0] === 'dialog') {
-				const [_, name, text] = action;
-
-				let voice: undefined | string | NovelyAsset | Record<string, string | NovelyAsset> = undefined;
-
-				/**
-				 * Search for the most recent `voice` action before current dialog
-				 */
-				for (let j = i - 1; j > p && j > 0; j--) {
-					const action = queue[j];
-
-					if (isUserRequiredAction(action) || isSkippedDuringRestore(action[0])) break;
-					if (action[0] === 'stopVoice') break;
-
-					if (action[0] === 'voice') {
-						voice = action[1];
-
-						break;
-					}
-				}
-
-				dialogItems.push({
-					name,
-					text,
-					voice,
-				});
-
-				p = i;
-				a--;
-			}
-		}
-
-		const entries: DialogOverview = dialogItems.reverse().map(({ name, text, voice }, i) => {
-			const state = stateSnapshots[i];
-			const audioSource = isString(voice)
-				? voice
-				: isAsset(voice)
-					? voice
-					: voice == undefined
-						? voice
-						: voice[lang];
-
-			name = name ? getCharacterName(name as keyof $Characters) : '';
-
-			return {
-				name: templateReplace(name, state),
-				text: templateReplace(text, state),
-				voice: audioSource ? unwrapAudioAsset(audioSource) : '',
-			} satisfies DialogOverviewEntry;
-		});
-
-		return entries;
-	};
-
 	// #region Renderer Creation
 	const renderer = createRenderer({
 		mainContextKey: MAIN_CONTEXT_KEY,
@@ -1004,7 +909,14 @@ const novely = <
 		getLanguageDisplayName,
 		getCharacterColor,
 		getCharacterAssets,
-		getDialogOverview,
+		getDialogOverview: getDialogOverview.bind({
+			referGuarded,
+			story,
+			getCharacterName,
+			getLanguage: () => getLanguageFromStore(storageData),
+			getStack: () => useStack(MAIN_CONTEXT_KEY),
+			templateReplace: (...args) => templateReplace(...args),
+		}),
 
 		getResourseType: getResourseTypeWrapper,
 	});
@@ -1572,7 +1484,7 @@ const novely = <
 	};
 
 	/**
-	 * Basically replaces content inside of {{braces}}.
+	 * Replaces content inside of {{braces}}.
 	 */
 	const templateReplace = (content: TextContent<$Language, Data>, values?: Data) => {
 		const {

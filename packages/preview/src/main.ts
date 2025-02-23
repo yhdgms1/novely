@@ -219,7 +219,7 @@ const action = extendAction(engine.action, {
 	},
 });
 
-true &&
+false &&
 	engine.script({
 		start: [action.showBackground(outdoor), action.dialog('Lily', 'HELLO'), action.jump('part_2')],
 	});
@@ -246,7 +246,7 @@ false &&
 		],
 	});
 
-false &&
+true &&
 	engine.script({
 		start: [
 			action.next(),
