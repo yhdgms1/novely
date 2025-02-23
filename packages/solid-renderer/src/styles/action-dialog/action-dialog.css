@@ -60,12 +60,18 @@
 	justify-content: center;
 }
 
-.action-dialog-name,
+.action-dialog-name {
+	display: block;
+	padding: 0.2rem 1.5vmin;
+	margin: 0;
+}
+
 .action-dialog-content {
 	display: block;
 	padding: 1vmin;
 	margin: 0;
 }
+
 
 .action-dialog-name {
 	font-size: 1.85rem;
