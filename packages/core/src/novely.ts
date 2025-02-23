@@ -868,7 +868,7 @@ const novely = <
 	const getCharacterName = (character: keyof $Characters): string => {
 		const c = character;
 		const cs = characters;
-		const [lang] = storageData.get().meta;
+		const lang = getLanguageFromStore(storageData);
 
 		if (c && c in cs) {
 			const block = cs[c].name;
@@ -878,11 +878,11 @@ const novely = <
 			}
 
 			if (lang in block) {
-				return block[lang as $Language];
+				return block[lang];
 			}
 		}
 
-		return String(c) || '';
+		return String(c);
 	};
 
 	// #region Renderer Creation
@@ -1049,8 +1049,7 @@ const novely = <
 			push();
 		},
 		voice({ ctx, push }, [source]) {
-			const [lang] = storageData.get().meta;
-
+			const lang = getLanguageFromStore(storageData);
 			const audioSource = isString(source) ? source : isAsset(source) ? source : source[lang];
 
 			/**
