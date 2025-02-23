@@ -13,7 +13,7 @@ export default defineConfig((options) => {
 		dts: true,
 		watch: options.watch,
 		esbuildOptions: (options) => {
-			options.charset = 'utf8'
-		}
+			options.charset = 'utf8';
+		},
 	};
 });
