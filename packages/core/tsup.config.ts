@@ -4,14 +4,16 @@ export default defineConfig((options) => {
 	return {
 		entry: ['src/index.ts'],
 		external: [],
-		noExternal: ['klona'],
+		noExternal: ['klona', 'dequal'],
 		sourcemap: true,
-		target: 'es2022',
-		format: ['esm', 'iife'],
+		target: 'es2024',
+		format: ['esm'],
 		bundle: true,
 		minify: false,
 		dts: true,
 		watch: options.watch,
-		globalName: 'Novely',
+		esbuildOptions: (options) => {
+			options.charset = 'utf8'
+		}
 	};
 });
