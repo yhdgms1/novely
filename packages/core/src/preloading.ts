@@ -2,17 +2,8 @@ import type { CustomHandler, DefaultActionProxy } from './action';
 import type { Character } from './character';
 import { ASSETS_TO_PRELOAD, PRELOADED_ASSETS } from './shared';
 import type { Lang } from './types';
-import {
-	isAudioAction,
-	isImageAsset,
-	isString,
-	isAsset,
-	getResourseType,
-	handleAudioAsset,
-	handleImageAsset,
-	mapSet,
-	toArray,
-} from './utilities';
+import { isAudioAction, isImageAsset, isString, isAsset, getResourseType, mapSet, toArray } from './utilities';
+import { unwrapAudioAsset, unwrapImageAsset } from './asset';
 
 const ACTION_NAME_TO_VOLUME_MAP = {
 	playMusic: 'music',
@@ -122,7 +113,7 @@ const huntAssets = ({ volume, lang, characters, action, props, handle }: HuntAss
 		 * Parameter is a `Record<'CSS Media', string>`
 		 */
 		if (isString(props[0])) {
-			handle(handleAudioAsset(props[0]));
+			handle(unwrapAudioAsset(props[0]));
 		}
 
 		if (props[0] && typeof props[0] === 'object') {
@@ -130,7 +121,7 @@ const huntAssets = ({ volume, lang, characters, action, props, handle }: HuntAss
 				if (isImageAsset(value)) {
 					handle(value);
 				} else if (isAsset(value)) {
-					const unwrapped = handleImageAsset(value);
+					const unwrapped = unwrapImageAsset(value);
 
 					if (isImageAsset(unwrapped)) {
 						handle(unwrapped);
@@ -156,7 +147,7 @@ const huntAssets = ({ volume, lang, characters, action, props, handle }: HuntAss
 	 */
 	if (isAudioAction(action) && isString(props[0])) {
 		if (getVolumeFor(action) > 0) {
-			handle(handleAudioAsset(props[0]));
+			handle(unwrapAudioAsset(props[0]));
 		}
 
 		return;
@@ -178,7 +169,7 @@ const huntAssets = ({ volume, lang, characters, action, props, handle }: HuntAss
 				 * We can use en-US for both en-US and en-GB. Same thing applies to `dialog` and `text` action.
 				 * Maybe voice over language can be selected separately
 				 */
-				value && handle(handleAudioAsset(value));
+				value && handle(unwrapAudioAsset(value));
 			}
 		}
 
@@ -192,7 +183,7 @@ const huntAssets = ({ volume, lang, characters, action, props, handle }: HuntAss
 		const images = toArray(characters[props[0]].emotions[props[1]]);
 
 		for (const asset of images) {
-			handle(handleImageAsset(asset));
+			handle(unwrapImageAsset(asset));
 		}
 
 		return;
@@ -214,7 +205,7 @@ const huntAssets = ({ volume, lang, characters, action, props, handle }: HuntAss
 			const data = props[i];
 
 			if (Array.isArray(data)) {
-				handle(handleImageAsset(data[5] as string));
+				handle(unwrapImageAsset(data[5] as string));
 			}
 		}
 	}

@@ -67,16 +67,14 @@ import {
 	getIntlLanguageDisplayName,
 	getLanguageFromStore,
 	getVolumeFromStore,
-	handleAudioAsset,
-	handleImageAsset,
 	noop,
 	toArray,
 	isUserRequiredAction,
 	isSkippedDuringRestore,
-	unwrapAsset,
 } from './utilities';
 import type { MatchActionHandlers } from './utilities';
 import { buildActionObject } from './utilities/actions';
+import { unwrapAsset, unwrapAudioAsset, unwrapImageAsset } from './asset';
 
 const novely = <
 	$Language extends string,
@@ -868,7 +866,7 @@ const novely = <
 	};
 
 	const getCharacterAssets = (character: string, emotion: string) => {
-		return toArray(characters[character].emotions[emotion]).map(handleImageAsset);
+		return toArray(characters[character].emotions[emotion]).map(unwrapImageAsset);
 	};
 
 	const getCharacterName = (character: keyof $Characters): string => {
@@ -975,7 +973,7 @@ const novely = <
 			return {
 				name: templateReplace(name, state),
 				text: templateReplace(text, state),
-				voice: audioSource ? handleAudioAsset(audioSource) : '',
+				voice: audioSource ? unwrapAudioAsset(audioSource) : '',
 			} satisfies DialogOverviewEntry;
 		});
 
@@ -1104,38 +1102,38 @@ const novely = <
 		showBackground({ ctx, push }, [background]) {
 			if (isString(background) || isAsset(background)) {
 				ctx.background({
-					all: handleImageAsset(background),
+					all: unwrapImageAsset(background),
 				});
 			} else {
 				ctx.background(
-					Object.fromEntries(Object.entries(background).map(([media, asset]) => [media, handleImageAsset(asset)])),
+					Object.fromEntries(Object.entries(background).map(([media, asset]) => [media, unwrapImageAsset(asset)])),
 				);
 			}
 
 			push();
 		},
 		playMusic({ ctx, push }, [source]) {
-			ctx.audio.music(handleAudioAsset(source), 'music').play(true);
+			ctx.audio.music(unwrapAudioAsset(source), 'music').play(true);
 			push();
 		},
 		pauseMusic({ ctx, push }, [source]) {
-			ctx.audio.music(handleAudioAsset(source), 'music').pause();
+			ctx.audio.music(unwrapAudioAsset(source), 'music').pause();
 			push();
 		},
 		stopMusic({ ctx, push }, [source]) {
-			ctx.audio.music(handleAudioAsset(source), 'music').stop();
+			ctx.audio.music(unwrapAudioAsset(source), 'music').stop();
 			push();
 		},
 		playSound({ ctx, push }, [source, loop]) {
-			ctx.audio.music(handleAudioAsset(source), 'sound').play(loop || false);
+			ctx.audio.music(unwrapAudioAsset(source), 'sound').play(loop || false);
 			push();
 		},
 		pauseSound({ ctx, push }, [source]) {
-			ctx.audio.music(handleAudioAsset(source), 'sound').pause();
+			ctx.audio.music(unwrapAudioAsset(source), 'sound').pause();
 			push();
 		},
 		stopSound({ ctx, push }, [source]) {
-			ctx.audio.music(handleAudioAsset(source), 'sound').stop();
+			ctx.audio.music(unwrapAudioAsset(source), 'sound').stop();
 			push();
 		},
 		voice({ ctx, push }, [source]) {
@@ -1151,7 +1149,7 @@ const novely = <
 				return;
 			}
 
-			ctx.audio.voice(handleAudioAsset(audioSource));
+			ctx.audio.voice(unwrapAudioAsset(audioSource));
 			push();
 		},
 		stopVoice({ ctx, push }) {
@@ -1262,7 +1260,7 @@ const novely = <
 					});
 				};
 
-				const imageValue = image ? handleImageAsset(image) : '';
+				const imageValue = image ? unwrapImageAsset(image) : '';
 
 				return [templateReplace(content, data), active$, visible$, onSelectWrapped, imageValue] as [
 					string,

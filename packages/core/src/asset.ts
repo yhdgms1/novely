@@ -4,7 +4,7 @@ import { supportsMap as audioSupport } from './audio-codecs';
 import { HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from './constants';
 import { supportsMap as imageSupport } from './image-formats';
 import type { NovelyAsset } from './types';
-import { getUrlFileExtension } from './utilities';
+import { getUrlFileExtension, isAsset } from './utilities';
 
 const generateRandomId = () => Math.random().toString(36);
 
@@ -149,4 +149,24 @@ asset.audio = (source: string): NovelyAsset => {
 	return asset;
 };
 
-export { asset };
+const unwrapAsset = (asset: string | NovelyAsset) => {
+	return isAsset(asset) ? asset.source : asset;
+};
+
+const unwrapAudioAsset = (asset: string | NovelyAsset) => {
+	if (DEV && isAsset(asset) && asset.type !== 'audio') {
+		throw new Error('Attempt to use non-audio asset in audio action', { cause: asset });
+	}
+
+	return unwrapAsset(asset);
+};
+
+const unwrapImageAsset = (asset: string | NovelyAsset) => {
+	if (DEV && isAsset(asset) && asset.type !== 'image') {
+		throw new Error('Attempt to use non-image asset in action that requires image assets', { cause: asset });
+	}
+
+	return unwrapAsset(asset);
+};
+
+export { asset, unwrapAsset, unwrapAudioAsset, unwrapImageAsset };

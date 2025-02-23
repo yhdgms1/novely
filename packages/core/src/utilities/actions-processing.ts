@@ -1,7 +1,6 @@
 import type { Story, ValidAction, CustomHandler, GetActionParameters } from '../action';
 import type { CloneFN, Path, PathItem, Thenable } from '../types';
 import type { NovelyAsset } from '../types';
-import { unwrapAsset } from './ungrupped';
 import {
 	isNull,
 	isNumber,
@@ -13,6 +12,7 @@ import {
 	isBlockStatement,
 	isBlockingAction,
 } from './assertions';
+import { unwrapAsset } from '../asset';
 import { DEV } from 'esm-env';
 
 // #region Is Exit Impossible

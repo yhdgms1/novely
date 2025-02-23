@@ -39,6 +39,7 @@ export type { NovelyStorage } from './storage';
 export type {
 	Thenable,
 	Path,
+	PathItem,
 	StorageData,
 	StorageMeta,
 	TypewriterSpeed,
