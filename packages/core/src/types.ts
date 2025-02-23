@@ -15,7 +15,7 @@ type NovelyAsset = {
 type Thenable<T> = T | Promise<T>;
 
 type PathItem =
-	| [null, number | string]
+	| [null, number]
 	| ['jump', string]
 	| ['choice', number]
 	| ['choice:exit']
