@@ -18,11 +18,7 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 	const volume = (kind: 2 | 3 | 4) => storageData().meta[kind];
 
 	const onLanguageSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = ({ currentTarget: { value } }) => {
-		storageDataUpdate((prev) => {
-			prev.meta[0] = value;
-
-			return prev;
-		});
+		options.setLanguage(value);
 	};
 
 	const onSpeedSelect: JSX.EventHandlerUnion<HTMLSelectElement, Event> = ({ currentTarget: { value } }) => {

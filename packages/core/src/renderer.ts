@@ -251,6 +251,8 @@ type RendererInit<$Language extends Lang, $Characters extends Record<string, Cha
 	getDialogOverview: () => Promise<DialogOverview>;
 
 	getResourseType: (url: string) => Promise<'image' | 'audio' | 'other'>;
+
+	setLanguage: (language: string) => void;
 };
 
 export type {

@@ -1,7 +1,7 @@
-import type { Lang } from "../types";
+import type { Lang } from '../types';
 
 const setDocumentLanguage = (language: Lang) => {
-  document.documentElement.lang = language;
-}
+	document.documentElement.lang = language;
+};
 
-export { setDocumentLanguage }
+export { setDocumentLanguage };

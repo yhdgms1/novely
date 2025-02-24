@@ -886,6 +886,20 @@ const novely = <
 		return String(c);
 	};
 
+	const setLanguage = (lang: string) => {
+		storageData.update((prev) => {
+			if (languages.includes(lang as $Language)) {
+				prev.meta[0] = lang as $Language;
+			}
+
+			setDocumentLanguage(prev.meta[0]);
+
+			// todo: add `setLanguage` parameter that will be called when language is set by a player
+
+			return prev;
+		});
+	};
+
 	// #region Renderer Creation
 	const renderer = createRenderer({
 		mainContextKey: MAIN_CONTEXT_KEY,
@@ -920,6 +934,8 @@ const novely = <
 		}),
 
 		getResourseType: getResourseTypeWrapper,
+
+		setLanguage,
 	});
 	// #endregion
 
