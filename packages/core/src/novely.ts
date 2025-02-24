@@ -71,6 +71,7 @@ import type { MatchActionHandlers } from './utilities';
 import { buildActionObject } from './utilities/actions';
 import { unwrapAsset, unwrapAudioAsset, unwrapImageAsset } from './asset';
 import { getDialogOverview } from './utilities/dialog-overview';
+import { setDocumentLanguage } from './utilities/document';
 
 const novely = <
 	$Language extends string,
@@ -210,10 +211,10 @@ const novely = <
 	const getLanguageWithoutParameters = () => {
 		const language = getLanguage(languages, defaultGetLanguage);
 
-		/**
-		 * This is valid language
-		 */
+		// This is valid language
 		if (languages.includes(language as $Language)) {
+			setDocumentLanguage(language);
+
 			return language as $Language;
 		}
 
