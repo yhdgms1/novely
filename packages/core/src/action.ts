@@ -1,5 +1,6 @@
 import type { Character } from './character';
 import type { Context } from './renderer';
+import type { Derived } from './store';
 import type { Lang, NonEmptyRecord, NovelyAsset, Path, State, StateFunction, Thenable } from './types';
 
 type ValidAction =
@@ -126,6 +127,11 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 	 * Function to replace template content
 	 */
 	templateReplace: (content: TextContent<L, State>, values?: State) => string;
+
+	/**
+	 * Is game currently paused
+	 */
+	paused: Derived<boolean>;
 };
 
 type CustomHandlerFunction<L extends string, S extends State> = (

@@ -153,13 +153,14 @@ const startRender = ({ preview, ctx, staticCtx, fontSize, variables, set, get }:
 	if (preview) {
 		return {
 			stop: () => {},
+			start: () => {},
 			getState: () => 'MISS' as const,
 		};
 	}
 
 	const strokeWidth = rem(6.125);
 
-	const stop = scheldue((_, dtm) => {
+	const schelduer = scheldue((_, dtm) => {
 		const { width: canvasWidth, height: canvasHeight } = ctx.canvas;
 
 		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -214,7 +215,8 @@ const startRender = ({ preview, ctx, staticCtx, fontSize, variables, set, get }:
 	};
 
 	return {
-		stop,
+		stop: schelduer.stop,
+		start: schelduer.start,
 		getState,
 	};
 };

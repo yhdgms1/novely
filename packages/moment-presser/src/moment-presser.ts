@@ -1,4 +1,4 @@
-import type { CustomHandler, Lang, State, StateFunction, TypeEssentials } from '@novely/core';
+import type { CustomHandler, Lang, State, StateFunction, EngineTypes } from '@novely/core';
 import { createButton } from './button';
 import { parseVariables } from './css-variables';
 import { once } from './once';
@@ -17,7 +17,7 @@ type MomentPresserOptions<$Lang extends Lang, $State extends State> = {
 };
 
 const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
-	const fn: CustomHandler = ({ getDomNodes, clear, remove, state, lang, flags: { preview } }) => {
+	const fn: CustomHandler = ({ getDomNodes, clear, remove, state, paused, lang, flags: { preview } }) => {
 		const { promise, resolve } = Promise.withResolvers<void>();
 
 		const { element } = getDomNodes(true);
@@ -49,7 +49,7 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
 		const fontSize = Number.parseFloat(getComputedStyle(element).fontSize);
 		const variables = parseVariables(element);
 
-		const { stop, getState } = startRender({
+		const { stop, start, getState } = startRender({
 			variables,
 			fontSize,
 
@@ -91,7 +91,18 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
 
 		button.addEventListener('click', onButtonClick);
 
-		clear(cleanup);
+		const unsub = paused.subscribe((paused) => {
+			if (paused) {
+				stop();
+			} else {
+				start();
+			}
+		});
+
+		clear(() => {
+			cleanup();
+			unsub();
+		});
 
 		if (preview) {
 			resolve();
@@ -108,7 +119,7 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
 	return fn;
 };
 
-type CreateMomentPresserOptions<T> = T extends TypeEssentials<infer $Lang, infer $State, any, any>
+type CreateMomentPresserOptions<T> = T extends EngineTypes<infer $Lang, infer $State, any, any>
 	? MomentPresserOptions<$Lang, $State>
 	: never;
 

@@ -20,10 +20,16 @@ const scheldue = (render: (dt: number, dtm: number) => void) => {
 		raf = requestAnimationFrame(loop);
 	};
 
-	raf = requestAnimationFrame(loop);
+	return {
+		stop: () => {
+			cancelAnimationFrame(raf);
+		},
+		start: () => {
+			cancelAnimationFrame(raf);
 
-	return () => {
-		cancelAnimationFrame(raf);
+			previousTime = performance.now();
+			raf = requestAnimationFrame(loop);
+		},
 	};
 };
 

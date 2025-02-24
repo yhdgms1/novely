@@ -178,8 +178,8 @@ const action = extendAction(engine.action, {
 	particles: (options: Parameters<typeof showParticles>[0]) => {
 		return ['custom', showParticles(options)];
 	},
-	momentPresser: (onPressed: CreateMomentPresserOptions<typeof engine.typeEssentials>['onPressed']) => {
-		const momentPresser = createMomentPresser<typeof engine.typeEssentials>({
+	momentPresser: (onPressed: CreateMomentPresserOptions<Types>['onPressed']) => {
+		const momentPresser = createMomentPresser<Types>({
 			onPressed: onPressed,
 			translation: {
 				ru: {
@@ -247,6 +247,16 @@ false &&
 	});
 
 true &&
+	engine.script({
+		start: [
+			action.particles(snow),
+			action.showBackground(outdoor),
+			action.momentPresser((_, state) => console.log(state)),
+			action.end(),
+		],
+	});
+
+false &&
 	engine.script({
 		start: [
 			action.next(),

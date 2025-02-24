@@ -92,6 +92,7 @@ type NonEmptyRecord<T extends Record<PropertyKey, unknown>> = keyof T extends ne
 
 type CoreData = {
 	dataLoaded: boolean;
+	paused: boolean;
 };
 
 type UseStackFunctionReturnType = {

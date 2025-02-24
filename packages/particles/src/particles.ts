@@ -9,6 +9,7 @@ type ParticlesOptions = RecursivePartial<IOptions>;
 
 type Data = {
 	instance?: Container;
+	unsubscribe?: () => void;
 	options?: ParticlesOptions;
 };
 
@@ -31,7 +32,7 @@ const withDefault = (options: ParticlesOptions) => {
 };
 
 const showParticles = function (this: ParticlesThis, options: ParticlesOptions): CustomHandler {
-	const handler: CustomHandler = async ({ clear, data, getDomNodes, flags: { goingBack, preview } }) => {
+	const handler: CustomHandler = async ({ clear, data, getDomNodes, paused, flags: { goingBack, preview } }) => {
 		if (preview) return;
 
 		const { loadSlim, tsParticles } = await this.getParticles();
@@ -49,25 +50,22 @@ const showParticles = function (this: ParticlesThis, options: ParticlesOptions):
 
 		const { element } = getDomNodes(true);
 
-		/**
-		 * Remove previous instance
-		 */
+		// Remove previous instance
 		clear(() => {
-			/**
-			 * Get the instance
-			 */
-			const { instance } = data<Data>();
+			// Get the instance
+			const { instance, unsubscribe } = data<Data>();
 
 			if (!instance) return;
 
-			/**
-			 * Destroy the instance
-			 */
+			// Destroy the instance
 			instance.destroy();
 
-			/**
-			 * Empty the `data`
-			 */
+			// Unsubscribe from 'paused' listener
+			if (unsubscribe) {
+				unsubscribe();
+			}
+
+			// Empty the `data`
 			data({});
 		});
 
@@ -93,7 +91,19 @@ const showParticles = function (this: ParticlesThis, options: ParticlesOptions):
 				options: withDefault(options),
 			});
 
-			data<Data>({ instance, options });
+			const unsubscribe = paused.subscribe((paused) => {
+				if (!instance) return;
+
+				try {
+					if (paused) {
+						instance.pause();
+					} else {
+						instance.play();
+					}
+				} catch {}
+			});
+
+			data<Data>({ instance, options, unsubscribe });
 		};
 
 		/**

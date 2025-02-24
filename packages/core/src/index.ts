@@ -60,7 +60,7 @@ export type {
 	NovelyAsset,
 	EngineTypes,
 } from './types';
-export type { Stored } from './store';
+export type { Stored, Derived } from './store';
 export type { BaseTranslationStrings } from './translations';
 export type { AllowedContent, PluralType, Pluralization, TranslationActions } from './translation';
 

@@ -237,9 +237,12 @@ const novely = <
 		meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED, 1, 1, 1],
 	};
 
+	// todo: provide an api for setting paused state
+
 	const storageData = store(initialData);
 	const coreData = store<CoreData>({
 		dataLoaded: false,
+		paused: false,
 	});
 
 	const onDataLoadedPromise = async ({ cancelled }: Awaited<ControlledPromise<void>>) => {
@@ -1308,6 +1311,7 @@ const novely = <
 				state,
 				lang,
 				getStack: useStack,
+				coreData,
 				templateReplace,
 			});
 
