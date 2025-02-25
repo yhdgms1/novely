@@ -237,8 +237,6 @@ const novely = <
 		meta: [getLanguageWithoutParameters(), DEFAULT_TYPEWRITER_SPEED, 1, 1, 1],
 	};
 
-	// todo: provide an api for setting paused state
-
 	const storageData = store(initialData);
 	const coreData = store<CoreData>({
 		dataLoaded: false,
@@ -1661,6 +1659,8 @@ const novely = <
 		 * Data updates still will work in case Novely already was loaded
 		 */
 		destroy() {
+			if (destroyed) return;
+
 			dataLoaded.cancel();
 
 			UIInstance.unmount();
@@ -1695,6 +1695,22 @@ const novely = <
 		 * ```
 		 */
 		setStorageData,
+		/**
+		 * Function to control paused state. Custom Actions are provided with `paused` store they can subscribe to.
+		 * This function will notify Custom Actions. Pause state can be used when showing ads or when game is minimized.
+		 * @example
+		 * ```ts
+		 * sdk.on('pause' () => engine.setPaused(true));
+		 * sdk.on('resume', () => engine.setPaused(false));
+		 * ```
+		 */
+		setPaused: (paused: boolean) => {
+			coreData.update((prev) => {
+				prev.paused = paused;
+
+				return prev;
+			});
+		},
 	};
 	// #endregion
 };
