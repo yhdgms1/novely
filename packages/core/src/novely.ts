@@ -104,6 +104,7 @@ const novely = <
 	startKey = 'start',
 	defaultTypewriterSpeed = DEFAULT_TYPEWRITER_SPEED,
 	storyOptions = { mode: 'static' },
+	onLanguageChange,
 }: NovelyInit<$Language, $Characters, $State, $Data, $Actions>) => {
 	type $ActionProxy = ActionProxy<$Characters, $Language, $State>;
 	type $VirtualActions = VirtualActions<$Characters, $Language, $State>;
@@ -893,9 +894,10 @@ const novely = <
 				prev.meta[0] = lang as $Language;
 			}
 
-			setDocumentLanguage(prev.meta[0]);
-
-			// todo: add `setLanguage` parameter that will be called when language is set by a player
+			if (lang === prev.meta[0]) {
+				setDocumentLanguage(lang);
+				onLanguageChange?.(lang as $Language);
+			}
 
 			return prev;
 		});

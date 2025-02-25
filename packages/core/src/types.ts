@@ -194,6 +194,8 @@ type StoryOptionsDynamic = {
 
 type StoryOptions = StoryOptionsStatic | StoryOptionsDynamic;
 
+type OnLanguageChange<$Lang extends Lang> = (language: $Lang) => void;
+
 interface NovelyInit<
 	$Language extends Lang,
 	$Characters extends Record<string, Character<NoInfer<$Language>>>,
@@ -423,9 +425,13 @@ interface NovelyInit<
 	 */
 	defaultTypewriterSpeed?: TypewriterSpeed;
 	/**
-	 *
+	 * Options to control story loading behaviour
 	 */
 	storyOptions?: StoryOptions;
+	/**
+	 * Will be called ONLY when language was changed by player
+	 */
+	onLanguageChange?: OnLanguageChange<NoInfer<$Language>>;
 }
 
 type StateFunction<S extends State> = {
