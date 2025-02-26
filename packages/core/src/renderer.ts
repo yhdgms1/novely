@@ -6,7 +6,7 @@ import type {
 	ValidAction,
 } from './action';
 import type { Character } from './character';
-import type { Stored } from './store';
+import type { Derived, Stored } from './store';
 import type { BaseTranslationStrings } from './translations';
 import type {
 	CharacterAssetSizes,
@@ -105,9 +105,9 @@ type Context = {
 	vibrate: (pattern: VibratePattern) => void;
 
 	audio: {
-		voice: (source: string) => void;
+		voice: (source: string, paused: Derived<boolean>) => void;
 		voiceStop: () => void;
-		music: (source: string, method: 'music' | 'sound') => AudioHandle;
+		music: (source: string, paused: Derived<boolean>, method: 'music' | 'sound') => AudioHandle;
 		/**
 		 * Stop all sounds
 		 */

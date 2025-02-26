@@ -266,8 +266,8 @@ importers:
         specifier: ^6.2.0
         version: 6.2.0
       simple-web-audio:
-        specifier: ^0.8.0
-        version: 0.8.0(postcss@8.5.1)
+        specifier: ^0.9.0
+        version: 0.9.0(postcss@8.5.1)
     devDependencies:
       tsup:
         specifier: ^8.3.6
@@ -1452,6 +1452,9 @@ packages:
 
   simple-web-audio@0.8.0:
     resolution: {integrity: sha512-/iv8kA1Gt51Wml5/VLGCnklfpWhqBX9YBluxc+xwkCKxh6cQuirIAtqYvO12XYgTFCfK0R63jPPYKjcPJIT1zw==}
+
+  simple-web-audio@0.9.0:
+    resolution: {integrity: sha512-nVoMJiF3Iv/CP/EPFarL/w+6eZfX+VOob65SpNkDxG1xrh0VpJ8bzaQQrEid3CQGWwNxA44XBM+PZDe7Hf55Sg==}
 
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
@@ -2666,6 +2669,20 @@ snapshots:
   signal-exit@4.1.0: {}
 
   simple-web-audio@0.8.0(postcss@8.5.1):
+    dependencies:
+      p-limit: 6.2.0
+      tsup: 8.3.6(postcss@8.5.1)(typescript@5.7.3)
+      typescript: 5.7.3
+    transitivePeerDependencies:
+      - '@microsoft/api-extractor'
+      - '@swc/core'
+      - jiti
+      - postcss
+      - supports-color
+      - tsx
+      - yaml
+
+  simple-web-audio@0.9.0(postcss@8.5.1):
     dependencies:
       p-limit: 6.2.0
       tsup: 8.3.6(postcss@8.5.1)(typescript@5.7.3)

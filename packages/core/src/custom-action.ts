@@ -1,6 +1,6 @@
 import type { CustomHandler, CustomHandlerFunctionGetFn, CustomHandlerGetResult, TextContent } from './action';
 import type { Context, CustomActionHandle } from './renderer';
-import type { Stored } from './store';
+import type { Derived, Stored } from './store';
 import { CUSTOM_ACTION_MAP } from './shared';
 import type { CoreData, Data, Lang, Stack, State, StateFunction } from './types';
 import { noop } from './utilities';
@@ -43,9 +43,9 @@ type HandleCustomActionOptions = CustomActionHandle & {
 	 */
 	templateReplace: (content: TextContent<Lang, Data>, values?: Data) => string;
 	/**
-	 * Core Data Store
+	 * Paused Store
 	 */
-	coreData: Stored<CoreData>;
+	paused: Derived<boolean>;
 };
 
 const createCustomActionNode = (id: string) => {
@@ -86,7 +86,7 @@ const handleCustomAction = (
 		remove: renderersRemove,
 		getStack,
 		templateReplace,
-		coreData,
+		paused,
 	}: HandleCustomActionOptions,
 ) => {
 	const holder = getCustomActionHolder(ctx, fn);
@@ -152,8 +152,6 @@ const handleCustomAction = (
 		return stack.value[0];
 	};
 
-	const paused = flags.preview ? immutable(false) : derive(coreData, (data) => data.paused);
-
 	return fn({
 		flags,
 
@@ -175,7 +173,7 @@ const handleCustomAction = (
 
 		contextKey: ctx.id,
 
-		paused,
+		paused: flags.preview ? immutable(false) : paused,
 	});
 };
 

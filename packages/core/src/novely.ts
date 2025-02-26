@@ -22,7 +22,7 @@ import type { Context, RendererInitPreviewReturn } from './renderer';
 import { PRELOADED_ASSETS, STACK_MAP } from './shared';
 import { localStorageStorage } from './storage';
 import type { Stored } from './store';
-import { store } from './store';
+import { derive, store } from './store';
 import { flattenAllowedContent, replace as replaceTranslation } from './translation';
 import type { BaseTranslationStrings } from './translations';
 import type {
@@ -72,6 +72,7 @@ import { buildActionObject } from './utilities/actions';
 import { unwrapAsset, unwrapAudioAsset, unwrapImageAsset } from './asset';
 import { getDialogOverview } from './utilities/dialog-overview';
 import { setDocumentLanguage } from './utilities/document';
+import { registerEventListeners } from './browser-events';
 
 const novely = <
 	$Language extends string,
@@ -242,7 +243,10 @@ const novely = <
 	const coreData = store<CoreData>({
 		dataLoaded: false,
 		paused: false,
+		focused: document.visibilityState === 'visible',
 	});
+
+	const paused = derive(coreData, (s) => s.paused || !s.focused);
 
 	const onDataLoadedPromise = async ({ cancelled }: Awaited<ControlledPromise<void>>) => {
 		/**
@@ -1045,27 +1049,27 @@ const novely = <
 			push();
 		},
 		playMusic({ ctx, push }, [source]) {
-			ctx.audio.music(unwrapAudioAsset(source), 'music').play(true);
+			ctx.audio.music(unwrapAudioAsset(source), paused, 'music').play(true);
 			push();
 		},
 		pauseMusic({ ctx, push }, [source]) {
-			ctx.audio.music(unwrapAudioAsset(source), 'music').pause();
+			ctx.audio.music(unwrapAudioAsset(source), paused, 'music').pause();
 			push();
 		},
 		stopMusic({ ctx, push }, [source]) {
-			ctx.audio.music(unwrapAudioAsset(source), 'music').stop();
+			ctx.audio.music(unwrapAudioAsset(source), paused, 'music').stop();
 			push();
 		},
 		playSound({ ctx, push }, [source, loop]) {
-			ctx.audio.music(unwrapAudioAsset(source), 'sound').play(loop || false);
+			ctx.audio.music(unwrapAudioAsset(source), paused, 'sound').play(loop || false);
 			push();
 		},
 		pauseSound({ ctx, push }, [source]) {
-			ctx.audio.music(unwrapAudioAsset(source), 'sound').pause();
+			ctx.audio.music(unwrapAudioAsset(source), paused, 'sound').pause();
 			push();
 		},
 		stopSound({ ctx, push }, [source]) {
-			ctx.audio.music(unwrapAudioAsset(source), 'sound').stop();
+			ctx.audio.music(unwrapAudioAsset(source), paused, 'sound').stop();
 			push();
 		},
 		voice({ ctx, push }, [source]) {
@@ -1080,7 +1084,7 @@ const novely = <
 				return;
 			}
 
-			ctx.audio.voice(unwrapAudioAsset(audioSource));
+			ctx.audio.voice(unwrapAudioAsset(audioSource), paused);
 			push();
 		},
 		stopVoice({ ctx, push }) {
@@ -1311,7 +1315,7 @@ const novely = <
 				state,
 				lang,
 				getStack: useStack,
-				coreData,
+				paused,
 				templateReplace,
 			});
 
@@ -1558,6 +1562,24 @@ const novely = <
 		storageData.set(data);
 	};
 
+	// todo: probably there should be a way to manage focus/blur from outside instead of these listeners
+	const removeEventListeners = registerEventListeners({
+		focus: () => {
+			coreData.update((prev) => {
+				prev.focused = true;
+
+				return prev;
+			});
+		},
+		blur: () => {
+			coreData.update((prev) => {
+				prev.focused = false;
+
+				return prev;
+			});
+		},
+	});
+
 	// #region Function Return
 	return {
 		/**
@@ -1668,6 +1690,7 @@ const novely = <
 			UIInstance.unmount();
 
 			removeEventListener('beforeunload', throttledShortOnStorageDataChange);
+			removeEventListeners();
 
 			destroyed = true;
 		},

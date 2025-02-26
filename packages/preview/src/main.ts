@@ -172,6 +172,9 @@ const engine = novely({
 	},
 });
 
+// @ts-expect-error
+window.setPaused = engine.setPaused;
+
 type Types = TypesFromEngine<typeof engine>;
 
 const action = extendAction(engine.action, {
@@ -251,6 +254,10 @@ true &&
 		start: [
 			action.particles(snow),
 			action.showBackground(outdoor),
+			action.say('Lily', {
+				en: 'Hello',
+				ru: 'Привет',
+			}),
 			action.momentPresser((_, state) => console.log(state)),
 			action.end(),
 		],

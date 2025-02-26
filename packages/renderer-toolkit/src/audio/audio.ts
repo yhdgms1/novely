@@ -27,6 +27,8 @@ const TYPE_META_MAP = {
  * ```
  */
 const createAudio = (storageData: StorageDataStore) => {
+	let started = false;
+
 	const store: AudioStore = {
 		music: {},
 		sound: {},
@@ -46,7 +48,6 @@ const createAudio = (storageData: StorageDataStore) => {
 		const audio = createWebAudio({
 			src,
 			volume: getVolume(type),
-			pauseOnBlur: true,
 		});
 
 		store[kind][src] = audio;
@@ -54,13 +55,25 @@ const createAudio = (storageData: StorageDataStore) => {
 		return audio;
 	};
 
-	let unsubscribe = noop;
+	const cleanup = new Set<() => void>();
+
+	let voiceCleanup = noop;
 
 	const context: AudioContext = {
-		music(src, method) {
+		music(src, paused, method) {
 			const resource = getAudio(method, src);
 
 			this.start();
+
+			const unsubscribe = paused.subscribe((paused) => {
+				if (paused) {
+					resource.pause();
+				} else {
+					resource.play();
+				}
+			});
+
+			cleanup.add(unsubscribe);
 
 			return {
 				pause() {
@@ -78,7 +91,7 @@ const createAudio = (storageData: StorageDataStore) => {
 				},
 			} satisfies AudioHandle;
 		},
-		voice(source) {
+		voice(source, paused) {
 			this.start();
 			this.voiceStop();
 
@@ -86,20 +99,29 @@ const createAudio = (storageData: StorageDataStore) => {
 
 			resource.volume = getVolume('voice');
 			resource.play();
+
+			voiceCleanup = paused.subscribe((paused) => {
+				if (paused) {
+					resource.pause();
+				} else {
+					resource.play();
+				}
+			});
 		},
 		voiceStop() {
 			if (!store.voice) return;
 
 			store.voice.stop();
+			voiceCleanup();
 			store.voice = undefined;
+			voiceCleanup = noop;
 		},
 		start() {
-			if (unsubscribe !== noop) return;
+			if (started) return;
 
-			/**
-			 * Subscribe for volume changes in settings
-			 */
-			unsubscribe = storageData.subscribe(() => {
+			started = true;
+
+			const unsubscribe = storageData.subscribe(() => {
 				for (const type of ['music', 'sound', 'voice'] as const) {
 					const volume = getVolume(type);
 
@@ -116,23 +138,27 @@ const createAudio = (storageData: StorageDataStore) => {
 					}
 				}
 			});
+
+			cleanup.add(unsubscribe);
 		},
 		clear() {
 			const musics = Object.values(store.music);
 			const sounds = Object.values(store.sound);
 
 			for (const music of [...musics, ...sounds]) {
-				// todo: при переходе в настройки для музыки не делать бы stop, а делать pause
-				music?.stop();
+				if (!music) continue;
+
+				// todo: when going to setting menu `pause` instead of `stop`
+				music.stop();
 			}
 
 			this.voiceStop();
 		},
 		destroy() {
-			unsubscribe();
+			cleanup.forEach((fn) => fn());
 			this.clear();
 
-			unsubscribe = noop;
+			started = false;
 		},
 	};
 
