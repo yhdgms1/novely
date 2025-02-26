@@ -254,9 +254,18 @@ true &&
 		start: [
 			action.particles(snow),
 			action.showBackground(outdoor),
+			action.playMusic(sakura_girl),
 			action.say('Lily', {
 				en: 'Hello',
 				ru: 'Привет',
+			}),
+			action.say('Lily', {
+				en: 'Hello 2',
+				ru: 'Привет 2',
+			}),
+			action.say('Lily', {
+				en: 'Hello 3',
+				ru: 'Привет 3',
 			}),
 			action.momentPresser((_, state) => console.log(state)),
 			action.end(),

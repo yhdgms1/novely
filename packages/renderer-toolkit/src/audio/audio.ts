@@ -80,6 +80,14 @@ const createAudio = (storageData: StorageDataStore) => {
 					resource.pause();
 				},
 				play(loop) {
+					// todo: do audio better (again)
+					if (resource.playing) {
+						resource.volume = getVolume(method);
+						resource.loop = loop;
+
+						return;
+					}
+
 					resource.reset().then(() => {
 						resource.volume = getVolume(method);
 						resource.loop = loop;
