@@ -37,5 +37,17 @@ addEventListener('blur', function (event) {
 	}
 });
 
-export { registerEventListeners };
-export type { EventHandler, BlurEventHandler, FocusEventHandler, EventListeners };
+const pauseOnBlur = (engine: { setFocused: (focused: boolean) => void }) => {
+	return {
+		unsubscribe: registerEventListeners({
+			focus: () => {
+				engine.setFocused(true);
+			},
+			blur: () => {
+				engine.setFocused(false);
+			},
+		}),
+	};
+};
+
+export { pauseOnBlur };

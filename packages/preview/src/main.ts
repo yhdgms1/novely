@@ -9,6 +9,7 @@ import {
 	asset,
 	extendAction,
 	novely,
+	pauseOnBlur,
 } from '@novely/core';
 import { adapterLocalStorage, cloneFunction, flexStorage } from '@novely/flex-storage';
 import { createSolidRenderer } from '@novely/solid-renderer';
@@ -221,6 +222,8 @@ const action = extendAction(engine.action, {
 		return ['custom', fn];
 	},
 });
+
+pauseOnBlur(engine);
 
 false &&
 	engine.script({

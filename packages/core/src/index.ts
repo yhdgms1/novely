@@ -79,3 +79,5 @@ export { extendAction } from './extend-actions';
 export { RU, EN } from './translations';
 
 export { asset } from './asset';
+
+export { pauseOnBlur } from './browser-events';

@@ -72,7 +72,6 @@ import { buildActionObject } from './utilities/actions';
 import { unwrapAsset, unwrapAudioAsset, unwrapImageAsset } from './asset';
 import { getDialogOverview } from './utilities/dialog-overview';
 import { setDocumentLanguage } from './utilities/document';
-import { registerEventListeners } from './browser-events';
 
 const novely = <
 	$Language extends string,
@@ -1562,24 +1561,6 @@ const novely = <
 		storageData.set(data);
 	};
 
-	// todo: probably there should be a way to manage focus/blur from outside instead of these listeners
-	const removeEventListeners = registerEventListeners({
-		focus: () => {
-			coreData.update((prev) => {
-				prev.focused = true;
-
-				return prev;
-			});
-		},
-		blur: () => {
-			coreData.update((prev) => {
-				prev.focused = false;
-
-				return prev;
-			});
-		},
-	});
-
 	// #region Function Return
 	return {
 		/**
@@ -1690,7 +1671,6 @@ const novely = <
 			UIInstance.unmount();
 
 			removeEventListener('beforeunload', throttledShortOnStorageDataChange);
-			removeEventListeners();
 
 			destroyed = true;
 		},
@@ -1722,7 +1702,7 @@ const novely = <
 		setStorageData,
 		/**
 		 * Function to control paused state. Custom Actions are provided with `paused` store they can subscribe to.
-		 * This function will notify Custom Actions. Pause state can be used when showing ads or when game is minimized.
+		 * This function will notify Custom Actions. Pause state can be used when showing ads.
 		 * @example
 		 * ```ts
 		 * sdk.on('pause' () => engine.setPaused(true));
@@ -1732,6 +1712,29 @@ const novely = <
 		setPaused: (paused: boolean) => {
 			coreData.update((prev) => {
 				prev.paused = paused;
+
+				return prev;
+			});
+		},
+		/**
+		 * Function to control focused state. It will affect `paused` store passed to Custom Actions.
+		 * This function can be used to pause game when it's not focused.
+		 * @example
+		 * ```ts
+		 * import { pauseOnBlur } from '@novely/core';
+		 *
+		 * // Will subscribe to blur/focus events and call `setFocused`
+		 * pauseOnBlur(engine);
+		 *
+		 * // OR
+		 *
+		 * sdk.on('focus' () => engine.setFocused(true));
+		 * sdk.on('blur', () => engine.setFocused(false));
+		 * ```
+		 */
+		setFocused: (focused: boolean) => {
+			coreData.update((prev) => {
+				prev.focused = focused;
 
 				return prev;
 			});
