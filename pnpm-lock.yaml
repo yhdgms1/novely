@@ -167,7 +167,7 @@ importers:
   packages/moment-presser:
     dependencies:
       '@novely/core':
-        specifier: workspace:*
+        specifier: workspace:>=0.51.0
         version: link:../core
     devDependencies:
       tsup:
@@ -192,7 +192,7 @@ importers:
   packages/particles:
     dependencies:
       '@novely/core':
-        specifier: workspace:*
+        specifier: workspace:>=0.51.0
         version: link:../core
       '@tsparticles/engine':
         specifier: ~3.7.1
@@ -295,7 +295,7 @@ importers:
   packages/solid-renderer:
     dependencies:
       '@novely/core':
-        specifier: workspace:*
+        specifier: workspace:>=0.51.0
         version: link:../core
       '@novely/renderer-toolkit':
         specifier: workspace:*
@@ -316,8 +316,8 @@ importers:
         specifier: ~1.9.4
         version: 1.9.4
       solid-transition-group:
-        specifier: ^0.2.3
-        version: 0.2.3(solid-js@1.9.4)
+        specifier: ^0.3.0
+        version: 0.3.0(solid-js@1.9.4)
     devDependencies:
       esbuild:
         specifier: ^0.24.2
@@ -1465,6 +1465,12 @@ packages:
   solid-transition-group@0.2.3:
     resolution: {integrity: sha512-iB72c9N5Kz9ykRqIXl0lQohOau4t0dhel9kjwFvx81UZJbVwaChMuBuyhiZmK24b8aKEK0w3uFM96ZxzcyZGdg==}
     engines: {node: '>=18.0.0', pnpm: '>=8.6.0'}
+    peerDependencies:
+      solid-js: ^1.6.12
+
+  solid-transition-group@0.3.0:
+    resolution: {integrity: sha512-gzFbtxkEnA8Hgi7UzmEjPPRl4rodoKLs+AGIXA7kJgjOr4j4qFRw39npu+WpdNSDV7aDKr+K0LFcoT9Kbm5PBA==}
+    engines: {node: '>=20.0.0', pnpm: '>=9.0.0'}
     peerDependencies:
       solid-js: ^1.6.12
 
@@ -2705,6 +2711,12 @@ snapshots:
       seroval-plugins: 1.2.0(seroval@1.2.0)
 
   solid-transition-group@0.2.3(solid-js@1.9.4):
+    dependencies:
+      '@solid-primitives/refs': 1.1.0(solid-js@1.9.4)
+      '@solid-primitives/transition-group': 1.1.0(solid-js@1.9.4)
+      solid-js: 1.9.4
+
+  solid-transition-group@0.3.0(solid-js@1.9.4):
     dependencies:
       '@solid-primitives/refs': 1.1.0(solid-js@1.9.4)
       '@solid-primitives/transition-group': 1.1.0(solid-js@1.9.4)

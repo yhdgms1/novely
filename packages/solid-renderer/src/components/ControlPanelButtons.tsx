@@ -5,7 +5,7 @@ import { Show } from 'solid-js';
 import { Icon } from './Icon';
 
 type ControlPanelButtonsProps = {
-	openSettings: () => void;
+	setSettingOpened: Setter<boolean>;
 	closeDropdown: () => void;
 
 	openDialogOverview: () => void;
@@ -73,9 +73,7 @@ const ControlPanelButtons: VoidComponent<ControlPanelButtonsProps> = (props) => 
 				class="button control-panel__button"
 				title={data.t('Settings')}
 				onClick={() => {
-					data.options.save('auto');
-					data.options.exit(true);
-					props.openSettings();
+					props.setSettingOpened((prev) => !prev);
 				}}
 			>
 				<span class="control-panel__button__content">{data.t('Settings')}</span>

@@ -86,6 +86,7 @@ const createRootComponent = ({
 					getContext={renderer.getContext}
 					removeContext={renderer.removeContext}
 					audio={audio}
+					showAudioSettings={showAudioSettings}
 				>
 					<Switch>
 						<Match when={screen() === 'game'}>
@@ -104,7 +105,7 @@ const createRootComponent = ({
 							<Saves />
 						</Match>
 						<Match when={screen() === 'settings'}>
-							<Settings showAudioSettings={showAudioSettings} />
+							<Settings />
 						</Match>
 					</Switch>
 

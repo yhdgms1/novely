@@ -12,6 +12,7 @@
 @import "./choice-dialog/index.css";
 @import "./input-dialog/index.css";
 @import "./exit-dialog/index.css";
+@import "./settings-dialog/index.css";
 
 @import "./game/index.css";
 @import "./main-menu/index.css";

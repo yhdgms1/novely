@@ -1,0 +1,58 @@
+.settings-dialog {
+	position: absolute;
+	z-index: 30;
+
+	display: flex;
+	flex-direction: column;
+
+	padding: 0.8rem;
+
+	left: 0.4rem;
+	top: 0.4rem;
+
+	width: calc(28vw - 0.4rem);
+	height: calc(100vh - 0.4rem - 0.4rem);
+
+	color: var(--novely-settings-dialog-color, #000000);
+
+	border: var(--novely-settings-dialog-border-width, 0.15rem) solid
+		var(--novely-settings-dialog-border-color, #ffffff);
+	border-radius: var(--novely-settings-dialog-border-radius, .4rem);
+	box-shadow: var(--novely-px) var(--novely-px) 0.2rem var(--novely-settings-dialog-box-shadow-color, #00000072);
+
+	background-image: var(--novely-settings-dialog-background-image, none);
+	background-color: var(--novely-settings-dialog-background-color, #d35583df);
+	background-position: var(--novely-settings-dialog-background-position);
+	background-size: var(--novely-settings-dialog-background-size);
+
+	backdrop-filter: blur(1vmax);
+}
+
+.settings-dialog__close-button {
+	--button-box-shadow-spread-radius: 0.2rem;
+
+	align-self: end;
+}
+
+.settings-dialog-enter-active,
+.settings-dialog-exit-active {
+	transition: opacity 0.3s, transform 0.3s;
+}
+.settings-dialog-enter,
+.settings-dialog-exit-to {
+	transform: translateX(-1rem);
+	opacity: 0;
+}
+
+.settings-dialog-enter {
+	transform: translateX(-1rem);
+}
+
+@media (max-aspect-ratio: 0.8) {
+	.settings-dialog {
+		right: 0.4rem;
+
+		width: calc(100vw - 0.4rem - 0.4rem);
+		height: calc(100vh - 2.4rem - 0.4rem - 0.4rem);
+	}
+}

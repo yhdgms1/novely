@@ -36,6 +36,8 @@ type DataContext = {
 		hyperWide: Accessor<boolean>;
 	};
 
+	showAudioSettings: boolean;
+
 	getContext: (name: string) => Context;
 	removeContext: (name: string) => void;
 
@@ -52,6 +54,8 @@ type ProviderProps = {
 
 	options: RendererInit<any, any>;
 	renderer: Renderer;
+
+	showAudioSettings: boolean;
 
 	emitter: Emitter<EmitterEventsMap>;
 
@@ -86,6 +90,8 @@ const Provider: FlowComponent<ProviderProps> = (props) => {
 		media: {
 			hyperWide: useMedia('(max-aspect-ratio: 0.26)'),
 		},
+
+		showAudioSettings: props.showAudioSettings,
 
 		getContext: props.getContext,
 		removeContext: props.removeContext,

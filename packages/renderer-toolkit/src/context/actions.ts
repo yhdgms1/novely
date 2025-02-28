@@ -1,7 +1,8 @@
 import type {
 	ActionInputOnInputMeta,
 	ActionInputSetup,
-	ChoiceOnSelectFunction,
+	ContextDialogData,
+	Puller,
 	Context,
 	CustomActionHandle,
 	CustomHandler,
@@ -11,7 +12,7 @@ import type {
 	Stored,
 } from '@novely/core';
 import type { DeepAtom } from '../atoms/deep-atom';
-import type { ContextState, ContextStateStore } from '../state/context-state';
+import { getDafaultDialogData, type ContextState, type ContextStateStore } from '../state/context-state';
 import type { RendererStateStore } from '../state/renderer-state';
 
 import { escapeHTML, noop } from '../utils';
@@ -66,15 +67,13 @@ const handleBackgroundAction = (
 
 const handleDialogAction = (
 	$contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>,
-	content: string,
-	name: string,
+	getData: Puller<ContextDialogData>,
 	character: string | undefined,
 	emotion: string | undefined,
 	resolve: () => void,
 ) => {
 	$contextState.mutate((s) => s.dialog, {
-		content,
-		name,
+		getData,
 		miniature: {
 			character,
 			emotion,
@@ -139,8 +138,7 @@ const handleClearAction = (
 	if (!keep.has('dialog')) {
 		$contextState.mutate((s) => s.dialog, {
 			visible: false,
-			content: '',
-			name: '',
+			getData: getDafaultDialogData,
 			miniature: {},
 		});
 	}
@@ -243,8 +241,7 @@ const handleClearBlockingActions = (
 	if (preserve !== 'dialog' && !allEmpty(current.dialog)) {
 		$contextState.mutate((s) => s.dialog, {
 			visible: false,
-			content: '',
-			name: '',
+			getData: getDafaultDialogData,
 			miniature: {},
 		});
 	}

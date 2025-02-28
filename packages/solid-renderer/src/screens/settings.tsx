@@ -5,12 +5,8 @@ import { Range, Select } from '$components';
 import { useData } from '$context';
 import { For, Show } from 'solid-js';
 
-interface SettingsProps {
-	showAudioSettings: boolean;
-}
-
-const Settings: VoidComponent<SettingsProps> = (props) => {
-	const { t, storageData, storageDataUpdate, options, $rendererState } = useData();
+const SettingsOptions: VoidComponent = () => {
+	const { t, storageData, storageDataUpdate, options, showAudioSettings } = useData();
 
 	const language = () => storageData().meta[0];
 	const textSpeed = () => storageData().meta[1];
@@ -42,6 +38,66 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 	};
 
 	return (
+		<div class="settings__options">
+			<Select icon="#novely-globe-icon" label={t('Language')} onChange={onLanguageSelect}>
+				<For each={options.languages}>
+					{(lang) => (
+						<option value={lang} selected={lang === language()}>
+							{options.getLanguageDisplayName(lang)}
+						</option>
+					)}
+				</For>
+			</Select>
+
+			<Select icon="#novely-typewriter-speed-icon" label={t('TextSpeed')} onChange={onSpeedSelect}>
+				<For each={['Slow', 'Medium', 'Fast', 'Auto']}>
+					{(speed) => (
+						<option value={speed} selected={speed === textSpeed()}>
+							{t('TextSpeed' + speed)}
+						</option>
+					)}
+				</For>
+			</Select>
+
+			<Show when={showAudioSettings}>
+				<Range
+					icon="#novely-music-volume-icon"
+					label={t('MusicVolume')}
+					min={0}
+					max={1}
+					step={0.01}
+					value={volume(2)}
+					onChange={volumeChange(2)}
+				/>
+
+				<Range
+					icon="#novely-sound-volume-icon"
+					label={t('SoundVolume')}
+					min={0}
+					max={1}
+					step={0.01}
+					value={volume(3)}
+					onChange={volumeChange(3)}
+				/>
+
+				<Range
+					icon="#novely-voice-volume-icon"
+					label={t('VoiceVolume')}
+					min={0}
+					max={1}
+					step={0.01}
+					value={volume(4)}
+					onChange={volumeChange(4)}
+				/>
+			</Show>
+		</div>
+	);
+};
+
+const Settings: VoidComponent = () => {
+	const { t, $rendererState } = useData();
+
+	return (
 		<div class="root settings">
 			<div class="settings__controls">
 				<button
@@ -53,73 +109,11 @@ const Settings: VoidComponent<SettingsProps> = (props) => {
 				>
 					{t('HomeScreen')}
 				</button>
-
-				<button
-					type="button"
-					class="button settings__button"
-					onClick={() => {
-						options.restore();
-					}}
-				>
-					{t('ToTheGame')}
-				</button>
 			</div>
 
-			<div class="settings__options">
-				<Select icon="#novely-globe-icon" label={t('Language')} onChange={onLanguageSelect}>
-					<For each={options.languages}>
-						{(lang) => (
-							<option value={lang} selected={lang === language()}>
-								{options.getLanguageDisplayName(lang)}
-							</option>
-						)}
-					</For>
-				</Select>
-
-				<Select icon="#novely-typewriter-speed-icon" label={t('TextSpeed')} onChange={onSpeedSelect}>
-					<For each={['Slow', 'Medium', 'Fast', 'Auto']}>
-						{(speed) => (
-							<option value={speed} selected={speed === textSpeed()}>
-								{t('TextSpeed' + speed)}
-							</option>
-						)}
-					</For>
-				</Select>
-
-				<Show when={props.showAudioSettings}>
-					<Range
-						icon="#novely-music-volume-icon"
-						label={t('MusicVolume')}
-						min={0}
-						max={1}
-						step={0.01}
-						value={volume(2)}
-						onChange={volumeChange(2)}
-					/>
-
-					<Range
-						icon="#novely-sound-volume-icon"
-						label={t('SoundVolume')}
-						min={0}
-						max={1}
-						step={0.01}
-						value={volume(3)}
-						onChange={volumeChange(3)}
-					/>
-
-					<Range
-						icon="#novely-voice-volume-icon"
-						label={t('VoiceVolume')}
-						min={0}
-						max={1}
-						step={0.01}
-						value={volume(4)}
-						onChange={volumeChange(4)}
-					/>
-				</Show>
-			</div>
+			<SettingsOptions />
 		</div>
 	);
 };
 
-export { Settings };
+export { Settings, SettingsOptions };

@@ -9,6 +9,7 @@ import {
 	Modal,
 	createTypewriter,
 } from '$components';
+import { SettingsOptions } from './settings';
 import { useData } from '$context';
 import { canvasDrawImages, imagePreloadWithCaching, isCSSImage, onKey } from '$utils';
 import { from } from '$utils';
@@ -19,6 +20,7 @@ import { For, Index, Show, createEffect, createMemo, createSignal, createUniqueI
 import type { IContextState } from '../context-state';
 import type { SolidRendererStore } from '../renderer';
 import { Transition } from 'solid-transition-group';
+import { createPrevious } from 'src/hooks/usePrevious';
 
 type GameProps = {
 	context: Context;
@@ -61,6 +63,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 	const { store, context, controls, skipTypewriterWhenGoingBack } = props;
 
 	const [auto, setAuto] = createSignal(false);
+	const [settingsModalShown, setSettingsModalShown] = createSignal(false);
 
 	const onInputButtonClick = () => {
 		if (input().error) return;
@@ -76,6 +79,8 @@ const Game: VoidComponent<GameProps> = (props) => {
 	};
 
 	const speed = () => data.storageData().meta[1];
+	const language = createMemo(() => data.storageData().meta[0]);
+	const previousLanguage = createPrevious(language);
 
 	const onWriterEnd = (cb: () => void) => {
 		return (prm: boolean) => {
@@ -144,6 +149,25 @@ const Game: VoidComponent<GameProps> = (props) => {
 		}
 	});
 
+	const dialogData = createMemo((prev) => {
+		const getData = dialog().getData;
+		const data = getData(language());
+
+		// if f(x) == g(x) then assume that f = g
+		const same = (() => {
+			if (prev && typeof prev === 'object' && 'content' in prev) {
+				return prev.content === getData(previousLanguage()).content || prev.content === data.content;
+			}
+
+			return false;
+		})();
+
+		return {
+			...data,
+			same,
+		};
+	});
+
 	return (
 		<div
 			class={props.className}
@@ -183,11 +207,11 @@ const Game: VoidComponent<GameProps> = (props) => {
 					'action-dialog--hidden': !dialog().visible,
 				}}
 			>
-				<DialogName character={dialog().miniature.character} name={dialog().name} mood={mood()} />
+				<DialogName character={dialog().miniature.character} name={dialogData().name} mood={mood()} />
 				<div
 					class="action-dialog-container"
 					data-no-person={!(dialog().miniature.character && dialog().miniature.emotion)}
-					aria-disabled={!dialog().content}
+					aria-disabled={!dialogData().content}
 					role="button"
 					tabIndex={0}
 					onClick={DialogWriter.clear}
@@ -242,8 +266,12 @@ const Game: VoidComponent<GameProps> = (props) => {
 										? undefined
 										: data.t(DialogWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
 							}}
-							content={dialog().content}
-							ignore={(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview)}
+							content={dialogData().content}
+							ignore={
+								(skipTypewriterWhenGoingBack && context.meta.goingBack) ||
+								Boolean(props.isPreview) ||
+								dialogData().same
+							}
 							speed={speed()}
 							ended={onWriterEnd(DialogWriter.clear)}
 						/>
@@ -369,6 +397,25 @@ const Game: VoidComponent<GameProps> = (props) => {
 				</div>
 			</Modal>
 
+			<Transition name="settings-dialog">
+				<Show when={settingsModalShown()}>
+					<div class="settings-dialog">
+						<button
+							type="button"
+							class="button settings-dialog__close-button"
+							title={data.t('CloseMenu')}
+							onClick={() => {
+								setSettingsModalShown(false);
+							}}
+						>
+							<Icon icon="#novely-x-icon" />
+						</button>
+
+						<SettingsOptions />
+					</div>
+				</Show>
+			</Transition>
+
 			<div data-custom={true}>
 				<For each={customs()}>{(value) => value!.node}</For>
 			</div>
@@ -443,9 +490,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 						}}
 					>
 						<ControlPanelButtons
-							openSettings={() => {
-								data.$rendererState.setKey('screen', 'settings');
-							}}
+							setSettingOpened={setSettingsModalShown}
 							closeDropdown={() => {
 								setControlPanelMenuExpanded(false);
 							}}

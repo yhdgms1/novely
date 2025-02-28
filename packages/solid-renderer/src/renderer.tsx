@@ -229,8 +229,8 @@ const createSolidRenderer = ({
 
 							return characterHandle;
 						},
-						dialog(content, name, character, emotion, resolve) {
-							handleDialogAction($contextState, content, name, character, emotion, resolve);
+						dialog(getData, character, emotion, resolve) {
+							handleDialogAction($contextState, getData, character, emotion, resolve);
 						},
 						choices(label, choices, resolve) {
 							handleChoiceAction($contextState, label, choices, resolve);

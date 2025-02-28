@@ -53,6 +53,13 @@ type AudioHandle = {
 	play: (loop: boolean) => void;
 };
 
+type ContextDialogData = {
+	content: string;
+	name: string;
+};
+
+type Puller<T> = (language?: Lang) => T;
+
 type Context = {
 	id: string;
 
@@ -62,8 +69,7 @@ type Context = {
 	character: (character: string) => CharacterHandle;
 	background: (background: Record<string, string>) => void;
 	dialog: (
-		content: string,
-		name: string,
+		getData: Puller<ContextDialogData>,
 		character: string | undefined,
 		emotion: string | undefined,
 		resolve: () => void,
@@ -263,4 +269,6 @@ export type {
 	Context,
 	CustomActionHandle,
 	RendererInitPreviewReturn,
+	ContextDialogData,
+	Puller,
 };

@@ -34,6 +34,8 @@ export type {
 	Context,
 	CustomActionHandle,
 	RendererInitPreviewReturn,
+	ContextDialogData,
+	Puller,
 } from './renderer';
 export type { NovelyStorage } from './storage';
 export type {

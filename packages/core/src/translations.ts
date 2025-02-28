@@ -1,7 +1,6 @@
 const RU = {
 	NewGame: 'Новая игра',
 	HomeScreen: 'Главный экран',
-	ToTheGame: 'К игре',
 	Language: 'Язык',
 	NoSaves: 'Сохранений нет',
 	LoadSave: 'Загрузить',
@@ -42,7 +41,6 @@ type BaseTranslationStrings = keyof typeof RU;
 const EN: Record<BaseTranslationStrings, string> = {
 	NewGame: 'New Game',
 	HomeScreen: 'Home Screen',
-	ToTheGame: 'To the Game',
 	Language: 'Language',
 	NoSaves: 'No saves',
 	LoadSave: 'Load',

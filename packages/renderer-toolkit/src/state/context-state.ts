@@ -1,4 +1,4 @@
-import type { ChoiceOnSelectFunction, CustomHandler, Stored } from '@novely/core';
+import type { ContextDialogData, CustomHandler, Puller, Stored } from '@novely/core';
 import type { BaseDeepMap } from 'nanostores';
 import { cleanStores, onMount } from 'nanostores';
 import type { DeepAtom } from '../atoms/deep-atom';
@@ -97,13 +97,9 @@ type ContextStateText = Disposable & {
 type ContextStateDialog = Disposable &
 	WithActionVisibility & {
 		/**
-		 * Character lyrics
+		 * Function to get text `content` and character `name`
 		 */
-		content: string;
-		/**
-		 * Character lyrics. It might be also empty
-		 */
-		name: string;
+		getData: Puller<ContextDialogData>;
 		/**
 		 * Miniature character rendered along with text
 		 */
@@ -234,6 +230,13 @@ const defaultEmpty = {} satisfies BaseDeepMap;
 
 type ContextStateStore<Extension extends BaseDeepMap = typeof defaultEmpty> = ContextState & Extension;
 
+const getDafaultDialogData = () => {
+	return {
+		content: '',
+		name: '',
+	} satisfies ContextDialogData;
+};
+
 const getDefaultContextState = (): ContextState => {
 	return {
 		background: {
@@ -246,8 +249,7 @@ const getDefaultContextState = (): ContextState => {
 			choices: [],
 		},
 		dialog: {
-			content: '',
-			name: '',
+			getData: getDafaultDialogData,
 			visible: false,
 			miniature: {},
 		},
@@ -338,5 +340,5 @@ const createContextStateRoot = <Extension extends BaseDeepMap = typeof defaultEm
 	};
 };
 
-export { createContextStateRoot };
+export { createContextStateRoot, getDafaultDialogData };
 export type { ContextStateStore, ContextState, ContextStateCharacter, ContextStateCustomHandler };

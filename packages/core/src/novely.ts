@@ -1114,7 +1114,6 @@ const novely = <
 			ctx.character(character).remove(className, style, duration, ctx.meta.restoring).then(push);
 		},
 		dialog({ ctx, data, forward }, [character, content, emotion]) {
-			const name = getCharacterName(character);
 			const stack = useStack(ctx);
 
 			/**
@@ -1127,7 +1126,14 @@ const novely = <
 
 			ctx.clearBlockingActions('dialog');
 
-			ctx.dialog(templateReplace(content, data), templateReplace(name, data), character, emotion, forward);
+			const getDialogData = (language?: Lang) => {
+				return {
+					content: templateReplace(content, data, language as $Language),
+					name: templateReplace(getCharacterName(character), data, language as $Language),
+				};
+			};
+
+			ctx.dialog(getDialogData, character, emotion, forward);
 		},
 		function({ ctx, push }, [fn]) {
 			const { restoring, goingBack, preview } = ctx.meta;
@@ -1509,11 +1515,15 @@ const novely = <
 	/**
 	 * Replaces content inside of {{braces}}.
 	 */
-	const templateReplace = (content: TextContent<$Language, Data>, values?: Data) => {
-		const {
+	const templateReplace = (content: TextContent<$Language, Data>, values?: Data, overrideLanguage?: $Language) => {
+		let {
 			data,
 			meta: [lang],
 		} = storageData.get();
+
+		if (overrideLanguage) {
+			lang = overrideLanguage;
+		}
 
 		// Object to take values from
 		const obj = values || data;
