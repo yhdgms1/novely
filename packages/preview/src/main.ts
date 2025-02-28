@@ -252,7 +252,7 @@ false &&
 		],
 	});
 
-true &&
+false &&
 	engine.script({
 		start: [
 			action.particles(snow),
@@ -272,7 +272,7 @@ true &&
 		],
 	});
 
-false &&
+true &&
 	engine.script({
 		start: [
 			action.next(),
@@ -288,37 +288,10 @@ false &&
 				en: 'Hii~',
 				ru: 'Привет!',
 			}),
-			action.talk('Lily', {
-				en: 'Iʼm going to tell you about the Novely engine',
-				ru: 'Я расскажу тебе про движок Novely',
-			}),
-			action.say('You', {
-				en: 'Great, something new. What kind of features does it offer?',
-				ru: 'Отлично, что-то новое. Какие возможности он дает?',
-			}),
 			action.animateCharacter('Lily', 'animate__animated animate__pulse'),
 			action.say('Lily', {
-				en: 'Novely has many features: multi-language support, TypeScript support, and it is open source, multi-platform and lightweight.',
-				ru: 'У Novely есть много преимуществ: поддержка нескольких языков, типизация на TypeScript, открытый исходный код, мультплатформенность и легковесность.',
-			}),
-			action.animateCharacter('Lily', 'animate__animated animate__pulse'),
-			action.say('Lily', {
-				en: 'As a result, it can be used to create interactive stories and short stories with a minimum of effort.',
-				ru: 'В итоге с его помощью можно создавать интерактивные истории и новеллы с минимумом усилий.',
-			}),
-			action.say('You', {
-				en: 'Sounds promising. How easy is it to use?',
-				ru: 'Звучит многообещающе. Насколько просто им пользоваться?',
-			}),
-			action.animateCharacter('Lily', 'animate__animated animate__pulse'),
-			action.say('Lily', {
-				en: "The Novely API is very simple and intuitive, so even a little programming experience is enough to start creating visual novels. And once you've studied the documentation, you'll get the hang of it!",
-				ru: 'API Novely очень простой и интуитивный, так что даже небольшой опыт в программировании подойдёт чтобы начать создавать визуальные новеллы. А уж после изучения документации всё получится!',
-			}),
-			action.animateCharacter('Lily', 'animate__animated animate__pulse'),
-			action.say('Lily', {
-				en: 'By the way, how old are you?',
-				ru: 'Кстати, сколько тебе лет?',
+				en: 'How old are you?',
+				ru: 'Сколько тебе лет?',
 			}),
 			action.input(
 				{
