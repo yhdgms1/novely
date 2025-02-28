@@ -1,7 +1,7 @@
 {
 	"name": "@novely/particles",
 	"description": "Particles Action",
-	"version": "0.9.0",
+	"version": "0.10.0",
 	"type": "module",
 	"sideEffects": false,
 	"exports": {
@@ -26,7 +26,7 @@
 		"build": "tsup --dts"
 	},
 	"dependencies": {
-		"@novely/core": "workspace:*",
+		"@novely/core": "workspace:>=0.51.0",
 		"@tsparticles/engine": "~3.7.1",
 		"@tsparticles/slim": "~3.7.1"
 	},

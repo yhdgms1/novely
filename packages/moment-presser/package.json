@@ -1,7 +1,7 @@
 {
 	"name": "@novely/moment-presser",
 	"description": "Moment Presser Action",
-	"version": "0.2.2",
+	"version": "0.3.0",
 	"type": "module",
 	"sideEffects": false,
 	"types": "./dist/index.d.ts",
@@ -24,7 +24,7 @@
 		"build": "tsup --dts"
 	},
 	"dependencies": {
-		"@novely/core": "workspace:*"
+		"@novely/core": "workspace:>=0.51.0"
 	},
 	"devDependencies": {
 		"tsup": "^8.3.6",
