@@ -107,7 +107,7 @@ type Context = {
 	 */
 	clearBlockingActions: (preserve: 'dialog' | 'choice' | 'input' | 'text' | undefined) => void;
 
-	text: (str: string, resolve: () => void) => void;
+	text: (getText: Puller<string>, resolve: () => void) => void;
 	vibrate: (pattern: VibratePattern) => void;
 
 	audio: {

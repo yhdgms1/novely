@@ -1366,15 +1366,17 @@ const novely = <
 			push();
 		},
 		text({ ctx, data, forward }, text) {
-			const string = text.map((content) => templateReplace(content, data)).join(' ');
+			const getText = (language?: Lang) => {
+				return text.map((content) => templateReplace(content, data, language as $Language)).join(' ');
+			};
 
-			if (DEV && string.length === 0) {
+			if (DEV && getText().length === 0) {
 				throw new Error(`Action Text was called with empty string or array`);
 			}
 
 			ctx.clearBlockingActions('text');
 
-			ctx.text(string, forward);
+			ctx.text(getText, forward);
 		},
 		async exit({ ctx, data }) {
 			if (ctx.meta.restoring) return;

@@ -87,12 +87,13 @@ type ContextStateCustomHandlers = {
 	[key: string]: ContextStateCustomHandler | undefined;
 };
 
-type ContextStateText = Disposable & {
-	/**
-	 * Text to be rendered
-	 */
-	content: string;
-};
+type ContextStateText = Disposable &
+	WithActionVisibility & {
+		/**
+		 * Text to be rendered
+		 */
+		content: Puller<string>;
+	};
 
 type ContextStateDialog = Disposable &
 	WithActionVisibility & {
@@ -237,6 +238,8 @@ const getDafaultDialogData = () => {
 	} satisfies ContextDialogData;
 };
 
+const getDefaultTextContent = () => '';
+
 const getDefaultContextState = (): ContextState => {
 	return {
 		background: {
@@ -260,7 +263,8 @@ const getDefaultContextState = (): ContextState => {
 			visible: false,
 		},
 		text: {
-			content: '',
+			content: getDefaultTextContent,
+			visible: false,
 		},
 		custom: {},
 		meta: {
@@ -340,5 +344,5 @@ const createContextStateRoot = <Extension extends BaseDeepMap = typeof defaultEm
 	};
 };
 
-export { createContextStateRoot, getDafaultDialogData };
+export { createContextStateRoot, getDafaultDialogData, getDefaultTextContent };
 export type { ContextStateStore, ContextState, ContextStateCharacter, ContextStateCustomHandler };

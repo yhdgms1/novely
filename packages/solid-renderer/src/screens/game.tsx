@@ -86,7 +86,9 @@ const Game: VoidComponent<GameProps> = (props) => {
 			text().resolve?.();
 		},
 		ignore: () => {
-			return (skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview);
+			return (
+				(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview) || textContent().same
+			);
 		},
 		onComplete: (prm, click) => {
 			if (!auto()) return;
@@ -176,6 +178,29 @@ const Game: VoidComponent<GameProps> = (props) => {
 
 		return {
 			...data,
+			same,
+		};
+	});
+
+	const textContent = createMemo((prev) => {
+		const getContent = text().content;
+		const content = getContent(language());
+
+		const same = (() => {
+			if (prev && typeof prev === 'object' && 'content' in prev) {
+				return prev.content === getContent(previousLanguage()) || prev.content === content;
+			}
+
+			return false;
+		})();
+
+		console.log({
+			content,
+			same,
+		});
+
+		return {
+			content,
 			same,
 		};
 	});
@@ -420,16 +445,16 @@ const Game: VoidComponent<GameProps> = (props) => {
 			<div
 				class="action-text"
 				classList={{
-					'action-text--shown': Boolean(text().content),
+					'action-text--shown': text().visible,
 				}}
-				aria-disabled={!text().content}
+				aria-disabled={!text().visible}
 				role="button"
 				tabIndex={0}
 				onClick={TextWriter.click}
 				onKeyPress={onKey(TextWriter.click, 'Enter')}
 				onKeyDown={onKey(TextWriter.click, ' ')}
 			>
-				<TextWriter.Typewriter content={text().content} />
+				<TextWriter.Typewriter content={textContent().content} />
 			</div>
 
 			<Show when={!props.isPreview}>

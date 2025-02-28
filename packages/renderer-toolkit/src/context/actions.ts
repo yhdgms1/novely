@@ -12,14 +12,23 @@ import type {
 	Stored,
 } from '@novely/core';
 import type { DeepAtom } from '../atoms/deep-atom';
-import { getDafaultDialogData, type ContextState, type ContextStateStore } from '../state/context-state';
+import {
+	getDafaultDialogData,
+	getDefaultTextContent,
+	type ContextState,
+	type ContextStateStore,
+} from '../state/context-state';
 import type { RendererStateStore } from '../state/renderer-state';
 
 import { escapeHTML, noop } from '../utils';
 import { useBackground } from './background';
 import { vibrate } from './vibrate';
 
-const allEmpty = (target: object | string | number | null | undefined) => {
+const allEmpty = (target: (() => any) | object | string | number | null | undefined) => {
+	if (typeof target === 'function') {
+		return allEmpty(target());
+	}
+
 	if (typeof target === 'string') {
 		return target == '';
 	}
@@ -144,7 +153,7 @@ const handleClearAction = (
 	}
 
 	if (!keep.has('text')) {
-		$contextState.mutate((s) => s.text, { content: '' });
+		$contextState.mutate((s) => s.text, { content: getDefaultTextContent, visible: false });
 	}
 
 	const { characters, custom } = $contextState.get() as ContextState;
@@ -235,7 +244,7 @@ const handleClearBlockingActions = (
 	}
 
 	if (preserve !== 'text' && !allEmpty(current.text)) {
-		$contextState.mutate((s) => s.text, { content: '' });
+		$contextState.mutate((s) => s.text, { content: getDefaultTextContent, visible: false });
 	}
 
 	if (preserve !== 'dialog' && !allEmpty(current.dialog)) {
@@ -249,10 +258,10 @@ const handleClearBlockingActions = (
 
 const handleTextAction = (
 	$contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>,
-	content: string,
+	getContent: Puller<string>,
 	resolve: () => void,
 ) => {
-	$contextState.mutate((s) => s.text, { content, resolve });
+	$contextState.mutate((s) => s.text, { content: getContent, resolve, visible: true });
 };
 
 const handleInputAction = (

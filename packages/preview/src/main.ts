@@ -277,6 +277,10 @@ true &&
 		start: [
 			action.next(),
 			action.text({
+				en: 'Press on text to continue',
+				ru: 'Нажимайте на текст для продолжения',
+			}),
+			action.text({
 				en: 'You wake up, but do not see your keyboard anymore, instead...',
 				ru: 'Вы просыпаетесь, но больше не видите своей клавиатуры, вместо неё...',
 			}),
