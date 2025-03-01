@@ -163,7 +163,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 	});
 
 	const dialogData = createComputedWithMemory([dialog, language], ([dialog, language], previous) => {
-		const data = dialog.getData(language);
+		const data = dialog.getData();
 
 		if (!previous) {
 			return {
@@ -181,7 +181,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 	});
 
 	const textData = createComputedWithMemory([text, language], ([text, language], previous) => {
-		const data = text.content(language);
+		const data = text.content();
 
 		if (!previous) {
 			return {
@@ -197,6 +197,12 @@ const Game: VoidComponent<GameProps> = (props) => {
 			same: text.content === _text.content && language !== _language,
 		};
 	});
+
+	const inputLabel = () => {
+		language();
+
+		return input().getLabel();
+	};
 
 	return (
 		<div
@@ -362,7 +368,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				trapFocus={() => !props.isPreview && !exitPromptShown()}
 			>
 				<label for="novely-input" class="input-dialog__text input-dialog__label">
-					{input().label}
+					{inputLabel()}
 				</label>
 
 				{input().element}

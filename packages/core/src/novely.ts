@@ -1126,10 +1126,10 @@ const novely = <
 
 			ctx.clearBlockingActions('dialog');
 
-			const getDialogData = (language?: Lang) => {
+			const getDialogData = () => {
 				return {
-					content: templateReplace(content, data, language as $Language),
-					name: templateReplace(getCharacterName(character), data, language as $Language),
+					content: templateReplace(content, data),
+					name: templateReplace(getCharacterName(character), data),
 				};
 			};
 
@@ -1305,7 +1305,7 @@ const novely = <
 		input({ ctx, data, forward }, [question, onInput, setup]) {
 			ctx.clearBlockingActions('input');
 
-			ctx.input(templateReplace(question, data), onInput, setup || noop, forward);
+			ctx.input(() => templateReplace(question, data), onInput, setup || noop, forward);
 		},
 		custom({ ctx, push }, [fn]) {
 			if (fn.requireUserAction) {
@@ -1366,8 +1366,8 @@ const novely = <
 			push();
 		},
 		text({ ctx, data, forward }, text) {
-			const getText = (language?: Lang) => {
-				return text.map((content) => templateReplace(content, data, language as $Language)).join(' ');
+			const getText = () => {
+				return text.map((content) => templateReplace(content, data)).join(' ');
 			};
 
 			if (DEV && getText().length === 0) {
@@ -1517,15 +1517,11 @@ const novely = <
 	/**
 	 * Replaces content inside of {{braces}}.
 	 */
-	const templateReplace = (content: TextContent<$Language, Data>, values?: Data, overrideLanguage?: $Language) => {
-		let {
+	const templateReplace = (content: TextContent<$Language, Data>, values?: Data) => {
+		const {
 			data,
 			meta: [lang],
 		} = storageData.get();
-
-		if (overrideLanguage) {
-			lang = overrideLanguage;
-		}
 
 		// Object to take values from
 		const obj = values || data;

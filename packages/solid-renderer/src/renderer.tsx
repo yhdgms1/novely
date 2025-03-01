@@ -242,8 +242,8 @@ const createSolidRenderer = ({
 
 							resolve();
 						},
-						input(label, onInput, setup, resolve) {
-							handleInputAction($contextState, options, context, label, onInput, setup, resolve);
+						input(getLabel, onInput, setup, resolve) {
+							handleInputAction($contextState, options, context, getLabel, onInput, setup, resolve);
 						},
 						custom(fn) {
 							return handleCustomAction($contextState, fn);

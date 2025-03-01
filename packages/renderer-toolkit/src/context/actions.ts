@@ -14,6 +14,7 @@ import type {
 import type { DeepAtom } from '../atoms/deep-atom';
 import {
 	getDafaultDialogData,
+	getDefaultInputLabel,
 	getDefaultTextContent,
 	type ContextState,
 	type ContextStateStore,
@@ -138,7 +139,7 @@ const handleClearAction = (
 	if (!keep.has('input')) {
 		$contextState.mutate((s) => s.input, {
 			element: null,
-			label: '',
+			getLabel: getDefaultInputLabel,
 			visible: false,
 			error: '',
 		});
@@ -237,7 +238,7 @@ const handleClearBlockingActions = (
 	if (preserve !== 'input' && !allEmpty(current.input)) {
 		$contextState.mutate((s) => s.input, {
 			element: null,
-			label: '',
+			getLabel: getDefaultInputLabel,
 			visible: false,
 			error: '',
 		});
@@ -268,7 +269,7 @@ const handleInputAction = (
 	$contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>,
 	options: RendererInit<any, any>,
 	context: Context,
-	label: string,
+	getLabel: Puller<string>,
 	onInput: (opts: ActionInputOnInputMeta<string, State>) => void,
 	setup: ActionInputSetup,
 	resolve: () => void,
@@ -306,7 +307,7 @@ const handleInputAction = (
 
 	$contextState.mutate((s) => s.input, {
 		element: input,
-		label,
+		getLabel,
 		error: '',
 		visible: true,
 		cleanup: setup(input) || noop,

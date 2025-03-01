@@ -58,7 +58,7 @@ type ContextDialogData = {
 	name: string;
 };
 
-type Puller<T> = (language?: Lang) => T;
+type Puller<T> = () => T;
 
 type Context = {
 	id: string;
@@ -86,7 +86,7 @@ type Context = {
 		resolve: (selected: number) => void,
 	) => void;
 	input: (
-		question: string,
+		getQuestion: Puller<string>,
 		onInput: (meta: ActionInputOnInputMeta<Lang, State>) => void,
 		setup: ActionInputSetup,
 		resolve: () => void,

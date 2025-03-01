@@ -117,8 +117,11 @@ type ContextStateDialog = Disposable &
 	};
 
 type ContextStateInput = Disposable &
-	WithActionVisibility &
-	Labelled & {
+	WithActionVisibility & {
+		/**
+		 * Label
+		 */
+		getLabel: Puller<string>;
 		/**
 		 * Input Element. Input action very dependent on DOM so this is needed
 		 */
@@ -239,6 +242,7 @@ const getDafaultDialogData = () => {
 };
 
 const getDefaultTextContent = () => '';
+const getDefaultInputLabel = () => '';
 
 const getDefaultContextState = (): ContextState => {
 	return {
@@ -258,7 +262,7 @@ const getDefaultContextState = (): ContextState => {
 		},
 		input: {
 			element: null,
-			label: '',
+			getLabel: getDefaultInputLabel,
 			error: '',
 			visible: false,
 		},
@@ -344,5 +348,5 @@ const createContextStateRoot = <Extension extends BaseDeepMap = typeof defaultEm
 	};
 };
 
-export { createContextStateRoot, getDafaultDialogData, getDefaultTextContent };
+export { createContextStateRoot, getDafaultDialogData, getDefaultTextContent, getDefaultInputLabel };
 export type { ContextStateStore, ContextState, ContextStateCharacter, ContextStateCustomHandler };
