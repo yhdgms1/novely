@@ -275,6 +275,7 @@ false &&
 true &&
 	engine.script({
 		start: [
+			action.showBackground('#000000'),
 			action.next(),
 			action.text({
 				en: 'Press on text to continue',

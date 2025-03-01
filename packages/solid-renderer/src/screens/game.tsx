@@ -20,7 +20,7 @@ import { For, Index, Show, createEffect, createMemo, createSignal, createUniqueI
 import type { IContextState } from '../context-state';
 import type { SolidRendererStore } from '../renderer';
 import { Transition } from 'solid-transition-group';
-import { createPrevious } from 'src/hooks/usePrevious';
+import { createComputedWithMemory } from '$hooks';
 
 type GameProps = {
 	context: Context;
@@ -79,7 +79,6 @@ const Game: VoidComponent<GameProps> = (props) => {
 	};
 
 	const language = createMemo(() => data.storageData().meta[0]);
-	const previousLanguage = createPrevious(language);
 
 	const TextWriter = createTypewriter({
 		resolve: () => {
@@ -87,7 +86,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 		},
 		ignore: () => {
 			return (
-				(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview) || textContent().same
+				(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview) || textData().same
 			);
 		},
 		onComplete: (prm, click) => {
@@ -163,45 +162,39 @@ const Game: VoidComponent<GameProps> = (props) => {
 		}
 	});
 
-	const dialogData = createMemo((prev) => {
-		const getData = dialog().getData;
-		const data = getData(language());
+	const dialogData = createComputedWithMemory([dialog, language], ([dialog, language], previous) => {
+		const data = dialog.getData(language);
 
-		// if f(x) == g(x) then assume that f = g
-		const same = (() => {
-			if (prev && typeof prev === 'object' && 'content' in prev) {
-				return prev.content === getData(previousLanguage()).content || prev.content === data.content;
-			}
+		if (!previous) {
+			return {
+				...data,
+				same: false,
+			};
+		}
 
-			return false;
-		})();
+		const [_dialog, _language] = previous;
 
 		return {
 			...data,
-			same,
+			same: dialog.getData === _dialog.getData && language !== _language,
 		};
 	});
 
-	const textContent = createMemo((prev) => {
-		const getContent = text().content;
-		const content = getContent(language());
+	const textData = createComputedWithMemory([text, language], ([text, language], previous) => {
+		const data = text.content(language);
 
-		const same = (() => {
-			if (prev && typeof prev === 'object' && 'content' in prev) {
-				return prev.content === getContent(previousLanguage()) || prev.content === content;
-			}
+		if (!previous) {
+			return {
+				content: data,
+				same: false,
+			};
+		}
 
-			return false;
-		})();
-
-		console.log({
-			content,
-			same,
-		});
+		const [_text, _language] = previous;
 
 		return {
-			content,
-			same,
+			content: data,
+			same: text.content === _text.content && language !== _language,
 		};
 	});
 
@@ -454,7 +447,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				onKeyPress={onKey(TextWriter.click, 'Enter')}
 				onKeyDown={onKey(TextWriter.click, ' ')}
 			>
-				<TextWriter.Typewriter content={textContent().content} />
+				<TextWriter.Typewriter content={textData().content} />
 			</div>
 
 			<Show when={!props.isPreview}>
