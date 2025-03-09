@@ -2,7 +2,6 @@ import type {
 	ActionInputOnInputMeta,
 	ActionInputSetup,
 	ContextDialogData,
-	Puller,
 	Context,
 	CustomActionHandle,
 	CustomHandler,
@@ -10,12 +9,12 @@ import type {
 	RendererInit,
 	State,
 	Stored,
+	ContextTextData,
 } from '@novely/core';
 import type { DeepAtom } from '../atoms/deep-atom';
 import {
-	getDafaultDialogData,
-	getDefaultInputLabel,
-	getDefaultTextContent,
+	getDefaultDialogData,
+	getDefaultTextData,
 	type ContextState,
 	type ContextStateStore,
 } from '../state/context-state';
@@ -77,13 +76,13 @@ const handleBackgroundAction = (
 
 const handleDialogAction = (
 	$contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>,
-	getData: Puller<ContextDialogData>,
+	data: ContextDialogData,
 	character: string | undefined,
 	emotion: string | undefined,
 	resolve: () => void,
 ) => {
 	$contextState.mutate((s) => s.dialog, {
-		getData,
+		data,
 		miniature: {
 			character,
 			emotion,
@@ -139,7 +138,7 @@ const handleClearAction = (
 	if (!keep.has('input')) {
 		$contextState.mutate((s) => s.input, {
 			element: null,
-			getLabel: getDefaultInputLabel,
+			label: '',
 			visible: false,
 			error: '',
 		});
@@ -148,13 +147,13 @@ const handleClearAction = (
 	if (!keep.has('dialog')) {
 		$contextState.mutate((s) => s.dialog, {
 			visible: false,
-			getData: getDafaultDialogData,
+			data: getDefaultDialogData(),
 			miniature: {},
 		});
 	}
 
 	if (!keep.has('text')) {
-		$contextState.mutate((s) => s.text, { content: getDefaultTextContent, visible: false });
+		$contextState.mutate((s) => s.text, { data: getDefaultTextData(), visible: false });
 	}
 
 	const { characters, custom } = $contextState.get() as ContextState;
@@ -238,20 +237,20 @@ const handleClearBlockingActions = (
 	if (preserve !== 'input' && !allEmpty(current.input)) {
 		$contextState.mutate((s) => s.input, {
 			element: null,
-			getLabel: getDefaultInputLabel,
+			label: '',
 			visible: false,
 			error: '',
 		});
 	}
 
 	if (preserve !== 'text' && !allEmpty(current.text)) {
-		$contextState.mutate((s) => s.text, { content: getDefaultTextContent, visible: false });
+		$contextState.mutate((s) => s.text, { data: getDefaultTextData(), visible: false });
 	}
 
 	if (preserve !== 'dialog' && !allEmpty(current.dialog)) {
 		$contextState.mutate((s) => s.dialog, {
 			visible: false,
-			getData: getDafaultDialogData,
+			data: getDefaultDialogData(),
 			miniature: {},
 		});
 	}
@@ -259,17 +258,17 @@ const handleClearBlockingActions = (
 
 const handleTextAction = (
 	$contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>,
-	getContent: Puller<string>,
+	data: ContextTextData,
 	resolve: () => void,
 ) => {
-	$contextState.mutate((s) => s.text, { content: getContent, resolve, visible: true });
+	$contextState.mutate((s) => s.text, { data, resolve, visible: true });
 };
 
 const handleInputAction = (
 	$contextState: DeepAtom<ContextStateStore<Record<PropertyKey, unknown>>>,
 	options: RendererInit<any, any>,
 	context: Context,
-	getLabel: Puller<string>,
+	label: string,
 	onInput: (opts: ActionInputOnInputMeta<string, State>) => void,
 	setup: ActionInputSetup,
 	resolve: () => void,
@@ -307,7 +306,7 @@ const handleInputAction = (
 
 	$contextState.mutate((s) => s.input, {
 		element: input,
-		getLabel,
+		label,
 		error: '',
 		visible: true,
 		cleanup: setup(input) || noop,

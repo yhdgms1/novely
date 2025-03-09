@@ -11,7 +11,12 @@ const STACK_MAP = new Map<string, StackHolder>();
  */
 const CUSTOM_ACTION_MAP = new Map<string, CustomActionHolder>();
 
+/**
+ * @internal
+ */
+const CLEANUP_INTERNAL_ACTIONS = new Set<() => void>();
+
 const PRELOADED_ASSETS = new Set<string>();
 const ASSETS_TO_PRELOAD = new Set<string>();
 
-export { PRELOADED_ASSETS, ASSETS_TO_PRELOAD, STACK_MAP, CUSTOM_ACTION_MAP };
+export { PRELOADED_ASSETS, ASSETS_TO_PRELOAD, STACK_MAP, CUSTOM_ACTION_MAP, CLEANUP_INTERNAL_ACTIONS };

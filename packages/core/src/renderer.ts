@@ -56,9 +56,13 @@ type AudioHandle = {
 type ContextDialogData = {
 	content: string;
 	name: string;
+	change: 'change' | 'lang';
 };
 
-type Puller<T> = () => T;
+type ContextTextData = {
+	content: string;
+	change: 'change' | 'lang';
+};
 
 type Context = {
 	id: string;
@@ -69,7 +73,7 @@ type Context = {
 	character: (character: string) => CharacterHandle;
 	background: (background: Record<string, string>) => void;
 	dialog: (
-		getData: Puller<ContextDialogData>,
+		data: ContextDialogData,
 		character: string | undefined,
 		emotion: string | undefined,
 		resolve: () => void,
@@ -86,7 +90,7 @@ type Context = {
 		resolve: (selected: number) => void,
 	) => void;
 	input: (
-		getQuestion: Puller<string>,
+		question: string,
 		onInput: (meta: ActionInputOnInputMeta<Lang, State>) => void,
 		setup: ActionInputSetup,
 		resolve: () => void,
@@ -107,7 +111,7 @@ type Context = {
 	 */
 	clearBlockingActions: (preserve: 'dialog' | 'choice' | 'input' | 'text' | undefined) => void;
 
-	text: (getText: Puller<string>, resolve: () => void) => void;
+	text: (data: ContextTextData, resolve: () => void) => void;
 	vibrate: (pattern: VibratePattern) => void;
 
 	audio: {
@@ -270,5 +274,5 @@ export type {
 	CustomActionHandle,
 	RendererInitPreviewReturn,
 	ContextDialogData,
-	Puller,
+	ContextTextData,
 };

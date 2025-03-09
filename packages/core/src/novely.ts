@@ -19,7 +19,7 @@ import { DEFAULT_TYPEWRITER_SPEED, EMPTY_SET, MAIN_CONTEXT_KEY } from './constan
 import { getCustomActionHolder, handleCustomAction } from './custom-action';
 import { enqueueAssetForPreloading, handleAssetsPreloading, huntAssets } from './preloading';
 import type { Context, RendererInitPreviewReturn } from './renderer';
-import { PRELOADED_ASSETS, STACK_MAP } from './shared';
+import { CLEANUP_INTERNAL_ACTIONS, PRELOADED_ASSETS, STACK_MAP } from './shared';
 import { localStorageStorage } from './storage';
 import type { Stored } from './store';
 import { derive, store } from './store';
@@ -66,6 +66,7 @@ import {
 	getVolumeFromStore,
 	noop,
 	toArray,
+	cleanupInternalActions,
 } from './utilities';
 import type { MatchActionHandlers } from './utilities';
 import { buildActionObject } from './utilities/actions';
@@ -246,6 +247,32 @@ const novely = <
 	});
 
 	const paused = derive(coreData, (s) => s.paused || !s.focused);
+	const language = derive(storageData, (s) => s.meta[0]);
+
+	const runActionWithLanguageListener = (
+		ctx: Context,
+		forward: () => void,
+		run: (change: 'change' | 'lang', next: () => void) => void,
+	) => {
+		if (ctx.id !== MAIN_CONTEXT_KEY) {
+			run('change', forward);
+			return;
+		}
+
+		const next = () => {
+			forward();
+			unsubscribe();
+		};
+
+		const unsubscribe = language.subscribe(() => {
+			// todo: skip first run
+			run('lang', next);
+		});
+
+		CLEANUP_INTERNAL_ACTIONS.add(unsubscribe);
+
+		run('change', next);
+	};
 
 	const onDataLoadedPromise = async ({ cancelled }: Awaited<ControlledPromise<void>>) => {
 		/**
@@ -594,6 +621,8 @@ const novely = <
 			});
 		}
 
+		cleanupInternalActions();
+
 		context.loading(false);
 
 		const lastQueueItem = queue.at(-1);
@@ -685,6 +714,7 @@ const novely = <
 		}
 
 		stack.clear();
+		cleanupInternalActions();
 		ctx.clear(EMPTY_SET, EMPTY_SET, { music: EMPTY_SET, sounds: EMPTY_SET }, noop);
 		renderer.ui.showScreen('mainmenu');
 		ctx.audio.destroy();
@@ -1126,14 +1156,17 @@ const novely = <
 
 			ctx.clearBlockingActions('dialog');
 
-			const getDialogData = () => {
+			const getData = (change: 'change' | 'lang') => {
 				return {
 					content: templateReplace(content, data),
 					name: templateReplace(getCharacterName(character), data),
+					change,
 				};
 			};
 
-			ctx.dialog(getDialogData, character, emotion, forward);
+			runActionWithLanguageListener(ctx, forward, (change, next) => {
+				ctx.dialog(getData(change), character, emotion, next);
+			});
 		},
 		function({ ctx, push }, [fn]) {
 			const { restoring, goingBack, preview } = ctx.meta;
@@ -1305,7 +1338,9 @@ const novely = <
 		input({ ctx, data, forward }, [question, onInput, setup]) {
 			ctx.clearBlockingActions('input');
 
-			ctx.input(() => templateReplace(question, data), onInput, setup || noop, forward);
+			// todo: input is "live" because of mask input and the content
+			// it should update it's content in another way, same as "choices"
+			ctx.input(templateReplace(question, data), onInput, setup || noop, forward);
 		},
 		custom({ ctx, push }, [fn]) {
 			if (fn.requireUserAction) {
@@ -1366,17 +1401,24 @@ const novely = <
 			push();
 		},
 		text({ ctx, data, forward }, text) {
-			const getText = () => {
-				return text.map((content) => templateReplace(content, data)).join(' ');
+			const getData = (change: 'change' | 'lang') => {
+				return {
+					content: text.map((content) => templateReplace(content, data)).join(' '),
+					change,
+				};
 			};
 
-			if (DEV && getText().length === 0) {
+			if (DEV && getData('change').content.length === 0) {
 				throw new Error(`Action Text was called with empty string or array`);
 			}
 
 			ctx.clearBlockingActions('text');
 
-			ctx.text(getText, forward);
+			runActionWithLanguageListener(ctx, forward, (change, next) => {
+				console.log(getData(change));
+
+				ctx.text(getData(change), next);
+			});
 		},
 		async exit({ ctx, data }) {
 			if (ctx.meta.restoring) return;

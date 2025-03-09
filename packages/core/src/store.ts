@@ -41,11 +41,18 @@ const store = <T>(current: T, subscribers = new Set<(value: T) => void>()): Stor
 };
 
 const derive = <T, K>(input: Stored<T>, map: (value: T) => K): Derived<K> => {
+	let prev: symbol | K = Symbol();
+
 	return {
 		get: () => map(input.get()),
 		subscribe: (subscriber) => {
 			return input.subscribe((value) => {
-				return subscriber(map(value));
+				const current = map(value);
+
+				if (current !== prev) {
+					prev = current;
+					subscriber(map(value));
+				}
 			});
 		},
 	};

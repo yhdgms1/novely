@@ -1,4 +1,4 @@
-import type { ContextDialogData, CustomHandler, Puller, Stored } from '@novely/core';
+import type { ContextDialogData, ContextTextData, CustomHandler, Stored } from '@novely/core';
 import type { BaseDeepMap } from 'nanostores';
 import { cleanStores, onMount } from 'nanostores';
 import type { DeepAtom } from '../atoms/deep-atom';
@@ -89,10 +89,7 @@ type ContextStateCustomHandlers = {
 
 type ContextStateText = Disposable &
 	WithActionVisibility & {
-		/**
-		 * Text to be rendered
-		 */
-		content: Puller<string>;
+		data: ContextTextData;
 	};
 
 type ContextStateDialog = Disposable &
@@ -100,7 +97,7 @@ type ContextStateDialog = Disposable &
 		/**
 		 * Function to get text `content` and character `name`
 		 */
-		getData: Puller<ContextDialogData>;
+		data: ContextDialogData;
 		/**
 		 * Miniature character rendered along with text
 		 */
@@ -121,7 +118,7 @@ type ContextStateInput = Disposable &
 		/**
 		 * Label
 		 */
-		getLabel: Puller<string>;
+		label: string;
 		/**
 		 * Input Element. Input action very dependent on DOM so this is needed
 		 */
@@ -234,15 +231,20 @@ const defaultEmpty = {} satisfies BaseDeepMap;
 
 type ContextStateStore<Extension extends BaseDeepMap = typeof defaultEmpty> = ContextState & Extension;
 
-const getDafaultDialogData = () => {
+const getDefaultDialogData = () => {
 	return {
 		content: '',
 		name: '',
+		change: 'change',
 	} satisfies ContextDialogData;
 };
 
-const getDefaultTextContent = () => '';
-const getDefaultInputLabel = () => '';
+const getDefaultTextData = () => {
+	return {
+		content: '',
+		change: 'change',
+	} satisfies ContextTextData;
+};
 
 const getDefaultContextState = (): ContextState => {
 	return {
@@ -256,18 +258,18 @@ const getDefaultContextState = (): ContextState => {
 			choices: [],
 		},
 		dialog: {
-			getData: getDafaultDialogData,
+			data: getDefaultDialogData(),
 			visible: false,
 			miniature: {},
 		},
 		input: {
 			element: null,
-			getLabel: getDefaultInputLabel,
+			label: '',
 			error: '',
 			visible: false,
 		},
 		text: {
-			content: getDefaultTextContent,
+			data: getDefaultTextData(),
 			visible: false,
 		},
 		custom: {},
@@ -348,5 +350,5 @@ const createContextStateRoot = <Extension extends BaseDeepMap = typeof defaultEm
 	};
 };
 
-export { createContextStateRoot, getDafaultDialogData, getDefaultTextContent, getDefaultInputLabel };
+export { createContextStateRoot, getDefaultDialogData, getDefaultTextData };
 export type { ContextStateStore, ContextState, ContextStateCharacter, ContextStateCustomHandler };

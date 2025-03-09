@@ -254,8 +254,8 @@ const createSolidRenderer = ({
 						vibrate(pattern) {
 							handleVibrateAction(pattern);
 						},
-						text(getContent, resolve) {
-							handleTextAction($contextState, getContent, resolve);
+						text(data, resolve) {
+							handleTextAction($contextState, data, resolve);
 						},
 						loading(shown) {
 							$contextState.setKey('loading', shown);

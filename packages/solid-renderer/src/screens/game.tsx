@@ -20,7 +20,6 @@ import { For, Index, Show, createEffect, createMemo, createSignal, createUniqueI
 import type { IContextState } from '../context-state';
 import type { SolidRendererStore } from '../renderer';
 import { Transition } from 'solid-transition-group';
-import { createComputedWithMemory } from '$hooks';
 
 type GameProps = {
 	context: Context;
@@ -85,9 +84,11 @@ const Game: VoidComponent<GameProps> = (props) => {
 			text().resolve?.();
 		},
 		ignore: () => {
-			return (
-				(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview) || textData().same
-			);
+			const goingBack = skipTypewriterWhenGoingBack && context.meta.goingBack;
+			const preview = Boolean(props.isPreview);
+			const languageChanged = text().data.change === 'lang';
+
+			return goingBack || preview || languageChanged;
 		},
 		onComplete: (prm, click) => {
 			if (!auto()) return;
@@ -109,9 +110,11 @@ const Game: VoidComponent<GameProps> = (props) => {
 			dialog().resolve?.();
 		},
 		ignore: () => {
-			return (
-				(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview) || dialogData().same
-			);
+			const goingBack = skipTypewriterWhenGoingBack && context.meta.goingBack;
+			const preview = Boolean(props.isPreview);
+			const languageChanged = dialog().data.change === 'lang';
+
+			return goingBack || preview || languageChanged;
 		},
 		onComplete: (prm, click) => {
 			if (!auto()) return;
@@ -162,46 +165,10 @@ const Game: VoidComponent<GameProps> = (props) => {
 		}
 	});
 
-	const dialogData = createComputedWithMemory([dialog, language], ([dialog, language], previous) => {
-		const data = dialog.getData();
-
-		if (!previous) {
-			return {
-				...data,
-				same: false,
-			};
-		}
-
-		const [_dialog, _language] = previous;
-
-		return {
-			...data,
-			same: dialog.getData === _dialog.getData && language !== _language,
-		};
-	});
-
-	const textData = createComputedWithMemory([text, language], ([text, language], previous) => {
-		const data = text.content();
-
-		if (!previous) {
-			return {
-				content: data,
-				same: false,
-			};
-		}
-
-		const [_text, _language] = previous;
-
-		return {
-			content: data,
-			same: text.content === _text.content && language !== _language,
-		};
-	});
-
 	const inputLabel = () => {
 		language();
 
-		return input().getLabel();
+		return input().label;
 	};
 
 	return (
@@ -243,11 +210,11 @@ const Game: VoidComponent<GameProps> = (props) => {
 					'action-dialog--hidden': !dialog().visible,
 				}}
 			>
-				<DialogName character={dialog().miniature.character} name={dialogData().name} mood={mood()} />
+				<DialogName character={dialog().miniature.character} name={dialog().data.name} mood={mood()} />
 				<div
 					class="action-dialog-container"
 					data-no-person={!(dialog().miniature.character && dialog().miniature.emotion)}
-					aria-disabled={!dialogData().content}
+					aria-disabled={!dialog().data.content}
 					role="button"
 					tabIndex={0}
 					onClick={DialogWriter.click}
@@ -295,7 +262,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 							'action-dialog-content--disable-shadow': props.isPreview,
 						}}
 					>
-						<DialogWriter.Typewriter content={dialogData().content} />
+						<DialogWriter.Typewriter content={dialog().data.content} />
 					</div>
 				</div>
 			</div>
@@ -453,7 +420,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 				onKeyPress={onKey(TextWriter.click, 'Enter')}
 				onKeyDown={onKey(TextWriter.click, ' ')}
 			>
-				<TextWriter.Typewriter content={textData().content} />
+				<TextWriter.Typewriter content={text().data.content} />
 			</div>
 
 			<Show when={!props.isPreview}>

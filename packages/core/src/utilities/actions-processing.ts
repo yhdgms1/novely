@@ -13,6 +13,7 @@ import {
 	isBlockingAction,
 } from './assertions';
 import { unwrapAsset } from '../asset';
+import { CLEANUP_INTERNAL_ACTIONS } from '../shared';
 import { DEV } from 'esm-env';
 
 // #region Is Exit Impossible
@@ -660,6 +661,16 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 };
 // #endregion
 
+// #region Cleanup Internal Actions
+const cleanupInternalActions = () => {
+	for (const fn of CLEANUP_INTERNAL_ACTIONS) {
+		fn();
+	}
+
+	CLEANUP_INTERNAL_ACTIONS.clear();
+};
+// #endregion
+
 export {
 	findLastPathItemBeforeItemOfType,
 	getActionsFromPath,
@@ -670,6 +681,7 @@ export {
 	collectActionsBeforeBlockingAction,
 	nextPath,
 	isExitImpossible,
+	cleanupInternalActions,
 };
 
 export type { GuardedReferFunction };
