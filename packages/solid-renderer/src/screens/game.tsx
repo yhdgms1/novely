@@ -75,25 +75,6 @@ const Game: VoidComponent<GameProps> = (props) => {
 		return Object.values(custom());
 	};
 
-	const speed = () => data.storageData().meta[1];
-
-	const onWriterEnd = (cb: () => void) => {
-		return (prm: boolean) => {
-			const next = untrack(auto);
-
-			/**
-			 * When `auto` mode is disabled
-			 */
-			if (!next) return;
-
-			if (prm) {
-				setAuto(false);
-			} else {
-				untrack(cb);
-			}
-		};
-	};
-
 	const TextWriter = createTypewriter({
 		resolve() {
 			text().resolve?.();
