@@ -167,7 +167,7 @@ importers:
   packages/moment-presser:
     dependencies:
       '@novely/core':
-        specifier: workspace:*
+        specifier: workspace:>=0.51.0
         version: link:../core
     devDependencies:
       tsup:
@@ -192,7 +192,7 @@ importers:
   packages/particles:
     dependencies:
       '@novely/core':
-        specifier: workspace:*
+        specifier: workspace:>=0.51.0
         version: link:../core
       '@tsparticles/engine':
         specifier: ~3.7.1
@@ -295,14 +295,11 @@ importers:
   packages/solid-renderer:
     dependencies:
       '@novely/core':
-        specifier: workspace:*
+        specifier: workspace:>=0.51.0
         version: link:../core
       '@novely/renderer-toolkit':
         specifier: workspace:*
         version: link:../renderer-toolkit
-      '@novely/typewriter':
-        specifier: workspace:*
-        version: link:../typewriter
       '@solid-primitives/destructure':
         specifier: ^0.2.0
         version: 0.2.0(solid-js@1.9.4)

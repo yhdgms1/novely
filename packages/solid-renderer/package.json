@@ -21,7 +21,6 @@
 	"dependencies": {
 		"@novely/core": "workspace:>=0.51.0",
 		"@novely/renderer-toolkit": "workspace:*",
-		"@novely/typewriter": "workspace:*",
 		"@solid-primitives/destructure": "^0.2.0",
 		"clsx": "^2.1.1",
 		"es-toolkit": "^1.31.0",

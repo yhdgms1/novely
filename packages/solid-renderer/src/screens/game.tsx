@@ -98,11 +98,39 @@ const Game: VoidComponent<GameProps> = (props) => {
 		resolve() {
 			text().resolve?.();
 		},
+		ignore: () => {
+			return (skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview);
+		},
+		onComplete: (prm, click) => {
+			if (!auto()) return;
+
+			if (prm) {
+				// When (prefers-reduced-motion: reduce) content will be set immidiately
+				// That's why we will just disable auto mode
+				setAuto(false);
+			} else {
+				// Otherwise we will just simulate the click
+				// todo: there should be a delay before going next
+				click();
+			}
+		},
 	});
 
 	const DialogWriter = createTypewriter({
 		resolve() {
 			dialog().resolve?.();
+		},
+		ignore: () => {
+			return (skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview);
+		},
+		onComplete: (prm, click) => {
+			if (!auto()) return;
+
+			if (prm) {
+				setAuto(false);
+			} else {
+				click();
+			}
 		},
 	});
 
@@ -190,9 +218,9 @@ const Game: VoidComponent<GameProps> = (props) => {
 					aria-disabled={!dialog().content}
 					role="button"
 					tabIndex={0}
-					onClick={DialogWriter.clear}
-					onKeyPress={onKey(DialogWriter.clear, 'Enter')}
-					onKeyDown={onKey(DialogWriter.clear, ' ')}
+					onClick={DialogWriter.click}
+					onKeyPress={onKey(DialogWriter.click, 'Enter')}
+					onKeyDown={onKey(DialogWriter.click, ' ')}
 				>
 					<Show when={dialog().miniature.emotion}>
 						<div class="action-dialog-person">
@@ -235,18 +263,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 							'action-dialog-content--disable-shadow': props.isPreview,
 						}}
 					>
-						<DialogWriter.Typewriter
-							attributes={{
-								title:
-									DialogWriter.state() === 'idle'
-										? undefined
-										: data.t(DialogWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
-							}}
-							content={dialog().content}
-							ignore={(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview)}
-							speed={speed()}
-							ended={onWriterEnd(DialogWriter.clear)}
-						/>
+						<DialogWriter.Typewriter content={dialog().content} />
 					</div>
 				</div>
 			</div>
@@ -381,22 +398,11 @@ const Game: VoidComponent<GameProps> = (props) => {
 				aria-disabled={!text().content}
 				role="button"
 				tabIndex={0}
-				onClick={TextWriter.clear}
-				onKeyPress={onKey(TextWriter.clear, 'Enter')}
-				onKeyDown={onKey(TextWriter.clear, ' ')}
+				onClick={TextWriter.click}
+				onKeyPress={onKey(TextWriter.click, 'Enter')}
+				onKeyDown={onKey(TextWriter.click, ' ')}
 			>
-				<TextWriter.Typewriter
-					attributes={{
-						title:
-							TextWriter.state() === 'idle'
-								? undefined
-								: data.t(TextWriter.state() === 'processing' ? 'CompleteText' : 'GoForward'),
-					}}
-					content={text().content}
-					ignore={(skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview)}
-					speed={speed()}
-					ended={onWriterEnd(TextWriter.clear)}
-				/>
+				<TextWriter.Typewriter content={text().content} />
 			</div>
 
 			<Show when={!props.isPreview}>
