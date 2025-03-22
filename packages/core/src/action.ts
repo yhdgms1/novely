@@ -1,7 +1,7 @@
 import type { Character } from './character';
 import type { Context } from './renderer';
 import type { Derived } from './store';
-import type { Lang, NonEmptyRecord, NovelyAsset, Path, State, StateFunction, Thenable } from './types';
+import type { Lang, NonEmptyRecord, NovelyAsset, Path, Save, State, StateFunction, Thenable } from './types';
 
 type ValidAction =
 	| ['choice', string | undefined, ...[string, unknown[], (() => boolean)?, (() => boolean)?, string?][]]
@@ -73,11 +73,16 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 	getDomNodes: CustomHandlerFunctionGetFn;
 
 	/**
-	 * Function to get current Path. Path can be mutated. Can be helpful when making complex custom actions.
+	 * @deprecated use `getSave` instead
+	 */
+	getPath: () => Path;
+
+	/**
+	 * Function to get current Save. It can be mutated.
 	 *
 	 * Only use it when you know what you do
 	 */
-	getPath: () => Path;
+	getSave: () => Save<S>;
 
 	/**
 	 * Renderer Context

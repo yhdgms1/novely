@@ -152,6 +152,10 @@ const handleCustomAction = (
 		return stack.value[0];
 	};
 
+	const getSave = () => {
+		return stack.value;
+	}
+
 	return fn({
 		flags,
 
@@ -169,6 +173,7 @@ const handleCustomAction = (
 
 		getDomNodes: getDomNodes as CustomHandlerFunctionGetFn,
 
+		getSave,
 		getPath,
 
 		contextKey: ctx.id,
