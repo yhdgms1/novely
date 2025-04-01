@@ -154,7 +154,7 @@ const handleCustomAction = (
 
 	const getSave = () => {
 		return stack.value;
-	}
+	};
 
 	return fn({
 		flags,

@@ -5,6 +5,14 @@ import { useData } from '$context';
 
 const PRM = matchMedia('(prefers-reduced-motion: reduce)');
 
+const createRandomId = (() => {
+	let i = 0;
+
+	return () => {
+		return 'nrid' + i++ + Math.random().toString(26).slice(2);
+	};
+})();
+
 const Writer = class Writer {
 	public completed: boolean;
 
@@ -12,7 +20,7 @@ const Writer = class Writer {
 	private current: number;
 	private endedCallback: () => void;
 	private getDuration: () => number;
-	private animation: Animation | null;
+	private animation: ReturnType<typeof this.createAnimation> | null;
 
 	private node: HTMLElement;
 	private segments: ChildNode[];
@@ -102,6 +110,32 @@ const Writer = class Writer {
 		return duration;
 	}
 
+	private createAnimation(element: HTMLSpanElement, duration: number) {
+		const id = createRandomId();
+		const style = document.createElement('style');
+
+		document.head.appendChild(style);
+
+		style.innerHTML = `@keyframes a${id} { from { opacity: 0; } to { opacity: 1; } } #${id} { animation: a${id} ${duration}ms linear; }`;
+
+		element.id = id;
+
+		return {
+			remove: () => {
+				style.remove();
+			},
+			pause: () => {
+				element.style.animationPlayState = 'paused';
+			},
+			resume: () => {
+				element.style.animationPlayState = 'initial';
+			},
+			finish: () => {
+				element.style.animationDuration = '0s';
+			},
+		};
+	}
+
 	public play() {
 		if (this.completed) return;
 		if (this.current >= this.segments.length) {
@@ -112,32 +146,22 @@ const Writer = class Writer {
 		const element = this.segments[this.current];
 
 		if (element instanceof HTMLSpanElement) {
-			if (!('animate' in element)) {
-				// todo: implement it without using `HTMLElement.prototype.animate`
-			}
+			const duration = this.adjustDuration(element.textContent || '', this.getDuration());
+			const animation = this.createAnimation(element, duration);
 
-			const animation = element.animate(
-				[
-					{
-						opacity: 0,
-					},
-					{
-						opacity: 1,
-					},
-				],
-				{
-					duration: this.adjustDuration(element.textContent || '', this.getDuration()),
+			element.addEventListener(
+				'animationend',
+				() => {
+					animation.remove();
+					this.animation = null;
+
+					element.replaceWith(document.createTextNode(element.textContent || ''));
+
+					this.current++;
+					this.play();
 				},
+				{ once: true },
 			);
-
-			animation.addEventListener('finish', () => {
-				this.animation = null;
-
-				element.replaceWith(document.createTextNode(element.textContent || ''));
-
-				this.current++;
-				this.play();
-			});
 
 			this.animation = animation;
 		}
@@ -151,7 +175,7 @@ const Writer = class Writer {
 
 	public resume() {
 		if (this.animation) {
-			this.animation.play();
+			this.animation.resume();
 		}
 	}
 
@@ -160,6 +184,7 @@ const Writer = class Writer {
 
 		if (this.animation) {
 			this.animation.finish();
+			this.animation.remove();
 			this.animation = null;
 		}
 
@@ -172,6 +197,7 @@ const Writer = class Writer {
 	public destroy() {
 		if (this.animation) {
 			this.animation.finish();
+			this.animation.remove();
 			this.animation = null;
 		}
 
@@ -218,6 +244,7 @@ const createTypewriter = ({ ignore, onComplete, resolve }: CreateTypewriterOptio
 	const Typewriter: VoidComponent<TypewriterProps> = (props) => {
 		const data = useData();
 		const duration = createMemo(() => data.storageData().meta[1]);
+		const paused = createMemo(() => data.coreData().paused || !data.coreData().focused);
 
 		const getDurationFunction = () => {
 			return TEXT_SPEED_MAP[untrack(duration)];
@@ -259,6 +286,19 @@ const createTypewriter = ({ ignore, onComplete, resolve }: CreateTypewriterOptio
 			duration();
 
 			typewriter?.setDurationFunction(getDurationFunction());
+		});
+
+		createEffect(() => {
+			paused();
+
+			if (!typewriter) return;
+			if (typewriter.completed) return;
+
+			if (paused()) {
+				typewriter.pause();
+			} else {
+				typewriter.resume();
+			}
 		});
 
 		onCleanup(() => {
