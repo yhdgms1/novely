@@ -8,7 +8,7 @@ Novel Engine for creating interactive stories
 
 ## Community
 
-We have a [Discord](https://discord.gg/h2U63hx4GR) server and a [Telegram](https://t.me/novelyjs) chat
+We have a [Discord](https://discord.gg/h2U63hx4GR) server.
 
 ## Demo
 
@@ -50,12 +50,6 @@ engine.script({
   ]
 })
 ```
-
-## Donations
-Your support is appreciated! You can make a donation to help keep this project alive:
-
-- **Toncoin (TON):** `UQDP7u4ZgCkNkk4jGcTkhmlWl6pXtXoJZpCUAH7pj_BDWjpZ`
-- **Tether (USDT-TRC20):** `TW3nWLvz6zQLg4SRLdLxfj2Qt4KoH248aW`
 
 ## License
 
