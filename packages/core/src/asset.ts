@@ -22,7 +22,7 @@ const getType = memoize(
 		}
 
 		if (DEV) {
-			throw new Error(`Unsupported file extensions: ${JSON.stringify(extensions)}`)
+			throw new Error(`Unsupported file extensions: ${JSON.stringify(extensions)}`);
 		}
 
 		throw extensions;
