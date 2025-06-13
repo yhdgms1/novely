@@ -5,14 +5,12 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build",
-		"preview": "vite preview",
-		"format": "prettier --write ."
+		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@novely/core": "~0.49.0",
-		"@novely/solid-renderer": "~0.47.0",
-		"modern-normalize": "~3.0.1",
-		"solid-js": "~1.9.4"
+		"@novely/core": "~0.51.1",
+		"@novely/solid-renderer": "~0.50.0",
+		"modern-normalize": "~3.0.1"
 	},
 	"devDependencies": {
 		"@novely/vite-plugin-novely": "~0.6.1",
