@@ -11,7 +11,6 @@ const getUrlFileExtension = (address: string) => {
 		 * By using pathname we remove search params from URL, but some things are still preserved
 		 *
 		 * Imagine pathname like `image.png!private:1230`
-		 * Yes, very unlikely to happen, but it is possible
 		 */
 		return pathname.split('.').at(-1)!.split('!')[0].split(':')[0];
 	} catch (error) {

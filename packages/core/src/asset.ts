@@ -21,6 +21,10 @@ const getType = memoize(
 			return 'image';
 		}
 
+		if (DEV) {
+			throw new Error(`Unsupported file extensions: ${JSON.stringify(extensions)}`)
+		}
+
 		throw extensions;
 	},
 	{
