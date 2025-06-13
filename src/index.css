@@ -1,0 +1,28 @@
+@import "modern-normalize";
+@import "@novely/solid-renderer/dist/styles/index.css";
+
+/* Character animation */
+
+.character-animation-talk {
+	animation: character-animation-push 385ms ease-in-out;
+}
+
+@keyframes character-animation-push {
+	from {
+		transform: scale(1);
+	}
+
+	50% {
+		transform: scale(1.01);
+	}
+
+	to {
+		transform: scale(1);
+	}
+}
+
+/* Character size */
+
+.characters > canvas {
+  max-height: 90vh;
+}
