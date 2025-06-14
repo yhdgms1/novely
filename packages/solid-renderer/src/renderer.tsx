@@ -38,10 +38,9 @@ import { useShared } from './shared';
 
 const { preloadAudioBlocking } = createAudioMisc();
 
-const createSolidRenderer = ({
+const createRenderer = ({
 	fullscreen = false,
 	controls = 'outside',
-	skipTypewriterWhenGoingBack = true,
 	target = document.body,
 	showAudioSettings = true,
 }: CreateSolidRendererOptions = {}) => {
@@ -322,7 +321,6 @@ const createSolidRenderer = ({
 							emitter,
 
 							controls,
-							skipTypewriterWhenGoingBack,
 
 							showAudioSettings,
 
@@ -377,5 +375,10 @@ const createSolidRenderer = ({
 	};
 };
 
-export { createSolidRenderer };
+/**
+ * @deprecated import `createRenderer` instead
+ */
+export const createSolidRenderer = createRenderer;
+
+export { createRenderer };
 export type { StateScreen, StateScreens, SolidRendererStore };

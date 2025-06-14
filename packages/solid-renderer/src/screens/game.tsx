@@ -28,7 +28,6 @@ type GameProps = {
 	store: SolidRendererStore;
 
 	controls: 'inside' | 'outside';
-	skipTypewriterWhenGoingBack: boolean;
 
 	isPreview?: boolean;
 	className?: string;
@@ -58,7 +57,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 	/**
 	 * Can be destructured because these are passed without getters
 	 */
-	const { store, context, controls, skipTypewriterWhenGoingBack } = props;
+	const { store, context, controls } = props;
 
 	const [auto, setAuto] = createSignal(false);
 
@@ -80,7 +79,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 			text().resolve?.();
 		},
 		ignore: () => {
-			return (skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview);
+			return context.meta.goingBack || Boolean(props.isPreview);
 		},
 		onComplete: (prm, click) => {
 			if (!auto()) return;
@@ -102,7 +101,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 			dialog().resolve?.();
 		},
 		ignore: () => {
-			return (skipTypewriterWhenGoingBack && context.meta.goingBack) || Boolean(props.isPreview);
+			return context.meta.goingBack || Boolean(props.isPreview);
 		},
 		onComplete: (prm, click) => {
 			if (!auto()) return;

@@ -37,11 +37,6 @@ type CreateSolidRendererOptions = {
 	 */
 	controls?: 'inside' | 'outside';
 	/**
-	 * When `goingBack` typewriter effect won't be applied
-	 * @default true
-	 */
-	skipTypewriterWhenGoingBack?: boolean;
-	/**
 	 * Where Novely will be mounted
 	 * @default document.body
 	 */

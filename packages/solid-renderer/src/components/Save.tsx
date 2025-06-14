@@ -220,7 +220,6 @@ const Save: VoidComponent<SaveProps> = (props) => {
 						<Portal mount={context.root}>
 							<Game
 								controls="outside"
-								skipTypewriterWhenGoingBack={true}
 								$contextState={$contextState}
 								context={context}
 								store={useShared(KEY)}

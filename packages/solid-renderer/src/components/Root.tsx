@@ -21,7 +21,6 @@ type CreateRootComponentOpts = {
 	fullscreen: boolean;
 	emitter: Emitter<EmitterEventsMap>;
 
-	skipTypewriterWhenGoingBack: boolean;
 	controls: 'inside' | 'outside';
 
 	showAudioSettings: boolean;
@@ -46,7 +45,6 @@ const createRootComponent = ({
 	fullscreen,
 	emitter,
 	controls,
-	skipTypewriterWhenGoingBack,
 	rendererContext,
 	audio,
 }: CreateRootComponentOpts) => {
@@ -93,7 +91,6 @@ const createRootComponent = ({
 								$contextState={/* @once */ $contextState}
 								context={/* @once */ rendererContext}
 								controls={/* @once */ controls}
-								skipTypewriterWhenGoingBack={/* @once */ skipTypewriterWhenGoingBack}
 								store={useShared(coreOptions.mainContextKey)}
 							/>
 						</Match>
