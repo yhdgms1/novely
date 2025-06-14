@@ -17,6 +17,9 @@ importers:
       '@novely/solid-renderer':
         specifier: ~0.50.0
         version: 0.50.0(@novely/core@0.51.1)(klona@2.0.6)(postcss@8.5.4)(solid-js@1.9.7)
+      iuliia:
+        specifier: ^0.8.2
+        version: 0.8.2
       modern-normalize:
         specifier: ~3.0.1
         version: 3.0.1
@@ -1409,6 +1412,9 @@ packages:
 
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
+
+  iuliia@0.8.2:
+    resolution: {integrity: sha512-HZL695HLLhdTuh3zZ30bhC7hfNo2w2h4qGgJPhsBMtnARDw8uEEK13MFPD6RPhHZX1FlbMcbRO4AC4JZiDUF3A==}
 
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
@@ -3372,6 +3378,8 @@ snapshots:
   is-standalone-pwa@0.1.1: {}
 
   isexe@2.0.0: {}
+
+  iuliia@0.8.2: {}
 
   jackspeak@3.4.3:
     dependencies:

@@ -41,7 +41,10 @@ const engine = novely({
 		Darya: 'default'
 	},
 	state: {
-		name: ''
+		name: {
+			en: '',
+			ru: ''
+		}
 	},
 });
 

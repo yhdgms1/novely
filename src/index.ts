@@ -3,6 +3,7 @@ import { action as a } from './actions';
 import { fountain, night } from './assets';
 import { particles } from './particles';
 import { getDeviceType } from './utilities';
+import * as iuliia from "iuliia";
 
 // Using asset does not have much sense because we access `.source` right away
 // The image in the main menu should be loaded ASAP so it's better to use CSS and image-set()
@@ -10,20 +11,20 @@ import { getDeviceType } from './utilities';
 document.body.style.setProperty('--novely-root-background-image', 'url("' + fountain.source + '")');
 
 script({
-	start: [
-		a.showBackground('#000000'),
-		a.text({
+  start: [
+    a.showBackground('#000000'),
+    a.text({
       en: 'You’re waking up...',
-      ru: 'Ты только просыпаться...'
+      ru: 'Ты только просыпаешься...'
     }),
     // a.playMusic(), // I don't have any music right now
     a.showParticles(particles),
-		a.showBackground(fountain),
+    a.showBackground(fountain),
     a.text({
       en: 'And realize that you don’t know where you are.',
       ru: 'И понимаешь, что не знаешь, где находишься.'
     }),
-		a.say('Me', {
+    a.say('Me', {
       en: 'W-where am I?',
       ru: 'Г-где я?'
     }),
@@ -155,36 +156,37 @@ script({
       en: 'to myself',
       ru: 'про себя'
     }),
-		a.say('Me', {
+    a.say('Me', {
       en: '<em>It seems that to better understand what is happening here, you need to look at the code... But maybe there is something else interesting?</em>',
       ru: '<em>Кажется, чтобы лучше понять что тут происходит нужно смотреть код... Но может есть ещё что-то интересное?</em>'
     }),
     a.setMood(''),
-		a.talk('Darya', {
+    a.talk('Darya', {
       en: 'By the way, what’s your name?',
       ru: 'Кстати, а как тебя зовут?'
     }),
-		a.input(
-			{
+    a.input(
+      {
         en: 'Enter anything',
         ru: 'Введите что угодно'
       },
-			({ input, error, state, value }) => {
-				error(input.validationMessage);
+      ({ input, error, state, value }) => {
+        error(input.validationMessage);
 
-				if (!input.validationMessage) {
-					state({ name: value });
-				}
-			},
-			(input) => {
-				input.setAttribute('type', 'text');
-				input.setAttribute('minlength', '2');
-				input.setAttribute('maxlength', '46');
-			},
-		),
-		a.talk('Darya', {
-      en: 'Nice to meet you, {{name}}! And I think you already know my name.',
-      ru: 'Приятно познакомиться, {{name}}! А моё имя ты, кажется, уже знаешь.'
+        if (!input.validationMessage) {
+          // Supports only ru -> en conversion, I don't think there is a need for more
+          state({ name: { ru: value, en: iuliia.translate(value, iuliia.MOSMETRO) } });
+        }
+      },
+      (input) => {
+        input.setAttribute('type', 'text');
+        input.setAttribute('minlength', '2');
+        input.setAttribute('maxlength', '46');
+      },
+    ),
+    a.talk('Darya', {
+      en: 'Nice to meet you, {{name.en}}! And I think you already know my name.',
+      ru: 'Приятно познакомиться, {{name.ru}}! А моё имя ты, кажется, уже знаешь.'
     }),
     a.say('Me', {
       en: 'Let’s change the location, shall we?',
@@ -195,6 +197,6 @@ script({
       en: 'No problem!',
       ru: 'Без проблем!'
     }),
-		a.end(),
-	],
+    a.end(),
+  ],
 });
