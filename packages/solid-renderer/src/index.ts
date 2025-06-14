@@ -1,1 +1,1 @@
-export { createSolidRenderer } from './renderer';
+export { createRenderer, createSolidRenderer } from './renderer';
