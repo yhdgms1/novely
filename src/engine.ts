@@ -1,14 +1,14 @@
-import { novely, localStorageStorage, pauseOnBlur, EN, RU } from '@novely/core';
-import { createSolidRenderer } from '@novely/solid-renderer';
+import { novely, storageAdapterLocal, pauseOnBlur, EN, RU } from '@novely/core';
+import { createRenderer } from '@novely/solid-renderer';
 import { darya } from './assets'
 
-const { renderer } = createSolidRenderer();
+const { renderer } = createRenderer();
 
 const engine = novely({
 	askBeforeExit: false,
 	defaultTypewriterSpeed: 'Fast',
 	renderer,
-	storage: localStorageStorage({ key: 'my-game' }),
+	storage: storageAdapterLocal({ key: 'demo' }),
 	translation: {
 		en: {
 			internal: EN,

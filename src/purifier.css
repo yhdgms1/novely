@@ -1,0 +1,19 @@
+*, *::before, *::after {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  -moz-user-drag: none;
+  -ms-user-select: none;
+  user-drag: none;
+  user-select: none;
+  touch-action: none;
+  cursor: default;
+}
+
+*::selection {
+  background: transparent;
+}
+
+.action-text > span {
+  cursor: default;
+}

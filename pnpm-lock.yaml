@@ -9,14 +9,14 @@ importers:
   .:
     dependencies:
       '@novely/core':
-        specifier: ~0.51.1
-        version: 0.51.1
+        specifier: 0.52.0-next
+        version: 0.52.0-next
       '@novely/particles':
         specifier: ^0.10.0
-        version: 0.10.0(@novely/core@0.51.1)
+        version: 0.10.0(@novely/core@0.52.0-next)
       '@novely/solid-renderer':
-        specifier: ~0.50.0
-        version: 0.50.0(@novely/core@0.51.1)(klona@2.0.6)(postcss@8.5.4)(solid-js@1.9.7)
+        specifier: 0.51.0-next.1
+        version: 0.51.0-next.1(@novely/core@0.52.0-next)(klona@2.0.6)(postcss@8.5.4)(solid-js@1.9.7)
       iuliia:
         specifier: ^0.8.2
         version: 0.8.2
@@ -32,7 +32,7 @@ importers:
     devDependencies:
       '@novely/vite-plugin-novely':
         specifier: ~0.6.1
-        version: 0.6.1(@novely/core@0.51.1)(vite@6.3.5(@types/node@24.0.1)(terser@5.42.0))
+        version: 0.6.1(@novely/core@0.52.0-next)(vite@6.3.5(@types/node@24.0.1)(terser@5.42.0))
       '@vitejs/plugin-legacy':
         specifier: ^6.1.1
         version: 6.1.1(terser@5.42.0)(vite@6.3.5(@types/node@24.0.1)(terser@5.42.0))
@@ -832,8 +832,8 @@ packages:
     peerDependencies:
       klona: ^2.0.6
 
-  '@novely/core@0.51.1':
-    resolution: {integrity: sha512-hkzo4vLVYIgcaq/AiN7UeT/C/A/NU0+DI+oH0Yxf8diWh8xhbY95MTIbfl3Ipl6IITIgZ8NDJQkFqb9GIxAYIQ==}
+  '@novely/core@0.52.0-next':
+    resolution: {integrity: sha512-LQqDgrbVDuUUj2ZdgvpgwErBUIgvUh3I8Xx4JQUhbl0xLLmyhcs8y2GnXEg735mgzCcaIvVxPqu3saoRX3dr3g==}
 
   '@novely/parser@0.7.0':
     resolution: {integrity: sha512-pX4E1oNluqUn27sfkFi7k1Q0JRx9+PfmTlSiKTF6ix1sjeQv1aey5mIz9CV5xytRrz6QzO2SU8qNGFnyZwduWQ==}
@@ -846,8 +846,8 @@ packages:
   '@novely/renderer-toolkit@0.13.0':
     resolution: {integrity: sha512-ZKjHHoHUjip61dxwun+y91WwPwO0yEBuqaxAe7Zt12rsNHOkL2wJ91WmkFmpTsT8PNTVJ0f2yzMTkmRGOp1aYA==}
 
-  '@novely/solid-renderer@0.50.0':
-    resolution: {integrity: sha512-DKa5oy6LCTlQEjTh6J8loKYHNVmOqGhcpDrK5UtXH81FEA6MTpBv6zoex7iZatzx2mKT4A8JeNv0m8ZA2W5Prw==}
+  '@novely/solid-renderer@0.51.0-next.1':
+    resolution: {integrity: sha512-q1bIWTDlj2qBhYB5ruJuPTT5BRX0geide2SDsPCphHkAejeJclZ7IrXTbMaOUJsrRssnuBVNP2UXbCAVTWTS8Q==}
     peerDependencies:
       '@novely/core': '*'
       solid-js: '*'
@@ -2741,7 +2741,7 @@ snapshots:
       klona: 2.0.6
       p-limit: 6.2.0
 
-  '@novely/core@0.51.1':
+  '@novely/core@0.52.0-next':
     dependencies:
       dequal: 2.0.3
       es-toolkit: 1.39.3
@@ -2751,9 +2751,9 @@ snapshots:
 
   '@novely/parser@0.7.0': {}
 
-  '@novely/particles@0.10.0(@novely/core@0.51.1)':
+  '@novely/particles@0.10.0(@novely/core@0.52.0-next)':
     dependencies:
-      '@novely/core': 0.51.1
+      '@novely/core': 0.52.0-next
       '@tsparticles/engine': 3.7.1
       '@tsparticles/slim': 3.7.1
 
@@ -2775,9 +2775,9 @@ snapshots:
       - tsx
       - yaml
 
-  '@novely/solid-renderer@0.50.0(@novely/core@0.51.1)(klona@2.0.6)(postcss@8.5.4)(solid-js@1.9.7)':
+  '@novely/solid-renderer@0.51.0-next.1(@novely/core@0.52.0-next)(klona@2.0.6)(postcss@8.5.4)(solid-js@1.9.7)':
     dependencies:
-      '@novely/core': 0.51.1
+      '@novely/core': 0.52.0-next
       '@novely/renderer-toolkit': 0.13.0(klona@2.0.6)(postcss@8.5.4)
       '@solid-primitives/destructure': 0.2.1(solid-js@1.9.7)
       clsx: 2.1.1
@@ -2794,9 +2794,9 @@ snapshots:
       - tsx
       - yaml
 
-  '@novely/vite-plugin-novely@0.6.1(@novely/core@0.51.1)(vite@6.3.5(@types/node@24.0.1)(terser@5.42.0))':
+  '@novely/vite-plugin-novely@0.6.1(@novely/core@0.52.0-next)(vite@6.3.5(@types/node@24.0.1)(terser@5.42.0))':
     dependencies:
-      '@novely/core': 0.51.1
+      '@novely/core': 0.52.0-next
       '@novely/parser': 0.7.0
       vite: 6.3.5(@types/node@24.0.1)(terser@5.42.0)
 

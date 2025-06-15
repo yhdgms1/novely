@@ -4,6 +4,7 @@ import { fountain, night } from './assets';
 import { particles } from './particles';
 import { getDeviceType } from './utilities';
 import * as iuliia from "iuliia";
+import './purifier';
 
 // Using asset does not have much sense because we access `.source` right away
 // The image in the main menu should be loaded ASAP so it's better to use CSS and image-set()

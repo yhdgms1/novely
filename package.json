@@ -8,9 +8,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@novely/core": "~0.51.1",
+    "@novely/core": "0.52.0-next",
     "@novely/particles": "^0.10.0",
-    "@novely/solid-renderer": "~0.50.0",
+    "@novely/solid-renderer": "0.51.0-next.1",
     "iuliia": "^0.8.2",
     "modern-normalize": "~3.0.1",
     "scule": "^1.3.0",
