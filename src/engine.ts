@@ -44,7 +44,9 @@ const engine = novely({
 		name: {
 			en: '',
 			ru: ''
-		}
+		},
+		pressState: 'MISS' as ("PERFECT" | "PASS" | "MISS"),
+		pressCount: 0
 	},
 });
 

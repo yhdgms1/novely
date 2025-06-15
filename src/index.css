@@ -1,5 +1,6 @@
 @import "modern-normalize";
 @import "@novely/solid-renderer/dist/styles/index.css";
+@import '@novely/moment-presser/style.css';
 
 /* Character animation */
 

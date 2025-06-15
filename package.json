@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@novely/core": "0.52.0-next",
+    "@novely/moment-presser": "^0.3.0",
     "@novely/particles": "^0.10.0",
     "@novely/solid-renderer": "0.51.0-next.1",
     "iuliia": "^0.8.2",

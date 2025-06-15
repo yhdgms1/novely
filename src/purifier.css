@@ -17,3 +17,7 @@
 .action-text > span {
   cursor: default;
 }
+
+.moment-presser-button {
+  cursor: default;
+}

@@ -186,18 +186,77 @@ script({
       },
     ),
     a.talk('Darya', {
-      en: 'Nice to meet you, {{name.en}}! And I think you already know my name.',
-      ru: 'Приятно познакомиться, {{name.ru}}! А моё имя ты, кажется, уже знаешь.'
-    }),
-    a.say('Me', {
-      en: 'Let’s change the location, shall we?',
-      ru: 'Давай, может, сменим локацию?'
+      en: 'Nice to meet you, {{name.en}}! Now let’s try something interesting.',
+      ru: 'Приятно познакомиться, {{name.ru}}! А давай теперь попробуем кое-что интересное?'
     }),
     a.showBackground(night),
     a.talk('Darya', {
-      en: 'No problem!',
-      ru: 'Без проблем!'
+      en: 'When the moving indicator gets into the highlighted area, press "Stop"! Are you ready?',
+      ru: 'Когда двигающийся индикатор попадёт в выделенную зону — нажимай "Стоп"! Готов(-а)?'
     }),
-    a.end(),
+    a.say('Me', {
+      en: 'More than ever!',
+      ru: 'Как никогда!'
+    }),
+    a.jump('scene_2'),
   ],
+  scene_2: [
+    a.showBackground(night),
+    a.momentPresser((state, pressState) => state({ pressState })),
+    a.condition((state) => state.pressState, {
+      'MISS': [
+        a.function(({ state }) => state({ pressCount: state().pressCount + 1 })),
+        a.condition((state) => state.pressCount >= 3, {
+          'true': [
+            a.talk('Darya', {
+              en: 'Okay, enough trying.',
+              ru: 'Ладно, хватит попыток.'
+            }),
+            a.function(({ state }) => state({ pressCount: 0 })),
+            a.jump('scene_3')
+          ],
+          'false': [
+            a.talk('Darya', {
+              en: 'Try again. I believe in you!',
+              ru: 'Попробуй ещё раз. Я верю в тебя!'
+            }),
+            a.block('scene_2')
+          ]
+        })
+      ],
+      'PASS': [
+        a.talk('Darya', {
+          en: 'Nice! That was almost perfect.',
+          ru: 'Хорошо! Почти идеально.'
+        }),
+        a.function(({ state }) => state({ pressCount: 0 })),
+        a.jump('scene_3')
+      ],
+      'PERFECT': [
+        a.talk('Darya', {
+          en: 'Wow! That was perfect!',
+          ru: 'Ух ты! Это было идеально!'
+        }),
+        a.function(({ state }) => state({ pressCount: 0 })),
+        a.jump('scene_3')
+      ],
+    })
+  ],
+  scene_3: [
+    a.showBackground(fountain),
+    a.showParticles(particles),
+    a.say('Me', {
+      en: 'Was it supposed to be interesting?',
+      ru: 'Это должно было быть интересно?'
+    }),
+    // too long and boring
+    a.talk('Darya', {
+      en: 'If you miss, you can try again, and if you miss three times, you move on. And if you hit it, you get praised. And that’s only 41 lines of code!',
+      ru: 'Заметь — не попадаешь, то можешь попробовать снова, а если не попадаешь три раза, то проходишь дальше. А если попал тебя ещё и хвалят. И это всего 41 строчка кода!'
+    }),
+    a.talk('Darya', {
+      en: 'But that’s not the important thing. What’s important is that both the particles behind me and this mini-game where you have to press at the right time are not part of the engine, but are connected separately.',
+      ru: 'Но важно не это. А то, что и частицы за моей спиной, и эта мини-игра где нужно нажать вовремя не входят в основную часть движка, а подключаются отдельно.'
+    }),
+  ]
 });

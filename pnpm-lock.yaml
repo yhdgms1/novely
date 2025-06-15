@@ -11,6 +11,9 @@ importers:
       '@novely/core':
         specifier: 0.52.0-next
         version: 0.52.0-next
+      '@novely/moment-presser':
+        specifier: ^0.3.0
+        version: 0.3.0(@novely/core@0.52.0-next)
       '@novely/particles':
         specifier: ^0.10.0
         version: 0.10.0(@novely/core@0.52.0-next)
@@ -834,6 +837,11 @@ packages:
 
   '@novely/core@0.52.0-next':
     resolution: {integrity: sha512-LQqDgrbVDuUUj2ZdgvpgwErBUIgvUh3I8Xx4JQUhbl0xLLmyhcs8y2GnXEg735mgzCcaIvVxPqu3saoRX3dr3g==}
+
+  '@novely/moment-presser@0.3.0':
+    resolution: {integrity: sha512-DqznYvyMmeNLjmdRNPD99QQhUrm04hCfy6JppvZt6B0lxj3HXoES9WJH/LQVm2jCuRJmiNU9wDSOgzz8EMPZkA==}
+    peerDependencies:
+      '@novely/core': '*'
 
   '@novely/parser@0.7.0':
     resolution: {integrity: sha512-pX4E1oNluqUn27sfkFi7k1Q0JRx9+PfmTlSiKTF6ix1sjeQv1aey5mIz9CV5xytRrz6QzO2SU8qNGFnyZwduWQ==}
@@ -2748,6 +2756,10 @@ snapshots:
       esm-env: 1.2.2
       klona: 2.0.6
       p-limit: 6.2.0
+
+  '@novely/moment-presser@0.3.0(@novely/core@0.52.0-next)':
+    dependencies:
+      '@novely/core': 0.52.0-next
 
   '@novely/parser@0.7.0': {}
 
