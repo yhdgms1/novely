@@ -1,13 +1,13 @@
-import { EN, localStorageStorage, novely } from '@novely/core';
-import { createSolidRenderer } from '@novely/solid-renderer';
+import { EN, storageAdapterLocal, novely } from '@novely/core';
+import { createRenderer } from '@novely/solid-renderer';
 
 import lily from './assets/lily.png';
 
-const { renderer } = createSolidRenderer();
+const { renderer } = createRenderer();
 
 const engine = novely({
 	renderer,
-	storage: localStorageStorage({ key: 'my-game' }),
+	storage: storageAdapterLocal({ key: 'my-game' }),
 	translation: {
 		en: {
 			internal: EN,

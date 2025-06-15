@@ -1,12 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { blue, red, reset, yellow } from 'kolorist';
+import { blue, red, reset } from 'kolorist';
 import prompts from 'prompts';
 
 async function main() {
 	let cancelled = false;
 
-	const { projectName, framework } = await prompts(
+	const { projectName, template } = await prompts(
 		[
 			{
 				type: 'text',
@@ -16,16 +16,12 @@ async function main() {
 			},
 			{
 				type: 'select',
-				name: 'framework',
-				message: reset('Select a framework:'),
+				name: 'template',
+				message: reset('Select a template:'),
 				choices: [
 					{
 						title: blue('SolidJS'),
 						value: 'solid-js',
-					},
-					{
-						title: `${blue('SolidJS')} + ${yellow('YandexGames')}`,
-						value: 'solid-js-yagames',
 					},
 				],
 				initial: 0,
@@ -52,7 +48,7 @@ async function main() {
 
 	fs.mkdirSync(directory, { recursive: true });
 
-	copyDir(path.resolve(root, `./template-${framework}`), directory);
+	copyDir(path.resolve(root, `./template-${template}`), directory);
 	editFile(path.join(directory, 'package.json'), (content) => {
 		const parsed = JSON.parse(content);
 
