@@ -35,7 +35,7 @@ export type {
 	CustomActionHandle,
 	RendererInitPreviewReturn,
 } from './renderer';
-export type { NovelyStorage } from './storage';
+export type { StorageAdapter } from './storage';
 export type {
 	Thenable,
 	Path,
@@ -73,7 +73,7 @@ export type {
 } from './type-utils';
 
 export { novely } from './novely';
-export { localStorageStorage } from './storage';
+export { storageAdapterLocal } from './storage';
 export { extendAction } from './extend-actions';
 
 export { RU, EN } from './translations';

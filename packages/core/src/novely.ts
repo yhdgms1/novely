@@ -20,7 +20,7 @@ import { getCustomActionHolder, handleCustomAction } from './custom-action';
 import { enqueueAssetForPreloading, handleAssetsPreloading, huntAssets } from './preloading';
 import type { Context, RendererInitPreviewReturn } from './renderer';
 import { PRELOADED_ASSETS, STACK_MAP } from './shared';
-import { localStorageStorage } from './storage';
+import { storageAdapterLocal } from './storage';
 import type { Stored } from './store';
 import { derive, store } from './store';
 import { flattenAllowedContent, replace as replaceTranslation } from './translation';
@@ -83,7 +83,7 @@ const novely = <
 	characters,
 	characterAssetSizes = {},
 	defaultEmotions = {},
-	storage = localStorageStorage({ key: 'novely-game-storage' }),
+	storage = storageAdapterLocal({ key: 'novely-game-storage' }),
 	storageDelay = Promise.resolve(),
 	renderer: createRenderer,
 	initialScreen = 'mainmenu',
@@ -92,7 +92,7 @@ const novely = <
 	data: defaultData = {} as $Data,
 	autosaves = true,
 	migrations = [],
-	throttleTimeout = 799,
+	throttleTimeout = 850,
 	getLanguage = defaultGetLanguage,
 	overrideLanguage = false,
 	askBeforeExit = true,

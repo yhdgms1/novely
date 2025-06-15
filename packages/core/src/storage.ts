@@ -1,21 +1,24 @@
 import type { StorageData } from './types';
 
-type LocalStorageStorageSettings = {
-	key: string;
-};
-
-type NovelyStorage = {
+type StorageAdapter = {
 	get: () => Promise<StorageData>;
 	set: (data: StorageData) => Promise<void>;
 };
 
-const localStorageStorage = (options: LocalStorageStorageSettings): NovelyStorage => {
+type StorageAdapterLocalOptions = {
+	key: string;
+};
+
+/**
+ * Stores data in localStorage
+ */
+const storageAdapterLocal = ({ key }: StorageAdapterLocalOptions): StorageAdapter => {
 	return {
 		async get() {
 			const fallback = { saves: [], data: {}, meta: [] };
 
 			try {
-				const value = localStorage.getItem(options.key);
+				const value = localStorage.getItem(key);
 
 				return value ? JSON.parse(value) : fallback;
 			} catch {
@@ -24,11 +27,11 @@ const localStorageStorage = (options: LocalStorageStorageSettings): NovelyStorag
 		},
 		async set(data) {
 			try {
-				localStorage.setItem(options.key, JSON.stringify(data));
+				localStorage.setItem(key, JSON.stringify(data));
 			} catch {}
 		},
 	};
 };
 
-export type { NovelyStorage };
-export { localStorageStorage };
+export type { StorageAdapter };
+export { storageAdapterLocal };

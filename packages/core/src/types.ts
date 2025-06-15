@@ -1,7 +1,7 @@
 import type { DefaultActionProxy, Story, ValidAction } from './action';
 import type { Character } from './character';
 import type { Renderer, RendererInit } from './renderer';
-import type { NovelyStorage } from './storage';
+import type { StorageAdapter } from './storage';
 import type { Pluralization, TranslationActions } from './translation';
 import type { BaseTranslationStrings } from './translations';
 import type { getLanguage as defaultGetLanguage } from './utilities';
@@ -279,9 +279,9 @@ interface NovelyInit<
 	characterAssetSizes?: CharacterAssetSizes<NoInfer<$Characters>>;
 	/**
 	 * An object that provides access to the game's storage system.
-	 * @default localStorage // at key `novely-game-storage`
+	 * @default storageAdapterLocal({ key: 'novely-game-storage' })
 	 */
-	storage?: NovelyStorage;
+	storage?: StorageAdapter;
 	/**
 	 * Delay loading data until Promise is resolved
 	 */
@@ -342,7 +342,7 @@ interface NovelyInit<
 	migrations?: Migration[];
 	/**
 	 * For saves Novely uses `throttle` function. This might be needed if you want to control frequency of saves to the storage
-	 * @default 799
+	 * @default 850
 	 */
 	throttleTimeout?: number;
 	/**
