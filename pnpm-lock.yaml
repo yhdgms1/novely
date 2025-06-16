@@ -79,46 +79,18 @@ importers:
   packages/create-novely/template-solid-js:
     dependencies:
       '@novely/core':
-        specifier: ~0.49.0
-        version: 0.49.0(klona@2.0.6)
+        specifier: ~0.51.1
+        version: 0.51.1
       '@novely/solid-renderer':
-        specifier: ~0.47.0
-        version: 0.47.0(@novely/core@0.49.0(klona@2.0.6))(klona@2.0.6)(postcss@8.5.3)(solid-js@1.9.4)
+        specifier: ~0.50.0
+        version: 0.50.0(@novely/core@0.51.1)(klona@2.0.6)(postcss@8.5.3)(solid-js@1.9.4)
       modern-normalize:
         specifier: ~3.0.1
         version: 3.0.1
-      solid-js:
-        specifier: ~1.9.4
-        version: 1.9.4
     devDependencies:
       '@novely/vite-plugin-novely':
         specifier: ~0.6.1
-        version: 0.6.1(@novely/core@0.49.0(klona@2.0.6))(vite@6.3.3(@types/node@22.10.10)(lightningcss@1.29.1))
-      vite:
-        specifier: ~6.3.3
-        version: 6.3.3(@types/node@22.10.10)(lightningcss@1.29.1)
-
-  packages/create-novely/template-solid-js-yagames:
-    dependencies:
-      '@novely/core':
-        specifier: ~0.49.0
-        version: 0.49.0(klona@2.0.6)
-      '@novely/solid-renderer':
-        specifier: ~0.47.0
-        version: 0.47.0(@novely/core@0.49.0(klona@2.0.6))(klona@2.0.6)(postcss@8.5.3)(solid-js@1.9.4)
-      modern-normalize:
-        specifier: ~3.0.1
-        version: 3.0.1
-      solid-js:
-        specifier: ~1.9.4
-        version: 1.9.4
-    devDependencies:
-      '@novely/vite-plugin-novely':
-        specifier: ~0.6.1
-        version: 0.6.1(@novely/core@0.49.0(klona@2.0.6))(vite@6.3.3(@types/node@22.10.10)(lightningcss@1.29.1))
-      '@vitejs/plugin-basic-ssl':
-        specifier: ^1.2.0
-        version: 1.2.0(vite@6.3.3(@types/node@22.10.10)(lightningcss@1.29.1))
+        version: 0.6.1(@novely/core@0.51.1)(vite@6.3.3(@types/node@22.10.10)(lightningcss@1.29.1))
       vite:
         specifier: ~6.3.3
         version: 6.3.3(@types/node@22.10.10)(lightningcss@1.29.1)
@@ -225,9 +197,6 @@ importers:
       '@novely/particles':
         specifier: workspace:*
         version: link:../particles
-      '@novely/rive':
-        specifier: workspace:*
-        version: link:../rive
       '@novely/solid-renderer':
         specifier: workspace:*
         version: link:../solid-renderer
@@ -268,22 +237,6 @@ importers:
       simple-web-audio:
         specifier: ^0.9.0
         version: 0.9.0(postcss@8.5.3)
-    devDependencies:
-      tsup:
-        specifier: ^8.3.6
-        version: 8.3.6(postcss@8.5.3)(typescript@5.7.3)
-      typescript:
-        specifier: ^5.7.3
-        version: 5.7.3
-
-  packages/rive:
-    dependencies:
-      '@novely/core':
-        specifier: workspace:*
-        version: link:../core
-      '@rive-app/canvas':
-        specifier: ^2.25.7
-        version: 2.25.7
     devDependencies:
       tsup:
         specifier: ^8.3.6
@@ -866,30 +819,30 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@novely/core@0.47.2':
-    resolution: {integrity: sha512-kmUkX6RYWuKNwNYuvfW6plvsBFXwqgEmhsJa55EzvmTmmsVO9PrZogiRyeKm3Kdms1HmU/+LP5TX6zHrrWov/w==}
-    peerDependencies:
-      klona: ^2.0.6
-
   '@novely/core@0.49.0':
     resolution: {integrity: sha512-6Ei/XbqjgtA9XCf9e9HCgwOERsJnbexY1Z/dwmuQBf1ezftRz/Re3wQ/aemGrJfxx6ZnY5ScxXSA2LcCqdit8g==}
     peerDependencies:
       klona: ^2.0.6
 
+  '@novely/core@0.50.0':
+    resolution: {integrity: sha512-TEf+Tc2W56OcI7Y729MfMJqrNx/L++PfV+zid1ww5JSL3NLOoPAxwM5zYLtus6DvXW4HEPE1km5p8wpR/W+jsg==}
+    peerDependencies:
+      klona: ^2.0.6
+
+  '@novely/core@0.51.1':
+    resolution: {integrity: sha512-hkzo4vLVYIgcaq/AiN7UeT/C/A/NU0+DI+oH0Yxf8diWh8xhbY95MTIbfl3Ipl6IITIgZ8NDJQkFqb9GIxAYIQ==}
+
   '@novely/parser@0.7.0':
     resolution: {integrity: sha512-pX4E1oNluqUn27sfkFi7k1Q0JRx9+PfmTlSiKTF6ix1sjeQv1aey5mIz9CV5xytRrz6QzO2SU8qNGFnyZwduWQ==}
 
-  '@novely/renderer-toolkit@0.12.1':
-    resolution: {integrity: sha512-kNEizqP4i+HOBJFJKigKDWLgUjKG0Mkj1JgEMfVcniDNssRcZRQZI9hsojkiyMBlm4/+7PQAKJamfQSHaOT0vw==}
+  '@novely/renderer-toolkit@0.13.0':
+    resolution: {integrity: sha512-ZKjHHoHUjip61dxwun+y91WwPwO0yEBuqaxAe7Zt12rsNHOkL2wJ91WmkFmpTsT8PNTVJ0f2yzMTkmRGOp1aYA==}
 
-  '@novely/solid-renderer@0.47.0':
-    resolution: {integrity: sha512-gn7gCn8opcSWnTknfHtjmRGpMGznes87RZpcNiYqOYQVH8yLNaPT/Wx3gUqYSmSz0aXOBxTwfkbC3mTcwg9wrw==}
+  '@novely/solid-renderer@0.50.0':
+    resolution: {integrity: sha512-DKa5oy6LCTlQEjTh6J8loKYHNVmOqGhcpDrK5UtXH81FEA6MTpBv6zoex7iZatzx2mKT4A8JeNv0m8ZA2W5Prw==}
     peerDependencies:
       '@novely/core': '*'
       solid-js: '*'
-
-  '@novely/typewriter@0.5.1':
-    resolution: {integrity: sha512-+/ktuW0h0hSjrZ/CxvrLn91nobBXFTMHdtZsoRGDbo1vsqFfE5IqEUtuH0Q9r2to72WZ8ib4hyLtcnUSn8+IlA==}
 
   '@novely/vite-plugin-novely@0.6.1':
     resolution: {integrity: sha512-3bVrvjDcNZoCL2JZIFpalfXt7cN49BDFnS3mvVoYU2LaHVrrW6CmQ7LfaMpy2+MKXUUjxQ85nCU0Q+DlyuUNig==}
@@ -900,9 +853,6 @@ packages:
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
-
-  '@rive-app/canvas@2.25.7':
-    resolution: {integrity: sha512-cxC9MrjaYw6VBtZFyXHvwXukERSsdrQP9/48rQkaBysS3+WQbv5XQRzgxFsaj4sYWUgoZu57vHa27o6ktSrY7g==}
 
   '@rollup/rollup-android-arm-eabi@4.32.0':
     resolution: {integrity: sha512-G2fUQQANtBPsNwiVFg4zKiPQyjVKZCUdQUol53R8E71J7AsheRMV/Yv/nB8giOcOVqP7//eB5xPqieBYZe9bGg==}
@@ -1238,12 +1188,6 @@ packages:
 
   '@types/prompts@2.4.9':
     resolution: {integrity: sha512-qTxFi6Buiu8+50/+3DGIWLHM6QuWsEKugJnnP6iv2Mc4ncxE4A/OJkjuVOA+5X0X1S/nq5VJRa8Lu+nwcvbrKA==}
-
-  '@vitejs/plugin-basic-ssl@1.2.0':
-    resolution: {integrity: sha512-mkQnxTkcldAzIsomk1UuLfAu9n+kpQ3JbHcpCp7d2Oo6ITtji8pHS3QToOWjhPFvNQSnhlkAjmGbhv2QvwO/7Q==}
-    engines: {node: '>=14.21.3'}
-    peerDependencies:
-      vite: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0
 
   animate.css@4.1.1:
     resolution: {integrity: sha512-+mRmCTv6SbCmtYJCN4faJMNFVNN5EuCTTprDTAo7YzIGji2KADmakjVA3+8mVDkZ2Bf09vayB35lSQIex2+QaQ==}
@@ -1717,9 +1661,6 @@ packages:
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
-
-  simple-web-audio@0.8.0:
-    resolution: {integrity: sha512-/iv8kA1Gt51Wml5/VLGCnklfpWhqBX9YBluxc+xwkCKxh6cQuirIAtqYvO12XYgTFCfK0R63jPPYKjcPJIT1zw==}
 
   simple-web-audio@0.9.0:
     resolution: {integrity: sha512-nVoMJiF3Iv/CP/EPFarL/w+6eZfX+VOob65SpNkDxG1xrh0VpJ8bzaQQrEid3CQGWwNxA44XBM+PZDe7Hf55Sg==}
@@ -2306,7 +2247,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@novely/core@0.47.2(klona@2.0.6)':
+  '@novely/core@0.49.0(klona@2.0.6)':
     dependencies:
       dequal: 2.0.3
       es-toolkit: 1.31.0
@@ -2314,7 +2255,15 @@ snapshots:
       klona: 2.0.6
       p-limit: 6.2.0
 
-  '@novely/core@0.49.0(klona@2.0.6)':
+  '@novely/core@0.50.0(klona@2.0.6)':
+    dependencies:
+      dequal: 2.0.3
+      es-toolkit: 1.31.0
+      esm-env: 1.2.2
+      klona: 2.0.6
+      p-limit: 6.2.0
+
+  '@novely/core@0.51.1':
     dependencies:
       dequal: 2.0.3
       es-toolkit: 1.31.0
@@ -2324,14 +2273,14 @@ snapshots:
 
   '@novely/parser@0.7.0': {}
 
-  '@novely/renderer-toolkit@0.12.1(klona@2.0.6)(postcss@8.5.3)':
+  '@novely/renderer-toolkit@0.13.0(klona@2.0.6)(postcss@8.5.3)':
     dependencies:
-      '@novely/core': 0.47.2(klona@2.0.6)
+      '@novely/core': 0.50.0(klona@2.0.6)
       dequal: 2.0.3
       esm-env: 1.2.2
       nanostores: 0.11.3
       p-limit: 6.2.0
-      simple-web-audio: 0.8.0(postcss@8.5.3)
+      simple-web-audio: 0.9.0(postcss@8.5.3)
     transitivePeerDependencies:
       - '@microsoft/api-extractor'
       - '@swc/core'
@@ -2342,11 +2291,10 @@ snapshots:
       - tsx
       - yaml
 
-  '@novely/solid-renderer@0.47.0(@novely/core@0.49.0(klona@2.0.6))(klona@2.0.6)(postcss@8.5.3)(solid-js@1.9.4)':
+  '@novely/solid-renderer@0.50.0(@novely/core@0.51.1)(klona@2.0.6)(postcss@8.5.3)(solid-js@1.9.4)':
     dependencies:
-      '@novely/core': 0.49.0(klona@2.0.6)
-      '@novely/renderer-toolkit': 0.12.1(klona@2.0.6)(postcss@8.5.3)
-      '@novely/typewriter': 0.5.1
+      '@novely/core': 0.51.1
+      '@novely/renderer-toolkit': 0.13.0(klona@2.0.6)(postcss@8.5.3)
       '@solid-primitives/destructure': 0.2.0(solid-js@1.9.4)
       clsx: 2.1.1
       es-toolkit: 1.31.0
@@ -2362,18 +2310,14 @@ snapshots:
       - tsx
       - yaml
 
-  '@novely/typewriter@0.5.1': {}
-
-  '@novely/vite-plugin-novely@0.6.1(@novely/core@0.49.0(klona@2.0.6))(vite@6.3.3(@types/node@22.10.10)(lightningcss@1.29.1))':
+  '@novely/vite-plugin-novely@0.6.1(@novely/core@0.51.1)(vite@6.3.3(@types/node@22.10.10)(lightningcss@1.29.1))':
     dependencies:
-      '@novely/core': 0.49.0(klona@2.0.6)
+      '@novely/core': 0.51.1
       '@novely/parser': 0.7.0
       vite: 6.3.3(@types/node@22.10.10)(lightningcss@1.29.1)
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
-
-  '@rive-app/canvas@2.25.7': {}
 
   '@rollup/rollup-android-arm-eabi@4.32.0':
     optional: true
@@ -2698,10 +2642,6 @@ snapshots:
     dependencies:
       '@types/node': 22.10.10
       kleur: 3.0.3
-
-  '@vitejs/plugin-basic-ssl@1.2.0(vite@6.3.3(@types/node@22.10.10)(lightningcss@1.29.1))':
-    dependencies:
-      vite: 6.3.3(@types/node@22.10.10)(lightningcss@1.29.1)
 
   animate.css@4.1.1: {}
 
@@ -3134,20 +3074,6 @@ snapshots:
   shebang-regex@3.0.0: {}
 
   signal-exit@4.1.0: {}
-
-  simple-web-audio@0.8.0(postcss@8.5.3):
-    dependencies:
-      p-limit: 6.2.0
-      tsup: 8.3.6(postcss@8.5.3)(typescript@5.7.3)
-      typescript: 5.7.3
-    transitivePeerDependencies:
-      - '@microsoft/api-extractor'
-      - '@swc/core'
-      - jiti
-      - postcss
-      - supports-color
-      - tsx
-      - yaml
 
   simple-web-audio@0.9.0(postcss@8.5.3):
     dependencies:

@@ -24,8 +24,6 @@
 		"build:parser": "pnpm --filter=@novely/parser... --parallel build",
 		"dev:vite-plugin-novely": "pnpm --filter=@novely/vite-plugin-novely... --parallel dev",
 		"build:vite-plugin-novely": "pnpm --filter=@novely/vite-plugin-novely... --parallel build",
-		"dev:rive": "pnpm --filter=@novely/rive... --parallel dev",
-		"build:rive": "pnpm --filter=@novely/rive... --parallel build",
 		"dev:toolkit": "pnpm --filter=@novely/renderer-toolkit... --parallel dev",
 		"build:toolkit": "pnpm --filter=@novely/renderer-toolkit... --parallel build",
 		"dev:moment-presser": "pnpm --filter=@novely/moment-presser... --parallel dev",

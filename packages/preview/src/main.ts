@@ -17,8 +17,6 @@ import { createSolidRenderer } from '@novely/solid-renderer';
 import { hideParticles, showParticles } from '@novely/particles';
 import { snow } from './particles';
 
-import { animate, hide as hideRive, remove, show } from '@novely/rive';
-
 import '@novely/moment-presser/style.css';
 import { createMomentPresser } from '@novely/moment-presser';
 import type { CreateMomentPresserOptions } from '@novely/moment-presser';
@@ -228,28 +226,6 @@ pauseOnBlur(engine);
 false &&
 	engine.script({
 		start: [action.showBackground(outdoor), action.dialog('Lily', 'HELLO'), action.jump('part_2')],
-	});
-
-false &&
-	engine.script({
-		start: [
-			action.playMusic(sakura_girl),
-			action.particles(snow),
-			action.showBackground(outdoor),
-			show('car', ({ init }) => {
-				init({
-					src: 'https://cdn.rive.app/animations/vehicles.riv',
-				});
-			}),
-			animate('car', 'curves'),
-			action.text('Bounce'),
-			animate('car', 'bounce'),
-			action.text('What about idle?'),
-			animate('car', 'idle'),
-			action.text('Go now'),
-			remove('car'),
-			action.text('The end?'),
-		],
 	});
 
 true &&
