@@ -1,6 +1,6 @@
 import type { CustomHandler } from '@novely/core';
 import type { Application } from '@pixi/app';
-import type { InternalModel, Live2DModel, Cubism2Spec } from 'pixi-live2d-display';
+import type { InternalModel, Live2DModel, CubismSpec } from 'pixi-live2d-display';
 import { initialize, runtime, library, fetchLibrary } from './loading';
 
 const LIVE2D_ID = Symbol();
@@ -14,7 +14,7 @@ type Data = {
 		  }>;
 };
 
-const addCubismModel = (key: string, from: string | (Cubism2Spec.ModelJSON & { url: string })) => {
+const addCubismModel = (key: string, from: string | (CubismSpec.ModelJSON & { url: string })) => {
 	const handler: CustomHandler = async ({ clear, data, getDomNodes, paused, flags: { goingBack, preview } }) => {
 		fetchLibrary();
 
@@ -46,7 +46,7 @@ const addCubismModel = (key: string, from: string | (Cubism2Spec.ModelJSON & { u
 
 		await runtime;
 
-		const { Live2DModel, Cubism2ModelSettings } = await library;
+		const { Live2DModel, Cubism4ModelSettings } = await library;
 		const { app, map } = await data<Data>().async!;
 
 		clear(() => {
@@ -54,7 +54,7 @@ const addCubismModel = (key: string, from: string | (Cubism2Spec.ModelJSON & { u
 			// app.destroy()
 		});
 
-		const model = await Live2DModel.from(typeof from === 'string' ? from : new Cubism2ModelSettings(from));
+		const model = await Live2DModel.from(typeof from === 'string' ? from : new Cubism4ModelSettings(from));
 
 		map.set(key, model);
 
