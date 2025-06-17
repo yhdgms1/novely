@@ -23,15 +23,15 @@ initialize({
 	runtimeURL: '/live2dcubismcore.js',
 	runtimeFetch: (fetch) => {
 		requestIdleCallback(fetch, {
-			timeout: 1000
+			timeout: 1000,
 		});
 	},
 	libraryFetch: (fetch) => {
 		requestIdleCallback(fetch, {
-			timeout: 1500
+			timeout: 1500,
 		});
-	}
-})
+	},
+});
 
 import '@novely/moment-presser/style.css';
 import { createMomentPresser } from '@novely/moment-presser';
@@ -529,10 +529,17 @@ false &&
 		],
 	});
 
-true && engine.script({
-	start: [
-		action.showBackground(outdoor),
-		action.custom(addModel('haru', (f) => f('https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/haru/haru_greeter_t03.model3.json'))),
-		action.say('Lily', 'Привет!'),
-	]
-})
+true &&
+	engine.script({
+		start: [
+			action.showBackground(outdoor),
+			action.custom(
+				addModel('haru', (f) =>
+					f(
+						'https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/haru/haru_greeter_t03.model3.json',
+					),
+				),
+			),
+			action.say('Lily', 'Привет!'),
+		],
+	});
