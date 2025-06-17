@@ -20,6 +20,7 @@
 		"@novely/moment-presser": "workspace:*",
 		"@novely/particles": "workspace:*",
 		"@novely/solid-renderer": "workspace:*",
+		"@novely/live2d": "workspace:*",
 		"animate.css": "^4.1.1",
 		"modern-normalize": "~3.0.1"
 	}

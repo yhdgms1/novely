@@ -12,10 +12,26 @@ import {
 	pauseOnBlur,
 } from '@novely/core';
 import { adapterLocalStorage, cloneFunction, flexStorage } from '@novely/flex-storage';
-import { createSolidRenderer } from '@novely/solid-renderer';
+import { createRenderer } from '@novely/solid-renderer';
 
 import { hideParticles, showParticles } from '@novely/particles';
 import { snow } from './particles';
+
+import { initialize, addModel } from '@novely/live2d';
+
+initialize({
+	runtimeURL: '/live2dcubismcore.js',
+	runtimeFetch: (fetch) => {
+		requestIdleCallback(fetch, {
+			timeout: 1000
+		});
+	},
+	libraryFetch: (fetch) => {
+		requestIdleCallback(fetch, {
+			timeout: 1500
+		});
+	}
+})
 
 import '@novely/moment-presser/style.css';
 import { createMomentPresser } from '@novely/moment-presser';
@@ -40,7 +56,7 @@ import sakura_girl from './assets/sakura_girl.mp3';
 
 import narrator0000 from './assets/narrator0000.mp3';
 
-const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidRenderer({
+const { emitter, renderer, registerScreen, registerMainmenuItem } = createRenderer({
 	fullscreen: false,
 });
 
@@ -228,7 +244,7 @@ false &&
 		start: [action.showBackground(outdoor), action.dialog('Lily', 'HELLO'), action.jump('part_2')],
 	});
 
-true &&
+false &&
 	engine.script({
 		start: [
 			action.particles(snow),
@@ -512,3 +528,11 @@ false &&
 			action.say('Lily', 'End'),
 		],
 	});
+
+true && engine.script({
+	start: [
+		action.showBackground(outdoor),
+		action.custom(addModel('haru', (f) => f('https://cdn.jsdelivr.net/gh/guansss/pixi-live2d-display/test/assets/haru/haru_greeter_t03.model3.json'))),
+		action.say('Lily', 'Привет!'),
+	]
+})

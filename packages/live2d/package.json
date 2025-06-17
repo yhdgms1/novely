@@ -1,0 +1,64 @@
+{
+	"name": "@novely/live2d",
+	"description": "Using live2d",
+	"version": "0.1.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"default": "./dist/index.js"
+		},
+		"./live2dcubismcore.js": "./dist/live2dcubismcore.min.js",
+		"./*": "./dist/*",
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"dev": "tsup --watch --dts",
+		"build": "tsup --dts"
+	},
+	"dependencies": {
+		"@novely/core": "workspace:>=0.51.0",
+		"@pixi/app": "^6.5.10",
+		"@pixi/constants": "6.5.10",
+		"@pixi/core": "^6.5.10",
+		"@pixi/extensions": "6.5.10",
+		"@pixi/interaction": "^6.5.10",
+		"@pixi/math": "6.5.10",
+		"@pixi/runner": "6.5.10",
+		"@pixi/settings": "6.5.10",
+		"@pixi/ticker": "^6.5.10",
+		"@pixi/utils": "6.5.10",
+		"pixi-live2d-display": "^0.4.0"
+	},
+	"devDependencies": {
+		"tsup": "^8.3.6",
+		"typescript": "^5.7.3"
+	},
+	"peerDependencies": {
+		"@novely/core": "*"
+	},
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/yhdgms1/novely/issues"
+	},
+	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/live2d",
+	"keywords": [
+		"novely"
+	],
+	"author": {
+		"name": "Artemiy Schukin",
+		"url": "https://github.com/yhdgms1"
+	},
+	"contributors": [],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/yhdgms1/novely.git"
+	},
+	"files": [
+		"dist/*"
+	]
+}

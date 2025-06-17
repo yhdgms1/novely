@@ -26,6 +26,8 @@
 		"build:vite-plugin-novely": "pnpm --filter=@novely/vite-plugin-novely... --parallel build",
 		"dev:toolkit": "pnpm --filter=@novely/renderer-toolkit... --parallel dev",
 		"build:toolkit": "pnpm --filter=@novely/renderer-toolkit... --parallel build",
+		"dev:live2d": "pnpm --filter=@novely/live2d... --parallel dev",
+		"build:live2d": "pnpm --filter=@novely/live2d... --parallel build",
 		"dev:moment-presser": "pnpm --filter=@novely/moment-presser... --parallel dev",
 		"build:moment-presser": "pnpm --filter=@novely/moment-presser... --parallel build",
 		"dev:flex-storage": "pnpm --filter=@novely/flex-storage... --parallel dev",
