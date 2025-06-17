@@ -9,7 +9,6 @@
 			"import": "./dist/index.js",
 			"default": "./dist/index.js"
 		},
-		"./live2dcubismcore.js": "./dist/live2dcubismcore.min.js",
 		"./*": "./dist/*",
 		"./package.json": "./package.json"
 	},
