@@ -1,11 +1,9 @@
 import type { CustomHandler } from '@novely/core';
-import type { getModel as GetModelFn, Application } from './pixi-live2d';
-import type { InternalModel, Live2DModel } from 'pixi-live2d-display';
+import type { Application } from '@pixi/app';
+import type { InternalModel, Live2DModel, Cubism2Spec } from 'pixi-live2d-display';
 import { initialize, runtime, library, fetchLibrary } from './loading';
 
 const LIVE2D_ID = Symbol();
-
-type GetModelFromCallback = (from: typeof GetModelFn) => ReturnType<typeof GetModelFn>;
 
 type Data = {
 	async:
@@ -16,7 +14,7 @@ type Data = {
 		  }>;
 };
 
-const addModel = (key: string, get: GetModelFromCallback) => {
+const addCubismModel = (key: string, from: string | (Cubism2Spec.ModelJSON & { url: string })) => {
 	const handler: CustomHandler = async ({ clear, data, getDomNodes, paused, flags: { goingBack, preview } }) => {
 		fetchLibrary();
 
@@ -48,7 +46,7 @@ const addModel = (key: string, get: GetModelFromCallback) => {
 
 		await runtime;
 
-		const { getModel } = await library;
+		const { Live2DModel, Cubism2ModelSettings } = await library;
 		const { app, map } = await data<Data>().async!;
 
 		clear(() => {
@@ -56,7 +54,7 @@ const addModel = (key: string, get: GetModelFromCallback) => {
 			// app.destroy()
 		});
 
-		const model = await get(getModel);
+		const model = await Live2DModel.from(typeof from === 'string' ? from : new Cubism2ModelSettings(from));
 
 		map.set(key, model);
 
@@ -71,4 +69,4 @@ const addModel = (key: string, get: GetModelFromCallback) => {
 	return handler;
 };
 
-export { initialize, addModel };
+export { initialize, addCubismModel };

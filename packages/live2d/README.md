@@ -24,4 +24,4 @@ initialize({
 
 ## Additional Info
 
-Based on [Pixi](https://github.com/pixijs/pixijs) and [pixi-live2d-display](https://github.com/guansss/pixi-live2d-display)
+Based on [Pixi](https://github.com/pixijs/pixijs) and [pixi-live2d-display](https://github.com/guansss/pixi-live2d-display) which is outdated
