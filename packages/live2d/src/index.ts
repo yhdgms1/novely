@@ -15,7 +15,7 @@ type Data = {
 };
 
 const addCubismModel = (key: string, from: string | (CubismSpec.ModelJSON & { url: string })) => {
-	const handler: CustomHandler = async ({ clear, data, getDomNodes, paused, flags: { goingBack, preview } }) => {
+	const handler: CustomHandler = async ({ clear, data, getDomNodes, flags: { goingBack, preview } }) => {
 		fetchLibrary();
 
 		const { element } = getDomNodes(true);
@@ -49,6 +49,10 @@ const addCubismModel = (key: string, from: string | (CubismSpec.ModelJSON & { ur
 		const { Live2DModel, Cubism4ModelSettings } = await library;
 		const { app, map } = await data<Data>().async!;
 
+		if (preview) {
+			// todo: render static
+		}
+
 		clear(() => {
 			// is this good?
 			// app.destroy()
@@ -58,6 +62,7 @@ const addCubismModel = (key: string, from: string | (CubismSpec.ModelJSON & { ur
 
 		map.set(key, model);
 
+		// todo: it should be adjustable
 		model.scale.set(0.25, 0.25);
 		app.stage.addChild(model);
 	};
@@ -68,5 +73,7 @@ const addCubismModel = (key: string, from: string | (CubismSpec.ModelJSON & { ur
 
 	return handler;
 };
+
+// todo: add functions to hide model, and to trigger model animations
 
 export { initialize, addCubismModel };

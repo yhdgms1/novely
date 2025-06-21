@@ -4,7 +4,19 @@ export default defineConfig((options) => {
 	return {
 		entry: ['src/index.ts'],
 		external: ['@novely/core'],
-		noExternal: [],
+		noExternal: [
+			'@pixi/app',
+			'@pixi/constants',
+			'@pixi/core',
+			'@pixi/extensions',
+			'@pixi/interaction',
+			'@pixi/math',
+			'@pixi/runner',
+			'@pixi/settings',
+			'@pixi/ticker',
+			'@pixi/utils',
+			'pixi-live2d-display',
+		],
 		sourcemap: true,
 		target: 'es2022',
 		format: ['esm'],
@@ -14,5 +26,8 @@ export default defineConfig((options) => {
 		dts: options.dts,
 		watch: options.watch,
 		clean: true,
+		esbuildOptions: (options) => {
+			options.legalComments = 'none';
+		},
 	};
 });
