@@ -533,7 +533,7 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 			if (action === 'custom') {
 				const fn = params[0] as CustomHandler;
 
-				if ('callOnlyLatest' in fn && fn.callOnlyLatest) {
+				if (fn.callOnlyLatest) {
 					const notLatest = next(i).some(([name, func]) => {
 						if (name !== 'custom') return;
 
@@ -546,7 +546,7 @@ const createQueueProcessor = (queue: Exclude<ValidAction, ValidAction[]>[], opti
 					});
 
 					if (notLatest) continue;
-				} else if ('skipOnRestore' in fn && fn.skipOnRestore) {
+				} else if (fn.skipOnRestore) {
 					if (fn.skipOnRestore(next(i))) {
 						continue;
 					}

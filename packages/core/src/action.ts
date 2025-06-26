@@ -73,11 +73,6 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 	getDomNodes: CustomHandlerFunctionGetFn;
 
 	/**
-	 * @deprecated use `getSave` instead
-	 */
-	getPath: () => Path;
-
-	/**
 	 * Function to get current Save. It can be mutated.
 	 *
 	 * Only use it when you know what you do
@@ -98,6 +93,12 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 	 * Function to work with custom action's state
 	 */
 	data: CustomHandlerGetResultDataFunction;
+
+	/**
+	 * Function to access data stored at specific key.
+	 * @deprecated
+	 */
+	dataAtKey: <T extends Record<string, unknown>>(key: string) => T | null;
 
 	/**
 	 * Function to set cleanup handler
@@ -176,12 +177,20 @@ type CustomHandlerInfo = CustomHandlerCalling & {
 	skipClearOnGoingBack?: boolean;
 
 	/**
+	 * When goingBack the restoring method is used. In that case, current actions array changes
+	 *
+	 * [1, 2, 3] changes to [1, 2]
+	 * When you don't want 3'rd action to be cleared use this
+	 */
+	skipClearOnRestore?: boolean;
+
+	/**
 	 * Id by which we will determine what action is which
 	 */
 	id: string | symbol;
 
 	/**
-	 * Key by which we will save the data in the `get` function provided to custom action.
+	 * Key by which we will save the custom action's data. It includes cleanup function's provided by `clear` and data in `data` function
 	 *
 	 * It can be a name of action or more specific thing. In example for custom `showCharacter` it may be `show-character-${character}
 	 */

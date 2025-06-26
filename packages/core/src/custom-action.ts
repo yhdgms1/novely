@@ -1,10 +1,10 @@
 import type { CustomHandler, CustomHandlerFunctionGetFn, CustomHandlerGetResult, TextContent } from './action';
 import type { Context, CustomActionHandle } from './renderer';
-import type { Derived, Stored } from './store';
+import type { Derived } from './store';
 import { CUSTOM_ACTION_MAP } from './shared';
-import type { CoreData, Data, Lang, Stack, State, StateFunction } from './types';
+import type { Data, Lang, Stack, State, StateFunction } from './types';
 import { noop } from './utilities';
-import { derive, immutable } from './store';
+import { immutable } from './store';
 
 type CustomActionHolder = {
 	/**
@@ -113,6 +113,7 @@ const handleCustomAction = (
 		};
 	};
 
+	// todo: store stack of cleanup functions and clean gracefully
 	const clear = (func: typeof noop) => {
 		/**
 		 * We wrap original cleanup to achieve these goals:
@@ -148,10 +149,6 @@ const handleCustomAction = (
 
 	const stack = getStack(ctx);
 
-	const getPath = () => {
-		return stack.value[0];
-	};
-
 	const getSave = () => {
 		return stack.value;
 	};
@@ -164,6 +161,8 @@ const handleCustomAction = (
 		state,
 		data,
 
+		dataAtKey: (key) => CUSTOM_ACTION_MAP.get(ctx.id + key)?.localData || null,
+
 		templateReplace,
 
 		clear,
@@ -174,7 +173,6 @@ const handleCustomAction = (
 		getDomNodes: getDomNodes as CustomHandlerFunctionGetFn,
 
 		getSave,
-		getPath,
 
 		contextKey: ctx.id,
 

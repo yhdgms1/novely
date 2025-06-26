@@ -550,9 +550,6 @@ const novely = <
 			for (let i = prevQueue.length - 1; i > queue.length - 1; i--) {
 				const element = prevQueue[i];
 
-				/**
-				 * Just in case 🤷
-				 */
 				if (!isAction(element)) {
 					continue;
 				}
@@ -578,8 +575,8 @@ const novely = <
 				 * call their clear methods so there is no side effects
 				 * from future in the past
 				 */
-				if (action === 'custom') {
-					getCustomActionHolder(context, fn).cleanup();
+				if (action === 'custom' && !fn.skipClearOnRestore) {
+					clearCustomAction(context, fn);
 				}
 			}
 		}
