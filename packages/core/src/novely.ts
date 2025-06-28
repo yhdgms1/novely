@@ -693,6 +693,7 @@ const novely = <
 		}
 
 		stack.clear();
+		clearCustomActionsAtContext(ctx);
 		ctx.clear(EMPTY_SET, EMPTY_SET, { music: EMPTY_SET, sounds: EMPTY_SET }, noop);
 		renderer.ui.showScreen('mainmenu');
 		ctx.audio.destroy();
