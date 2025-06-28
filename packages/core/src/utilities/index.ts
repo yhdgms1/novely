@@ -6,7 +6,7 @@ export * from './resources';
 export * from './stack';
 export * from './story';
 export * from './internationalization';
-export * from './functions';
+export * from './noop';
 export * from './store';
 export * from './array';
 export * from './else';

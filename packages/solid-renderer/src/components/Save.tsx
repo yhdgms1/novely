@@ -75,7 +75,20 @@ const Save: VoidComponent<SaveProps> = (props) => {
 
 	const stringType = t(type === 'auto' ? 'Automatic' : 'Manual');
 
+	const cleanup = once(() => {
+		try {
+			options.clearCustomActionsAtContext(context);
+			removeContextState(KEY);
+			removeContext(KEY);
+			options.removeContext(KEY);
+			removeShared(KEY);
+		} catch (error) {
+			console.error(error);
+		}
+	});
+
 	const loadSave = () => {
+		cleanup();
 		options.set(props.save);
 	};
 
@@ -158,22 +171,7 @@ const Save: VoidComponent<SaveProps> = (props) => {
 		}
 	});
 
-	onCleanup(() => {
-		const state = useContextState(KEY);
-
-		for (const custom of Object.values(state.get().custom)) {
-			if (!custom) continue;
-
-			try {
-				options.clearCustomAction(context, custom.fn);
-			} catch {}
-		}
-
-		removeContextState(KEY);
-		removeContext(KEY);
-		options.removeContext(KEY);
-		removeShared(KEY);
-	});
+	onCleanup(cleanup);
 
 	onCleanup(() => {
 		clearTimeout(previewDoneTimeoutId);

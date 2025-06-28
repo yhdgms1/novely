@@ -73,9 +73,9 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 	getDomNodes: CustomHandlerFunctionGetFn;
 
 	/**
-	 * Function to get current Save. It can be mutated.
+	 * Function to get current Save. It can be mutated. Only use it when you know what you do
 	 *
-	 * Only use it when you know what you do
+	 * @deprecated
 	 */
 	getSave: () => Save<S>;
 
@@ -91,32 +91,73 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 
 	/**
 	 * Function to work with custom action's state
+	 *
+	 * @example
+	 * ```ts
+	 * type Data = { name: string };
+	 *
+	 * const handler: CustomHandler = async ({ data }) => {
+	 *   const _data = data<Data>();
+	 *
+	 *   if (!_data.name) {
+	 *     _data.name = 'Mr. Crabs'
+	 *   }
+	 *
+	 *   data<Data>().name // 'Mr. Crabs'
+	 *
+	 *   data<Data>() == _data // true
+	 *
+	 *   // passing object will replace object
+	 *   data<Data>({ name: 'Mr. Crabs' })
+	 *   data<Data>() == _data // false
+	 * }
+	 * ```
 	 */
 	data: CustomHandlerGetResultDataFunction;
 
 	/**
 	 * Function to access data stored at specific key.
+	 * @example
+	 * ```ts
+	 * const handler: CustomHandler = async ({ dataAtKey }) => {
+	 *   // peek at data at action with key 'action-2'
+	 *   console.log(dataAtKey('action-2'))
+	 * }
+	 *
+	 * handler.key = 'action-1'
+	 * ```
 	 * @deprecated
 	 */
 	dataAtKey: <T extends Record<string, unknown>>(key: string) => T | null;
 
 	/**
-	 * Function to set cleanup handler
+	 * Function to set cleanup functions.
+	 *
+	 * @example
+	 * ```ts
+	 * const handler: CustomHandler = async ({ clear, paused }) => {
+	 *   const unsubscribe = paused.subscribe((paused) => {
+	 *
+	 *   })
+	 *
+	 *   clear(paused);
+	 * }
+	 * ```
 	 */
 	clear: (fn: () => void) => void;
 
 	/**
-	 * Remove's custom handler instance
+	 * It will call all clear actions and remove HTML element from `getDomNodes` function
 	 */
 	remove: () => void;
 
 	/**
-	 * Context's state function
+	 * State function
 	 */
 	state: StateFunction<S>;
 
 	/**
-	 * Game flags (aka game states)
+	 * Game state
 	 */
 	flags: {
 		restoring: boolean;
@@ -131,11 +172,28 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 
 	/**
 	 * Function to replace template content
+	 *
+	 * @example
+	 * ```ts
+	 * const handler: CustomHandler = async ({ state, templateReplace }) => {
+	 *   const text = templateReplace({ en: '' }, state())
+	 * }
+	 * ```
 	 */
 	templateReplace: (content: TextContent<L, State>, values?: State) => string;
 
 	/**
 	 * Is game currently paused
+	 *
+	 * @example
+	 * ```ts
+	 * const handler: CustomHandler = async ({ clear, paused }) => {
+	 *   const unsubscribe = paused.subscribe((paused) => {
+	 *     // Here you can pause/resume animations, sounds, etc, etc
+	 *   })
+	 *
+	 *   clear(paused);
+	 * }
 	 */
 	paused: Derived<boolean>;
 };
@@ -171,19 +229,6 @@ type CustomHandlerInfo = CustomHandlerCalling & {
 	 * When true interacting with it will be saved in history
 	 */
 	requireUserAction?: boolean;
-	/**
-	 * When player is going back we clear every custom action. But we can ignore clearing that.
-	 */
-	skipClearOnGoingBack?: boolean;
-
-	/**
-	 * When goingBack the restoring method is used. In that case, current actions array changes
-	 *
-	 * [1, 2, 3] changes to [1, 2]
-	 * When you don't want 3'rd action to be cleared use this
-	 */
-	skipClearOnRestore?: boolean;
-
 	/**
 	 * Id by which we will determine what action is which
 	 */

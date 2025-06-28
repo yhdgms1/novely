@@ -77,10 +77,6 @@ type ContextStateCustomHandler = {
 	 * Custom Handler function itself
 	 */
 	fn: CustomHandler;
-	/**
-	 * Clear Function. Removes the action.
-	 */
-	clear: () => void;
 };
 
 type ContextStateCustomHandlers = {

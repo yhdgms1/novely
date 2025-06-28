@@ -149,23 +149,13 @@ const handleClearAction = (
 		$contextState.mutate((s) => s.text, { content: '' });
 	}
 
-	const { characters, custom } = $contextState.get() as ContextState;
-
-	for (const character of Object.keys(characters)) {
+	for (const character of Object.keys($contextState.get().characters)) {
 		if (!keepCharacters.has(character)) {
 			$contextState.mutate((s) => s.characters[character]!, {
 				style: undefined,
 				visible: false,
 			});
 		}
-	}
-
-	for (const [id, obj] of Object.entries(custom)) {
-		if (!obj) continue;
-		if (context.meta.goingBack && obj.fn.skipClearOnGoingBack) continue;
-
-		options.clearCustomAction(context, obj.fn);
-		$contextState.mutate((s) => s.custom[id], undefined);
 	}
 };
 
@@ -180,7 +170,6 @@ const handleCustomAction = (
 		$contextState.mutate((s) => s.custom[fn.key]!, {
 			fn,
 			node: null,
-			clear: noop,
 		});
 	}
 
@@ -192,17 +181,6 @@ const handleCustomAction = (
 					return {
 						...state,
 						node,
-					};
-				},
-			);
-		},
-		setClear(clear) {
-			$contextState.mutate(
-				(s) => s.custom[fn.key]!,
-				(state) => {
-					return {
-						...state,
-						clear,
 					};
 				},
 			);

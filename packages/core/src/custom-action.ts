@@ -1,10 +1,21 @@
 import type { CustomHandler, CustomHandlerFunctionGetFn, CustomHandlerGetResult, TextContent } from './action';
 import type { Context, CustomActionHandle } from './renderer';
 import type { Derived } from './store';
-import { CUSTOM_ACTION_MAP } from './shared';
+import { CUSTOM_ACTION_CLEANUP_MAP, CUSTOM_ACTION_MAP } from './shared';
 import type { Data, Lang, Stack, State, StateFunction } from './types';
 import { noop } from './utilities';
 import { immutable } from './store';
+import { once } from 'es-toolkit/function';
+
+type CleanupFn = () => void;
+
+type CustomActionCleanupHolderItem = {
+	fn: CustomHandler;
+	list: Set<CleanupFn>;
+	dom: CleanupFn;
+};
+
+type CustomActionCleanupHolder = CustomActionCleanupHolderItem[];
 
 type CustomActionHolder = {
 	/**
@@ -19,10 +30,6 @@ type CustomActionHolder = {
 	 * Local Data
 	 */
 	localData: any;
-	/**
-	 * Cleanup function. Provided by custom action.
-	 */
-	cleanup: () => void;
 };
 
 type HandleCustomActionOptions = CustomActionHandle & {
@@ -64,13 +71,26 @@ const getCustomActionHolder = (ctx: Context, fn: CustomHandler) => {
 	}
 
 	const holder = {
-		cleanup: noop,
 		node: null,
 		fn: fn,
 		localData: {},
 	} satisfies CustomActionHolder;
 
 	CUSTOM_ACTION_MAP.set(ctx.id + fn.key, holder);
+
+	return holder;
+};
+
+const getCustomActionCleanupHolder = (ctx: Context) => {
+	const existing = CUSTOM_ACTION_CLEANUP_MAP.get(ctx.id);
+
+	if (existing) {
+		return existing;
+	}
+
+	const holder: CustomActionCleanupHolder = [];
+
+	CUSTOM_ACTION_CLEANUP_MAP.set(ctx.id, holder);
 
 	return holder;
 };
@@ -82,7 +102,6 @@ const handleCustomAction = (
 		lang,
 		state,
 		setMountElement,
-		setClear,
 		remove: renderersRemove,
 		getStack,
 		templateReplace,
@@ -90,6 +109,22 @@ const handleCustomAction = (
 	}: HandleCustomActionOptions,
 ) => {
 	const holder = getCustomActionHolder(ctx, fn);
+	const cleanupHolder = getCustomActionCleanupHolder(ctx);
+
+	const cleanupNode = () => {
+		if (!cleanupHolder.some((item) => item.fn.id === fn.id && item.fn.key === fn.key)) {
+			holder.node = null;
+			setMountElement(null);
+		}
+	};
+
+	const cleanupSource: CustomActionCleanupHolderItem = {
+		fn,
+		list: new Set(),
+		dom: cleanupNode,
+	};
+
+	cleanupHolder.push(cleanupSource);
 
 	const flags = {
 		...ctx.meta,
@@ -113,25 +148,8 @@ const handleCustomAction = (
 		};
 	};
 
-	// todo: store stack of cleanup functions and clean gracefully
 	const clear = (func: typeof noop) => {
-		/**
-		 * We wrap original cleanup to achieve these goals:
-		 *
-		 * - when cleaned up function will not be called again
-		 * - when cleaned up renderer will get updated element
-		 */
-		setClear(
-			(holder.cleanup = () => {
-				func();
-
-				holder.node = null;
-				holder.cleanup = noop;
-
-				setMountElement(null);
-				setClear(noop);
-			}),
-		);
+		cleanupSource.list.add(once(func));
 	};
 
 	const data = (updatedData?: any) => {
@@ -143,7 +161,10 @@ const handleCustomAction = (
 	};
 
 	const remove = () => {
-		holder.cleanup();
+		cleanupSource.list.forEach((fn) => fn());
+		cleanupSource.list.clear();
+
+		cleanupSource.dom();
 		renderersRemove();
 	};
 
@@ -180,5 +201,5 @@ const handleCustomAction = (
 	});
 };
 
-export { getCustomActionHolder, handleCustomAction };
-export type { CustomActionHolder, HandleCustomActionOptions };
+export { getCustomActionHolder, handleCustomAction, getCustomActionCleanupHolder };
+export type { CustomActionHolder, CustomActionCleanupHolder, HandleCustomActionOptions, CleanupFn };

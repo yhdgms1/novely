@@ -15,8 +15,9 @@ import type {
 	VirtualActions,
 } from './action';
 import type { Character } from './character';
+import type { CleanupFn } from './custom-action';
 import { DEFAULT_TYPEWRITER_SPEED, EMPTY_SET, MAIN_CONTEXT_KEY } from './constants';
-import { getCustomActionHolder, handleCustomAction } from './custom-action';
+import { getCustomActionCleanupHolder, handleCustomAction } from './custom-action';
 import { enqueueAssetForPreloading, handleAssetsPreloading, huntAssets } from './preloading';
 import type { Context, RendererInitPreviewReturn } from './renderer';
 import { PRELOADED_ASSETS, STACK_MAP } from './shared';
@@ -500,9 +501,6 @@ const novely = <
 			latest = clone(initial);
 
 			storageData.update((prev) => {
-				/**
-				 * `latest` will be not undefined because this callback called immediately and variable is not changed
-				 */
 				prev.saves.push(latest!);
 
 				return prev;
@@ -531,13 +529,7 @@ const novely = <
 			referGuarded,
 		});
 
-		const {
-			run,
-			keep: { keep, characters, audio },
-		} = createQueueProcessor(queue, {
-			skip,
-			skipPreserve,
-		});
+		const cleanupHolder = getCustomActionCleanupHolder(context);
 
 		if (previous) {
 			const { queue: prevQueue } = await getActionsFromPath({
@@ -547,39 +539,50 @@ const novely = <
 				referGuarded,
 			});
 
-			for (let i = prevQueue.length - 1; i > queue.length - 1; i--) {
-				const element = prevQueue[i];
+			const futures: CustomHandler[] = [];
 
-				if (!isAction(element)) {
-					continue;
-				}
+			const isFromDifferentBranches = previous[0][0][1] !== path[0][1];
+			const end = isFromDifferentBranches ? 0 : queue.length - 1;
 
-				const [action, fn] = element;
+			for (let i = prevQueue.length - 1; i >= end; i--) {
+				const [action, fn] = prevQueue[i];
 
-				/**
-				 * Imagine array of actions like
-				 *
-				 * [
-				 *  ['dialog', ...props]
-				 *  ['showBackground', ...props]
-				 *  ['custom', function]
-				 * ]
-				 *
-				 * When player goes back array changes to
-				 *
-				 * [
-				 *  ['dialog', ...props]
-				 * ]
-				 *
-				 * We catch these custom actions that are gone and
-				 * call their clear methods so there is no side effects
-				 * from future in the past
-				 */
-				if (action === 'custom' && !fn.skipClearOnRestore) {
-					clearCustomAction(context, fn);
+				if (action === 'custom') {
+					futures.push(fn);
 				}
 			}
+
+			futures.reverse();
+
+			const dom = new Set<CleanupFn>();
+
+			for (const future of futures) {
+				inner: for (let i = cleanupHolder.length - 1; i >= 0; i--) {
+					const item = cleanupHolder[i];
+
+					if (future === item.fn) {
+						item.list.forEach((fn) => fn());
+						item.list.clear();
+
+						cleanupHolder.splice(i, 1);
+
+						dom.add(item.dom);
+
+						break inner;
+					}
+				}
+			}
+
+			dom.forEach((f) => f());
 		}
+
+		const {
+			run,
+			keep: { keep, characters, audio },
+		} = createQueueProcessor(queue, {
+			skip,
+			skipPreserve,
+		});
 
 		if (context.meta.goingBack) {
 			/**
@@ -607,6 +610,17 @@ const novely = <
 			}
 
 			const [action, ...props] = item;
+
+			if (action === 'custom') {
+				/**
+				 * We check if there's an existing cleanup function for this action.
+				 * If found, it means the previous run hasn't been cleaned up yet.
+				 * In that case, we avoid re-running.
+				 */
+				if (cleanupHolder.some((holder) => holder.fn === props[0])) {
+					return;
+				}
+			}
 
 			return match(action, props, {
 				ctx: context,
@@ -765,9 +779,7 @@ const novely = <
 
 		ctx.loading(false);
 
-		/**
-		 * Enter restoring mode in action
-		 */
+		// Enter restoring mode in action
 		ctx.meta.restoring = true;
 		ctx.meta.preview = true;
 
@@ -849,8 +861,20 @@ const novely = <
 		return capitalize(language.nameOverride || getIntlLanguageDisplayName(lang));
 	};
 
-	const clearCustomAction = (ctx: Context, fn: CustomHandler) => {
-		getCustomActionHolder(ctx, fn).cleanup();
+	const clearCustomActionsAtContext = (ctx: Context) => {
+		const cleanupHolder = getCustomActionCleanupHolder(ctx);
+		const dom = new Set<CleanupFn>();
+
+		for (const item of cleanupHolder) {
+			item.list.forEach((fn) => fn());
+			item.list.clear();
+
+			dom.add(item.dom);
+		}
+
+		cleanupHolder.length = 0;
+
+		dom.forEach((fn) => fn());
 	};
 
 	const getResourseTypeWrapper = (url: string) => {
@@ -919,7 +943,7 @@ const novely = <
 		preview,
 		removeContext,
 		getStateFunction,
-		clearCustomAction,
+		clearCustomActionsAtContext,
 		languages,
 		storageData: storageData as unknown as Stored<StorageData<string, Data>>,
 		coreData,

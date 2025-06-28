@@ -41,10 +41,6 @@ type CustomActionHandle = {
 	 * Function that will give action root (element which you should add to the screen because custom actions rendered into that element)
 	 */
 	setMountElement: (mountElement: null | HTMLDivElement) => void;
-	/**
-	 * Function that will give you clean function provided by custom action.
-	 */
-	setClear: (clear: () => void) => void;
 };
 
 type AudioHandle = {
@@ -243,7 +239,7 @@ type RendererInit<$Language extends Lang, $Characters extends Record<string, Cha
 
 	getStateFunction: (context: string) => StateFunction<State>;
 
-	clearCustomAction: (ctx: Context, customAction: CustomHandler) => void;
+	clearCustomActionsAtContext: (ctx: Context) => void;
 
 	getLanguageDisplayName: (lang: Lang) => string;
 	getCharacterColor: (character: string) => string;

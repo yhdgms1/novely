@@ -112,7 +112,7 @@ const showParticles = function (this: ParticlesThis, options: ParticlesOptions):
 		void load();
 	};
 
-	handler.callOnlyLatest = handler.skipClearOnGoingBack = true;
+	handler.callOnlyLatest = true;
 	handler.id = PARTICLES_ID;
 	handler.key = 'particles';
 
