@@ -17,7 +17,7 @@ import type {
 import type { Character } from './character';
 import type { CleanupFn } from './custom-action';
 import { DEFAULT_TYPEWRITER_SPEED, EMPTY_SET, MAIN_CONTEXT_KEY } from './constants';
-import { getCustomActionCleanupHolder, handleCustomAction } from './custom-action';
+import { cleanCleanupSource, getCustomActionCleanupHolder, handleCustomAction } from './custom-action';
 import { enqueueAssetForPreloading, handleAssetsPreloading, huntAssets } from './preloading';
 import type { Context, RendererInitPreviewReturn } from './renderer';
 import { PRELOADED_ASSETS, STACK_MAP } from './shared';
@@ -36,7 +36,6 @@ import type {
 	State,
 	StateFunction,
 	StorageData,
-	TypeEssentials,
 } from './types';
 import type { ControlledPromise } from './utilities';
 import {
@@ -554,26 +553,24 @@ const novely = <
 
 			futures.reverse();
 
-			const dom = new Set<CleanupFn>();
+			const nodeCleanup = new Set<CleanupFn>();
 
 			for (const future of futures) {
 				inner: for (let i = cleanupHolder.length - 1; i >= 0; i--) {
 					const item = cleanupHolder[i];
 
 					if (future === item.fn) {
-						item.list.forEach((fn) => fn());
-						item.list.clear();
+						cleanCleanupSource(item);
+						nodeCleanup.add(item.node);
 
 						cleanupHolder.splice(i, 1);
-
-						dom.add(item.dom);
 
 						break inner;
 					}
 				}
 			}
 
-			dom.forEach((f) => f());
+			nodeCleanup.forEach((f) => f());
 		}
 
 		const {
@@ -863,18 +860,15 @@ const novely = <
 
 	const clearCustomActionsAtContext = (ctx: Context) => {
 		const cleanupHolder = getCustomActionCleanupHolder(ctx);
-		const dom = new Set<CleanupFn>();
+		const nodeCleanup = new Set<CleanupFn>();
 
 		for (const item of cleanupHolder) {
-			item.list.forEach((fn) => fn());
-			item.list.clear();
-
-			dom.add(item.dom);
+			cleanCleanupSource(item);
+			nodeCleanup.add(item.node);
 		}
 
 		cleanupHolder.length = 0;
-
-		dom.forEach((fn) => fn());
+		nodeCleanup.forEach((fn) => fn());
 	};
 
 	const getResourseTypeWrapper = (url: string) => {
@@ -1632,19 +1626,6 @@ const novely = <
 		 * ```
 		 */
 		data,
-		/**
-		 * Used in combination with type utilities
-		 * @deprecated Use `engine.types` instead
-		 * @example
-		 * ```ts
-		 * import type { ConditionParams, StateFunction } from '@novely/core';
-		 *
-		 * const conditionCheck = (state: StateFunction<ConditionParams<typeof engine.typeEssintials>>) => {
-		 *   return state.age >= 18;
-		 * }
-		 * ```
-		 */
-		typeEssentials: {} as TypeEssentials<$Language, $State, $Data, $Characters>,
 		/**
 		 * Used in combination with type utilities
 		 * @example

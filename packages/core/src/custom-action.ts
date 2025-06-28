@@ -11,8 +11,8 @@ type CleanupFn = () => void;
 
 type CustomActionCleanupHolderItem = {
 	fn: CustomHandler;
-	list: Set<CleanupFn>;
-	dom: CleanupFn;
+	list: CleanupFn[];
+	node: CleanupFn;
 };
 
 type CustomActionCleanupHolder = CustomActionCleanupHolderItem[];
@@ -95,6 +95,16 @@ const getCustomActionCleanupHolder = (ctx: Context) => {
 	return holder;
 };
 
+const cleanCleanupSource = ({ list }: CustomActionCleanupHolderItem) => {
+	while (list.length) {
+		try {
+			list.pop()!();
+		} catch (e) {
+			console.error(e);
+		}
+	}
+};
+
 const handleCustomAction = (
 	ctx: Context,
 	fn: CustomHandler,
@@ -120,15 +130,11 @@ const handleCustomAction = (
 
 	const cleanupSource: CustomActionCleanupHolderItem = {
 		fn,
-		list: new Set(),
-		dom: cleanupNode,
+		list: [],
+		node: cleanupNode,
 	};
 
 	cleanupHolder.push(cleanupSource);
-
-	const flags = {
-		...ctx.meta,
-	};
 
 	const getDomNodes = (insert = true): CustomHandlerGetResult<boolean> => {
 		if (holder.node || !insert) {
@@ -149,7 +155,7 @@ const handleCustomAction = (
 	};
 
 	const clear = (func: typeof noop) => {
-		cleanupSource.list.add(once(func));
+		cleanupSource.list.push(once(func));
 	};
 
 	const data = (updatedData?: any) => {
@@ -161,10 +167,9 @@ const handleCustomAction = (
 	};
 
 	const remove = () => {
-		cleanupSource.list.forEach((fn) => fn());
-		cleanupSource.list.clear();
+		cleanCleanupSource(cleanupSource);
+		cleanupSource.node();
 
-		cleanupSource.dom();
 		renderersRemove();
 	};
 
@@ -175,7 +180,7 @@ const handleCustomAction = (
 	};
 
 	return fn({
-		flags,
+		flags: ctx.meta,
 
 		lang,
 
@@ -197,9 +202,9 @@ const handleCustomAction = (
 
 		contextKey: ctx.id,
 
-		paused: flags.preview ? immutable(false) : paused,
+		paused: ctx.meta.preview ? immutable(false) : paused,
 	});
 };
 
-export { getCustomActionHolder, handleCustomAction, getCustomActionCleanupHolder };
+export { getCustomActionHolder, handleCustomAction, getCustomActionCleanupHolder, cleanCleanupSource };
 export type { CustomActionHolder, CustomActionCleanupHolder, HandleCustomActionOptions, CleanupFn };

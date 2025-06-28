@@ -440,21 +440,6 @@ type StateFunction<S extends State> = {
 	(): S;
 };
 
-/**
- * @deprecated `EngineTypes` should be used instead
- */
-type TypeEssentials<
-	$Lang extends Lang,
-	$State extends State,
-	$Data extends Data,
-	$Characters extends Record<string, Character<$Lang>>,
-> = {
-	readonly l: $Lang | null;
-	readonly s: $State | null;
-	readonly d: $Data | null;
-	readonly c: $Characters | null;
-};
-
 type EngineTypes<
 	$Lang extends Lang = Lang,
 	$State extends State = State,
@@ -506,7 +491,6 @@ export type {
 	StackHolder,
 	NovelyInit,
 	StateFunction,
-	TypeEssentials,
 	DefaultEmotions,
 	Assign,
 	CharacterAssetSizes,

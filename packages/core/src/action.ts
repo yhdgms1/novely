@@ -131,7 +131,7 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 	dataAtKey: <T extends Record<string, unknown>>(key: string) => T | null;
 
 	/**
-	 * Function to set cleanup functions.
+	 * Function to register cleanup callbacks (executed in reverse order of registration).
 	 *
 	 * @example
 	 * ```ts

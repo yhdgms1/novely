@@ -54,7 +54,6 @@ export type {
 	StateFunction,
 	Data,
 	DeepPartial,
-	TypeEssentials,
 	CharacterAssetSizes,
 	CharactersData,
 	NovelyAsset,
