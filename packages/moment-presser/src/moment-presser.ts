@@ -30,7 +30,12 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
 
 		if (!ctx || !staticCtx) return;
 
-		canvas.width = staticCanvas.width = element.getBoundingClientRect().width * devicePixelRatio;
+		const root = document.createElement('div');
+		root.className = 'moment-presser-root';
+
+		element.appendChild(root);
+
+		canvas.width = staticCanvas.width = root.getBoundingClientRect().width * devicePixelRatio;
 		canvas.height = staticCanvas.height = canvas.width / 2;
 
 		/**
@@ -42,9 +47,9 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
 			label: options.translation ? options.translation[lang].stop : 'Stop',
 		});
 
-		element.appendChild(canvas);
-		element.appendChild(staticCanvas);
-		element.appendChild(button);
+		root.appendChild(canvas);
+		root.appendChild(staticCanvas);
+		root.appendChild(button);
 
 		const fontSize = Number.parseFloat(getComputedStyle(element).fontSize);
 		const variables = parseVariables(element);
@@ -71,6 +76,7 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
 
 			button.removeEventListener('click', onButtonClick);
 
+			root.remove();
 			canvas.remove();
 			staticCanvas.remove();
 			button.remove();
@@ -91,7 +97,7 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
 
 		button.addEventListener('click', onButtonClick);
 
-		const unsub = paused.subscribe((paused) => {
+		const unsubscribe = paused.subscribe((paused) => {
 			if (paused) {
 				stop();
 			} else {
@@ -101,7 +107,7 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
 
 		clear(() => {
 			cleanup();
-			unsub();
+			unsubscribe();
 		});
 
 		if (preview) {
@@ -127,5 +133,5 @@ const createMomentPresser = <T>(options: CreateMomentPresserOptions<T>) => {
 	return momentPresser(options);
 };
 
-export { createMomentPresser, momentPresser };
+export { createMomentPresser };
 export type { MomentPresserOptions, CreateMomentPresserOptions };

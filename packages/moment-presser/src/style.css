@@ -1,4 +1,4 @@
-[data-id="moment-presser"] {
+.moment-presser-root {
 	width: 100vw;
 	height: 100vh;
 
@@ -13,12 +13,12 @@
 	backdrop-filter: blur(10px);
 }
 
-.preview [data-id="moment-presser"] {
+.preview .moment-presser-root {
 	width: 100%;
 	height: 100%;
 }
 
-[data-id="moment-presser"] canvas {
+.moment-presser-root canvas {
 	position: absolute;
 
 	margin-bottom: 4rem;
@@ -29,7 +29,7 @@
 }
 
 @media (max-aspect-ratio: 0.8) {
-	[data-id="moment-presser"] canvas {
+	.moment-presser-root canvas {
 		width: 100%;
 	}
 }

@@ -138,6 +138,8 @@ const handleCustomAction = (
 
 	const getDomNodes = (insert = true): CustomHandlerGetResult<boolean> => {
 		if (holder.node || !insert) {
+			setMountElement(holder.node);
+
 			return {
 				element: holder.node,
 				root: ctx.root,
@@ -168,7 +170,10 @@ const handleCustomAction = (
 
 	const remove = () => {
 		cleanCleanupSource(cleanupSource);
-		cleanupSource.node();
+
+		// When requested not hestitate
+		holder.node = null;
+		setMountElement(null);
 
 		renderersRemove();
 	};
