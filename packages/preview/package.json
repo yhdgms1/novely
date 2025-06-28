@@ -10,8 +10,8 @@
 	},
 	"devDependencies": {
 		"@novely/vite-plugin-novely": "workspace:^",
-		"typescript": "^5.7.3",
-		"vite": "~6.3.3"
+		"typescript": "^5.8.3",
+		"vite": "~7.0.0"
 	},
 	"dependencies": {
 		"@novely/core": "workspace:*",

@@ -24,11 +24,11 @@
 		"build": "tsup --dts"
 	},
 	"dependencies": {
-		"@novely/core": "workspace:>=0.51.0"
+		"@novely/core": "workspace:^"
 	},
 	"devDependencies": {
-		"tsup": "^8.3.6",
-		"typescript": "^5.7.3"
+		"tsup": "^8.5.0",
+		"typescript": "^5.8.3"
 	},
 	"peerDependencies": {
 		"@novely/core": "*"
