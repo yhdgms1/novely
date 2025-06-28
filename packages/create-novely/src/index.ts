@@ -20,8 +20,8 @@ async function main() {
 				message: reset('Select a template:'),
 				choices: [
 					{
-						title: blue('SolidJS'),
-						value: 'solid-js',
+						title: blue('Basic'),
+						value: 'basic',
 					},
 				],
 				initial: 0,

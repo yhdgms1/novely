@@ -1,4 +1,4 @@
-import type { NovelyStorage, StorageData } from '@novely/core';
+import type { StorageAdapter, StorageData } from '@novely/core';
 import { compress, decompress } from 'lz-string';
 import { deserialize, serialize } from 'seroval';
 import type { Adapter, AdapterLocalStorageOptions, Options } from './types';
@@ -14,7 +14,7 @@ const getDefault = (): StorageData => {
 	} as unknown as StorageData;
 };
 
-const flexStorage = ({ adapter }: Options): NovelyStorage => {
+const flexStorage = ({ adapter }: Options): StorageAdapter => {
 	return {
 		async get() {
 			const value = await adapter.get();

@@ -1,4 +1,4 @@
-import type { Character, Data, Lang, NovelyAsset, State, TypeEssentials, ValidAction } from '@novely/core';
+import type { Character, Data, Lang, NovelyAsset, State, EngineTypes, ValidAction } from '@novely/core';
 
 type Attributes<BaseKeys extends string = string> = Record<
 	string,
@@ -87,7 +87,7 @@ type ClothingData<BaseKeys extends string, Attribs extends Attributes<BaseKeys>>
 type CreateActionsFN<BaseKeys extends string, Attribs extends Attributes<BaseKeys>> = {
 	<Engine extends EngineInstance>(
 		engine: Engine,
-		options: AllOptions<NoInfer<Engine['typeEssentials']>, NoInfer<BaseKeys>, NoInfer<Attribs>>,
+		options: AllOptions<NoInfer<Engine['types']>, NoInfer<BaseKeys>, NoInfer<Attribs>>,
 	): {
 		showBasePicker: (options?: ShowPickerOptionsBase) => ValidAction;
 		showAttributePicker: (options: ShowPickerOptionsAttribute<Attribs>) => ValidAction;
@@ -102,13 +102,9 @@ type EmotionsResult<BaseKeys extends string, Attribs extends Attributes<BaseKeys
 
 type Entries<T> = T extends Record<infer T, infer K> ? [T, K][] : never;
 
-type DefaultTypeEssentials = TypeEssentials<Lang, State, Data, Record<string, Character>>;
+type DefaultEngineTypes = EngineTypes<Lang, State, Data, Record<string, Character>>;
 
-type AllOptions<
-	TE extends DefaultTypeEssentials,
-	BaseKeys extends string,
-	Attribs extends Attributes<BaseKeys>,
-> = {
+type AllOptions<TE extends DefaultEngineTypes, BaseKeys extends string, Attribs extends Attributes<BaseKeys>> = {
 	/**
 	 * Character ID
 	 */
@@ -168,7 +164,7 @@ type AllOptions<
 
 type AllThis = {
 	clothingData: ClothingData<string, Attributes>;
-	options: AllOptions<DefaultTypeEssentials, string, Attributes>;
+	options: AllOptions<DefaultEngineTypes, string, Attributes>;
 };
 
 type EmotionObject = {
@@ -219,7 +215,7 @@ type ShowPickerOptionsBase = ShowPickerBuyFunctions;
 
 type EngineInstance = {
 	action: Record<string, (...args: any[]) => ValidAction>;
-	typeEssentials: DefaultTypeEssentials;
+	types: DefaultEngineTypes;
 };
 
 export type {
@@ -231,7 +227,7 @@ export type {
 	EmotionObject,
 	AllOptions,
 	AllThis,
-	DefaultTypeEssentials,
+	DefaultEngineTypes,
 	InternalShowPickerOptions,
 	ShowPickerOptionsAttribute,
 	ShowPickerOptionsBase,

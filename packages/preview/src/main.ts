@@ -12,7 +12,7 @@ import {
 	pauseOnBlur,
 } from '@novely/core';
 import { adapterLocalStorage, cloneFunction, flexStorage } from '@novely/flex-storage';
-import { createSolidRenderer } from '@novely/solid-renderer';
+import { createRenderer } from '@novely/solid-renderer';
 
 import { hideParticles, showParticles } from '@novely/particles';
 import { snow } from './particles';
@@ -40,7 +40,7 @@ import sakura_girl from './assets/sakura_girl.mp3';
 
 import narrator0000 from './assets/narrator0000.mp3';
 
-const { emitter, renderer, registerScreen, registerMainmenuItem } = createSolidRenderer({
+const { emitter, renderer, registerScreen, registerMainmenuItem } = createRenderer({
 	fullscreen: false,
 });
 
@@ -171,9 +171,6 @@ const engine = novely({
 	},
 });
 
-// @ts-expect-error
-window.setPaused = engine.setPaused;
-
 type Types = TypesFromEngine<typeof engine>;
 
 const action = extendAction(engine.action, {
@@ -195,16 +192,13 @@ const action = extendAction(engine.action, {
 
 		return ['custom', momentPresser];
 	},
-	talk: (
-		character: keyof NonNullable<typeof engine.typeEssentials.c> & string,
-		text: TextContent<NonNullable<typeof engine.typeEssentials.l>, NonNullable<typeof engine.typeEssentials.s>>,
-	) => {
+	talk: (character: keyof Types['c'], text: TextContent<Types['l'], Types['s']>) => {
 		return [
 			engine.action.animateCharacter(character, 'animate__animated animate__pulse'),
 			engine.action.say(character, text),
 		];
 	},
-	setCharacterOpacity: (character: keyof NonNullable<(typeof engine.typeEssentials)['c']>, opacity: number) => {
+	setCharacterOpacity: (character: keyof Types['c'], opacity: number) => {
 		const fn: CustomHandler = ({ clear, getDomNodes }) => {
 			const { root } = getDomNodes();
 

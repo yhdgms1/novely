@@ -6,7 +6,7 @@ import type {
 	AllThis,
 	ShowPickerOptionsAttribute,
 	ShowPickerOptionsBase,
-	DefaultTypeEssentials,
+	DefaultEngineTypes,
 } from './types';
 import { showPicker } from './picker';
 import { showCharacter } from './show';
@@ -26,7 +26,7 @@ const DEFAULT_SHOW_ATTRIBUTE_OPTIONS = {
 const createActions = function (
 	this: ClothingData<string, Attributes>,
 	engine: EngineInstance,
-	options: AllOptions<DefaultTypeEssentials, string, Attributes>,
+	options: AllOptions<DefaultEngineTypes, string, Attributes>,
 ) {
 	const that: AllThis = {
 		clothingData: this,
