@@ -200,8 +200,27 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 
 	/**
 	 * Ticker
+	 *
+	 * @example
+	 * ```ts
+	 * const handler: CustomHandler = async ({ clear, ticker }) => {
+	 *   const unsubscribe = ticker.add((ticker) => {
+	 *     console.log(ticker.deltaTime);
+	 *   })
+	 *
+	 *   ticker.start();
+	 *
+	 *   clear(unsubscribe);
+	 * }
+	 * ```
 	 */
 	ticker: Ticker;
+
+	/**
+	 * Fetching function.
+	 * @default fetch
+	 */
+	request: typeof fetch;
 };
 
 type CustomHandlerFunction<L extends string, S extends State> = (

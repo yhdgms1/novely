@@ -58,6 +58,10 @@ type HandleCustomActionOptions = CustomActionHandle & {
 	 * Ticker
 	 */
 	ticker: Ticker;
+	/**
+	 * Fetching function
+	 */
+	request: typeof fetch;
 };
 
 const createCustomActionNode = (id: string) => {
@@ -122,6 +126,7 @@ const handleCustomAction = (
 		templateReplace,
 		paused,
 		ticker,
+		request,
 	}: HandleCustomActionOptions,
 ) => {
 	const holder = getCustomActionHolder(ctx, fn);
@@ -216,6 +221,8 @@ const handleCustomAction = (
 		paused: ctx.meta.preview ? immutable(false) : paused,
 
 		ticker,
+
+		request,
 	});
 };
 

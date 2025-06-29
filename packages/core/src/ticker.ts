@@ -53,6 +53,8 @@ class Ticker {
 	};
 
 	public detach = () => {
+		this.listeners.clear();
+		this.stop();
 		this._factory.detach(this);
 	};
 }

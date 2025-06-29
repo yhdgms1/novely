@@ -1336,6 +1336,7 @@ const novely = <
 				paused,
 				ticker: ticker.fork(),
 				templateReplace,
+				request,
 			});
 
 			const next = () => {
