@@ -15,15 +15,18 @@ npm i @novely/moment-presser
 ## Usage
 
 ```ts
+import type { TypesFromEngine } from '@novely/core';
 import type { CreateMomentPresserOptions } from '@novely/moment-presser';
 import { createMomentPresser } from '@novely/moment-presser';
 import '@novely/moment-presser/style.css';
 
 import { extendAction } from '@novely/core';
 
+type Types = TypesFromEngine<typeof engine>;
+
 const action = extendAction(engine.action, {
-	momentPresser: (onPressed: CreateMomentPresserOptions<typeof engine.typeEssentials>['onPressed']) => {
-		const momentPresser = createMomentPresser<typeof engine.typeEssentials>({
+	momentPresser: (onPressed: CreateMomentPresserOptions<Types>['onPressed']) => {
+		const momentPresser = createMomentPresser<Types>({
 			onPressed: onPressed,
 			translation: {
 				en: {
@@ -87,8 +90,8 @@ engine.script({
   --moment-presser-button-border: <color>;
   --moment-presser-circle-background: <color>;
   --moment-presser-circle-border: <color>;
-  --moment-presser-circle-<color>: <color>;
+  --moment-presser-circle-color: <color>;
 
-  --moment-presser-caption-<color>: <color>;
+  --moment-presser-caption-color: <color>;
 }
 ```

@@ -10,7 +10,7 @@
     "fetch-highlight": "node ./fetch-highlight.mjs"
   },
   "devDependencies": {
-    "@types/node": "22.10.0",
+    "@types/node": "^24.0.7",
     "vitepress": "~1.6.3"
   },
   "pnpm": {

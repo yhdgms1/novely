@@ -63,7 +63,7 @@ createShowPicture('./mountain.jpeg').key == createShowPicture('./forest.jpeg').k
 ```
 :::
 
-### Call Only Latest
+### callOnlyLatest
 
 In our example we create a `showPicture` action. Actions are called one after another. It can be nice, but during restore process or when player hits the back button we will probably need to show only the last picture.
 
@@ -73,6 +73,20 @@ So how to make the engine to call only latest custom action that we made?
 const showPicture: CustomHandler = () => {}
 
 showPicture.callOnlyLatest = true;
+```
+
+It will look at actions that come next and see if there are actions with same `id` and `key`, or actions equal by reference (`===`), or equal by code (`.toString()`).
+
+### skipOnRestore
+
+Instead of relying on logic of `callOnlyLatest`, you can write it yourself.
+
+```ts
+const showPicture: CustomHandler = () => {}
+
+showPicture.skipOnRestore = (next) => {
+  return next.some(([action, fn]) => action === 'custom' && fn.id === Symbol.for('SHOW_PICTURE'))
+}
 ```
 
 ### Assets 
@@ -94,7 +108,7 @@ const createShowPicture = (url: string) => {
 ```
 
 ::: details Why you should give engine that information
-Engine has different [preload strategies](/guide/other-options#preloadassets). For blocking and automatic strategies it's necessary to know what your actions uses to preload it.
+Engine has different [preload strategies](/guide/other-options#preloadassets). For automatic strategy it's necessary to know what your actions uses to preload it (or magic won't work).
 
 Preloading assets is used to avoid flashing and lagging.
 :::
@@ -131,21 +145,22 @@ That way, we will
 ```ts
 const createShowPicture = (url: string) => {
   const showPicture: CustomHandler = ({ getDomNodes }) => {
+    const { promise, resolve } = Promise.withResolvers();
     const { root, element } = getDomNodes(true);
 
-    return new Promise<void>((resolve) => {
-      const image = document.createElement('img');
+    const image = document.createElement('img');
 
-      image.src = image;
-      image.className = 'show-picture__image';
+    image.src = image;
+    image.className = 'show-picture__image';
 
-      image.addEveneListener('click', () => {
-        image.remove();
-        resolve();
-      });
+    image.addEveneListener('click', () => {
+      image.remove();
+      resolve();
+    });
 
-      element.appendChild(image);
-    })
+    element.appendChild(image);
+
+    return promise;
   }
 
   showPicture.id = Symbol.for('SHOW_PICTURE');
@@ -157,106 +172,221 @@ const createShowPicture = (url: string) => {
 }
 ```
 
+### Clear
+
+Actions can make dirty job, therefore there should be a way to clean up after action's run.
+
 ```ts
-const action: CustomHandler = ({
-  data,
-  clear,
-  remove,
-  getDomNodes,
-  flags,
-  lang,
-}) => {
-  const { goingBack, preview, restoring } = flags;
+const drawSquare: CustomHandler = ({ getDomNodes, clear }) => {
+  const { promise, resolve } = Promise.withResolvers<void>();
+  const { element } = getDomNodes(true);
 
-  /**
-   * Preview is an environment in the saves page
-   */
-  if (preview) return;
+	element.style.cssText += `position: absolute; z-index: 1337; inset: 0;`
 
-  /**
-   * @param insert Insert the Node to DOM or not. Not needed when you'r action does not render something
-   */
-  const { element, root } = getDomNodes(true);
+  const canvas = document.createElement('canvas');
+  element.appendChild(canvas);
 
-  /**
-   * Root Novely Node
-   */
-  root;
+  const ctx = canvas.getContext('2d')!;
 
-  /**
-   * When `insert` is true, then HTMLDivElement, `null` otherwise
-   */
-  element;
+  const loop = (time: DOMHighResTimeStamp) => {
+    const r = Math.floor(128 + 127 * Math.sin(time * 0.001));
+    const g = Math.floor(128 + 127 * Math.sin(time * 0.001 + 2));
+    const b = Math.floor(128 + 127 * Math.sin(time * 0.001 + 4));
 
-  /**
-   * Call without arguments to read the data
-   */
-  if (data().notification) {
-    /**
-     * Provide an argument to write the data
-     */
-    data({});
+    ctx.fillStyle = `rgb(${r},${g},${b})`;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+		raf = requestAnimationFrame(loop);
   }
 
-  /**
-   * Set the function that would be called when action would be cleared
-   */
-  clear(() => {
-    data().notification?.destroy();
+  let raf = requestAnimationFrame(loop)
+  let tid = setTimeout(resolve, 3000);
+
+  return promise;
+}
+
+drawSquare.id = Symbol.for('DRAW_SQUARE');
+drawSquare.key = 'draw-square';
+```
+
+You can create cool effects like one above. But what's gonna happen when you will press "exit"? Loop will still run. It will still draw a square in background.
+Run it 100 times it will slow down player's phone and waste battery.
+
+```ts
+const drawSquare: CustomHandler = ({ getDomNodes, clear }) => {
+  const { promise, resolve } = Promise.withResolvers<void>();
+  const { element } = getDomNodes(true);
+
+  element.style.cssText += `position: absolute; z-index: 1337; inset: 0;`
+
+  const canvas = document.createElement('canvas');
+  element.appendChild(canvas);
+
+  // Remove canvas
+  clear(() => canvas.remove()) // [!code ++]
+
+  const ctx = canvas.getContext('2d')!;
+
+  const loop = (time: DOMHighResTimeStamp) => {
+    const r = Math.floor(128 + 127 * Math.sin(time * 0.001));
+    const g = Math.floor(128 + 127 * Math.sin(time * 0.001 + 2));
+    const b = Math.floor(128 + 127 * Math.sin(time * 0.001 + 4));
+
+    ctx.fillStyle = `rgb(${r},${g},${b})`;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    raf = requestAnimationFrame(loop);
+  }
+
+  let raf = requestAnimationFrame(loop)
+  let tid = setTimeout(resolve, 3000);
+
+  // Stop drawing loop
+  clear(() => cancelAnimationFrame(raf)) // [!code ++]
+
+  // Cancel timeout and resolve promise immediately
+  clear(() => { cancelTimeout(tid); resolve() }); // [!code ++]
+
+  return promise;
+}
+
+drawSquare.id = Symbol.for('DRAW_SQUARE');
+drawSquare.key = 'draw-square';
+```
+
+These clear handlers will be called in reverse order (`cancelTimeout` first, then `cancelAnimationFrame`, remove canvas last).
+
+Clear will be called in some cases, in example when player click "exit" button or "back" button.
+
+### Remove
+
+Remove function will call all registered cleanup handlers and remove element node.
+
+### templateReplace
+
+This function is very helpful when you want to manage translations. You can offer same experience to developers with your custom actions as with native actions. 
+
+```ts
+type Options<T> = T extends EngineTypes<infer $Lang, infer $State, any, any>
+	? { hello: TextContent<$Lang, $State> }
+	: never;
+
+const createTextAction = <T>({ hello }: Options<T>) => {
+  const handler: CustomHandler = ({ templateReplace, state }) => {
+    console.log(templateReplace(hello, state))
+  }
+
+  handler.id = Symbol.for('TEXT_ACTION');
+  handler.key = 'text-action';
+}
+
+createTextAction({
+  hello: {
+    en: 'Hello!',
+    ru: (state) => state.polite ? 'Здравствуйте!' : 'Привет!',
+    ja: ['こんにちは!']
+  }
+})
+```
+
+### Data
+
+You need a way to store some data, pass it between actions, right? You can you `data` for that. 
+The data is stored by `key` property on a function.
+
+```ts
+type Data = {
+  name: string | undefined
+}
+
+const example: CustomHandler = ({ data, dataAtKey }) => {
+  // Get data
+  const _data = data<Data>();
+
+  // Update data
+  if (!_data.name) {
+    _data.name = 'Luke Skywalker'
+  }
+
+  // Override data. You will replace underlying object with new one
+  // Not recommended because can be confusing
+  data<Data>({})
+
+  _data.name;        // Luke Skywalker
+  data<Data>().name; // undefined
+
+  // Get data by key. Dark magic, not recommended to use
+  dataAtKey<Data>('example').name // undefined
+}
+
+example.id = Symbol.for('EXAMPLE');
+example.key = 'example';
+```
+
+### Paused
+
+Engine [has a way](https://github.com/yhdgms1/novely/releases/tag/v0.51.0) to set focuses/blurred and paused/resumed state. It must be used when publising your game. 
+
+You will receive `paused` store. You can subscribe to it to get current paused value. Naming is confusing, but that's actually both focus & pause combined.
+
+```ts
+type Data = {
+  name: string | undefined
+}
+
+const example: CustomHandler = ({ paused, clear }) => {
+  const unsubscribe = paused.subscribe((paused) => {
+    if (paused) {
+      // game is paused or blurred
+    } else {
+      // game is resumed and focused
+    }
+  })
+
+  clear(unsubscribe)
+}
+
+example.id = Symbol.for('EXAMPLE');
+example.key = 'example';
+```
+
+### Ticker
+
+You might want to render something in `requestAnimationFrame`. But we offer you a ticker there. It automatically pauses when game pauses and resumes after.
+
+```ts
+const example: CustomHandler = ({ ticker, clear }) => {
+  const unsubscribe = ticker.add((ticker) => {
+    console.log(ticker.deltaTime)
   });
 
-  /**
-   * Delete the action data and element
-   */
-  remove();
+  ticker.start();
 
-  if (goingBack) {
-    // Player pressed the `Back` button
-  }
+  clear(unsubscribe)
+}
 
-  if (lang === "RU_ru") {
-    console.log("Russian detected");
-  }
-};
+example.id = Symbol.for('EXAMPLE');
+example.key = 'example';
+```
 
-//! Important // [!code warning]
-/**
- * Key under which data from `get` function will be stored
- */
-action.key = "notifications";
+### Request
 
-/**
- * This is used to know which action is which
- */
-action.id = Symbol("notification");
+There is a way to [customise used fetch function](/guide/other-options.html#fetch). Custom Actions should use that function if they need to fetch something. Don't make anybody patch globals.
 
-/**
- * Assets (pictures urls) if any is rendered
- */
-action.assets = []
+The exception is when you need to use [XHR](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
 
-/**
- * Let's imagine you'r action show's some notifications
- * When restoring game action would be called lots of times and lots of notifications will be shown
- * But `callOnlyLatest` will make novely call only latest action of that type.
- *
- * The check is make using `action.id` OR `fn1 === fn2` OR `fn1.toString() === fn2.toString()`
- */
-action.callOnlyLatest = true;
+```ts
+const example: CustomHandler = ({ request }) => {
+  fetch('https://') // [!code --]
+  request('https://') // [!code ++]
+}
 
-/**
- * Do not call `clear` when goingBack (when player clicked the `Back` button)
- */
-action.skipClearOnGoingBack = true;
-
-/**
- * When set to true, novely would wait until `resolve` function is called
- */
-action.requireUserAction = true;
-
-engine.script({
-  start: [engine.action.custom(action)],
-});
+example.id = Symbol.for('EXAMPLE');
+example.key = 'example';
 ```
 
 Novely itself uses custom action in [particles](https://github.com/yhdgms1/novely/tree/main/packages/particles).

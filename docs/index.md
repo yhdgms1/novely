@@ -32,7 +32,7 @@ features:
     details: Development efficiency and reliability, type checking, easier and more productive development experience
   - title: Open Source
     icon: 🔓
-    details: Novely is an OSS, giving developers access to the source code and the freedom to change, distribute and improve the product as needed
+    details: It's OSS, giving you access to source code and the freedom to change, distribute and improve the product as needed
   - title: Multiplatform
     icon: 🌐
     details: Built on the Web, available on all platforms
