@@ -6,6 +6,7 @@ import type { Data, Lang, Stack, State, StateFunction } from './types';
 import { noop } from './utilities';
 import { immutable } from './store';
 import { once } from 'es-toolkit/function';
+import type { Ticker } from './ticker';
 
 type CleanupFn = () => void;
 
@@ -53,6 +54,10 @@ type HandleCustomActionOptions = CustomActionHandle & {
 	 * Paused Store
 	 */
 	paused: Derived<boolean>;
+	/**
+	 * Ticker
+	 */
+	ticker: Ticker;
 };
 
 const createCustomActionNode = (id: string) => {
@@ -116,6 +121,7 @@ const handleCustomAction = (
 		getStack,
 		templateReplace,
 		paused,
+		ticker,
 	}: HandleCustomActionOptions,
 ) => {
 	const holder = getCustomActionHolder(ctx, fn);
@@ -130,7 +136,7 @@ const handleCustomAction = (
 
 	const cleanupSource: CustomActionCleanupHolderItem = {
 		fn,
-		list: [],
+		list: [ticker.detach],
 		node: cleanupNode,
 	};
 
@@ -208,6 +214,8 @@ const handleCustomAction = (
 		contextKey: ctx.id,
 
 		paused: ctx.meta.preview ? immutable(false) : paused,
+
+		ticker,
 	});
 };
 

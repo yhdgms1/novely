@@ -241,6 +241,14 @@ true &&
 				ru: 'Привет 3',
 			}),
 			action.momentPresser((_, state) => console.log(state)),
+			action.say('Lily', {
+				en: 'Hello 4',
+				ru: 'Привет 5',
+			}),
+			action.say('Lily', {
+				en: 'Hello 5',
+				ru: 'Привет 5',
+			}),
 			action.end(),
 		],
 	});

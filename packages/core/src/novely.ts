@@ -72,6 +72,7 @@ import { buildActionObject } from './utilities/actions';
 import { unwrapAsset, unwrapAudioAsset, unwrapImageAsset } from './asset';
 import { getDialogOverview } from './utilities/dialog-overview';
 import { setDocumentLanguage } from './utilities/document';
+import { TickerFactory } from './ticker';
 
 const novely = <
 	$Language extends string,
@@ -1043,6 +1044,8 @@ const novely = <
 		},
 	};
 
+	const ticker = new TickerFactory(paused);
+
 	// #region Match Action
 	const { match, nativeActions } = matchAction(matchActionOptions, {
 		wait({ ctx, data, push }, [time]) {
@@ -1331,6 +1334,7 @@ const novely = <
 				lang,
 				getStack: useStack,
 				paused,
+				ticker: ticker.fork(),
 				templateReplace,
 			});
 
@@ -1672,6 +1676,8 @@ const novely = <
 			dataLoaded.cancel();
 
 			UIInstance.unmount();
+
+			ticker.destroy();
 
 			removeEventListener('beforeunload', throttledShortOnStorageDataChange);
 

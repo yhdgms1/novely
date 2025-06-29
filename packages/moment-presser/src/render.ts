@@ -1,6 +1,6 @@
 import type { Variables } from './css-variables';
+import type { Ticker } from '@novely/core';
 import { PI, PI_OVER_TWO, TWO_PI, clamp, cos, max, random, sin } from './math';
-import { scheldue } from './render-schelduer';
 
 const st = PI + PI / 6;
 const ed = TWO_PI - PI / 6;
@@ -113,6 +113,8 @@ const renderStaticObjects = ({ ctx, fontSize, variables, get }: RenderStaticCicl
 };
 
 type StartRenderOptions = {
+	ticker: Ticker;
+
 	variables: Variables;
 	fontSize: number;
 
@@ -125,7 +127,7 @@ type StartRenderOptions = {
 	get: () => number | undefined;
 };
 
-const startRender = ({ preview, ctx, staticCtx, fontSize, variables, set, get }: StartRenderOptions) => {
+const startRender = ({ ticker, preview, ctx, staticCtx, fontSize, variables, set, get }: StartRenderOptions) => {
 	let position = 0;
 	let direction: 'right' | 'left' = 'right';
 
@@ -152,15 +154,16 @@ const startRender = ({ preview, ctx, staticCtx, fontSize, variables, set, get }:
 	 */
 	if (preview) {
 		return {
-			stop: () => {},
-			start: () => {},
+			cleanup: () => {},
 			getState: () => 'MISS' as const,
 		};
 	}
 
 	const strokeWidth = rem(6.125);
 
-	const schelduer = scheldue((_, dtm) => {
+	const cleanup = ticker.add((ticker) => {
+		const dtm = ticker.deltaTime / (1000 / 60);
+
 		const { width: canvasWidth, height: canvasHeight } = ctx.canvas;
 
 		ctx.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -200,6 +203,8 @@ const startRender = ({ preview, ctx, staticCtx, fontSize, variables, set, get }:
 		position = clamp(0, position + change, 1);
 	});
 
+	ticker.start();
+
 	const getState = () => {
 		const angle = getAngle(position);
 
@@ -215,8 +220,7 @@ const startRender = ({ preview, ctx, staticCtx, fontSize, variables, set, get }:
 	};
 
 	return {
-		stop: schelduer.stop,
-		start: schelduer.start,
+		cleanup,
 		getState,
 	};
 };

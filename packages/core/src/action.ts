@@ -1,6 +1,7 @@
 import type { Character } from './character';
 import type { Context } from './renderer';
 import type { Derived } from './store';
+import type { Ticker } from './ticker';
 import type { Lang, NonEmptyRecord, NovelyAsset, Path, Save, State, StateFunction, Thenable } from './types';
 
 type ValidAction =
@@ -196,6 +197,11 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 	 * }
 	 */
 	paused: Derived<boolean>;
+
+	/**
+	 * Ticker
+	 */
+	ticker: Ticker;
 };
 
 type CustomHandlerFunction<L extends string, S extends State> = (

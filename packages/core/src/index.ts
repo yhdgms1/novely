@@ -80,3 +80,5 @@ export { RU, EN } from './translations';
 export { asset } from './asset';
 
 export { pauseOnBlur } from './browser-events';
+
+export type { Ticker } from './ticker';

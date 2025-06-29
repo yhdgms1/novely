@@ -17,7 +17,7 @@ type MomentPresserOptions<$Lang extends Lang, $State extends State> = {
 };
 
 const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
-	const fn: CustomHandler = ({ getDomNodes, clear, remove, state, paused, lang, flags: { preview } }) => {
+	const fn: CustomHandler = ({ getDomNodes, clear, remove, state, ticker, lang, flags: { preview } }) => {
 		const { promise, resolve } = Promise.withResolvers<void>();
 
 		const { element } = getDomNodes(true);
@@ -54,7 +54,9 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
 		const fontSize = Number.parseFloat(getComputedStyle(element).fontSize);
 		const variables = parseVariables(element);
 
-		const { stop, start, getState } = startRender({
+		const renderer = startRender({
+			ticker,
+
 			variables,
 			fontSize,
 
@@ -72,7 +74,8 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
 		});
 
 		const cleanup = once(() => {
-			stop();
+			ticker.stop();
+			renderer.cleanup();
 
 			button.removeEventListener('click', onButtonClick);
 
@@ -85,7 +88,7 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
 		const onButtonClick = once(() => {
 			if (preview) return;
 
-			options.onPressed?.(state, getState());
+			options.onPressed?.(state, renderer.getState());
 
 			state({ $$momentPresserStart: undefined });
 
@@ -97,18 +100,7 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
 
 		button.addEventListener('click', onButtonClick);
 
-		const unsubscribe = paused.subscribe((paused) => {
-			if (paused) {
-				stop();
-			} else {
-				start();
-			}
-		});
-
-		clear(() => {
-			cleanup();
-			unsubscribe();
-		});
+		clear(cleanup);
 
 		if (preview) {
 			resolve();
