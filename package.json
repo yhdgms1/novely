@@ -34,7 +34,7 @@
 		"build:dynamic-character": "pnpm --filter=@novely/dynamic-character... --parallel build"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^1.9.4",
+		"@biomejs/biome": "^2.0.6",
 		"husky": "^9.1.7"
 	},
 	"pnpm": {

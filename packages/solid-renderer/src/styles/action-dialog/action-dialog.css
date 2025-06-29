@@ -37,7 +37,7 @@
 	color: var(--novely-dialog-color, #ffffff);
 
 	border: var(--novely-dialog-border-width, 0.15rem) solid var(--novely-dialog-border-color, #ffffff);
-	border-radius: var(--novely-dialog-border-radius, .4rem);
+	border-radius: var(--novely-dialog-border-radius, 0.4rem);
 	box-shadow: var(--novely-px) var(--novely-px) 0.2rem var(--novely-dialog-box-shadow-color, #00000072);
 
 	background-image: var(--novely-dialog-background-image, none);
@@ -101,9 +101,11 @@
 	word-break: break-word;
 
 	/* biome-ignore */
-	text-shadow: var(--novely-px) var(--novely-px) 0 black, calc(var(--novely-px) * -1) calc(var(--novely-px) * -1) 0
-		black, var(--novely-px) calc(var(--novely-px) * -1) 0 black, calc(var(--novely-px) * -1) var(--novely-px) 0
-		black;
+	text-shadow:
+		var(--novely-px) var(--novely-px) 0 black,
+		calc(var(--novely-px) * -1) calc(var(--novely-px) * -1) 0 black,
+		var(--novely-px) calc(var(--novely-px) * -1) 0 black,
+		calc(var(--novely-px) * -1) var(--novely-px) 0 black;
 }
 
 .action-dialog-content--disable-shadow {

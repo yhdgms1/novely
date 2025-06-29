@@ -13,7 +13,7 @@
 	width: 100%;
 	height: 80%;
 
-	padding: var(--novely-saves-list-border-width, .875rem) 1rem;
+	padding: var(--novely-saves-list-border-width, 0.875rem) 1rem;
 
 	display: flex;
 	align-content: flex-start;
@@ -34,12 +34,12 @@
 
 	touch-action: auto !important;
 
-	border-radius: var(--novely-saves-list-border-radius, .875rem);
+	border-radius: var(--novely-saves-list-border-radius, 0.875rem);
 	background-color: var(--novely-saves-list-background-color, #ffffff57);
 }
 
 .saves__list::-webkit-scrollbar {
-	width: var(--novely-saves-list-border-width, .875rem);
+	width: var(--novely-saves-list-border-width, 0.875rem);
 }
 
 .saves__list::-webkit-scrollbar-track {
@@ -147,7 +147,9 @@
  */
 .saves__list-item__overlay-enter-active,
 .saves__list-item__overlay-exit-active {
-	transition: opacity 0.3s, transform 0.3s;
+	transition:
+		opacity 0.3s,
+		transform 0.3s;
 }
 
 .saves__list-item__overlay-enter,

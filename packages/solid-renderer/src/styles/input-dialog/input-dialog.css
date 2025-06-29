@@ -35,7 +35,7 @@
 	color: var(--novely-input-dialog-color, #ffffff);
 
 	border: var(--novely-input-dialog-border-width, 0.15rem) solid var(--novely-input-dialog-border-color, #ffffff);
-	border-radius: var(--novely-input-dialog-border-radius, .4rem);
+	border-radius: var(--novely-input-dialog-border-radius, 0.4rem);
 	box-shadow: var(--novely-px) var(--novely-px) 0.2rem var(--novely-input-dialog-box-shadow-color, #00000072);
 
 	background-image: var(--novely-input-dialog-background-image, none);

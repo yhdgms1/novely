@@ -16,7 +16,7 @@
 
 	width: calc(100% - (var(--select-box-shadow-spread-radius, 0.25rem) * 2));
 
-	border-radius: .25rem;
+	border-radius: 0.25rem;
 }
 
 @supports (-webkit-appearance: none) {

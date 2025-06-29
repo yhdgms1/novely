@@ -56,11 +56,11 @@
 	overflow-x: hidden;
 	overflow-y: scroll;
 
-	padding: 0 var(--novely-saves-list-border-width, .675rem) 0 0;
+	padding: 0 var(--novely-saves-list-border-width, 0.675rem) 0 0;
 }
 
 .dialog-overview__body::-webkit-scrollbar {
-	width: var(--novely-saves-list-border-width, .675rem);
+	width: var(--novely-saves-list-border-width, 0.675rem);
 }
 
 .dialog-overview__body::-webkit-scrollbar-track {
@@ -78,7 +78,7 @@
 /* todo: fix spacing is too large in chromium */
 .dialog-overview__list {
 	border-collapse: separate;
-	border-spacing: .75rem;
+	border-spacing: 0.75rem;
 
 	padding: 1rem;
 

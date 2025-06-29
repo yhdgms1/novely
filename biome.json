@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.3/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
 	"formatter": {
 		"enabled": true,
 		"formatWithErrors": false,
@@ -8,11 +8,10 @@
 		"lineEnding": "lf",
 		"lineWidth": 115,
 		"attributePosition": "auto",
-		"ignore": ["**/pnpm-lock.yaml", "dist/**"]
+		"includes": ["packages/**", "!**/pnpm-lock.yaml", "!**/package.json"]
 	},
-	"organizeImports": { "enabled": true },
 	"linter": {
-		"ignore": ["dist/**"],
+		"includes": ["src/**"],
 		"enabled": true,
 		"rules": {
 			"recommended": false,
@@ -45,25 +44,20 @@
 		}
 	},
 	"overrides": [
-		{ "include": [".eslintrc.{js,cjs}"] },
 		{
-			"include": ["*.ts", "*.tsx", "*.mts", "*.cts"],
+			"includes": ["*.ts", "*.tsx", "*.mts", "*.cts"],
 			"linter": {
 				"rules": {
 					"correctness": {
 						"noConstAssign": "off",
 						"noGlobalObjectCalls": "off",
 						"noInvalidConstructorSuper": "off",
-						"noInvalidNewBuiltin": "off",
-						"noNewSymbol": "off",
 						"noSetterReturn": "off",
 						"noUndeclaredVariables": "off",
 						"noUnreachable": "off",
 						"noUnreachableSuper": "off"
 					},
 					"style": {
-						"noArguments": "error",
-						"noVar": "error",
 						"useConst": "error"
 					},
 					"suspicious": {

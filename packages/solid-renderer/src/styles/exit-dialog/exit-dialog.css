@@ -5,7 +5,7 @@
 	color: var(--novely-exit-dialog-color, #ffffff);
 
 	border: var(--novely-exit-dialog-border-width, 0.15rem) solid var(--novely-exit-dialog-border-color, #ffffff);
-	border-radius: var(--novely-exit-dialog-border-radius, .4rem);
+	border-radius: var(--novely-exit-dialog-border-radius, 0.4rem);
 	box-shadow: var(--novely-px) var(--novely-px) 0.2rem var(--novely-exit-dialog-box-shadow-color, #00000072);
 
 	background-image: var(--novely-exit-dialog-background-image, none);

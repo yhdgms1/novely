@@ -10,7 +10,9 @@
 		radial-gradient(#d6608998 20%, transparent 20%),
 		radial-gradient(#d6608998 20%, transparent 20%)
 	);
-	background-position: 0 0, 3.125rem 3.125rem;
+	background-position:
+		0 0,
+		3.125rem 3.125rem;
 	background-size: 6.25rem 6.25rem;
 	color: var(--appearance-picker-color, #000);
 	bottom: 0;
@@ -59,8 +61,9 @@
 	background-color: #ffc7df;
 	border-radius: 0.875rem;
 	transition: opacity 150ms ease-in-out;
-	box-shadow: 0 0 0 0.15rem var(--appearance-picker-tablist-border-color, #ffa6cd), var(--novely-px)
-		var(--novely-px) 0.25rem var(--appearance-picker-box-shadow-color, #00000072);
+	box-shadow:
+		0 0 0 0.15rem var(--appearance-picker-tablist-border-color, #ffa6cd),
+		var(--novely-px) var(--novely-px) 0.25rem var(--appearance-picker-box-shadow-color, #00000072);
 	text-align: center;
 }
 
