@@ -1,5 +1,23 @@
 import fetchAssetsKeys from "./fetch-assets-keys";
 
+class StaticResponse extends Response {
+  _arrayBuffer: ArrayBuffer;
+
+  constructor(body: ArrayBuffer) {
+    super(body, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    this._arrayBuffer = body;
+  }
+
+  async arrayBuffer() {
+    return this._arrayBuffer;
+  }
+}
+
 const responseCache = new Map<string, Response>();
 
 const request = async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -16,15 +34,9 @@ const request = async (input: RequestInfo | URL, init?: RequestInit) => {
     }
 
     const json = JSON.stringify(entry);
-    const arrayBuffer = new TextEncoder().encode(json).buffer as ArrayBuffer;
+    const buffer = new TextEncoder().encode(json).buffer as ArrayBuffer;
 
-    const response = new Response(arrayBuffer, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    Object.defineProperty(response, 'arrayBuffer', { value: async () => arrayBuffer });
+    const response = new StaticResponse(buffer);
 
     responseCache.set(input, response);
 

@@ -31,3 +31,11 @@
 [data-dialog-overview-button] {
 	display: flex;
 }
+
+.settings__options .select:nth-child(2) {
+  display: none;
+}
+
+.control-panel__button--auto-mode {
+  display: none;
+}

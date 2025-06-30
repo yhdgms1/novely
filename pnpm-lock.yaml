@@ -12,8 +12,8 @@ importers:
         specifier: ^0.53.0
         version: 0.53.0
       '@novely/live2d':
-        specifier: ^0.2.0
-        version: 0.2.0(@novely/core@0.53.0)
+        specifier: ^0.3.0
+        version: 0.3.0(@novely/core@0.53.0)
       '@novely/moment-presser':
         specifier: ^0.5.0
         version: 0.5.0(@novely/core@0.53.0)
@@ -841,8 +841,8 @@ packages:
   '@novely/core@0.53.0':
     resolution: {integrity: sha512-0XGho95xmHCSbA14/Aly21PniY/qAeCxGsAOnx8iTF0jxqLhUrt0YKjedv5aHb/yr12jHT8dTajMoly45iz/kA==}
 
-  '@novely/live2d@0.2.0':
-    resolution: {integrity: sha512-LF3kqC+igiBszPgmehZG/CXLNRzbE0qeye8yIln6PZGoLSL0a8b2xQExanbOqnFIFUemqMtd/1ac7Ozp2HEKYA==}
+  '@novely/live2d@0.3.0':
+    resolution: {integrity: sha512-ULdv3FSGrgxJuLHfjNV94fCSY6EwvZbUh/PMK3ebDcqFhsvNHjvXuyyXI1BbNmTv7xkuCeH3hlma1LQaVxheeQ==}
     peerDependencies:
       '@novely/core': '*'
 
@@ -2774,7 +2774,7 @@ snapshots:
       klona: 2.0.6
       p-limit: 6.2.0
 
-  '@novely/live2d@0.2.0(@novely/core@0.53.0)':
+  '@novely/live2d@0.3.0(@novely/core@0.53.0)':
     dependencies:
       '@novely/core': 0.53.0
       easy-cl2d: 0.3.0
