@@ -1,18 +1,15 @@
 {
-	"name": "@novely/moment-presser",
-	"description": "Moment Presser Action",
-	"version": "0.5.0",
+	"name": "@novely/live2d",
+	"description": "Integration of live2d for novely",
+	"version": "0.2.0",
 	"type": "module",
 	"sideEffects": false,
-	"types": "./dist/index.d.ts",
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
+			"import": "./dist/index.js",
+			"default": "./dist/index.js"
 		},
-		"./style.css": "./dist/index.css",
 		"./*": "./dist/*",
 		"./package.json": "./package.json"
 	},
@@ -24,7 +21,9 @@
 		"build": "tsup --dts"
 	},
 	"dependencies": {
-		"@novely/core": "workspace:^"
+		"@novely/core": "workspace:*",
+		"easy-cl2d": "^0.3.0",
+		"es-toolkit": "^1.39.5"
 	},
 	"devDependencies": {
 		"tsup": "^8.5.0",
@@ -37,8 +36,8 @@
 	"bugs": {
 		"url": "https://github.com/yhdgms1/novely/issues"
 	},
-	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/moment-presser",
-	"keywords": ["novely"],
+	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/live2d",
+	"keywords": [],
 	"author": {
 		"name": "Artemiy Schukin",
 		"url": "https://github.com/yhdgms1"

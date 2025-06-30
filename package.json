@@ -31,7 +31,9 @@
 		"dev:flex-storage": "pnpm --filter=@novely/flex-storage... --parallel dev",
 		"build:flex-storage": "pnpm --filter=@novely/flex-storage... --parallel build",
 		"dev:dynamic-character": "pnpm --filter=@novely/dynamic-character... --parallel dev",
-		"build:dynamic-character": "pnpm --filter=@novely/dynamic-character... --parallel build"
+		"build:dynamic-character": "pnpm --filter=@novely/dynamic-character... --parallel build",
+		"dev:live2d": "pnpm --filter=@novely/live2d... --parallel dev",
+		"build:live2d": "pnpm --filter=@novely/live2d... --parallel build"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.0.6",
