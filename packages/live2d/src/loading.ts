@@ -21,14 +21,28 @@ type InitializeOptions = {
 	 * @param fetch Function that will load Pixi.js and pixi-live2d-display
 	 */
 	libraryFetch?: (fetch: () => void) => void;
+	/**
+	 * Logging function
+	 * @default console.log
+	 */
+	logFunction?: (...args: any[]) => void;
+	/**
+	 * Logging level
+	 * @default "off"
+	 */
+	logLevel?: 'verbose' | 'debug' | 'info' | 'warning' | 'error' | 'off';
 };
 
 type Shared = {
 	runtimeURL: string;
+	logFunction: (...args: any[]) => void;
+	logLevel: 'verbose' | 'debug' | 'info' | 'warning' | 'error' | 'off';
 };
 
 const shared: Shared = {
 	runtimeURL: '',
+	logFunction: console.log,
+	logLevel: 'off',
 };
 
 const {
@@ -79,8 +93,17 @@ const fetchLibrary = once(async () => {
 	fetchRuntime();
 
 	try {
-		libResolve(await import('./cubism-module'));
-		log('Library Load');
+		const library = await import('./cubism-module');
+
+		await runtime;
+
+		library.startup({
+			logLevel: shared.logLevel,
+			log: shared.logFunction,
+		});
+
+		libResolve(library);
+		log('Cubism Library Load');
 	} catch {
 		libReject();
 	}
