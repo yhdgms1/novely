@@ -27,3 +27,7 @@
 .characters > canvas {
   max-height: 90vh;
 }
+
+[data-dialog-overview-button] {
+	display: flex;
+}

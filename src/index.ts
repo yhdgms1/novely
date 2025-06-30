@@ -25,11 +25,35 @@ script({
       en: 'And realize that you don’t know where you are.',
       ru: 'И понимаешь, что не знаешь, где находишься.'
     }),
+    a.addModel(
+      'Alena',
+      { directory: 'Alena', model3: 'Alena.model3.json' },
+      {
+        onTap: () => {},
+        onIdle: ({ model }) => {
+          // todo: add Idle animation
+          model.startRandomMotion('Idle', 1)
+        }
+      }
+    ),
     a.say('Me', {
       en: 'W-where am I?',
       ru: 'Г-где я?'
     }),
-    a.talk('Darya', {
+    a.useModel(
+      'Alena',
+      ({ model }) => {
+        if (!model) return;
+
+        model.startRandomMotion('TapBody', 2);
+
+        return () => {
+          model.startRandomMotion('Idle', 2);
+          console.log('Cancel')
+        }
+      }
+    ),
+    a.talk('Alena', {
       en: 'In the demo of the Novely novel engine. Let me show you what I can do?',
       ru: 'В демке движка визуальных новелл Novely. Давай покажу тебе что я умею?'
     }),
@@ -54,11 +78,11 @@ script({
         active: () => false,
       }
     ),
-    a.talk('Darya', {
+    a.talk('Alena', {
       en: 'Well, it seems you had no choice.',
       ru: 'Что-ж, кажется, у тебя не было выбора.'
     }),
-    a.talk('Darya', {
+    a.talk('Alena', {
       en: 'But surely the concept of choice was clear?',
       ru: 'Но ведь концепция выбора была понятна?'
     }),
@@ -80,7 +104,7 @@ script({
           ru: 'Хочу'
         },
         children: [
-          a.talk('Darya', {
+          a.talk('Alena', {
             en: 'To create a choice dialog, you only need to specify a title, which is optional, and the choice options. Each option consists of the option text and a description of what will happen when it is selected. You can also make an option inactive or hide it completely.',
             ru: 'Для создания диалога выбора нужно лишь указать заголовок, который, впрочем, опционален, и варианты выбора. Каждый вариант — это текст варианта и описание того что будет происходить при его выборе. Так же вариант можно сделать неактивным или вовсе скрыть его.'
           }),
@@ -88,7 +112,7 @@ script({
             en: 'And what does the description of what is happening look like?',
             ru: 'А как выглядит описание того что происходит?'
           }),
-          a.talk('Darya', {
+          a.talk('Alena', {
             en: 'Just like the rest of the story. In short, the story looks like an array of actions performed one after the other, for example, showing text or animating a character.',
             ru: 'Так же как и вся остальная история. Вкратце — история выглядит как массив выполняемых друг за другом действий, например, показ текста или анимация персонажа.'
           }),
@@ -99,55 +123,55 @@ script({
       en: 'The player makes a choice, and based on that choice, something happens. What else is there?',
       ru: 'Игрок делает какой-то выбор, и на основе этого выбора что-то происходит. Что есть ещё?'
     }),
-    a.talk('Darya', {
+    a.talk('Alena', {
       en: 'You can also create branches based on certain conditions. Each condition has its own branch. The next phrase I am going to say will be from the branch based on the condition.',
       ru: 'Ещё можно сделать ответвления на основе какого-то условия. Для каждого условия прописывается своя ветка. Следующая фраза которую я скажу будет как раз из ветки по условию.'
     }),
     a.condition(getDeviceType, {
       mobile: [
-        a.talk('Darya', {
+        a.talk('Alena', {
           en: 'And I know you’re on your phone right now.',
           ru: 'А я знаю что ты сейчас сидишь в телефоне.'
         })
       ],
       tablet: [
-        a.talk('Darya', {
+        a.talk('Alena', {
           en: 'You are currently using a tablet.',
           ru: 'Сейчас ты пользуешься планшетом.'
         })
       ],
       console: [
-        a.talk('Darya', {
+        a.talk('Alena', {
           en: 'Browser gaming on consoles!',
           ru: 'Браузерный гейминг на консолях!'
         })
       ],
       smarttv: [
-        a.talk('Darya', {
+        a.talk('Alena', {
           en: 'You’re currently on a smart TV?',
           ru: 'Ты сейчас на смарт-ТВ?'
         })
       ],
       wearable: [
-        a.talk('Darya', {
+        a.talk('Alena', {
           en: 'You play on your wearable? It’s too much even for me!',
           ru: 'Играешь на часах? Это слишком даже для меня!'
         })
       ],
       xr: [
-        a.talk('Darya', {
+        a.talk('Alena', {
           en: 'Wow, are you in XR?',
           ru: 'Ого, ты в дополненной реальности?'
         })
       ],
       embedded: [
-        a.talk('Darya', {
+        a.talk('Alena', {
           en: 'Are you running this on a toaster?',
           ru: 'Запускаешь это на тостере?'
         })
       ],
       desktop: [
-        a.talk('Darya', {
+        a.talk('Alena', {
           en: 'You’re sitting at the desktop or on a laptop?',
           ru: 'Ты сидишь за компьютером или за ноутбуком?'
         })
@@ -162,7 +186,7 @@ script({
       ru: '<em>Кажется, чтобы лучше понять что тут происходит нужно смотреть код... Но может есть ещё что-то интересное?</em>'
     }),
     a.setMood(''),
-    a.talk('Darya', {
+    a.talk('Alena', {
       en: 'By the way, what’s your name?',
       ru: 'Кстати, а как тебя зовут?'
     }),
@@ -171,7 +195,7 @@ script({
         en: 'Enter anything',
         ru: 'Введите что угодно'
       },
-      ({ input, error, state, value }) => {
+      ({ input, error, state, value, lang }) => {
         error(input.validationMessage);
 
         if (!input.validationMessage) {
@@ -185,30 +209,36 @@ script({
         input.setAttribute('maxlength', '46');
       },
     ),
-    a.talk('Darya', {
+    a.talk('Alena', {
       en: 'Nice to meet you, {{name.en}}! Now let’s try something interesting.',
       ru: 'Приятно познакомиться, {{name.ru}}! А давай теперь попробуем кое-что интересное?'
     }),
     a.showBackground(night),
-    a.talk('Darya', {
-      en: 'When the moving indicator gets into the highlighted area, press "Stop"! Are you ready?',
-      ru: 'Когда двигающийся индикатор попадёт в выделенную зону — нажимай "Стоп"! Готов(-а)?'
-    }),
-    a.say('Me', {
-      en: 'More than ever!',
-      ru: 'Как никогда!'
+    a.talk('Alena', {
+      en: 'When the moving indicator gets into the highlighted area, press "Stop". Let’s go!',
+      ru: 'Когда двигающийся индикатор попадёт в выделенную зону — нажимай "Стоп". Начинаем!'
     }),
     a.jump('scene_2'),
   ],
   scene_2: [
     a.showBackground(night),
+    a.addModel(
+      'Alena',
+      { directory: 'Alena', model3: 'Alena.model3.json' },
+      {
+        onTap: () => {},
+        onIdle: ({ model }) => {
+          model.startRandomMotion('Idle', 1)
+        }
+      }
+    ),
     a.momentPresser((state, pressState) => state({ pressState })),
     a.condition((state) => state.pressState, {
       'MISS': [
         a.function(({ state }) => state({ pressCount: state().pressCount + 1 })),
         a.condition((state) => state.pressCount >= 3, {
           'true': [
-            a.talk('Darya', {
+            a.talk('Alena', {
               en: 'Okay, enough trying.',
               ru: 'Ладно, хватит попыток.'
             }),
@@ -216,7 +246,7 @@ script({
             a.jump('scene_3')
           ],
           'false': [
-            a.talk('Darya', {
+            a.talk('Alena', {
               en: 'Try again. I believe in you!',
               ru: 'Попробуй ещё раз. Я верю в тебя!'
             }),
@@ -225,7 +255,7 @@ script({
         })
       ],
       'PASS': [
-        a.talk('Darya', {
+        a.talk('Alena', {
           en: 'Nice! That was almost perfect.',
           ru: 'Хорошо! Почти идеально.'
         }),
@@ -233,7 +263,7 @@ script({
         a.jump('scene_3')
       ],
       'PERFECT': [
-        a.talk('Darya', {
+        a.talk('Alena', {
           en: 'Wow! That was perfect!',
           ru: 'Ух ты! Это было идеально!'
         }),
@@ -245,18 +275,23 @@ script({
   scene_3: [
     a.showBackground(fountain),
     a.showParticles(particles),
+    a.addModel(
+      'Alena',
+      { directory: 'Alena', model3: 'Alena.model3.json' },
+      {
+        onTap: () => {},
+        onIdle: ({ model }) => {
+          model.startRandomMotion('Idle', 1)
+        }
+      }
+    ),
     a.say('Me', {
       en: 'Was it supposed to be interesting?',
       ru: 'Это должно было быть интересно?'
     }),
-    // too long and boring
-    a.talk('Darya', {
-      en: 'If you miss, you can try again, and if you miss three times, you move on. And if you hit it, you get praised. And that’s only 41 lines of code!',
-      ru: 'Заметь — не попадаешь, то можешь попробовать снова, а если не попадаешь три раза, то проходишь дальше. А если попал тебя ещё и хвалят. И это всего 41 строчка кода!'
-    }),
-    a.talk('Darya', {
-      en: 'But that’s not the important thing. What’s important is that both the particles behind me and this mini-game where you have to press at the right time are not part of the engine, but are connected separately.',
-      ru: 'Но важно не это. А то, что и частицы за моей спиной, и эта мини-игра где нужно нажать вовремя не входят в основную часть движка, а подключаются отдельно.'
+    a.talk('Alena', {
+      en: 'If you hit it, well done; if you miss three times, never mind, and move on. Mini-game in only 41 lines of code!',
+      ru: 'Попал — молодец, не попал трижды — так уж и быть, пропустим дальше. Мини-игра всего в 41 строку кода!'
     }),
   ]
 });

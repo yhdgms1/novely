@@ -27,7 +27,7 @@ const extract = (input: Record<string, unknown>) => {
  */
 const backgrounds = import.meta.glob('./backgrounds/*.png', {
   eager: true,
-  query: '?format=avif;webp;jpeg&effort=max'
+  query: '?format=avif;webp;jpeg'
 });
 
 /**
@@ -36,8 +36,8 @@ const backgrounds = import.meta.glob('./backgrounds/*.png', {
  */
 const characters = import.meta.glob('./characters/*.png', {
   eager: true,
-  query: '?format=webp;png&effort=max'
+  query: '?format=webp;png'
 });
 
 export const { fountain, night } = extract(backgrounds);
-export const { darya } = extract(characters);
+export const {} = extract(characters);

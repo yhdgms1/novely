@@ -8,7 +8,7 @@
  * in this case it's not used and will be disabled
  */
 
-import './purifier.css';
+import './css/purifier.css';
 
 if (import.meta.env.PROD) {
   document.addEventListener('contextmenu', (event) => {

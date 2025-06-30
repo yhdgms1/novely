@@ -1,2 +1,8 @@
 node_modules
 dist
+live2dcubismcore.js*
+
+src/fetch-assets-keys.ts
+src/fetch-assets.ts
+
+public/Alena

@@ -1,14 +1,15 @@
 import { novely, storageAdapterLocal, pauseOnBlur, EN, RU } from '@novely/core';
 import { createRenderer } from '@novely/solid-renderer';
-import { darya } from './assets'
+import { request } from './fetcher';
 
 const { renderer } = createRenderer();
 
 const engine = novely({
 	askBeforeExit: false,
 	defaultTypewriterSpeed: 'Fast',
+	fetch: request,
 	renderer,
-	storage: storageAdapterLocal({ key: 'demo' }),
+	storage: storageAdapterLocal({ key: 'demo-game' }),
 	translation: {
 		en: {
 			internal: EN,
@@ -18,15 +19,13 @@ const engine = novely({
 		}
 	},
 	characters: {
-		Darya: {
+		Alena: {
 			name: {
-				en: 'Darya',
-				ru: 'Дарья'
+				en: 'Alena',
+				ru: 'Алёна'
 			},
 			color: '#ed5c87',
-			emotions: {
-				default: darya,
-			},
+			emotions: {},
 		},
 		Me: {
 			name: {
@@ -36,9 +35,6 @@ const engine = novely({
 			color: '#000000',
 			emotions: {},
 		},
-	},
-	defaultEmotions: {
-		Darya: 'default'
 	},
 	state: {
 		name: {
