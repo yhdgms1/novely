@@ -25,7 +25,9 @@ for (const dir of cubismDirs) {
     const size = new Blob([JSON.stringify(json)]).size;
 
     if (entry.parentPath === dir || size <= 32 * 1024) {
-      cache.push([filePath.replace(publicPath, '').slice(1), json])
+      const name = filePath.replace(publicPath, '').slice(1).replaceAll(path.win32.sep, path.posix.sep);
+
+      cache.push([name, json])
     }
   }
 }

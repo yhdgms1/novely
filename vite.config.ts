@@ -19,5 +19,8 @@ export default defineConfig(() => {
 			legalComments: 'none'
 		},
 		base: './',
+		server: {
+			host: '0.0.0.0',
+		}
 	} satisfies UserConfig;
 });

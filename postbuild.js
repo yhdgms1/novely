@@ -7,5 +7,15 @@ const assetsJson = await fs.readFile(path.resolve(import.meta.dirname, 'src', 'f
 const assets = JSON.parse(assetsJson);
 
 for (const asset of assets) {
-  await fs.rm(path.resolve(distPath, asset), { force: true })
+  const filePath = (() => {
+    const name = path.resolve(distPath, asset);
+
+    if (path.sep === path.win32.sep) {
+      return name.replaceAll(path.posix.sep, path.win32.sep);
+    }
+
+    return name;
+  })();
+
+  await fs.rm(filePath, { force: true })
 }
