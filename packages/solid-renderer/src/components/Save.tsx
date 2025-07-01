@@ -1,6 +1,6 @@
 import { useData } from '$context';
 import { Game } from '$screens';
-import { capitalize, createRetrieved, getDocumentStyles, imagePreloadWithCaching, once } from '$utils';
+import { capitalize, createRetrieved, getDocumentStyles, createImage, once } from '$utils';
 import type { Save as NovelySave } from '@novely/core';
 import type { VoidComponent } from 'solid-js';
 import { Show, createEffect, createSignal, onCleanup, untrack } from 'solid-js';
@@ -159,7 +159,7 @@ const Save: VoidComponent<SaveProps> = (props) => {
 				const type = await options.getResourseType(asset);
 
 				if (type === 'image') {
-					await imagePreloadWithCaching(asset);
+					await createImage(asset);
 				}
 			});
 

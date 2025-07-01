@@ -110,13 +110,7 @@ type HuntAssetsOptions = {
 
 const huntAssets = async ({ volume, lang, characters, action, props, handle, request }: HuntAssetsOptions) => {
 	if (action === 'showBackground') {
-		/**
-		 * There are two types of showBackground currently
-		 *
-		 * Parameter is a `string`
-		 * Parameter is a `Record<'CSS Media', string>`
-		 */
-		if (isString(props[0])) {
+		if (isAsset(props[0]) || isString(props[0])) {
 			handle(unwrapImageAsset(props[0]));
 			return;
 		}

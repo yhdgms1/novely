@@ -10,7 +10,7 @@ import {
 	createTypewriter,
 } from '$components';
 import { useData } from '$context';
-import { canvasDrawImages, imagePreloadWithCaching, isCSSImage, onKey } from '$utils';
+import { canvasDrawImages, createImage, isCSSImage, onKey } from '$utils';
 import { from } from '$utils';
 import type { Context } from '@novely/core';
 import { destructure } from '@solid-primitives/destructure';
@@ -142,7 +142,7 @@ const Game: VoidComponent<GameProps> = (props) => {
 		const currentBackground = background().background;
 
 		if (isCSSImage(currentBackground)) {
-			imagePreloadWithCaching(currentBackground).then(() => {
+			createImage(currentBackground).then(() => {
 				if (currentBackground === background().background) {
 					setBg(`url(${JSON.stringify(currentBackground)})`);
 				}
@@ -290,7 +290,9 @@ const Game: VoidComponent<GameProps> = (props) => {
 												class="choice-dialog__choice-image"
 												resize={false}
 												render={async (canvas, ctx) => {
-													const img = await imagePreloadWithCaching(image);
+													const img = await createImage(image);
+
+													if (!img) return;
 
 													canvas.width = img.width;
 													canvas.height = img.height;

@@ -1,8 +1,6 @@
 import type { Stored } from '@novely/core';
 import type { Atom } from '@novely/renderer-toolkit';
-import { noop } from '@novely/renderer-toolkit';
 import { batch, createSignal, onCleanup, untrack } from 'solid-js';
-import { PRELOADED_IMAGE_MAP, PRELOADING_IMAGE_MAP } from './shared';
 
 const capitalize = (str: string) => {
 	return str[0].toUpperCase() + str.slice(1);
@@ -14,30 +12,47 @@ const isCSSImage = (str: string) => {
 	return startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data');
 };
 
-const createImage = (src: string) => {
-	const img = document.createElement('img');
+const createImageSync = (src: string) => {
+	const image = document.createElement('img');
 
-	Object.assign(img, {
-		src,
-	});
+	image.src = src;
 
-	return img;
+	return image;
 };
 
-const imageLoaded = (image: HTMLImageElement) => {
-	const { promise, resolve } = Promise.withResolvers<boolean>();
+const createImage = (src: string) => {
+	const { promise, resolve } = Promise.withResolvers<HTMLImageElement | null>();
+	const image = document.createElement('img');
 
-	if (image.complete && image.naturalHeight !== 0) {
-		resolve(true);
+	image.addEventListener('load', () => {
+		resolve(image);
+	});
 
-		return promise;
+	image.addEventListener('abort', () => {
+		resolve(null);
+	});
+
+	image.addEventListener('error', () => {
+		resolve(null);
+	});
+
+	image.src = src;
+
+	if (image.complete) {
+		resolve(image.naturalHeight === 0 ? null : image);
 	}
 
-	image.addEventListener('load', async () => {
-		if (image.decode) {
-			await image.decode().catch(noop);
-		}
+	return promise;
+};
 
+const waitForImage = (image: HTMLImageElement) => {
+	const { promise, resolve } = Promise.withResolvers<boolean>();
+
+	if (image.complete) {
+		resolve(image.naturalHeight !== 0);
+	}
+
+	image.addEventListener('load', () => {
 		resolve(true);
 	});
 
@@ -52,62 +67,6 @@ const imageLoaded = (image: HTMLImageElement) => {
 	return promise;
 };
 
-/**
- * Uses `PRELOADING_IMAGE_MAP` and `PRELOADED_IMAGE_MAP` for asset caching.
- * @param src Image source
- * @returns Loaded image
- */
-const imagePreloadWithCaching = async (src: string) => {
-	if (PRELOADING_IMAGE_MAP.has(src)) {
-		const image = PRELOADING_IMAGE_MAP.get(src)!;
-
-		await imageLoaded(image);
-
-		PRELOADING_IMAGE_MAP.delete(src);
-		PRELOADED_IMAGE_MAP.set(src, image);
-
-		return image;
-	}
-
-	if (PRELOADED_IMAGE_MAP.has(src)) {
-		const image = PRELOADED_IMAGE_MAP.get(src)!;
-
-		return image;
-	}
-
-	const image = createImage(src);
-
-	PRELOADING_IMAGE_MAP.set(src, image);
-
-	await imageLoaded(image);
-
-	PRELOADING_IMAGE_MAP.delete(src);
-	PRELOADED_IMAGE_MAP.set(src, image);
-
-	return image;
-};
-
-/**
- * Takes images from `PRELOADING_IMAGE_MAP` and `PRELOADED_IMAGE_MAP` cache. When no images were cached adds images to `PRELOADING_IMAGE_MAP`.
- * @param src Image source
- * @returns Image, load status is unknown
- */
-const imagePreloadWithCachingNotComplete = (src: string) => {
-	if (PRELOADING_IMAGE_MAP.has(src)) {
-		PRELOADING_IMAGE_MAP.get(src)!;
-	}
-
-	if (PRELOADED_IMAGE_MAP.has(src)) {
-		return PRELOADED_IMAGE_MAP.get(src)!;
-	}
-
-	const image = createImage(src);
-
-	PRELOADING_IMAGE_MAP.set(src, image);
-
-	return image;
-};
-
 const createCanvas = () => {
 	return document.createElement('canvas');
 };
@@ -120,7 +79,7 @@ const getContext = (canvas: HTMLCanvasElement) => {
  * Draws passed `images` array on a `canvas`
  */
 const canvasDrawImages = async (canvas = createCanvas(), ctx = getContext(canvas), images: HTMLImageElement[]) => {
-	await Promise.allSettled(images.map((image) => imageLoaded(image)));
+	await Promise.allSettled(images.map((image) => waitForImage(image)));
 
 	if (canvas.dataset.resized === 'false' || !canvas.dataset.resized) {
 		const sizesSorted = images.slice().sort((a, b) => b.width - a.width);
@@ -242,15 +201,14 @@ export {
 	isCSSImage,
 	canvasDrawImages,
 	url,
-	createImage,
 	capitalize,
 	onKey,
 	simple,
 	getDocumentStyles,
 	once,
-	imageLoaded,
-	imagePreloadWithCaching,
-	imagePreloadWithCachingNotComplete,
 	from,
 	removeTagsFromHTML,
+	createImageSync,
+	createImage,
+	waitForImage,
 };

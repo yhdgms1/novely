@@ -83,7 +83,7 @@ importers:
         version: 0.52.0
       '@novely/solid-renderer':
         specifier: ~0.51.0
-        version: 0.51.0(@novely/core@0.52.0)(klona@2.0.6)(solid-js@1.9.7)
+        version: 0.51.0(@novely/core@0.52.0)(klona@2.0.6)(postcss@8.5.6)(solid-js@1.9.7)
       modern-normalize:
         specifier: ~3.0.1
         version: 3.0.1
@@ -142,8 +142,8 @@ importers:
         specifier: workspace:*
         version: link:../core
       easy-cl2d:
-        specifier: ^0.3.0
-        version: 0.3.0
+        specifier: ^0.3.1
+        version: 0.3.1
       es-toolkit:
         specifier: ^1.39.5
         version: 1.39.5
@@ -1079,8 +1079,8 @@ packages:
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
 
-  easy-cl2d@0.3.0:
-    resolution: {integrity: sha512-dVui3QfiJj+pfVBIMc5SwOIrcrEADRJ5RpDkFxV/Im9Ubiqbpv/VdbQMGFad/jC2M4LaQ9nGJHwcylm6MJBbyA==}
+  easy-cl2d@0.3.1:
+    resolution: {integrity: sha512-/keZzEU7vYgboL6XgV5ejrLM79DcCvCWfbeEh/2iF1rZqZw6fjCQ3f5syz1UsFnupoVOiu1naZ2NoJP4dhh5WQ==}
 
   electron-to-chromium@1.5.177:
     resolution: {integrity: sha512-7EH2G59nLsEMj97fpDuvVcYi6lwTcM1xuWw3PssD8xzboAW7zj7iB3COEEEATUfjLHrs5uKBLQT03V/8URx06g==}
@@ -1973,7 +1973,7 @@ snapshots:
 
   '@novely/parser@0.7.0': {}
 
-  '@novely/renderer-toolkit@0.13.0(klona@2.0.6)':
+  '@novely/renderer-toolkit@0.13.0(klona@2.0.6)(postcss@8.5.6)':
     dependencies:
       '@novely/core': 0.50.0(klona@2.0.6)
       dequal: 2.0.3
@@ -1991,10 +1991,10 @@ snapshots:
       - tsx
       - yaml
 
-  '@novely/solid-renderer@0.51.0(@novely/core@0.52.0)(klona@2.0.6)(solid-js@1.9.7)':
+  '@novely/solid-renderer@0.51.0(@novely/core@0.52.0)(klona@2.0.6)(postcss@8.5.6)(solid-js@1.9.7)':
     dependencies:
       '@novely/core': 0.52.0
-      '@novely/renderer-toolkit': 0.13.0(klona@2.0.6)
+      '@novely/renderer-toolkit': 0.13.0(klona@2.0.6)(postcss@8.5.6)
       '@solid-primitives/destructure': 0.2.1(solid-js@1.9.7)
       clsx: 2.1.1
       es-toolkit: 1.39.5
@@ -2377,7 +2377,7 @@ snapshots:
 
   eastasianwidth@0.2.0: {}
 
-  easy-cl2d@0.3.0: {}
+  easy-cl2d@0.3.1: {}
 
   electron-to-chromium@1.5.177: {}
 

@@ -10,7 +10,7 @@ import type {
 	StateScreens,
 } from './types';
 
-import { imageLoaded, imagePreloadWithCaching, imagePreloadWithCachingNotComplete } from '$utils';
+import { createImage, createImageSync, waitForImage } from '$utils';
 import {
 	createAudio,
 	createAudioMisc,
@@ -113,7 +113,7 @@ const createRenderer = ({
 									if (!this.emotions[emotion]) {
 										this.emotions[emotion] = options
 											.getCharacterAssets(character, emotion)
-											.map((src) => imagePreloadWithCachingNotComplete(src));
+											.map((src) => createImageSync(src));
 									}
 
 									if (!shouldRender) return;
@@ -130,7 +130,7 @@ const createRenderer = ({
 										element.style.setProperty('height', height + 'px');
 									}
 
-									Promise.allSettled(stored.map((image) => imageLoaded(image))).then(() => {
+									Promise.allSettled(stored.map((image) => waitForImage(image))).then(() => {
 										const sizesSorted = stored.slice().sort((a, b) => b.width - a.width);
 										const sizes = sizesSorted[0];
 
@@ -339,15 +339,12 @@ const createRenderer = ({
 				},
 				misc: {
 					preloadImage: (src) => {
-						/**
-						 * We are not awaiting this
-						 */
-						renderer.misc.preloadImageBlocking(src);
+						createImageSync(src);
 
 						return src;
 					},
 					preloadImageBlocking: async (src) => {
-						await imagePreloadWithCaching(src);
+						await createImage(src);
 					},
 					preloadAudioBlocking,
 				},

@@ -1,7 +1,7 @@
 import type { CustomHandler, ValidAction, NovelyAsset } from '@novely/core';
 import { noop } from '@novely/renderer-toolkit';
 import { useContextState } from '../context-state';
-import { imagePreloadWithCachingNotComplete } from '$utils';
+import { createImageSync } from '$utils';
 
 const getIndex = (ctx: ReturnType<typeof useContextState>, key: string) => {
 	const images = ctx.get().images;
@@ -56,7 +56,7 @@ const showImage = (asset: NovelyAsset, { classesBase, classesIn, wait }: ShowIma
 		const ctx = useContextState(contextKey);
 		const index = getIndex(ctx, key);
 
-		const image = imagePreloadWithCachingNotComplete(asset.source).cloneNode(true) as HTMLImageElement;
+		const image = createImageSync(asset.source).cloneNode(true) as HTMLImageElement;
 
 		const classesBaseSplitted = classesBase?.split(' ') || [];
 		const classesInSplitted = classesIn?.split(' ') || [];

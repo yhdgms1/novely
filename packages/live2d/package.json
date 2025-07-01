@@ -1,7 +1,7 @@
 {
 	"name": "@novely/live2d",
 	"description": "Integration of live2d for novely",
-	"version": "0.4.0-next",
+	"version": "0.4.0-next.1",
 	"type": "module",
 	"sideEffects": false,
 	"exports": {
@@ -22,7 +22,7 @@
 	},
 	"dependencies": {
 		"@novely/core": "workspace:*",
-		"easy-cl2d": "^0.3.0",
+		"easy-cl2d": "^0.3.1",
 		"es-toolkit": "^1.39.5"
 	},
 	"devDependencies": {
