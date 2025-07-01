@@ -118,6 +118,7 @@ const huntAssets = async ({ volume, lang, characters, action, props, handle, req
 		 */
 		if (isString(props[0])) {
 			handle(unwrapImageAsset(props[0]));
+			return;
 		}
 
 		if (props[0] && typeof props[0] === 'object') {
