@@ -1,8 +1,8 @@
-import type { CustomHandler, DefaultActionProxy } from './action';
+import type { CustomHandler, DefaultActionProxy, ResolvedAssets } from './action';
 import type { Character } from './character';
 import { ASSETS_TO_PRELOAD, PRELOADED_ASSETS } from './shared';
 import type { Lang } from './types';
-import { isAudioAction, isImageAsset, isString, isAsset, getResourseType, mapSet, toArray } from './utilities';
+import { isAudioAction, isString, isAsset, getResourseType, mapSet, toArray } from './utilities';
 import { unwrapAudioAsset, unwrapImageAsset } from './asset';
 
 const ACTION_NAME_TO_VOLUME_MAP = {
@@ -102,9 +102,13 @@ type HuntAssetsOptions = {
 	 * Function to handle found asset
 	 */
 	handle: (asset: string) => void;
+	/**
+	 * Fetching function
+	 */
+	request: typeof fetch;
 };
 
-const huntAssets = ({ volume, lang, characters, action, props, handle }: HuntAssetsOptions) => {
+const huntAssets = async ({ volume, lang, characters, action, props, handle, request }: HuntAssetsOptions) => {
 	if (action === 'showBackground') {
 		/**
 		 * There are two types of showBackground currently
@@ -113,19 +117,15 @@ const huntAssets = ({ volume, lang, characters, action, props, handle }: HuntAss
 		 * Parameter is a `Record<'CSS Media', string>`
 		 */
 		if (isString(props[0])) {
-			handle(unwrapAudioAsset(props[0]));
+			handle(unwrapImageAsset(props[0]));
 		}
 
 		if (props[0] && typeof props[0] === 'object') {
 			for (const value of Object.values(props[0])) {
-				if (isImageAsset(value)) {
+				if (isAsset(value)) {
+					handle(unwrapImageAsset(value));
+				} else {
 					handle(value);
-				} else if (isAsset(value)) {
-					const unwrapped = unwrapImageAsset(value);
-
-					if (isImageAsset(unwrapped)) {
-						handle(unwrapped);
-					}
 				}
 			}
 		}
@@ -180,6 +180,7 @@ const huntAssets = ({ volume, lang, characters, action, props, handle }: HuntAss
 	 * Load characters
 	 */
 	if (action === 'showCharacter' && isString(props[0]) && isString(props[1])) {
+		// todo: handle default emotion
 		const images = toArray(characters[props[0]].emotions[props[1]]);
 
 		for (const asset of images) {
@@ -193,7 +194,25 @@ const huntAssets = ({ volume, lang, characters, action, props, handle }: HuntAss
 	 * Custom action assets
 	 */
 	if (action === 'custom' && (props[0] as CustomHandler).assets) {
-		for (const asset of (props[0] as CustomHandler).assets!) {
+		const assets = (props[0] as CustomHandler).assets!;
+
+		let resolved: ResolvedAssets = [];
+
+		if (typeof assets === 'function') {
+			resolved = await Promise.race([
+				assets({ request }),
+				new Promise<[]>((resolve) => setTimeout(resolve, 250, [])),
+			]);
+
+			Object.defineProperty(props[0], 'assets', {
+				value: async () => resolved,
+				writable: false,
+			});
+		} else {
+			resolved = assets;
+		}
+
+		for (const asset of resolved) {
 			isAsset(asset) ? handle(asset.source) : handle(asset);
 		}
 
@@ -205,7 +224,9 @@ const huntAssets = ({ volume, lang, characters, action, props, handle }: HuntAss
 			const data = props[i];
 
 			if (Array.isArray(data)) {
-				handle(unwrapImageAsset(data[5] as string));
+				if (data[5]) {
+					handle(unwrapImageAsset(data[5]));
+				}
 			}
 		}
 	}

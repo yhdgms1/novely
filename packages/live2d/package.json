@@ -1,7 +1,7 @@
 {
 	"name": "@novely/live2d",
 	"description": "Integration of live2d for novely",
-	"version": "0.3.0",
+	"version": "0.4.0-next",
 	"type": "module",
 	"sideEffects": false,
 	"exports": {

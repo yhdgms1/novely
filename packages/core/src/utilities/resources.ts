@@ -1,6 +1,5 @@
 import { memoize } from 'es-toolkit/function';
 import { HOWLER_SUPPORTED_FILE_FORMATS, SUPPORTED_IMAGE_FILE_FORMATS } from '../constants';
-import { isCSSImageURL } from './assertions';
 import { DEV } from 'esm-env';
 
 const getUrlFileExtension = (address: string) => {
@@ -45,15 +44,6 @@ type GetResourceTypeParams = {
 
 const getResourseType = memoize(
 	async ({ url, request }: GetResourceTypeParams) => {
-		/**
-		 * If url is not http we should not check
-		 *
-		 * startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data')
-		 */
-		if (!isCSSImageURL(url)) {
-			return 'other';
-		}
-
 		const extension = getUrlFileExtension(url);
 
 		if (HOWLER_SUPPORTED_FILE_FORMATS.has(extension as any)) {

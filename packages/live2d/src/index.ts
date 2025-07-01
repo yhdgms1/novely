@@ -1,6 +1,7 @@
 import type { CustomHandler } from '@novely/core';
 import type { TapHandlerFn, IdleHandlerFn, createModelView } from 'easy-cl2d';
 import type { Thenable } from './types';
+import { asset } from '@novely/core';
 import { initialize, runtime, library, fetchLibrary } from './loading';
 import { debounce } from 'es-toolkit';
 
@@ -9,6 +10,16 @@ const CUBISM_ID = Symbol();
 type Data = {
 	canvas: HTMLCanvasElement | undefined;
 	view: ReturnType<typeof createModelView> | undefined;
+};
+
+const extractTextures = (model3: Record<string, unknown>) => {
+	if ('FileReferences' in model3 && model3.FileReferences && typeof model3.FileReferences === 'object') {
+		if ('Textures' in model3.FileReferences && Array.isArray(model3.FileReferences.Textures)) {
+			return model3.FileReferences.Textures;
+		}
+	}
+
+	return [];
 };
 
 type ModelOption = {
@@ -99,6 +110,27 @@ const addModel = (key: string, { directory, model3 }: ModelOption, { onTap, onId
 
 	handler.id = CUBISM_ID;
 	handler.key = `cubism-${key}`;
+
+	handler.assets = async ({ request }) => {
+		if (typeof model3 === 'string') {
+			try {
+				const response = await request(directory + '/' + model3).then((res) => res.json());
+				const textures = extractTextures(response);
+
+				return textures.map((texture) => asset.image(directory + '/' + texture));
+			} catch (e) {
+				console.error(
+					new Error('Failed to fetch "model3.json". Assets will not be preloaded for that model.', { cause: e }),
+				);
+
+				return [];
+			}
+		} else {
+			const textures = extractTextures(model3);
+
+			return textures.map((texture) => asset.image(directory + '/' + texture));
+		}
+	};
 
 	handler.skipOnRestore = (next) => {
 		return next.some(([action, fn]) => {

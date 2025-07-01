@@ -245,11 +245,40 @@ type CustomHandlerCalling = {
 	skipOnRestore?: (nextActions: Exclude<ValidAction, ValidAction[]>[]) => boolean;
 };
 
+/**
+ * Array of URL or NovelyAsset
+ */
+type ResolvedAssets = (NovelyAsset | string)[];
+
+type AssetsResolverArgs = {
+	/**
+	 * Fetching function
+	 */
+	request: typeof fetch;
+};
+
+/**
+ * Function to get assets
+ */
+type AssetsResolver = (args: AssetsResolverArgs) => Thenable<ResolvedAssets>;
+
 type CustomHandlerInfo = CustomHandlerCalling & {
 	/**
-	 * Assets (pictures, audio files) used by action
+	 * Assets used by action. When preload is "automatic", will be preloaded before action runs.
+	 *
+	 * In case function is provided, execution time is limited to 250ms,
+	 * then returned assets or empty array (when limited)
+	 * will always be used with that action
+	 *
+	 * @example
+	 * ```ts
+	 * handler.assets = [url]
+	 * handler.assets = async ({ request }) => {
+	 *   return [url]
+	 * }
+	 * ```
 	 */
-	assets?: (NovelyAsset | string)[];
+	assets?: ResolvedAssets | AssetsResolver;
 	/**
 	 * When true interacting with it will be saved in history
 	 */
@@ -513,4 +542,5 @@ export type {
 	FunctionActionProps,
 	FunctionAction,
 	VirtualActions,
+	ResolvedAssets,
 };

@@ -27,15 +27,6 @@ const isEmpty = (val: unknown): val is Record<PropertyKey, never> => {
 };
 
 /**
- * Checks if a given string starts with 'http', '/', '.', or 'data'
- */
-const isCSSImageURL = (url: string): boolean => {
-	const startsWith = String.prototype.startsWith.bind(url);
-
-	return startsWith('http') || startsWith('/') || startsWith('.') || startsWith('data');
-};
-
-/**
  * Determines if a given action requires user interaction based on its type and metadata.
  */
 const isUserRequiredAction = ([action, ...meta]: ValidAction) => {
@@ -66,10 +57,6 @@ const isAction = (element: unknown): element is Exclude<ValidAction, ValidAction
 	return Array.isArray(element) && isString(element[0]);
 };
 
-const isImageAsset = (asset: unknown): asset is string => {
-	return isString(asset) && isCSSImageURL(asset);
-};
-
 /**
  * Is custom and requires user action or skipped during restoring
  */
@@ -88,14 +75,12 @@ export {
 	isFunction,
 	isPromise,
 	isEmpty,
-	isCSSImageURL,
 	isUserRequiredAction,
 	isBlockStatement,
 	isBlockExitStatement,
 	isSkippedDuringRestore,
 	isAudioAction,
 	isAction,
-	isImageAsset,
 	isBlockingAction,
 	isAsset,
 };

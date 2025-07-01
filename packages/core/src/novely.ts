@@ -789,13 +789,14 @@ const novely = <
 		useStack(ctx).push(clone(save));
 
 		const assets: string[] = [];
+		const huntPromises: Promise<void>[] = [];
 
 		await processor.run(([action, ...props]) => {
 			if (isAudioAction(action)) return;
 			if (action === 'vibrate') return;
 			if (action === 'end') return;
 
-			huntAssets({
+			const huntPromise = huntAssets({
 				action,
 				props: props as any,
 
@@ -805,13 +806,18 @@ const novely = <
 				volume: getVolumeFromStore(storageData),
 
 				handle: assets.push.bind(assets),
+				request,
 			});
+
+			huntPromises.push(huntPromise);
 
 			return match(action, props, {
 				ctx,
 				data,
 			});
 		});
+
+		await Promise.all(huntPromises);
 
 		return {
 			assets,
@@ -1019,8 +1025,8 @@ const novely = <
 					clone,
 				});
 
-				for (const [action, ...props] of collection) {
-					huntAssets({
+				const queue = collection.map(([action, ...props]) => {
+					return huntAssets({
 						action,
 						props: props as any,
 
@@ -1030,8 +1036,11 @@ const novely = <
 						volume: getVolumeFromStore(storageData),
 
 						handle: enqueueAssetForPreloading,
+						request,
 					});
-				}
+				});
+
+				await Promise.all(queue);
 
 				handleAssetsPreloading({
 					...renderer.misc,
