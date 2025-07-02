@@ -8,8 +8,8 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@novely/core": "~0.52.0",
-		"@novely/solid-renderer": "~0.51.0",
+		"@novely/core": "~0.54.0",
+		"@novely/solid-renderer": "~0.52.0",
 		"modern-normalize": "~3.0.1"
 	},
 	"devDependencies": {

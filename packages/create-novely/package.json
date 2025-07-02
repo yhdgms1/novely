@@ -1,6 +1,6 @@
 {
 	"name": "create-novely",
-	"version": "0.13.0",
+	"version": "0.13.1",
 	"type": "commonjs",
 	"publishConfig": {
 		"access": "public"
