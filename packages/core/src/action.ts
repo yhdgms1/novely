@@ -57,6 +57,15 @@ type CustomHandlerGetResult<I extends boolean> = {
 	root: HTMLElement;
 };
 
+type OnForwardFnParams = {
+	isUserRequiredAction: boolean;
+	isBlockingAction: boolean;
+
+	action: Exclude<ValidAction, ValidAction[]>;
+};
+
+type OnForwardFn = (params: OnForwardFnParams) => void;
+
 type CustomHandlerFunctionGetFn = <I extends boolean = true>(insert?: I) => CustomHandlerGetResult<I>;
 
 type CustomHandlerFunctionParameters<L extends string, S extends State> = {
@@ -146,6 +155,40 @@ type CustomHandlerFunctionParameters<L extends string, S extends State> = {
 	 * ```
 	 */
 	clear: (fn: () => void) => void;
+
+	/**
+	 * Overwrites `onBack` callback. Callback will be called after clearing some actions, but before starting others.
+	 *
+	 * @example
+	 * ```ts
+	 * const handler: CustomHandler = ({ getDomNodes, state, onBack }) => {
+	 *   // some code
+	 *   const update = () => button.textContent = `Clicks: ${state().clicks}`;
+	 *
+	 *   onBack(() => {
+	 *     console.log('Backing up');
+	 *     // sync state with UI
+	 *     update();
+	 *   })
+	 * }
+	 * ```
+	 */
+	onBack: (fn: () => void) => void;
+
+	/**
+	 * Overwrites `onForward` callback. Callback will be called before executing next action.
+	 *
+	 * @example
+	 * ```ts
+	 * const handler: CustomHandler = ({ getDomNodes, state, onForward }) => {
+	 *   onForward(({ action, isBlockingAction, isUserRequiredAction }) => {
+	 *     console.log(action)
+	 *     console.log({ isBlockingAction, isUserRequiredAction })
+	 *   })
+	 * }
+	 * ```
+	 */
+	onForward: (fn: OnForwardFn) => void;
 
 	/**
 	 * It will call all clear actions and remove HTML element from `getDomNodes` function
@@ -543,4 +586,6 @@ export type {
 	FunctionAction,
 	VirtualActions,
 	ResolvedAssets,
+	OnForwardFn,
+	OnForwardFnParams,
 };

@@ -6,8 +6,8 @@ type MatchActionParams = {
 	data: State;
 	ctx: Context;
 
-	push: () => void;
-	forward: () => void;
+	push: () => Promise<void>;
+	forward: () => Promise<void>;
 };
 
 type MatchActionMap = {
@@ -39,16 +39,16 @@ type OnBeforeActionCallPayload = {
 };
 
 type MatchActionHandlers = {
-	push: (ctx: Context) => void;
-	forward: (ctx: Context) => void;
+	push: (ctx: Context) => Promise<void>;
+	forward: (ctx: Context) => Promise<void>;
 
 	getContext: (name: string) => Context;
 
 	onBeforeActionCall: (payload: OnBeforeActionCallPayload) => void;
 };
 
-const matchAction = (callbacks: MatchActionHandlers, values: MatchActionMapComplete) => {
-	const { getContext, onBeforeActionCall, push, forward } = callbacks;
+const matchAction = (handlers: MatchActionHandlers, values: MatchActionMapComplete) => {
+	const { getContext, onBeforeActionCall, push, forward } = handlers;
 
 	const match = (action: keyof MatchActionMapComplete, props: any, { ctx, data }: MatchActionParameters) => {
 		const context = typeof ctx === 'string' ? getContext(ctx) : ctx;
@@ -64,15 +64,15 @@ const matchAction = (callbacks: MatchActionHandlers, values: MatchActionMapCompl
 				ctx: context,
 				data,
 
-				push() {
+				async push() {
 					if (context.meta.preview) return;
 
-					push(context);
+					await push(context);
 				},
-				forward() {
+				async forward() {
 					if (context.meta.preview) return;
 
-					forward(context);
+					await forward(context);
 				},
 			},
 			props,

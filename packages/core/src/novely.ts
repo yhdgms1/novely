@@ -9,6 +9,7 @@ import type {
 	ActionProxy,
 	ChoiceCheckFunction,
 	CustomHandler,
+	OnForwardFnParams,
 	Story,
 	TextContent,
 	ValidAction,
@@ -17,7 +18,7 @@ import type {
 import type { Character } from './character';
 import type { CleanupFn } from './custom-action';
 import { DEFAULT_TYPEWRITER_SPEED, EMPTY_SET, MAIN_CONTEXT_KEY } from './constants';
-import { cleanCleanupSource, getCustomActionCleanupHolder, handleCustomAction } from './custom-action';
+import { getCustomActionInstances, cleanInstance, handleCustomAction } from './custom-action';
 import { enqueueAssetForPreloading, handleAssetsPreloading, huntAssets } from './preloading';
 import type { Context, RendererInitPreviewReturn } from './renderer';
 import { PRELOADED_ASSETS, STACK_MAP } from './shared';
@@ -66,6 +67,7 @@ import {
 	getVolumeFromStore,
 	noop,
 	toArray,
+	isUserRequiredAction,
 } from './utilities';
 import type { MatchActionHandlers } from './utilities';
 import { buildActionObject } from './utilities/actions';
@@ -529,7 +531,7 @@ const novely = <
 			referGuarded,
 		});
 
-		const cleanupHolder = getCustomActionCleanupHolder(context);
+		const instances = getCustomActionInstances(context);
 
 		if (previous) {
 			const { queue: prevQueue } = await getActionsFromPath({
@@ -557,14 +559,14 @@ const novely = <
 			const nodeCleanup = new Set<CleanupFn>();
 
 			for (const future of futures) {
-				inner: for (let i = cleanupHolder.length - 1; i >= 0; i--) {
-					const item = cleanupHolder[i];
+				inner: for (let i = instances.length - 1; i >= 0; i--) {
+					const instance = instances[i];
 
-					if (future === item.fn) {
-						cleanCleanupSource(item);
-						nodeCleanup.add(item.node);
+					if (future === instance.fn) {
+						cleanInstance(instance);
+						nodeCleanup.add(instance.node);
 
-						cleanupHolder.splice(i, 1);
+						instances.splice(i, 1);
 
 						break inner;
 					}
@@ -572,6 +574,10 @@ const novely = <
 			}
 
 			nodeCleanup.forEach((f) => f());
+
+			for (const instance of instances.filter((i) => !i.disposed)) {
+				instance.onBack();
+			}
 		}
 
 		const {
@@ -615,7 +621,7 @@ const novely = <
 				 * If found, it means the previous run hasn't been cleaned up yet.
 				 * In that case, we avoid re-running.
 				 */
-				if (cleanupHolder.some((holder) => holder.fn === props[0])) {
+				if (instances.some((instance) => instance.fn === props[0] && !instance.disposed)) {
 					return;
 				}
 			}
@@ -867,15 +873,15 @@ const novely = <
 	};
 
 	const clearCustomActionsAtContext = (ctx: Context) => {
-		const cleanupHolder = getCustomActionCleanupHolder(ctx);
+		const instances = getCustomActionInstances(ctx);
 		const nodeCleanup = new Set<CleanupFn>();
 
-		for (const item of cleanupHolder) {
-			cleanCleanupSource(item);
-			nodeCleanup.add(item.node);
+		for (const instance of instances) {
+			cleanInstance(instance);
+			nodeCleanup.add(instance.node);
 		}
 
-		cleanupHolder.length = 0;
+		instances.length = 0;
 		nodeCleanup.forEach((fn) => fn());
 	};
 
@@ -991,6 +997,8 @@ const novely = <
 		save('auto');
 	};
 
+	const ticker = new TickerFactory(paused);
+
 	const next = (ctx: Context) => {
 		const stack = useStack(ctx);
 		const path = stack.value[0];
@@ -998,18 +1006,36 @@ const novely = <
 		nextPath(path);
 	};
 
-	const matchActionOptions: MatchActionHandlers = {
+	const matchActionHandlers: MatchActionHandlers = {
 		getContext: renderer.getContext,
-		push(ctx) {
+		async push(ctx) {
 			if (ctx.meta.restoring) return;
 
+			const stack = useStack(ctx);
+			const instances = getCustomActionInstances(ctx).filter((i) => !i.disposed);
+
 			next(ctx);
-			render(ctx);
+
+			if (stack.value && instances.length !== 0) {
+				const action = await refer(stack.value[0]).then((r) => r.value);
+
+				const params: OnForwardFnParams = {
+					action,
+					isBlockingAction: isBlockingAction(action),
+					isUserRequiredAction: isUserRequiredAction(action),
+				};
+
+				for (const instance of instances) {
+					instance.onForward(params);
+				}
+			}
+
+			await render(ctx);
 		},
-		forward(ctx) {
+		async forward(ctx) {
 			if (!ctx.meta.preview) enmemory(ctx);
 
-			matchActionOptions.push(ctx);
+			await matchActionHandlers.push(ctx);
 
 			if (!ctx.meta.preview) interactivity(true);
 		},
@@ -1053,10 +1079,8 @@ const novely = <
 		},
 	};
 
-	const ticker = new TickerFactory(paused);
-
 	// #region Match Action
-	const { match, nativeActions } = matchAction(matchActionOptions, {
+	const { match, nativeActions } = matchAction(matchActionHandlers, {
 		wait({ ctx, data, push }, [time]) {
 			if (ctx.meta.restoring) return;
 

@@ -1,7 +1,13 @@
-import type { CustomHandler, CustomHandlerFunctionGetFn, CustomHandlerGetResult, TextContent } from './action';
+import type {
+	CustomHandler,
+	CustomHandlerFunctionGetFn,
+	CustomHandlerGetResult,
+	TextContent,
+	OnForwardFn,
+} from './action';
 import type { Context, CustomActionHandle } from './renderer';
 import type { Derived } from './store';
-import { CUSTOM_ACTION_CLEANUP_MAP, CUSTOM_ACTION_MAP } from './shared';
+import { CUSTOM_ACTION_INSTANCES_MAP, CUSTOM_ACTION_MAP } from './shared';
 import type { Data, Lang, Stack, State, StateFunction } from './types';
 import { noop } from './utilities';
 import { immutable } from './store';
@@ -10,13 +16,18 @@ import type { Ticker } from './ticker';
 
 type CleanupFn = () => void;
 
-type CustomActionCleanupHolderItem = {
+type CustomActionInstance = {
 	fn: CustomHandler;
+	disposed: boolean;
+
 	list: CleanupFn[];
 	node: CleanupFn;
+
+	onBack: () => void;
+	onForward: OnForwardFn;
 };
 
-type CustomActionCleanupHolder = CustomActionCleanupHolderItem[];
+type CustomActionInstances = CustomActionInstance[];
 
 type CustomActionHolder = {
 	/**
@@ -90,21 +101,21 @@ const getCustomActionHolder = (ctx: Context, fn: CustomHandler) => {
 	return holder;
 };
 
-const getCustomActionCleanupHolder = (ctx: Context) => {
-	const existing = CUSTOM_ACTION_CLEANUP_MAP.get(ctx.id);
+const getCustomActionInstances = (ctx: Context) => {
+	const existing = CUSTOM_ACTION_INSTANCES_MAP.get(ctx.id);
 
 	if (existing) {
 		return existing;
 	}
 
-	const holder: CustomActionCleanupHolder = [];
+	const array: CustomActionInstances = [];
 
-	CUSTOM_ACTION_CLEANUP_MAP.set(ctx.id, holder);
+	CUSTOM_ACTION_INSTANCES_MAP.set(ctx.id, array);
 
-	return holder;
+	return array;
 };
 
-const cleanCleanupSource = ({ list }: CustomActionCleanupHolderItem) => {
+const cleanInstance = ({ list }: CustomActionInstance) => {
 	while (list.length) {
 		try {
 			list.pop()!();
@@ -130,22 +141,38 @@ const handleCustomAction = (
 	}: HandleCustomActionOptions,
 ) => {
 	const holder = getCustomActionHolder(ctx, fn);
-	const cleanupHolder = getCustomActionCleanupHolder(ctx);
+	const instances = getCustomActionInstances(ctx);
 
 	const cleanupNode = () => {
-		if (!cleanupHolder.some((item) => item.fn.id === fn.id && item.fn.key === fn.key)) {
+		if (!instances.some((item) => item.fn.id === fn.id && item.fn.key === fn.key)) {
 			holder.node = null;
 			setMountElement(null);
 		}
 	};
 
-	const cleanupSource: CustomActionCleanupHolderItem = {
-		fn,
-		list: [ticker.detach],
-		node: cleanupNode,
+	const dispose = () => {
+		if (instance.disposed) return;
+
+		ticker.detach();
+
+		instance.onBack = noop;
+		instance.onForward = noop;
+
+		instance.disposed = true;
 	};
 
-	cleanupHolder.push(cleanupSource);
+	const instance: CustomActionInstance = {
+		fn,
+		disposed: false,
+
+		list: [dispose],
+		node: cleanupNode,
+
+		onBack: noop,
+		onForward: noop,
+	};
+
+	instances.push(instance);
 
 	const getDomNodes = (insert = true): CustomHandlerGetResult<boolean> => {
 		if (holder.node || !insert) {
@@ -168,7 +195,7 @@ const handleCustomAction = (
 	};
 
 	const clear = (func: typeof noop) => {
-		cleanupSource.list.push(once(func));
+		instance.list.push(once(func));
 	};
 
 	const data = (updatedData?: any) => {
@@ -180,7 +207,7 @@ const handleCustomAction = (
 	};
 
 	const remove = () => {
-		cleanCleanupSource(cleanupSource);
+		cleanInstance(instance);
 
 		// When requested not hestitate
 		holder.node = null;
@@ -223,8 +250,21 @@ const handleCustomAction = (
 		ticker,
 
 		request,
+
+		onBack: (fn) => {
+			instance.onBack = fn;
+		},
+		onForward: (fn) => {
+			instance.onForward = fn;
+		},
 	});
 };
 
-export { getCustomActionHolder, handleCustomAction, getCustomActionCleanupHolder, cleanCleanupSource };
-export type { CustomActionHolder, CustomActionCleanupHolder, HandleCustomActionOptions, CleanupFn };
+export { getCustomActionHolder, handleCustomAction, getCustomActionInstances, cleanInstance };
+export type {
+	CustomActionHolder,
+	CustomActionInstance,
+	CustomActionInstances,
+	HandleCustomActionOptions,
+	CleanupFn,
+};
