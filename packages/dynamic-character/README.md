@@ -10,7 +10,7 @@ Will give a way to dynamically dress characters.
 
 ```ts
 import { generateEmotions } from '@novely/dynamic-character';
-import '@novely/dynamic-character/dist/index.css';
+import '@novely/dynamic-character/dist/style.css';
 ```
 
 ```ts

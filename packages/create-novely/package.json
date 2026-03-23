@@ -10,12 +10,12 @@
 		"create-novely": "index.cjs"
 	},
 	"scripts": {
-		"build": "tsup --dts"
+		"build": "tsdown --dts"
 	},
 	"devDependencies": {
 		"@types/prompts": "^2.4.9",
-		"tsup": "^8.5.0",
-		"typescript": "^5.8.3"
+		"tsdown": "^0.21.4",
+		"typescript": "^5.9.3"
 	},
 	"dependencies": {
 		"kolorist": "^1.8.0",
@@ -26,7 +26,10 @@
 		"url": "https://github.com/yhdgms1/novely/issues"
 	},
 	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/create-novely",
-	"keywords": ["novely", "novel"],
+	"keywords": [
+		"novely",
+		"novel"
+	],
 	"author": {
 		"name": "Artemiy Schukin",
 		"url": "https://github.com/yhdgms1"

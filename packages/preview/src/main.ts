@@ -222,7 +222,7 @@ false &&
 		start: [action.showBackground(outdoor), action.dialog('Lily', 'HELLO'), action.jump('part_2')],
 	});
 
-true &&
+false &&
 	engine.script({
 		start: [
 			action.particles(snow),
@@ -253,7 +253,7 @@ true &&
 		],
 	});
 
-false &&
+true &&
 	engine.script({
 		start: [
 			action.next(),

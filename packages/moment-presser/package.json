@@ -4,15 +4,15 @@
 	"version": "0.5.0",
 	"type": "module",
 	"sideEffects": false,
-	"types": "./dist/index.d.ts",
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
+	"types": "./dist/index.d.mts",
+	"main": "./dist/index.mjs",
+	"module": "./dist/index.mjs",
 	"exports": {
 		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
+			"types": "./dist/index.d.mts",
+			"import": "./dist/index.mjs"
 		},
-		"./style.css": "./dist/index.css",
+		"./style.css": "./dist/style.css",
 		"./*": "./dist/*",
 		"./package.json": "./package.json"
 	},
@@ -20,15 +20,16 @@
 		"access": "public"
 	},
 	"scripts": {
-		"dev": "tsup --watch --dts",
-		"build": "tsup --dts"
+		"dev": "tsdown --watch --dts",
+		"build": "tsdown --dts"
 	},
 	"dependencies": {
 		"@novely/core": "workspace:^"
 	},
 	"devDependencies": {
-		"tsup": "^8.5.0",
-		"typescript": "^5.8.3"
+		"@tsdown/css": "^0.21.4",
+		"tsdown": "^0.21.4",
+		"typescript": "^5.9.3"
 	},
 	"peerDependencies": {
 		"@novely/core": "*"
@@ -38,7 +39,9 @@
 		"url": "https://github.com/yhdgms1/novely/issues"
 	},
 	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/moment-presser",
-	"keywords": ["novely"],
+	"keywords": [
+		"novely"
+	],
 	"author": {
 		"name": "Artemiy Schukin",
 		"url": "https://github.com/yhdgms1"
@@ -48,5 +51,7 @@
 		"type": "git",
 		"url": "git+https://github.com/yhdgms1/novely.git"
 	},
-	"files": ["dist/*"]
+	"files": [
+		"dist/*"
+	]
 }

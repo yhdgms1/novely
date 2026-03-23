@@ -1,15 +1,14 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsdown';
 
 export default defineConfig((options) => {
 	return {
 		entry: ['src/index.ts'],
-		external: [],
 		sourcemap: true,
-		target: 'es2022',
+		target: 'es2024',
 		format: ['esm'],
 		minify: false,
-		bundle: true,
 		dts: true,
+		clean: false,
 		watch: options.watch,
 	};
 });

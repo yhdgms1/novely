@@ -5,17 +5,13 @@ export default defineConfig({
 	plugins: [novelyPlugin()],
 	build: {
 		modulePreload: false,
-		rollupOptions: {
+		rolldownOptions: {
 			output: {
 				manualChunks: (id) => {
 					return null;
 				},
 			},
 		},
-	},
-	esbuild: {
-		legalComments: 'none',
-		charset: 'utf8',
 	},
 	server: {
 		open: true,

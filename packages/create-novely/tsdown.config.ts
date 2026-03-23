@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsdown';
 
 export default defineConfig((options) => {
 	return {
@@ -8,9 +8,11 @@ export default defineConfig((options) => {
 		format: ['cjs'],
 		clean: true,
 		minify: true,
-		bundle: true,
 		dts: options.dts,
 		watch: options.watch,
-		noExternal: [/kolorist|prompts/gm],
+		clean: false,
+		deps: {
+			neverBundle: [/kolorist|prompts/gm],
+		},
 	};
 });

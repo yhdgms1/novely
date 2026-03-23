@@ -6,14 +6,14 @@
 	"sideEffects": false,
 	"exports": {
 		".": {
-			"types": "./dist/lazy.d.ts",
-			"import": "./dist/lazy.js",
-			"default": "./dist/lazy.js"
+			"types": "./dist/lazy.d.mts",
+			"import": "./dist/lazy.mjs",
+			"default": "./dist/lazy.mjs"
 		},
 		"./eager": {
-			"types": "./dist/eager.d.ts",
-			"import": "./dist/eager.js",
-			"default": "./dist/eager.js"
+			"types": "./dist/eager.d.mts",
+			"import": "./dist/eager.mjs",
+			"default": "./dist/eager.mjs"
 		},
 		"./*": "./dist/*",
 		"./package.json": "./package.json"
@@ -22,8 +22,8 @@
 		"access": "public"
 	},
 	"scripts": {
-		"dev": "tsup --watch --dts",
-		"build": "tsup --dts"
+		"dev": "tsdown --watch --dts",
+		"build": "tsdown --dts"
 	},
 	"dependencies": {
 		"@novely/core": "workspace:^",
@@ -31,8 +31,8 @@
 		"@tsparticles/slim": "~3.8.1"
 	},
 	"devDependencies": {
-		"tsup": "^8.5.0",
-		"typescript": "^5.8.3"
+		"tsdown": "^0.21.4",
+		"typescript": "^5.9.3"
 	},
 	"peerDependencies": {
 		"@novely/core": "*"
@@ -42,7 +42,11 @@
 		"url": "https://github.com/yhdgms1/novely/issues"
 	},
 	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/particles",
-	"keywords": ["ts-particles", "particles", "novely"],
+	"keywords": [
+		"ts-particles",
+		"particles",
+		"novely"
+	],
 	"author": {
 		"name": "Artemiy Schukin",
 		"url": "https://github.com/yhdgms1"
@@ -52,5 +56,7 @@
 		"type": "git",
 		"url": "git+https://github.com/yhdgms1/novely.git"
 	},
-	"files": ["dist/*"]
+	"files": [
+		"dist/*"
+	]
 }

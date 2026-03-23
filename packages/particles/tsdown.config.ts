@@ -1,16 +1,17 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsdown';
 
 export default defineConfig((options) => {
 	return {
-		entry: ['src/index.ts'],
-		external: ['@novely/core', 'easy-cl2d'],
+		entry: ['src/eager.ts', 'src/lazy.ts'],
 		sourcemap: true,
 		target: 'es2024',
-		format: ['esm'],
 		minify: true,
-		bundle: true,
 		splitting: true,
 		dts: options.dts,
 		watch: options.watch,
+		clean: false,
+		deps: {
+			neverBundle: ['@tsparticles/engine', '@tsparticles/slim'],
+		},
 	};
 });

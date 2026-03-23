@@ -6,9 +6,9 @@
 	"sideEffects": false,
 	"exports": {
 		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js",
-			"default": "./dist/index.js"
+			"types": "./dist/index.d.mts",
+			"import": "./dist/index.mjs",
+			"default": "./dist/index.mjs"
 		},
 		"./*": "./dist/*",
 		"./package.json": "./package.json"
@@ -17,8 +17,8 @@
 		"access": "public"
 	},
 	"scripts": {
-		"dev": "tsup --watch --dts",
-		"build": "tsup --dts"
+		"dev": "tsdown --watch --dts",
+		"build": "tsdown --dts"
 	},
 	"dependencies": {
 		"@novely/core": "workspace:*",
@@ -26,8 +26,8 @@
 		"es-toolkit": "^1.39.5"
 	},
 	"devDependencies": {
-		"tsup": "^8.5.0",
-		"typescript": "^5.8.3"
+		"tsdown": "^0.21.4",
+		"typescript": "^5.9.3"
 	},
 	"peerDependencies": {
 		"@novely/core": "*"
@@ -47,5 +47,7 @@
 		"type": "git",
 		"url": "git+https://github.com/yhdgms1/novely.git"
 	},
-	"files": ["dist/*"]
+	"files": [
+		"dist/*"
+	]
 }
