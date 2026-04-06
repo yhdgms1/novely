@@ -1,12 +1,32 @@
 {
 	"name": "@novely/parser",
-	"description": "Novely Story Format Parser",
 	"version": "0.7.0",
+	"description": "Novely Story Format Parser",
+	"keywords": [
+		"novely"
+	],
+	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/parser",
+	"bugs": {
+		"url": "https://github.com/yhdgms1/novely/issues"
+	},
+	"license": "ISC",
+	"author": {
+		"name": "Artemiy Schukin",
+		"url": "https://github.com/yhdgms1"
+	},
+	"contributors": [],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/yhdgms1/novely.git"
+	},
+	"files": [
+		"dist/*"
+	],
 	"type": "module",
 	"sideEffects": false,
-	"types": "./dist/index.d.mts",
 	"main": "./dist/index.mjs",
 	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.mts",
 	"publishConfig": {
 		"access": "public"
 	},
@@ -19,25 +39,5 @@
 		"tsdown": "^0.21.4",
 		"typescript": "^5.9.3",
 		"uvu": "^0.5.6"
-	},
-	"license": "ISC",
-	"bugs": {
-		"url": "https://github.com/yhdgms1/novely/issues"
-	},
-	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/parser",
-	"keywords": [
-		"novely"
-	],
-	"author": {
-		"name": "Artemiy Schukin",
-		"url": "https://github.com/yhdgms1"
-	},
-	"contributors": [],
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/yhdgms1/novely.git"
-	},
-	"files": [
-		"dist/*"
-	]
+	}
 }

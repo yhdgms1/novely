@@ -1,33 +1,17 @@
 {
 	"name": "@novely/typewriter",
-	"description": "Эффект пишущей машинки",
 	"version": "0.5.1",
-	"type": "module",
-	"sideEffects": false,
-	"types": "./dist/index.d.mts",
-	"main": "./dist/index.mjs",
-	"module": "./dist/index.mjs",
-	"publishConfig": {
-		"access": "public"
-	},
-	"scripts": {
-		"dev": "tsdown --watch",
-		"build": "tsdown --dts"
-	},
-	"devDependencies": {
-		"tsdown": "^0.21.4",
-		"typescript": "^5.9.3"
-	},
-	"license": "ISC",
+	"description": "Эффект пишущей машинки",
+	"keywords": [
+		"effect",
+		"novely",
+		"typewriter"
+	],
+	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/typewriter",
 	"bugs": {
 		"url": "https://github.com/yhdgms1/novely/issues"
 	},
-	"homepage": "https://github.com/yhdgms1/novely/tree/main/packages/typewriter",
-	"keywords": [
-		"typewriter",
-		"effect",
-		"novely"
-	],
+	"license": "ISC",
 	"author": {
 		"name": "Artemiy Schukin",
 		"url": "https://github.com/yhdgms1"
@@ -39,5 +23,21 @@
 	},
 	"files": [
 		"dist/*"
-	]
+	],
+	"type": "module",
+	"sideEffects": false,
+	"main": "./dist/index.mjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.mts",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"dev": "tsdown --watch",
+		"build": "tsdown --dts"
+	},
+	"devDependencies": {
+		"tsdown": "^0.21.4",
+		"typescript": "^5.9.3"
+	}
 }

@@ -16,4 +16,3 @@
 Please, you TypeScript.
 
 You can add `any` in new code, but not in existing code. You can use `as` type cast in case that's needed.
-

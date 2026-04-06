@@ -44,7 +44,7 @@ const createControlledPromise = <T = void>() => {
 		object.promise = promise as ControlledPromise<T>;
 	};
 
-	return init(), object;
+	return (init(), object);
 };
 
 export { createControlledPromise };

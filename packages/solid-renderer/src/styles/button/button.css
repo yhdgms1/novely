@@ -30,7 +30,7 @@
 	color: var(--novely-button-hover-color, #ffb7a2);
 }
 
-.button[aria-disabled="true"] {
+.button[aria-disabled='true'] {
 	cursor: not-allowed;
 	opacity: 0.9;
 }
@@ -39,7 +39,7 @@
  * enables :hover on box-shadow
  */
 .button::after {
-	content: "";
+	content: '';
 
 	position: absolute;
 	inset: -0.15rem;

@@ -146,7 +146,7 @@ const novely = <
 	 * Saves timestamps created in this session
 	 */
 	const intime = (value: number) => {
-		return times.add(value), value;
+		return (times.add(value), value);
 	};
 
 	const scriptBase = async (part: Story) => {
@@ -448,7 +448,7 @@ const novely = <
 		 */
 		if (autosaves) {
 			storageData.update((prev) => {
-				return prev.saves.push(save), prev;
+				return (prev.saves.push(save), prev);
 			});
 		}
 

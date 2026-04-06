@@ -1,6 +1,6 @@
 # @novely/flex-storage
 
-Flex storage uses [seroval](https://github.com/lxsmnsyc/seroval) for serializing/deserializing and  [lz-string](https://github.com/pieroxy/lz-string) for compression/decompression.
+Flex storage uses [seroval](https://github.com/lxsmnsyc/seroval) for serializing/deserializing and [lz-string](https://github.com/pieroxy/lz-string) for compression/decompression.
 
 ## Usage
 

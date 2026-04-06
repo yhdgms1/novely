@@ -63,13 +63,7 @@ export type { Stored, Derived } from './store';
 export type { BaseTranslationStrings } from './translations';
 export type { AllowedContent, PluralType, Pluralization, TranslationActions } from './translation';
 
-export type {
-	ConditionParams,
-	InputHandler,
-	FunctionParams,
-	ChoiceParams,
-	TypesFromEngine,
-} from './type-utils';
+export type { ConditionParams, InputHandler, FunctionParams, ChoiceParams, TypesFromEngine } from './type-utils';
 
 export { novely } from './novely';
 export { storageAdapterLocal } from './storage';

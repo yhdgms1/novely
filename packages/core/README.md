@@ -21,30 +21,30 @@ import { createSolidRenderer } from '@novely/solid-renderer';
 import { novely, EN } from '@novely/core';
 
 const engine = novely({
-  renderer: createSolidRenderer().renderer,
-  translation: {
-    en: {
-      internal: EN
-    }
-  },
-  characters: {
-    Natsuki: {
-      name: 'Natsuki',
-      color: '#f388aa',
-      emotions: {
-        happy: './natsuki-happy.png'
-      }
-    }
-  }
+	renderer: createSolidRenderer().renderer,
+	translation: {
+		en: {
+			internal: EN,
+		},
+	},
+	characters: {
+		Natsuki: {
+			name: 'Natsuki',
+			color: '#f388aa',
+			emotions: {
+				happy: './natsuki-happy.png',
+			},
+		},
+	},
 });
 
 engine.script({
-  start: [
-    engine.action.showBackground('./school.png'),
-    engine.action.showCharacter('Natsuki', 'happy'),
-    engine.action.dialog('Natsuki', 'Whoa! I am very happy to see you!')
-  ]
-})
+	start: [
+		engine.action.showBackground('./school.png'),
+		engine.action.showCharacter('Natsuki', 'happy'),
+		engine.action.dialog('Natsuki', 'Whoa! I am very happy to see you!'),
+	],
+});
 ```
 
 ## Features Used

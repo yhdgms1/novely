@@ -1,11 +1,10 @@
 {
 	"name": "novely",
-	"private": true,
 	"version": "0.0.0",
+	"private": true,
 	"type": "module",
 	"scripts": {
-		"lint": "biome check --write ./packages",
-		"format": "biome format --write .",
+		"format": "oxfmt",
 		"prepare": "husky",
 		"init-repo": "pnpm build:parser && pnpm build:vite-plugin-novely && pnpm build:core && pnpm build:typewriter && pnpm build:particles && pnpm build:toolkit && pnpm build:flex-storage && pnpm build:solid",
 		"dev": "pnpm dev:preview",
@@ -36,8 +35,8 @@
 		"build:live2d": "pnpm --filter=@novely/live2d... --parallel build"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.0.6",
-		"husky": "^9.1.7"
+		"husky": "^9.1.7",
+		"oxfmt": "^0.43.0"
 	},
 	"pnpm": {
 		"overrides": {
@@ -48,6 +47,9 @@
 			"cross-spawn@>=7.0.0 <7.0.5": ">=7.0.5",
 			"nanoid@<3.3.8": "~3.3.8"
 		},
-		"onlyBuiltDependencies": ["@biomejs/biome", "@tsparticles/engine", "esbuild"]
+		"onlyBuiltDependencies": [
+			"@tsparticles/engine",
+			"esbuild"
+		]
 	}
 }

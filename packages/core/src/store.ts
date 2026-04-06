@@ -14,7 +14,7 @@ type Derived<T> = {
 
 const store = <T>(current: T, subscribers = new Set<(value: T) => void>()): Stored<T> => {
 	const subscribe = (cb: (value: T) => void) => {
-		subscribers.add(cb), cb(current);
+		(subscribers.add(cb), cb(current));
 
 		return () => {
 			subscribers.delete(cb);

@@ -21,46 +21,46 @@ const action = extendAction(engine.action, {
 			onPressed: onPressed,
 			translation: {
 				en: {
-					stop: 'Stop'
-				}
-			}
-		})
+					stop: 'Stop',
+				},
+			},
+		});
 
 		return ['custom', momentPresser];
-	}
-})
+	},
+});
 
 engine.script({
-  start: [
-    // you'r story goes here
-    action.momentPresser((state, presserState) => {
-      console.log(presserState) // 'PERFECT' | 'PASS' | 'MISS'
+	start: [
+		// you'r story goes here
+		action.momentPresser((state, presserState) => {
+			console.log(presserState); // 'PERFECT' | 'PASS' | 'MISS'
 
-      // Function to receive or set state, see: https://novely.deno.dev/guide/state.html
-      state()
-    })
-  ]
-})
+			// Function to receive or set state, see: https://novely.deno.dev/guide/state.html
+			state();
+		}),
+	],
+});
 ```
 
 ## CSS Properties
 
 ```css
 :root {
-  --moment-presser-main-arc-background: color;
-  --moment-presser-inner-arc-background: color;
-  --moment-presser-outer-arc-background: color;
-  --moment-presser-pillar-background: color;
-  --moment-presser-wide-match-zone-background: color;
-  --moment-presser-narrow-match-zone-background: color;
-  --moment-presser-aim-background: color;
+	--moment-presser-main-arc-background: color;
+	--moment-presser-inner-arc-background: color;
+	--moment-presser-outer-arc-background: color;
+	--moment-presser-pillar-background: color;
+	--moment-presser-wide-match-zone-background: color;
+	--moment-presser-narrow-match-zone-background: color;
+	--moment-presser-aim-background: color;
 
-  --moment-presser-button-background: color;
-  --moment-presser-button-border: color;
-  --moment-presser-circle-background: color;
-  --moment-presser-circle-border: color;
-  --moment-presser-circle-color: color;
+	--moment-presser-button-background: color;
+	--moment-presser-button-border: color;
+	--moment-presser-circle-background: color;
+	--moment-presser-circle-border: color;
+	--moment-presser-circle-color: color;
 
-  --moment-presser-caption-color: color;
+	--moment-presser-caption-color: color;
 }
 ```

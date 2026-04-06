@@ -107,7 +107,9 @@ const createReferFunction = ({ story, onUnknownSceneHit }: CreateReferFunctionPa
 	};
 
 	const referGuarded = async (path: Path) => {
-		return await (await refer(path)).value;
+		return await (
+			await refer(path)
+		).value;
 	};
 
 	return {

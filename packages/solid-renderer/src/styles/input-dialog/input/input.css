@@ -1,4 +1,4 @@
-input[name="novely-input"] {
+input[name='novely-input'] {
 	position: relative;
 	display: block;
 
@@ -12,20 +12,20 @@ input[name="novely-input"] {
 	max-width: 100%;
 }
 
-input[name="novely-input"][type="text"],
-input[name="novely-input"][type="number"],
-input[name="novely-input"][type="password"] {
+input[name='novely-input'][type='text'],
+input[name='novely-input'][type='number'],
+input[name='novely-input'][type='password'] {
 	box-shadow: 0 0 0 var(--input-box-shadow-spread-radius, 0.15rem) var(--novely-input-border-color, #ffc7df);
 
 	outline-offset: var(--input-box-shadow-spread-radius, 0.15rem);
 }
 
-input[name="novely-input"][type="checkbox"] {
+input[name='novely-input'][type='checkbox'] {
 	min-width: unset;
 }
 
 @supports (-webkit-appearance: none) {
-	input[name="novely-input"][type="number"] {
+	input[name='novely-input'][type='number'] {
 		appearance: textfield;
 	}
 }

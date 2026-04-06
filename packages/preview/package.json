@@ -1,17 +1,12 @@
 {
 	"name": "@novely/preview",
-	"private": true,
 	"version": "0.0.0",
+	"private": true,
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build",
 		"preview": "vite preview"
-	},
-	"devDependencies": {
-		"@novely/vite-plugin-novely": "workspace:^",
-		"typescript": "^5.9.3",
-		"vite": "^8.0.0"
 	},
 	"dependencies": {
 		"@novely/core": "workspace:*",
@@ -22,5 +17,10 @@
 		"@novely/solid-renderer": "workspace:*",
 		"animate.css": "^4.1.1",
 		"modern-normalize": "~3.0.1"
+	},
+	"devDependencies": {
+		"@novely/vite-plugin-novely": "workspace:^",
+		"typescript": "^5.9.3",
+		"vite": "^8.0.0"
 	}
 }

@@ -117,9 +117,8 @@ const momentPresser = (options: MomentPresserOptions<Lang, State> = {}) => {
 	return fn;
 };
 
-type CreateMomentPresserOptions<T> = T extends EngineTypes<infer $Lang, infer $State, any, any>
-	? MomentPresserOptions<$Lang, $State>
-	: never;
+type CreateMomentPresserOptions<T> =
+	T extends EngineTypes<infer $Lang, infer $State, any, any> ? MomentPresserOptions<$Lang, $State> : never;
 
 const createMomentPresser = <T>(options: CreateMomentPresserOptions<T>) => {
 	return momentPresser(options);
