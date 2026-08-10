@@ -19,9 +19,9 @@ hero:
     - theme: alt
       text: View on GitHub
       link: https://github.com/yhdgms1/novely
-    - theme: alt
-      text: Demo
-      link: /demo/demo
+    # - theme: alt
+    #   text: Demo
+    #   link: /demo/demo
 
 features:
   - title: Multilanguage Support

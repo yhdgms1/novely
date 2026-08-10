@@ -90,10 +90,10 @@ export default defineConfig({
             text: "Story Format",
             link: "/guide/story-format",
           },
-          {
-            text: "Demo",
-            link: "/demo/demo",
-          },
+          // {
+          //   text: "Demo",
+          //   link: "/demo/demo",
+          // },
         ],
       },
     ],

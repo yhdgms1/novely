@@ -45,7 +45,7 @@ engine.script({
     action.momentPresser((state, presserState) => {
       console.log(presserState) // 'PERFECT' | 'PASS' | 'MISS'
 
-      // Function to receive or set state, see: https://novely.deno.dev/guide/state.html
+      // Function to receive or set state, see: https://novely.pages.dev/guide/state.html
       state()
     })
   ]

@@ -2,6 +2,10 @@
   "name": "novely",
   "type": "module",
   "private": true,
+  "packageManager": "pnpm@11.8.0",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "prepare": "node ./fetch-highlight.mjs",
     "dev": "vitepress dev docs",
@@ -10,10 +14,7 @@
     "fetch-highlight": "node ./fetch-highlight.mjs"
   },
   "devDependencies": {
-    "@types/node": "^24.0.7",
-    "vitepress": "~1.6.3"
-  },
-  "pnpm": {
-    "peerDependencyRules": {}
+    "@types/node": "^26.2.0",
+    "vitepress": "~1.6.4"
   }
 }
